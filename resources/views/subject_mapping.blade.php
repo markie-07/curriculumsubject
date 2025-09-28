@@ -612,7 +612,7 @@
 
             subjectTag.innerHTML = `
                 <div class="flex items-center gap-3">
-                    <span class="w-2 h-2 rounded-full ${typeColorClass}"></span>
+                    <span class="w-2 h-2 rounded-full ${typeCogitlorClass}"></span>
                     <div>
                         <p class="font-bold text-sm text-gray-800">${subjectData.subject_code}</p>
                         <p class="text-xs text-gray-600">${subjectData.subject_name}</p>

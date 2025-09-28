@@ -4,7 +4,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CurriculumController;
 use App\Http\Controllers\SubjectController;
-use App\Http\Controllers\AiController;
 use App\Http\Controllers\PrerequisiteController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\EquivalencyToolController; 
@@ -25,12 +24,6 @@ Route::get('/subjects', [SubjectController::class, 'index']);
 Route::post('/subjects', [SubjectController::class, 'store']);
 Route::get('/subjects/{id}', [SubjectController::class, 'show']);
 Route::put('/subjects/{id}', [SubjectController::class, 'update']);
-
-
-// --- AI Generation Routes ---
-Route::post('/generate-lesson-topics', [AiController::class, 'generateLessonTopics']);
-Route::post('/generate-lesson-plan', [AiController::class, 'generateLessonPlan']);
-
 
 // --- Prerequisite Routes ---
 Route::get('/prerequisites/{curriculum}', [PrerequisiteController::class, 'fetchData']);
