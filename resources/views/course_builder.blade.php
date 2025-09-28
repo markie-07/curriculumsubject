@@ -2,6 +2,7 @@
 
 @section('content')
 <div class="px-6 py-8 bg-gray-50">
+    {{-- This is the container that was changed --}}
     <div class="w-full"> 
         <div class="mb-8">
             <h1 class="text-4xl font-bold text-gray-800">Course Builder</h1>
@@ -71,28 +72,6 @@
                             <h4 class="font-semibold text-gray-600">DEPARTMENT</h4>
                             <p class="mt-2 text-gray-700">To awaken the curiosity and ignite passion of individuals to excel independents in academics endeavors towards their development into ethically and morally strong people.</p>
                         </div>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-xl font-bold text-gray-700 mb-2">PHILOSOPHY</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="p-4 bg-gray-50 rounded-md border">
-                            <h4 class="font-semibold text-gray-600">SCHOOL</h4>
-                            <p class="mt-2 text-gray-700">BCP advocates threefold core values: “Fides”, Faith; “Ratio”, Reason; Pax. Peace. “Fides” represents BCPs, endeavors for expansion, development, and growth amidst the challenges of the new millennium. It is moving forward and lifting its faith its fate to the hands of God, for without His guidance, BCP cannot do and deliver affordable education and multiply God's graces, especially to the less fortunate youth of the land. "Ratio" symbolizes BCP's efforts to provide an education which can be man's tool to be liberated from all forms of ignorance and poverty. Hence, all its academic offerings are relevant tools to empower man to ably use his reason, intellect and will to confront life's challenges. "Pax". BCP is a forerunner in the promotion of a harmonious relationship between the different sectors of its academic community. From the administration, to its work force, and students, peace resides in them as depicted by the dove with the laurel of growth and progress clenched in its beak.</p>
-                        </div>
-                        <div class="p-4 bg-gray-50 rounded-md border">
-                            <h4 class="font-semibold text-gray-600">DEPARTMENT</h4>
-                            <p class="mt-2 text-gray-700">General Education advocates threefold core values “Devotion”, “Serenity’, “Determination” “Devotion” represents General Education commitment and dedication to provide quality education that will fuel the passion of the students for learning in driving academic success “Serenity” symbolizes a crucial element in the overall well-being and success of students by means of creating a more supportive, conducive, and enriching learning environment, enabling them to thrive academically, emotionally, and personally. “Determination” general education is committed to provide a high-quality, equitable, and supportive learning environment that empowers students to succeed.</p>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-xl font-bold text-gray-700 mb-2">CORE VALUES</h3>
-                    <div class="p-4 bg-gray-50 rounded-md border">
-                        <p class="mt-2 text-gray-700"><span class="font-bold">FAITH (Fides)</span> represents BCP’s endeavor for expansion, development and for growth amidst the global challenges of the new millennium. It is moving forward and lifting its fate to the hands of God for without His guidance, BCP cannot do and deliver affordable quality education and multiply God’s grace especially to the less fortunate youth of the land.</p>
-                        <p class="mt-4 text-gray-700"><span class="font-bold">KNOWLEDGE (Cognito)</span> connotes the institution’s efforts to impart excellent lifelong education that can be used as human tool so that one can liberate himself/herself from ignorance and poverty. Hence, all its academic offerings are relevant tools to empower man to effectively use one’s reason, intellect and will to face the challenges of life.</p>
-                        <p class="mt-4 text-gray-700"><span class="font-bold">CHARITY (Caritas)</span> is the institution’s commitment towards its clienteles. Sharing and services are the insignia of its soul, the badge of its character</p>
-                        <p class="mt-4 text-gray-700"><span class="font-bold">HUMILITY (Humiliates)</span> refers to the institution’s recognition of the human frailty, its imperfection. But its imperfection, it learns how to move forward and learn from do’s and don’ts of life. Simply stated</p>
                     </div>
                 </div>
             </div>
@@ -203,58 +182,63 @@
         {{-- Section 5: Weekly Plan --}}
         <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 mb-8">
             <h2 class="text-2xl font-semibold text-gray-800 mb-6">Weekly Plan (Weeks 1-15)</h2>
-            <div class="space-y-8">
+            <div class="space-y-4">
                 @for ($i = 1; $i <= 15; $i++)
-                    <div class="border-b pb-6 last:border-b-0">
-                        <h3 class="text-xl font-semibold text-gray-700 mb-4">Week {{ $i }}</h3>
-                        <div class="grid grid-cols-1 gap-6">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label for="week_{{ $i }}_content" class="block text-sm font-medium text-gray-700">Content</label>
-                                    <textarea id="week_{{ $i }}_content" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
-                                </div>
-                                <div>
-                                    <label for="week_{{ $i }}_silo" class="block text-sm font-medium text-gray-700">Student Intended Learning Outcomes</label>
-                                    <textarea id="week_{{ $i }}_silo" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Assessment Tasks (ATs)</label>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 p-4 border rounded-md bg-gray-50">
+                    <div class="border rounded-lg overflow-hidden">
+                        <button class="w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none" onclick="toggleAccordion('week-{{ $i }}')">
+                            <h3 class="text-lg font-semibold text-gray-700">Week {{ $i }}</h3>
+                            <svg id="icon-week-{{ $i }}" class="w-6 h-6 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div id="content-week-{{ $i }}" class="hidden p-6 bg-white">
+                            <div class="grid grid-cols-1 gap-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label for="week_{{ $i }}_at_onsite" class="block text-xs font-semibold text-gray-600 mb-1">ONSITE</label>
-                                        <textarea id="week_{{ $i }}_at_onsite" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring-indigo-200"></textarea>
+                                        <label for="week_{{ $i }}_content" class="block text-sm font-medium text-gray-700">Content</label>
+                                        <textarea id="week_{{ $i }}_content" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
                                     </div>
                                     <div>
-                                        <label for="week_{{ $i }}_at_offsite" class="block text-xs font-semibold text-gray-600 mb-1">OFFSITE</label>
-                                        <textarea id="week_{{ $i }}_at_offsite" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring-indigo-200"></textarea>
+                                        <label for="week_{{ $i }}_silo" class="block text-sm font-medium text-gray-700">Student Intended Learning Outcomes</label>
+                                        <textarea id="week_{{ $i }}_silo" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
                                     </div>
                                 </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Suggested Teaching/Learning Activities (TLAs)</label>
-                                <div class="mt-2 p-4 border rounded-md bg-gray-50">
-                                    <p class="text-xs font-semibold text-gray-600 mb-2">Blended Learning Delivery Modality (BLDM)</p>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Assessment Tasks (ATs)</label>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 p-4 border rounded-md bg-gray-50">
                                         <div>
-                                            <label for="week_{{ $i }}_tla_onsite" class="block text-xs font-semibold text-gray-600 mb-1">Face to Face (On-Site)</label>
-                                            <textarea id="week_{{ $i }}_tla_onsite" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring-indigo-200"></textarea>
+                                            <label for="week_{{ $i }}_at_onsite" class="block text-xs font-semibold text-gray-600 mb-1">ONSITE</label>
+                                            <textarea id="week_{{ $i }}_at_onsite" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring-indigo-200"></textarea>
                                         </div>
                                         <div>
-                                            <label for="week_{{ $i }}_tla_offsite" class="block text-xs font-semibold text-gray-600 mb-1">Online (Off-Site)</label>
-                                            <textarea id="week_{{ $i }}_tla_offsite" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring-indigo-200"></textarea>
+                                            <label for="week_{{ $i }}_at_offsite" class="block text-xs font-semibold text-gray-600 mb-1">OFFSITE</label>
+                                            <textarea id="week_{{ $i }}_at_offsite" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring-indigo-200"></textarea>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label for="week_{{ $i }}_ltsm" class="block text-sm font-medium text-gray-700">Learning and Teaching Support Materials (LTSM)</label>
-                                    <textarea id="week_{{ $i }}_ltsm" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                                    <label class="block text-sm font-medium text-gray-700">Suggested Teaching/Learning Activities (TLAs)</label>
+                                    <div class="mt-2 p-4 border rounded-md bg-gray-50">
+                                        <p class="text-xs font-semibold text-gray-600 mb-2">Blended Learning Delivery Modality (BLDM)</p>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label for="week_{{ $i }}_tla_onsite" class="block text-xs font-semibold text-gray-600 mb-1">Face to Face (On-Site)</label>
+                                                <textarea id="week_{{ $i }}_tla_onsite" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring-indigo-200"></textarea>
+                                            </div>
+                                            <div>
+                                                <label for="week_{{ $i }}_tla_offsite" class="block text-xs font-semibold text-gray-600 mb-1">Online (Off-Site)</label>
+                                                <textarea id="week_{{ $i }}_tla_offsite" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring-indigo-200"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label for="week_{{ $i }}_output" class="block text-sm font-medium text-gray-700">Output Materials</label>
-                                    <textarea id="week_{{ $i }}_output" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="week_{{ $i }}_ltsm" class="block text-sm font-medium text-gray-700">Learning and Teaching Support Materials (LTSM)</label>
+                                        <textarea id="week_{{ $i }}_ltsm" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                                    </div>
+                                    <div>
+                                        <label for="week_{{ $i }}_output" class="block text-sm font-medium text-gray-700">Output Materials</label>
+                                        <textarea id="week_{{ $i }}_output" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -266,7 +250,7 @@
         {{-- Section 6: Course Requirements and Policies --}}
         <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 mb-8">
             <h2 class="text-2xl font-semibold text-gray-800 mb-6">Course Requirements and Policies</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 gap-6">
                 <div>
                     <label for="basic_readings" class="block text-sm font-medium text-gray-700">Basic Readings / Textbooks</label>
                     <textarea id="basic_readings" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
@@ -275,11 +259,11 @@
                     <label for="extended_readings" class="block text-sm font-medium text-gray-700">Extended Readings / References</label>
                     <textarea id="extended_readings" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
                 </div>
-                <div class="md:col-span-2">
+                <div>
                     <label for="course_assessment" class="block text-sm font-medium text-gray-700">Course Assessment</label>
                     <textarea id="course_assessment" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
                 </div>
-                <div class="md:col-span-2 p-6 border rounded-lg bg-gray-50">
+                <div class="p-6 border rounded-lg bg-gray-50">
                     <h3 class="text-xl font-bold text-gray-700 mb-4">Course Policies and Statements</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="p-4 bg-white rounded-md border">
@@ -302,7 +286,7 @@
                 </div>
             </div>
         </div>
-        
+
         {{-- Section 7: Approval Section --}}
         <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
             <h2 class="text-2xl font-semibold text-gray-800 mb-6">Approval</h2>
@@ -332,44 +316,50 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const addProgramMappingBtn = document.getElementById('add-program-mapping-row');
-    const programMappingTableBody = document.getElementById('program-mapping-table-body');
-    const addCourseMappingBtn = document.getElementById('add-course-mapping-row');
-    const courseMappingTableBody = document.getElementById('course-mapping-table-body');
+    function toggleAccordion(id) {
+        const content = document.getElementById('content-' + id);
+        const icon = document.getElementById('icon-' + id);
+        content.classList.toggle('hidden');
+        icon.classList.toggle('rotate-180');
+    }
 
-    const createMappingTableRow = (isPilo = true) => {
-        const row = document.createElement('tr');
-        row.className = 'hover:bg-gray-50';
-        row.innerHTML = `
-            <td class="py-2 px-4 border-b">
-                <input type="text" placeholder="${isPilo ? 'Enter PILO...' : 'Enter CILO...'}" class="w-full p-2 border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
-            </td>
-            <td class="py-2 px-4 border-b"><input type="text" class="w-full p-2 text-center border-gray-300 rounded"></td>
-            <td class="py-2 px-4 border-b"><input type="text" class="w-full p-2 text-center border-gray-300 rounded"></td>
-            <td class="py-2 px-4 border-b"><input type="text" class="w-full p-2 text-center border-gray-300 rounded"></td>
-            <td class="py-2 px-4 border-b"><input type="text" class="w-full p-2 text-center border-gray-300 rounded"></td>
-            <td class="py-2 px-4 border-b text-center">
-                <button class="delete-row-btn text-red-500 hover:text-red-700 font-semibold p-1">Delete</button>
-            </td>
-        `;
-        return row;
-    };
-    
-    addProgramMappingBtn.addEventListener('click', () => {
-        programMappingTableBody.appendChild(createMappingTableRow(true));
-    });
+    document.addEventListener('DOMContentLoaded', function () {
+        const addProgramMappingBtn = document.getElementById('add-program-mapping-row');
+        const programMappingTableBody = document.getElementById('program-mapping-table-body');
+        const addCourseMappingBtn = document.getElementById('add-course-mapping-row');
+        const courseMappingTableBody = document.getElementById('course-mapping-table-body');
 
-    addCourseMappingBtn.addEventListener('click', () => {
-        courseMappingTableBody.appendChild(createMappingTableRow(false));
-    });
+        const createMappingTableRow = (isPilo = true) => {
+            const row = document.createElement('tr');
+            row.className = 'hover:bg-gray-50';
+            row.innerHTML = `
+                <td class="py-2 px-4 border-b">
+                    <input type="text" placeholder="${isPilo ? 'Enter PILO...' : 'Enter CILO...'}" class="w-full p-2 border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+                </td>
+                <td class="py-2 px-4 border-b"><input type="text" class="w-full p-2 text-center border-gray-300 rounded"></td>
+                <td class="py-2 px-4 border-b"><input type="text" class="w-full p-2 text-center border-gray-300 rounded"></td>
+                <td class="py-2 px-4 border-b"><input type="text" class="w-full p-2 text-center border-gray-300 rounded"></td>
+                <td class="py-2 px-4 border-b"><input type="text" class="w-full p-2 text-center border-gray-300 rounded"></td>
+                <td class="py-2 px-4 border-b text-center">
+                    <button class="delete-row-btn text-red-500 hover:text-red-700 font-semibold p-1">Delete</button>
+                </td>
+            `;
+            return row;
+        };
+        
+        addProgramMappingBtn.addEventListener('click', () => {
+            programMappingTableBody.appendChild(createMappingTableRow(true));
+        });
 
-    document.querySelector('.max-w-7xl').addEventListener('click', function (e) {
-        if (e.target.classList.contains('delete-row-btn')) {
-            e.target.closest('tr').remove();
-        }
+        addCourseMappingBtn.addEventListener('click', () => {
+            courseMappingTableBody.appendChild(createMappingTableRow(false));
+        });
+
+        document.querySelector('.w-full').addEventListener('click', function (e) {
+            if (e.target.classList.contains('delete-row-btn')) {
+                e.target.closest('tr').remove();
+            }
+        });
     });
-});
 </script>
-
 @endsection
