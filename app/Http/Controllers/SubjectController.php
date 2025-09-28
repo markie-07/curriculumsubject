@@ -20,27 +20,29 @@ class SubjectController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'subjectName' => 'required|string|max:255',
-            'subjectCode' => 'required|string|max:255|unique:subjects,subject_code',
-            'subjectType' => 'required|string|in:Major,Minor,Elective',
-            'subjectUnit' => 'required|integer',
-            'lessons' => 'nullable|array',
+            $validated = $request->validate([
+            // Map the frontend names to the expected Subject model attributes
+            'course_title' => 'required|string|max:255',   // Maps to subject_name
+            'course_code' => 'required|string|max:255|unique:subjects,subject_code', // Maps to subject_code
+            'credit_units' => 'required|integer',        // Maps to subject_unit
+            'subject_type' => 'required|string|in:Major,Minor,Elective,General', // Must be explicitly selected/sent
+            'lessons' => 'nullable|array', // The compiled JSON array of the weekly plan
         ]);
 
-        $subject = Subject::create([
-            'subject_name' => $validated['subjectName'],
-            'subject_code' => $validated['subjectCode'],
-            'subject_type' => $validated['subjectType'],
-            'subject_unit' => $validated['subjectUnit'],
-            'lessons' => $validated['lessons'],
+            $subject = Subject::create([
+            'subject_name' => $validated['course_title'],
+            'subject_code' => $validated['course_code'],
+            'subject_type' => $validated['subject_type'], // Use the value sent from the form
+            'subject_unit' => $validated['credit_units'],
+            'lessons' => $validated['lessons'] ?? [], // Store the entire compiled lessons object/array
         ]);
 
         return response()->json([
-            'message' => 'Subject created successfully!',
+            'message' => 'Subject created successfully! Ready for mapping.',
             'subject' => $subject,
         ], 201);
     }
+    
     
     /**
      * Retrieves a single subject.
@@ -48,35 +50,5 @@ class SubjectController extends Controller
     public function show($id)
     {
         return response()->json(Subject::findOrFail($id));
-    }
-
-    /**
-     * Updates an existing subject.
-     */
-    public function update(Request $request, $id)
-    {
-        $subject = Subject::findOrFail($id);
-
-        $validated = $request->validate([
-            'subjectName' => 'required|string|max:255',
-            // Allow the same subject code for the current subject being updated
-            'subjectCode' => 'required|string|max:255|unique:subjects,subject_code,' . $subject->id,
-            'subjectType' => 'required|string|in:Major,Minor,Elective',
-            'subjectUnit' => 'required|integer',
-            'lessons' => 'nullable|array',
-        ]);
-
-        $subject->update([
-            'subject_name' => $validated['subjectName'],
-            'subject_code' => $validated['subjectCode'],
-            'subject_type' => $validated['subjectType'],
-            'subject_unit' => $validated['subjectUnit'],
-            'lessons' => $validated['lessons'],
-        ]);
-
-        return response()->json([
-            'message' => 'Subject updated successfully!',
-            'subject' => $subject,
-        ]);
     }
 }

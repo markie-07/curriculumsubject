@@ -7,6 +7,8 @@ use App\Http\Controllers\SubjectHistoryController;
 use App\Http\Controllers\EquivalencyToolController;
 use App\Http\Controllers\CurriculumExportToolController;
 use App\Http\Controllers\GradeController;
+use App\Http\Controllers\SubjectController;
+
 
 Route::get('/', function () {
     return view('dashboard');
