@@ -30,8 +30,8 @@
                     <input type="number" id="contact_hours" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
                 <div>
-                    <label for="prerequisites" class="block text-sm font-medium text-gray-700">Prerequisites</label>
-                    <input type="text" id="prerequisites" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <label for="credit prerequisites" class="block text-sm font-medium text-gray-700">Credit Prerequisites</label>
+                    <input type="text" id="credit_prerequisites" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
                 <div>
                     <label for="pre_requisite_to" class="block text-sm font-medium text-gray-700">Pre-requisite to</label>
