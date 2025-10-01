@@ -367,6 +367,37 @@
         const courseForm = document.getElementById('courseForm');
         // ... other modal elements ...
 
+        // --- NEW HELPER FUNCTION TO COLLECT MAPPING GRID DATA ---
+        const collectMappingGridData = (tableBodyId) => {
+            const tableBody = document.getElementById(tableBodyId);
+            if (!tableBody) return null; // Guard clause if the table body doesn't exist
+
+            const rows = tableBody.querySelectorAll('tr');
+            const data = [];
+
+            rows.forEach(row => {
+                const inputs = row.querySelectorAll('input[type="text"]');
+                // Create a key for the main outcome based on its placeholder text
+                const outcomeKey = inputs[0].placeholder.includes('PILO') ? 'pilo' : 'cilo';
+
+                const rowData = {
+                    [outcomeKey]: inputs[0].value, // e.g., 'pilo': 'Some text'
+                    ctpss: inputs[1].value,
+                    ecc: inputs[2].value,
+                    epp: inputs[3].value,
+                    glc: inputs[4].value,
+                };
+                
+                // Only add the row to our data array if the main PILO/CILO input has a value
+                if (rowData[outcomeKey]) {
+                    data.push(rowData);
+                }
+            });
+
+            // Return the array of data, or null if it's empty
+            return data.length > 0 ? data : null;
+        };
+
         // --- Utility Functions: Collect all data ---
         const collectWeeklyPlan = () => {
             const lessons = {};
@@ -395,7 +426,7 @@
             return lessons;
         };
         
-        // --- Main Logic: Form Submission ---
+        // --- Main Logic: Form Submission (MODIFIED) ---
         courseForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!courseForm.checkValidity()) {
@@ -406,10 +437,10 @@
             // Collect all form data including the new fields
             const formData = new FormData(courseForm);
             const payload = {
-                course_title: formData.get('course_title'),
-                subject_code: formData.get('course_code'), // Use subject_code for API key
+                subject_name: formData.get('course_title'), // API expects subject_name
+                subject_code: formData.get('course_code'),
                 subject_type: formData.get('subject_type'),
-                subject_unit: formData.get('credit_units'), // Use subject_unit for API key
+                subject_unit: formData.get('credit_units'),
                 
                 // All other fields you input:
                 contact_hours: formData.get('contact_hours'),
@@ -431,17 +462,14 @@
                 reviewed_by: formData.get('reviewed_by'),
                 approved_by: formData.get('approved_by'),
                 
-                // The crucial Weekly Plan (Lessons) JSON structure
                 lessons: collectWeeklyPlan(),
+
+                // +++ ADDED THIS PART TO COLLECT MAPPING GRIDS +++
+                program_mapping_grid: collectMappingGridData('program-mapping-table-body'),
+                course_mapping_grid: collectMappingGridData('course-mapping-table-body'),
             };
             
-            // NOTE: You must ensure your Laravel SubjectController is set up to accept 
-            // and save ALL these fields into the `subjects` table.
-
-            // ... (Your existing AJAX/Fetch logic to post 'payload' to /api/subjects here) ...
-            
             try {
-                // Mock API endpoint call
                 const response = await fetch('/api/subjects', {
                     method: 'POST',
                     headers: {
@@ -455,12 +483,24 @@
                 const result = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(result.message || 'Failed to save course.');
+                    let errorMessage = result.message || 'Failed to save course.';
+                     if (result.errors) {
+                        // Concatenate all error messages from the server validation
+                        errorMessage += '\n' + Object.values(result.errors).flat().join('\n');
+                    }
+                    throw new Error(errorMessage);
                 }
                 
                 // On success, redirect to mapping page with subject info
                 const newSubjectId = result.subject.id;
-                window.location.href = `/subject_mapping?new_subject_id=${newSubjectId}`;
+                
+                // Redirect logic after successful save
+                if (confirm("Subject created successfully! Do you want to set up the grade components now?")) {
+                    const newSubjectName = encodeURIComponent(`${result.subject.subject_name} (${result.subject.subject_code})`);
+                    window.location.href = `/grade-setup?new_subject_id=${newSubjectId}&new_subject_name=${newSubjectName}`;
+                } else {
+                    window.location.href = `/subject_mapping?new_subject_id=${newSubjectId}`;
+                }
 
             } catch (error) {
                 alert('Error saving course: ' + error.message);
@@ -499,6 +539,7 @@
             courseMappingTableBody.appendChild(createMappingTableRow(false));
         });
     
+        // Event delegation for deleting rows
         document.querySelector('.bg-white').addEventListener('click', function (e) {
             if (e.target.classList.contains('delete-row-btn')) {
                 e.target.closest('tr').remove();

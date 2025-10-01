@@ -376,7 +376,7 @@
         const modalDetailsPanel = document.getElementById('modal-details-panel');
         const editSubjectDetailsButton = document.getElementById('editSubjectDetailsButton');
         const importSubjectDetailsButton = document.getElementById('importSubjectDetailsButton');
-        
+
         // Detailed Content Elements
         const detailsCourseTitle = document.getElementById('detailsCourseTitle');
         const detailsContactHours = document.getElementById('detailsContactHours');
@@ -416,7 +416,42 @@
             setTimeout(() => subjectDetailsModal.classList.add('hidden'), 300);
         };
         
-        // NEW, REWRITTEN FUNCTION
+        // +++ NEW HELPER FUNCTION TO BUILD MAPPING GRIDS +++
+        const createMappingGridHtml = (gridData, mainHeader) => {
+            // Check if data exists and is a non-empty array
+            if (!gridData || !Array.isArray(gridData) || gridData.length === 0) {
+                return '<p class="text-sm text-gray-500">No mapping grid data available.</p>';
+            }
+
+            // Define table headers
+            const headers = [mainHeader, 'CTPSS', 'ECC', 'EPP', 'GLC'];
+            
+            // Start building the table HTML
+            let tableHtml = `<div class="overflow-x-auto border rounded-md">
+                                <table class="min-w-full divide-y divide-gray-200 text-xs">
+                                    <thead class="bg-gray-50">
+                                        <tr>${headers.map(h => `<th scope="col" class="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">${h}</th>`).join('')}</tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">`;
+            
+            // Populate table rows with data
+            gridData.forEach(row => {
+                // Access the main cell data dynamically using the header key (e.g., 'pilo' or 'cilo')
+                const mainCellData = row[mainHeader.toLowerCase()] || '';
+                tableHtml += `<tr>
+                                <td class="px-3 py-2 whitespace-normal">${mainCellData}</td>
+                                <td class="px-3 py-2 text-center whitespace-nowrap">${row.ctpss || ''}</td>
+                                <td class="px-3 py-2 text-center whitespace-nowrap">${row.ecc || ''}</td>
+                                <td class="px-3 py-2 text-center whitespace-nowrap">${row.epp || ''}</td>
+                                <td class="px-3 py-2 text-center whitespace-nowrap">${row.glc || ''}</td>
+                              </tr>`;
+            });
+
+            tableHtml += `</tbody></table></div>`;
+            return tableHtml;
+        };
+
+        // MODIFIED showDetailsModal FUNCTION
         const showDetailsModal = (data) => {
             // Helper function to set text content, defaulting to 'N/A'
             const setText = (elementId, value) => {
@@ -448,9 +483,10 @@
             setText('detailsReviewedBy', data.reviewed_by);
             setText('detailsApprovedBy', data.approved_by);
             
-            // Set placeholder text for mapping grids
-            detailsProgramMapping.textContent = "Mapping Grid data is stored in the Course Builder.";
-            detailsCourseMapping.textContent = "Mapping Grid data is stored in the Course Builder.";
+            // +++ DYNAMICALLY RENDER MAPPING GRIDS +++
+            // This replaces the old placeholder text
+            detailsProgramMapping.innerHTML = createMappingGridHtml(data.program_mapping_grid, 'PILO');
+            detailsCourseMapping.innerHTML = createMappingGridHtml(data.course_mapping_grid, 'CILO');
 
             // 2. Format and display the Weekly Plan
             detailsLessonsContainer.innerHTML = '';
@@ -692,7 +728,7 @@
                 });
                 deleteButtons.forEach(button => button.classList.add('hidden'));
                 saveButton.setAttribute('disabled', 'disabled');
-                editButton.innerHTML = `<svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 A-Z0-9a2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg> Edit`;
+                editButton.innerHTML = `<svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg> Edit`;
             }
         };
 

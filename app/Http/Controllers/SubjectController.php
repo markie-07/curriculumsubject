@@ -39,8 +39,10 @@ class SubjectController extends Controller
             'approved_by' => 'nullable|string',
         ]);
 
+        // --- THE FIX IS HERE ---
+        // We map the validated 'course_title' to the 'subject_name' database column.
         $subject = Subject::create([
-            'subject_name' => $validated['course_title'],
+            'subject_name' => $validated['course_title'], // Changed 'course_title' key to 'subject_name'
             'subject_code' => $validated['subject_code'],
             'subject_type' => $validated['subject_type'],
             'subject_unit' => $validated['subject_unit'],

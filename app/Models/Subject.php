@@ -36,8 +36,15 @@ class Subject extends Model
         'approved_by',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
     protected $casts = [
         'lessons' => 'array',
+        'program_mapping_grid' => 'array', // This line was added
+        'course_mapping_grid' => 'array',  // This line was added
     ];
 
     public function curriculums(): BelongsToMany
