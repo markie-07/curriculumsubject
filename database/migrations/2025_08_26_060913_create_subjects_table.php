@@ -11,7 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // This 'up' method with your new columns is correct.
         Schema::create('subjects', function (Blueprint $table) {
             $table->id();
             $table->string('subject_code')->unique();
@@ -45,7 +44,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // The down method should only drop the table it creates.
         Schema::dropIfExists('subjects');
     }
 };

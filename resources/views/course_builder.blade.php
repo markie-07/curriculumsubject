@@ -365,40 +365,36 @@
     document.addEventListener('DOMContentLoaded', function () {
         // Core elements
         const courseForm = document.getElementById('courseForm');
-        // ... other modal elements ...
 
-        // --- NEW HELPER FUNCTION TO COLLECT MAPPING GRID DATA ---
+        // --- Helper Function to Collect Mapping Grid Data ---
         const collectMappingGridData = (tableBodyId) => {
             const tableBody = document.getElementById(tableBodyId);
-            if (!tableBody) return null; // Guard clause if the table body doesn't exist
+            if (!tableBody) return null;
 
             const rows = tableBody.querySelectorAll('tr');
             const data = [];
 
             rows.forEach(row => {
                 const inputs = row.querySelectorAll('input[type="text"]');
-                // Create a key for the main outcome based on its placeholder text
                 const outcomeKey = inputs[0].placeholder.includes('PILO') ? 'pilo' : 'cilo';
 
                 const rowData = {
-                    [outcomeKey]: inputs[0].value, // e.g., 'pilo': 'Some text'
+                    [outcomeKey]: inputs[0].value,
                     ctpss: inputs[1].value,
                     ecc: inputs[2].value,
                     epp: inputs[3].value,
                     glc: inputs[4].value,
                 };
                 
-                // Only add the row to our data array if the main PILO/CILO input has a value
-                if (rowData[outcomeKey]) {
+                if (rowData[outcomeKey] && rowData[outcomeKey].trim() !== '') {
                     data.push(rowData);
                 }
             });
 
-            // Return the array of data, or null if it's empty
             return data.length > 0 ? data : null;
         };
 
-        // --- Utility Functions: Collect all data ---
+        // --- Utility Function: Collect Weekly Plan Data ---
         const collectWeeklyPlan = () => {
             const lessons = {};
             for (let i = 1; i <= 15; i++) {
@@ -412,7 +408,6 @@
                 const output = document.getElementById(`week_${i}_output`).value;
                 
                 if (content || silo || atOnsite || atOffsite || tlaOnsite || tlaOffsite || ltsm || output) {
-                    // CRUCIAL: Combining data into one string with a unique separator (,, )
                     lessons[`Week ${i}`] = [
                         `Detailed Lesson Content:\n${content}`,
                         `Student Intended Learning Outcomes:\n${silo}`,
@@ -426,7 +421,7 @@
             return lessons;
         };
         
-        // --- Main Logic: Form Submission (MODIFIED) ---
+        // --- Main Logic: Form Submission ---
         courseForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!courseForm.checkValidity()) {
@@ -434,37 +429,30 @@
                 return;
             }
 
-            // Collect all form data including the new fields
             const formData = new FormData(courseForm);
             const payload = {
-                subject_name: formData.get('course_title'), // API expects subject_name
+                // This key is corrected to match the controller's validation rule
+                course_title: formData.get('course_title'), 
+                
                 subject_code: formData.get('course_code'),
                 subject_type: formData.get('subject_type'),
                 subject_unit: formData.get('credit_units'),
-                
-                // All other fields you input:
                 contact_hours: formData.get('contact_hours'),
                 prerequisites: formData.get('prerequisites'),
                 pre_requisite_to: formData.get('pre_requisite_to'),
                 course_description: formData.get('course_description'),
-                
                 pilo_outcomes: formData.get('pilo_outcomes'),
                 cilo_outcomes: formData.get('cilo_outcomes'),
                 learning_outcomes: formData.get('learning_outcomes'),
-
                 basic_readings: formData.get('basic_readings'),
                 extended_readings: formData.get('extended_readings'),
                 course_assessment: formData.get('course_assessment'),
                 committee_members: formData.get('committee_members'),
                 consultation_schedule: formData.get('consultation_schedule'),
-
                 prepared_by: formData.get('prepared_by'),
                 reviewed_by: formData.get('reviewed_by'),
                 approved_by: formData.get('approved_by'),
-                
                 lessons: collectWeeklyPlan(),
-
-                // +++ ADDED THIS PART TO COLLECT MAPPING GRIDS +++
                 program_mapping_grid: collectMappingGridData('program-mapping-table-body'),
                 course_mapping_grid: collectMappingGridData('course-mapping-table-body'),
             };
@@ -485,16 +473,13 @@
                 if (!response.ok) {
                     let errorMessage = result.message || 'Failed to save course.';
                      if (result.errors) {
-                        // Concatenate all error messages from the server validation
                         errorMessage += '\n' + Object.values(result.errors).flat().join('\n');
                     }
                     throw new Error(errorMessage);
                 }
                 
-                // On success, redirect to mapping page with subject info
                 const newSubjectId = result.subject.id;
                 
-                // Redirect logic after successful save
                 if (confirm("Subject created successfully! Do you want to set up the grade components now?")) {
                     const newSubjectName = encodeURIComponent(`${result.subject.subject_name} (${result.subject.subject_code})`);
                     window.location.href = `/grade-setup?new_subject_id=${newSubjectId}&new_subject_name=${newSubjectName}`;
@@ -507,7 +492,7 @@
             }
         });
         
-        // --- Mapping Grid Row Logic (Retained) ---
+        // --- Mapping Grid Row Logic ---
         const addProgramMappingBtn = document.getElementById('add-program-mapping-row');
         const programMappingTableBody = document.getElementById('program-mapping-table-body');
         const addCourseMappingBtn = document.getElementById('add-course-mapping-row');
@@ -539,7 +524,6 @@
             courseMappingTableBody.appendChild(createMappingTableRow(false));
         });
     
-        // Event delegation for deleting rows
         document.querySelector('.bg-white').addEventListener('click', function (e) {
             if (e.target.classList.contains('delete-row-btn')) {
                 e.target.closest('tr').remove();
