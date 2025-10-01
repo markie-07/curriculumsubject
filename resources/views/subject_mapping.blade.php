@@ -1,6 +1,19 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    .assigned-card {
+        background-color: #2d3748; /* Dark gray */
+        color: white;
+    }
+    .assigned-card p {
+        color: white;
+    }
+    .assigned-badge {
+        background-color: #4a5568;
+        color: white;
+    }
+</style>
 <main class="flex-1 overflow-hidden bg-gray-100 p-6 flex flex-col">
     <div class="bg-white rounded-2xl shadow-xl p-8 flex-1 flex flex-col">
         
@@ -591,7 +604,7 @@
 
         const addDraggableEvents = (item) => {
             item.addEventListener('dragstart', (e) => {
-                if (!isEditing || item.dataset.status === 'removed') {
+                if (!isEditing || item.dataset.status === 'removed' || item.classList.contains('assigned-card')) {
                     e.preventDefault();
                     return;
                 }
@@ -612,12 +625,12 @@
             newSubjectCard.dataset.status = status;
 
             let cardClasses = 'subject-card flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg transition-all';
-            let statusHTML = '<i class="fas fa-bars text-gray-400"></i>';
+            let statusHTML = '';
             let isDraggable = true;
 
             if (isMapped) {
-                cardClasses += ' opacity-50 cursor-not-allowed mapped-subject-card';
-                statusHTML = '<span class="text-xs font-semibold text-blue-500 bg-blue-100 px-2 py-1 rounded-full">In Use</span>';
+                cardClasses += ' assigned-card cursor-not-allowed';
+                statusHTML = '<span class="status-badge text-xs font-semibold px-2 py-1 rounded-full assigned-badge">Assigned</span>';
                 isDraggable = false;
             } else if (status === 'removed') {
                 cardClasses += ' opacity-50 cursor-not-allowed removed-subject-card';
@@ -625,12 +638,22 @@
                 isDraggable = false;
             } else {
                 cardClasses += ' hover:bg-blue-50 cursor-grab';
+                statusHTML = '<span class="status-badge text-xs font-semibold text-green-500 bg-green-100 px-2 py-1 rounded-full">Available</span>';
             }
             
             newSubjectCard.className = cardClasses;
             newSubjectCard.setAttribute('draggable', isDraggable);
             
-            newSubjectCard.innerHTML = `<div><p class="font-semibold text-gray-700">${subject.subject_name}</p><p class="text-xs text-gray-500">${subject.subject_code}</p><p class="text-xs text-gray-500">Unit: ${subject.subject_unit}</p></div><div class="flex items-center space-x-2">${statusHTML}</div>`;
+            newSubjectCard.innerHTML = `
+                <div>
+                    <p class="font-semibold text-gray-700">${subject.subject_name}</p>
+                    <p class="text-xs text-gray-500">${subject.subject_code}</p>
+                    <p class="text-xs text-gray-500">Unit: ${subject.subject_unit}</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    ${statusHTML}
+                    ${isDraggable ? '<i class="fas fa-bars text-gray-400"></i>' : ''}
+                </div>`;
             
             if(isDraggable) {
                 addDraggableEvents(newSubjectCard);
@@ -755,8 +778,16 @@
                 if (draggedItem.classList.contains('subject-card')) {
                     const subjectTag = createSubjectTag(droppedSubjectData, isEditing);
                     targetContainer.appendChild(subjectTag);
-                    draggedItem.classList.add('opacity-50', 'cursor-not-allowed', 'mapped-subject-card');
                     draggedItem.setAttribute('draggable', 'false');
+                    draggedItem.classList.add('assigned-card', 'cursor-not-allowed');
+                    draggedItem.classList.remove('hover:bg-blue-50', 'cursor-grab');
+        
+                    const statusBadge = draggedItem.querySelector('.status-badge');
+                    if (statusBadge) {
+                        statusBadge.textContent = 'Assigned';
+                        statusBadge.className = 'status-badge text-xs font-semibold px-2 py-1 rounded-full assigned-badge';
+                    }
+                    draggedItem.querySelector('i')?.remove();
                 } else if (draggedItem.classList.contains('subject-tag')) {
                     draggedItem.parentNode.removeChild(draggedItem);
                     const subjectTag = createSubjectTag(droppedSubjectData, isEditing);
@@ -790,8 +821,20 @@
                     const subjectData = JSON.parse(draggedItem.dataset.subjectData);
                     const originalSubjectCard = document.getElementById(`subject-${subjectData.subject_code.toLowerCase()}`);
                     if (originalSubjectCard) {
-                        originalSubjectCard.classList.remove('opacity-50', 'cursor-not-allowed', 'mapped-subject-card');
                         originalSubjectCard.setAttribute('draggable', 'true');
+                        originalSubjectCard.classList.remove('assigned-card', 'cursor-not-allowed');
+                        originalSubjectCard.classList.add('hover:bg-blue-50', 'cursor-grab');
+            
+                        const statusBadge = originalSubjectCard.querySelector('.status-badge');
+                        if (statusBadge) {
+                            statusBadge.textContent = 'Available';
+                            statusBadge.className = 'status-badge text-xs font-semibold text-green-500 bg-green-100 px-2 py-1 rounded-full';
+                        }
+                        if (!originalSubjectCard.querySelector('i')) {
+                            const dragIcon = document.createElement('i');
+                            dragIcon.className = 'fas fa-bars text-gray-400';
+                            originalSubjectCard.querySelector('div:last-child').appendChild(dragIcon);
+                        }
                     }
                     draggedItem.remove();
                     updateUnitTotals();
@@ -838,13 +881,19 @@
 
                 const originalSubjectCard = document.getElementById(`subject-${subjectData.subject_code.toLowerCase()}`);
                 if (originalSubjectCard) {
-                    originalSubjectCard.classList.remove('opacity-50', 'cursor-not-allowed', 'mapped-subject-card');
                     originalSubjectCard.setAttribute('draggable', 'true');
-                    originalSubjectCard.dataset.status = '';
-                    
-                    const statusIndicator = originalSubjectCard.querySelector('div:last-child');
-                    if (statusIndicator) {
-                        statusIndicator.innerHTML = `<i class="fas fa-bars text-gray-400"></i>`;
+                    originalSubjectCard.classList.remove('assigned-card', 'cursor-not-allowed');
+                    originalSubjectCard.classList.add('hover:bg-blue-50', 'cursor-grab');
+        
+                    const statusBadge = originalSubjectCard.querySelector('.status-badge');
+                    if (statusBadge) {
+                        statusBadge.textContent = 'Available';
+                        statusBadge.className = 'status-badge text-xs font-semibold text-green-500 bg-green-100 px-2 py-1 rounded-full';
+                    }
+                    if (!originalSubjectCard.querySelector('i')) {
+                        const dragIcon = document.createElement('i');
+                        dragIcon.className = 'fas fa-bars text-gray-400';
+                        originalSubjectCard.querySelector('div:last-child').appendChild(dragIcon);
                     }
                 }
 
