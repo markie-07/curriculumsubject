@@ -10,267 +10,319 @@
             @csrf
             {{-- This hidden input will store the ID of the subject being edited --}}
             <input type="hidden" id="subject_id" name="subject_id">
-            
+
             {{-- Section 1: Course Information --}}
-            <section class="mb-10">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Course Information</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="course_title" class="block text-sm font-medium text-gray-700">Course Title</label>
-                        <input type="text" name="course_title" id="course_title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+            <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 mb-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center"><svg class="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>Course Information</h2>
+                <section>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="course_title" class="block text-sm font-medium text-gray-700">Course Title</label>
+                            <input type="text" name="course_title" id="course_title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                        </div>
+                        <div>
+                            <label for="course_code" class="block text-sm font-medium text-gray-700">Course Code</label>
+                            <input type="text" name="course_code" id="course_code" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                        </div>
+                        <div>
+                            <label for="subject_type" class="block text-sm font-medium text-gray-700">Course Type</label>
+                            <select name="subject_type" id="subject_type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                                <option value="" disabled selected>Select a Type</option>
+                                <option value="Major">Major</option>
+                                <option value="Minor">Minor</option>
+                                <option value="Elective">Elective</option>
+                                <option value="General">General Education</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="credit_units" class="block text-sm font-medium text-gray-700">Credit Units</label>
+                            <input type="number" name="credit_units" id="credit_units" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                        </div>
+                        <div>
+                            <label for="contact_hours" class="block text-sm font-medium text-gray-700">Contact Hours</label>
+                            <input type="number" name="contact_hours" id="contact_hours" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                        </div>
+                        <div>
+                            <label for="prerequisites" class="block text-sm font-medium text-gray-700">Credit Prerequisites</label>
+                            <input type="text" name="prerequisites" id="prerequisites" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                        </div>
+                        <div>
+                            <label for="pre_requisite_to" class="block text-sm font-medium text-gray-700">Pre-requisite to</label>
+                            <input type="text" name="pre_requisite_to" id="pre_requisite_to" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="course_description" class="block text-sm font-medium text-gray-700">Course Description</label>
+                            <textarea id="course_description" name="course_description" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"></textarea>
+                        </div>
                     </div>
-                    <div>
-                        <label for="course_code" class="block text-sm font-medium text-gray-700">Course Code</label>
-                        <input type="text" name="course_code" id="course_code" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
-                    </div>
-                    <div>
-                        <label for="subject_type" class="block text-sm font-medium text-gray-700">Course Type</label>
-                        <select name="subject_type" id="subject_type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
-                            <option value="" disabled selected>Select a Type</option>
-                            <option value="Major">Major</option>
-                            <option value="Minor">Minor</option>
-                            <option value="Elective">Elective</option>
-                            <option value="General">General Education</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="credit_units" class="block text-sm font-medium text-gray-700">Credit Units</label>
-                        <input type="number" name="credit_units" id="credit_units" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
-                    </div>
-                    <div>
-                        <label for="contact_hours" class="block text-sm font-medium text-gray-700">Contact Hours</label>
-                        <input type="number" name="contact_hours" id="contact_hours" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                    </div>
-                    <div>
-                        <label for="prerequisites" class="block text-sm font-medium text-gray-700">Credit Prerequisites</label>
-                        <input type="text" name="prerequisites" id="prerequisites" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                    </div>
-                    <div>
-                        <label for="pre_requisite_to" class="block text-sm font-medium text-gray-700">Pre-requisite to</label>
-                        <input type="text" name="pre_requisite_to" id="pre_requisite_to" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label for="course_description" class="block text-sm font-medium text-gray-700">Course Description</label>
-                        <textarea id="course_description" name="course_description" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"></textarea>
-                    </div>
-                </div>
-            </section>
+                </section>
+            </div>
 
             {{-- Institutional Information --}}
-            <section class="mb-10 p-6 border rounded-lg bg-gray-50">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Institutional Information</h2>
-                <div class="mb-6">
-                    <h3 class="text-xl font-bold text-gray-700 mb-4">VISION</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="p-4 bg-white rounded-md border">
-                            <h4 class="font-semibold text-gray-600">SCHOOL</h4>
-                            <p class="mt-2 text-gray-700">BCP is committed to provide and promote quality education with a unique, modern and research-based curriculum with delivery systems geared towards excellence.</p>
-                        </div>
-                        <div class="p-4 bg-white rounded-md border">
-                            <h4 class="font-semibold text-gray-600">DEPARTMENT</h4>
-                            <p class="mt-2 text-gray-700">BCP General Education Department innovates, investigate and discovers greatness and prosperity through oneness.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="mb-6">
-                    <h3 class="text-xl font-bold text-gray-700 mb-4">MISSION</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="p-4 bg-white rounded-md border">
-                            <h4 class="font-semibold text-gray-600">SCHOOL</h4>
-                            <p class="mt-2 text-gray-700">To produce self-motivated and self-directed individual who aims for academic excellence, God-fearing, peaceful, healthy and productive successful citizens.</p>
-                        </div>
-                        <div class="p-4 bg-white rounded-md border">
-                            <h4 class="font-semibold text-gray-600">DEPARTMENT</h4>
-                            <p class="mt-2 text-gray-700">To awaken the curiosity and ignite passion of individuals to excel independents in academics endeavors towards their development into ethically and morally strong people.</p>
+            <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 mb-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center"><svg class="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h6m-6 4h6m-6 4h6"></path></svg>Institutional Information</h2>
+                <section>
+                    <div class="mb-6">
+                        <h3 class="text-xl font-bold text-gray-700 mb-4">VISION</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="p-4 bg-gray-50 rounded-md border">
+                                <h4 class="font-semibold text-gray-600">SCHOOL</h4>
+                                <p class="mt-2 text-gray-700">BCP is committed to provide and promote quality education with a unique, modern and research-based curriculum with delivery systems geared towards excellence.</p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded-md border">
+                                <h4 class="font-semibold text-gray-600">DEPARTMENT</h4>
+                                <p class="mt-2 text-gray-700">BCP General Education Department innovates, investigate and discovers greatness and prosperity through oneness.</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                {{-- Philosophy and Core Values... --}}
-            </section>
+                    <div class="mb-6">
+                        <h3 class="text-xl font-bold text-gray-700 mb-4">MISSION</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="p-4 bg-gray-50 rounded-md border">
+                                <h4 class="font-semibold text-gray-600">SCHOOL</h4>
+                                <p class="mt-2 text-gray-700">To produce self-motivated and self-directed individual who aims for academic excellence, God-fearing, peaceful, healthy and productive successful citizens.</p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded-md border">
+                                <h4 class="font-semibold text-gray-600">DEPARTMENT</h4>
+                                <p class="mt-2 text-gray-700">To awaken the curiosity and ignite passion of individuals to excel independents in academics endeavors towards their development into ethically and morally strong people.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <h3 class="text-xl font-bold text-gray-700 mb-4">PHILOSOPHY</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="p-4 bg-gray-50 rounded-md border">
+                                <h4 class="font-semibold text-gray-600">SCHOOL</h4>
+                                <p class="mt-2 text-gray-700">BCP advocates threefold core values: “Fides”, “Faith; “Ratio”, Reason; Pax. Peace. “Fides” represents BCPs, endeavors for expansion, development, and growth amidst the challenges of the new millennium. "Ratio" symbolizes BCP's efforts to provide an education which can be man's tool to be liberated from all forms of ignorance and poverty. "Pax". BCP is a forerunner in the promotion of a harmonious relationship between the different sectors of its academic community.</p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded-md border">
+                                <h4 class="font-semibold text-gray-600">DEPARTMENT</h4>
+                                <p class="mt-2 text-gray-700">General Education advocates threefold core values “Devotion”, “Serenity’, “Determination” “Devotion” represents General Education commitment and dedication to provide quality education that will fuel the passion of the students for learning in driving academic success “Serenity” symbolizes a crucial element in the overall well-being and success of students by means of creating a more supportive, conducive, and enriching learning environment, enabling them to thrive academically, emotionally, and personally. “Determination” general education is committed to provide a high-quality, equitable, and supportive learning environment that empowers students to succeed.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-700 mb-4">CORE VALUES</h3>
+                        <div class="p-4 bg-gray-50 rounded-md border">
+                            <p class="mt-2 text-gray-700"><strong>FAITH, KNOWLEDGE, CHARITY AND HUMILITY</strong><br><strong>FAITH (Fides)</strong> represents BCP’s endeavor for expansion, development and for growth amidst the global challenges of the new millennium.<br><strong>KNOWLEDGE (Cognito)</strong> connotes the institution’s efforts to impart excellent lifelong education that can be used as human tool so that one can liberate himself/herself from ignorance and poverty<br><strong>CHARITY (Caritas)</strong> is the institution’s commitment towards its clienteles.<br><strong>HUMILITY (Humiliates)</strong> refers to the institution’s recognition of the human frailty, its imperfection.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
 
             {{-- Mapping Grids --}}
-            <section class="mb-10">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Mapping Grids</h2>
-                <div class="mb-8 p-6 border rounded-lg">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-semibold text-gray-700">PROGRAM MAPPING GRID</h3>
-                        <button id="add-program-mapping-row" type="button" class="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors">Add Row</button>
+            <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 mb-8">
+                 <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center"><svg class="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>Mapping Grids</h2>
+                <section>
+                    <div class="mb-8 p-6 border rounded-lg">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-semibold text-gray-700">PROGRAM MAPPING GRID</h3>
+                            <button id="add-program-mapping-row" type="button" class="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors">Add Row</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full bg-white border">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">PILO</th>
+                                        <th class="py-2 px-4 border-b text-center text-sm font-semibold text-gray-600 w-24">CTPSS</th>
+                                        <th class="py-2 px-4 border-b text-center text-sm font-semibold text-gray-600 w-24">ECC</th>
+                                        <th class="py-2 px-4 border-b text-center text-sm font-semibold text-gray-600 w-24">EPP</th>
+                                        <th class="py-2 px-4 border-b text-center text-sm font-semibold text-gray-600 w-24">GLC</th>
+                                        <th class="py-2 px-4 border-b text-center text-sm font-semibold text-gray-600 w-24">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="program-mapping-table-body"></tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white border">
-                            <thead class="bg-gray-100">
-                                <tr>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">PILO</th>
-                                    <th class="py-2 px-4 border-b text-center text-sm font-semibold text-gray-600 w-24">CTPSS</th>
-                                    <th class="py-2 px-4 border-b text-center text-sm font-semibold text-gray-600 w-24">ECC</th>
-                                    <th class="py-2 px-4 border-b text-center text-sm font-semibold text-gray-600 w-24">EPP</th>
-                                    <th class="py-2 px-4 border-b text-center text-sm font-semibold text-gray-600 w-24">GLC</th>
-                                    <th class="py-2 px-4 border-b text-center text-sm font-semibold text-gray-600 w-24">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="program-mapping-table-body"></tbody>
-                        </table>
+                    <div class="p-6 border rounded-lg">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-semibold text-gray-700">COURSE MAPPING GRID</h3>
+                            <button id="add-course-mapping-row" type="button" class="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors">Add Row</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full bg-white border">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">CILO</th>
+                                        <th class="py-2 px-4 border-b text-center text-sm font-semibold text-gray-600 w-24">CTPSS</th>
+                                        <th class="py-2 px-4 border-b text-center text-sm font-semibold text-gray-600 w-24">ECC</th>
+                                        <th class="py-2 px-4 border-b text-center text-sm font-semibold text-gray-600 w-24">EPP</th>
+                                        <th class="py-2 px-4 border-b text-center text-sm font-semibold text-gray-600 w-24">GLC</th>
+                                        <th class="py-2 px-4 border-b text-center text-sm font-semibold text-gray-600 w-24">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="course-mapping-table-body"></tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-                <div class="p-6 border rounded-lg">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-semibold text-gray-700">COURSE MAPPING GRID</h3>
-                        <button id="add-course-mapping-row" type="button" class="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors">Add Row</button>
+                    <div class="mt-8 p-6 bg-gray-50 border rounded-lg">
+                        <h4 class="font-bold text-gray-700">Legend:</h4>
+                        <ul class="list-disc list-inside mt-2 text-gray-600 space-y-1">
+                            <li><span class="font-semibold">L</span> – Facilitate Learning of the competencies</li>
+                            <li><span class="font-semibold">P</span> – Allow student to practice competencies (No input but competency is evaluated)</li>
+                            <li><span class="font-semibold">O</span> – Provide opportunity for development (No input or evaluation, but there is opportunity to practice the competencies)</li>
+                            <li><span class="font-semibold">CTPSS</span> - critical thinking and problem-solving skills;</li>
+                            <li><span class="font-semibold">ECC</span> - effective communication and collaboration;</li>
+                            <li><span class="font-semibold">EPP</span> - ethical and professional practice; and,</li>
+                            <li><span class="font-semibold">GLC</span> - global and lifelong learning commitment.</li>
+                        </ul>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white border">
-                            <thead class="bg-gray-100">
-                                <tr>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">CILO</th>
-                                    <th class="py-2 px-4 border-b text-center text-sm font-semibold text-gray-600 w-24">CTPSS</th>
-                                    <th class="py-2 px-4 border-b text-center text-sm font-semibold text-gray-600 w-24">ECC</th>
-                                    <th class="py-2 px-4 border-b text-center text-sm font-semibold text-gray-600 w-24">EPP</th>
-                                    <th class="py-2 px-4 border-b text-center text-sm font-semibold text-gray-600 w-24">GLC</th>
-                                    <th class="py-2 px-4 border-b text-center text-sm font-semibold text-gray-600 w-24">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="course-mapping-table-body"></tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="mt-8 p-6 bg-gray-50 border rounded-lg">
-                    <h4 class="font-bold text-gray-700">Legend:</h4>
-                    <ul class="list-disc list-inside mt-2 text-gray-600 space-y-1">
-                        <li><span class="font-semibold">L</span> – Facilitate Learning of the competencies</li>
-                        <li><span class="font-semibold">P</span> – Allow student to practice competencies (No input but competency is evaluated)</li>
-                        <li><span class="font-semibold">O</span> – Provide opportunity for development (No input or evaluation, but there is opportunity to practice the competencies)</li>
-                    </ul>
-                </div>
-            </section>
+                </section>
+            </div>
 
             {{-- Learning Outcomes --}}
-            <section class="mb-10">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Learning Outcomes</h2>
-                <div class="space-y-6">
-                    <div>
-                        <label for="pilo_outcomes" class="block text-xl font-semibold text-gray-700 mb-2">PROGRAM INTENDED LEARNING OUTCOMES (PILO)</label>
-                        <textarea id="pilo_outcomes" name="pilo_outcomes" rows="5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"></textarea>
+            <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 mb-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center"><svg class="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>Learning Outcomes</h2>
+                <section>
+                    <div class="space-y-6">
+                        <div>
+                            <label for="pilo_outcomes" class="block text-xl font-semibold text-gray-700 mb-2">PROGRAM INTENDED LEARNING OUTCOMES (PILO)</label>
+                            <textarea id="pilo_outcomes" name="pilo_outcomes" rows="5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"></textarea>
+                        </div>
+                        <div>
+                            <label for="cilo_outcomes" class="block text-xl font-semibold text-gray-700 mb-2">Course Intended Learning Outcomes (CILO)</label>
+                            <textarea id="cilo_outcomes" name="cilo_outcomes" rows="5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"></textarea>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-md border">
+                            <h4 class="font-semibold text-gray-600">Expected BCP Graduate Elements:</h4>
+                            <p class="mt-2 text-gray-700">The BCP ideal graduate demonstrates/internalizes this attribute:</p>
+                            <ul class="list-disc list-inside mt-2 text-gray-600 space-y-1">
+                                <li>critical thinking and problem-solving skills;</li>
+                                <li>effective communication and collaboration;</li>
+                                <li>ethical and professional practice; and,</li>
+                                <li>global and lifelong learning commitment.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <label for="learning_outcomes" class="block text-xl font-semibold text-gray-700 mb-2">Learning Outcomes</label>
+                            <textarea id="learning_outcomes" name="learning_outcomes" rows="5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"></textarea>
+                        </div>
                     </div>
-                    <div>
-                        <label for="cilo_outcomes" class="block text-xl font-semibold text-gray-700 mb-2">Course Intended Learning Outcomes (CILO)</label>
-                        <textarea id="cilo_outcomes" name="cilo_outcomes" rows="5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"></textarea>
-                    </div>
-                    <div>
-                        <label for="learning_outcomes" class="block text-xl font-semibold text-gray-700 mb-2">Learning Outcomes</label>
-                        <textarea id="learning_outcomes" name="learning_outcomes" rows="5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"></textarea>
-                    </div>
-                </div>
-            </section>
+                </section>
+            </div>
+
 
             {{-- Weekly Plan (Weeks 1-15) --}}
-            <section class="mb-10">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Weekly Plan (Weeks 1-15)</h2>
-                @for ($i = 1; $i <= 15; $i++)
-                    <div class="mb-6 border-b pb-4">
-                        <h3 class="text-xl font-semibold text-gray-700 mb-4">Week {{ $i }}</h3>
-                        <div class="grid grid-cols-1 gap-6">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label for="week_{{ $i }}_content" class="block text-sm font-medium text-gray-700">Content</label>
-                                    <textarea id="week_{{ $i }}_content" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
-                                </div>
-                                <div>
-                                    <label for="week_{{ $i }}_silo" class="block text-sm font-medium text-gray-700">Student Intended Learning Outcomes</label>
-                                    <textarea id="week_{{ $i }}_silo" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Assessment Tasks (ATs)</label>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 p-4 border rounded-md bg-gray-50">
+            <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 mb-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center"><svg class="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>Weekly Plan (Weeks 1-15)</h2>
+                <section>
+                    @for ($i = 1; $i <= 15; $i++)
+                        <div class="mb-6 border-b pb-4">
+                            <h3 class="text-xl font-semibold text-gray-700 mb-4">Week {{ $i }}</h3>
+                            <div class="grid grid-cols-1 gap-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label for="week_{{ $i }}_at_onsite" class="block text-xs font-semibold text-gray-600 mb-1">ONSITE</label>
-                                        <textarea id="week_{{ $i }}_at_onsite" rows="3" class="w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                                        <label for="week_{{ $i }}_content" class="block text-sm font-medium text-gray-700">Content</label>
+                                        <textarea id="week_{{ $i }}_content" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
                                     </div>
                                     <div>
-                                        <label for="week_{{ $i }}_at_offsite" class="block text-xs font-semibold text-gray-600 mb-1">OFFSITE</label>
-                                        <textarea id="week_{{ $i }}_at_offsite" rows="3" class="w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                                        <label for="week_{{ $i }}_silo" class="block text-sm font-medium text-gray-700">Student Intended Learning Outcomes</label>
+                                        <textarea id="week_{{ $i }}_silo" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
                                     </div>
                                 </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Suggested Teaching/Learning Activities (TLAs)</label>
-                                <div class="mt-2 p-4 border rounded-md bg-gray-50">
-                                    <p class="text-xs font-semibold text-gray-600 mb-2">Blended Learning Delivery Modality (BLDM)</p>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Assessment Tasks (ATs)</label>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 p-4 border rounded-md bg-gray-50">
                                         <div>
-                                            <label for="week_{{ $i }}_tla_onsite" class="block text-xs font-semibold text-gray-600 mb-1">Face to Face (On-Site)</label>
-                                            <textarea id="week_{{ $i }}_tla_onsite" rows="3" class="w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                                            <label for="week_{{ $i }}_at_onsite" class="block text-xs font-semibold text-gray-600 mb-1">ONSITE</label>
+                                            <textarea id="week_{{ $i }}_at_onsite" rows="3" class="w-full rounded-md border-gray-300 shadow-sm"></textarea>
                                         </div>
                                         <div>
-                                            <label for="week_{{ $i }}_tla_offsite" class="block text-xs font-semibold text-gray-600 mb-1">Online (Off-Site)</label>
-                                            <textarea id="week_{{ $i }}_tla_offsite" rows="3" class="w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                                            <label for="week_{{ $i }}_at_offsite" class="block text-xs font-semibold text-gray-600 mb-1">OFFSITE</label>
+                                            <textarea id="week_{{ $i }}_at_offsite" rows="3" class="w-full rounded-md border-gray-300 shadow-sm"></textarea>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label for="week_{{ $i }}_ltsm" class="block text-sm font-medium text-gray-700">Learning and Teaching Support Materials (LTSM)</label>
-                                    <textarea id="week_{{ $i }}_ltsm" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                                    <label class="block text-sm font-medium text-gray-700">Suggested Teaching/Learning Activities (TLAs)</label>
+                                    <div class="mt-2 p-4 border rounded-md bg-gray-50">
+                                        <p class="text-xs font-semibold text-gray-600 mb-2">Blended Learning Delivery Modality (BLDM)</p>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label for="week_{{ $i }}_tla_onsite" class="block text-xs font-semibold text-gray-600 mb-1">Face to Face (On-Site)</label>
+                                                <textarea id="week_{{ $i }}_tla_onsite" rows="3" class="w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                                            </div>
+                                            <div>
+                                                <label for="week_{{ $i }}_tla_offsite" class="block text-xs font-semibold text-gray-600 mb-1">Online (Off-Site)</label>
+                                                <textarea id="week_{{ $i }}_tla_offsite" rows="3" class="w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label for="week_{{ $i }}_output" class="block text-sm font-medium text-gray-700">Output Materials</label>
-                                    <textarea id="week_{{ $i }}_output" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="week_{{ $i }}_ltsm" class="block text-sm font-medium text-gray-700">Learning and Teaching Support Materials (LTSM)</label>
+                                        <textarea id="week_{{ $i }}_ltsm" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                                    </div>
+                                    <div>
+                                        <label for="week_{{ $i }}_output" class="block text-sm font-medium text-gray-700">Output Materials</label>
+                                        <textarea id="week_{{ $i }}_output" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @endfor
-            </section>
+                    @endfor
+                </section>
+            </div>
 
             {{-- Course Requirements and Policies --}}
-            <section class="mb-10">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Course Requirements and Policies</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="basic_readings" class="block text-sm font-medium text-gray-700">Basic Readings / Textbooks</label>
-                        <textarea id="basic_readings" name="basic_readings" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+            <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 mb-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center"><svg class="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h6m-6 4h6m-6 4h6"></path></svg>Course Requirements and Policies</h2>
+                <section>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="basic_readings" class="block text-sm font-medium text-gray-700">Basic Readings / Textbooks</label>
+                            <textarea id="basic_readings" name="basic_readings" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                        </div>
+                        <div>
+                            <label for="extended_readings" class="block text-sm font-medium text-gray-700">Extended Readings / References</label>
+                            <textarea id="extended_readings" name="extended_readings" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="course_assessment" class="block text-sm font-medium text-gray-700">Course Assessment</label>
+                            <textarea id="course_assessment" name="course_assessment" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="course_policies" class="block text-sm font-medium text-gray-700">Course Policies and Statements</label>
+                            <textarea id="course_policies" name="course_policies" rows="6" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">This course is committed in providing equal access and participation for all students including those with disabilities. If you have a disability that may require accommodations, please contact the OFFICE OF THE STUDENTS’ AFFAIRS and SERVICES to register in the LIST OF LEARNERS with Disabilities. Please be aware that it is your responsibility to communicate your needs and works with the instructor to ensure that appropriate accommodations can be arranged promptly. The faculty reserves the right to change or amend this syllabus as needed. Any changes to the syllabus will be communicated promptly to the VPAA through the Department Heads / Deans, if any, adjustments will be made to ensure that all students can continue to meet the course objectives. Your feedback and input are valued, and we encourage open communication to facilitate a positive and productive learning experience for all.</textarea>
+                        </div>
+                        <div>
+                            <label for="committee_members" class="block text-sm font-medium text-gray-700">Committee Members</label>
+                            <textarea id="committee_members" name="committee_members" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                        </div>
+                        <div>
+                            <label for="consultation_schedule" class="block text-sm font-medium text-gray-700">Consultation Schedule</label>
+                            <textarea id="consultation_schedule" name="consultation_schedule" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                        </div>
                     </div>
-                    <div>
-                        <label for="extended_readings" class="block text-sm font-medium text-gray-700">Extended Readings / References</label>
-                        <textarea id="extended_readings" name="extended_readings" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label for="course_assessment" class="block text-sm font-medium text-gray-700">Course Assessment</label>
-                        <textarea id="course_assessment" name="course_assessment" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
-                    </div>
-                    <div>
-                        <label for="committee_members" class="block text-sm font-medium text-gray-700">Committee Members</label>
-                        <textarea id="committee_members" name="committee_members" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
-                    </div>
-                    <div>
-                        <label for="consultation_schedule" class="block text-sm font-medium text-gray-700">Consultation Schedule</label>
-                        <textarea id="consultation_schedule" name="consultation_schedule" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
-                    </div>
-                </div>
-            </section>
+                </section>
+            </div>
+
 
             {{-- Approval Section --}}
-            <section>
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Approval</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label for="prepared_by" class="block text-sm font-medium text-gray-700">Prepared:</label>
-                        <input type="text" id="prepared_by" name="prepared_by" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                        <p class="text-xs text-gray-500 mt-1">Cluster Leader</p>
+            <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 mb-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center"><svg class="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>Approval</h2>
+                <section>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="prepared_by" class="block text-sm font-medium text-gray-700">Prepared:</label>
+                            <input type="text" id="prepared_by" name="prepared_by" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            <p class="text-xs text-gray-500 mt-1">Cluster Leader</p>
+                        </div>
+                        <div>
+                            <label for="reviewed_by" class="block text-sm font-medium text-gray-700">Reviewed:</label>
+                            <input type="text" id="reviewed_by" name="reviewed_by" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            <p class="text-xs text-gray-500 mt-1">General Education Program Head</p>
+                        </div>
+                        <div>
+                            <label for="approved_by" class="block text-sm font-medium text-gray-700">Approved:</label>
+                            <input type="text" id="approved_by" name="approved_by" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            <p class="text-xs text-gray-500 mt-1">Vice President for Academic Affairs</p>
+                        </div>
                     </div>
-                    <div>
-                        <label for="reviewed_by" class="block text-sm font-medium text-gray-700">Reviewed:</label>
-                        <input type="text" id="reviewed_by" name="reviewed_by" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                        <p class="text-xs text-gray-500 mt-1">General Education Program Head</p>
-                    </div>
-                    <div>
-                        <label for="approved_by" class="block text-sm font-medium text-gray-700">Approved:</label>
-                        <input type="text" id="approved_by" name="approved_by" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                        <p class="text-xs text-gray-500 mt-1">Vice President for Academic Affairs</p>
-                    </div>
-                </div>
-            </section>
+                </section>
+            </div>
 
             {{-- Save/Update Button --}}
             <div class="mt-10 pt-6 border-t border-gray-200">
