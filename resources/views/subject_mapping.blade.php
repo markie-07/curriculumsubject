@@ -68,163 +68,166 @@
         </div>
     </div>
     
-    {{-- Subject Details Modal (COMPREHENSIVE) --}}
-    <div id="subjectDetailsModal" class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-60 transition-opacity duration-300 ease-out hidden">
-        <div class="flex items-start justify-center min-h-screen p-4 pt-8">
-            <div class="relative bg-white w-11/12 max-w-5xl rounded-2xl shadow-2xl transform scale-95 opacity-0 transition-all duration-300 ease-out flex flex-col h-[90vh]" id="modal-details-panel">
-                
-                {{-- Modal Header (Sticky) --}}
-                <div class="flex justify-between items-center p-5 border-b border-gray-200 sticky top-0 bg-white z-10">
-                    <h2 id="detailsSubjectName" class="text-2xl font-bold text-gray-800"></h2>
-                    <button id="closeDetailsModalButtonTop" class="text-gray-400 hover:text-gray-600 focus:outline-none transition-colors duration-200" aria-label="Close modal">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
+ {{-- Subject Details Modal (COMPREHENSIVE) --}}
+<div id="subjectDetailsModal" class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-60 transition-opacity duration-300 ease-out hidden">
+    {{-- MODIFIED: Reduced padding to `p-2` to make the modal closer to the screen edges --}}
+    <div class="flex items-center justify-center min-h-screen p-2">
+        {{-- MODIFIED: Width and height are now set to 98% of the viewport width (vw) and height (vh) --}}
+        <div class="relative bg-white w-[98vw] h-[98vh] rounded-2xl shadow-2xl transform scale-95 opacity-0 transition-all duration-300 ease-out flex flex-col" id="modal-details-panel">
+            
+            {{-- Modal Header (Sticky) --}}
+            <div class="flex justify-between items-center p-5 border-b border-gray-200 sticky top-0 bg-white z-10 rounded-t-2xl">
+                <h2 id="detailsSubjectName" class="text-2xl font-bold text-gray-800"></h2>
+                <button id="closeDetailsModalButtonTop" class="text-gray-400 hover:text-gray-600 focus:outline-none transition-colors duration-200" aria-label="Close modal">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            {{-- Modal Content Scrollable Area (Your existing content goes here) --}}
+            <div class="p-6 flex-1 overflow-y-auto">
+
+                {{-- 1. Course Information --}}
+                <h3 class="text-xl font-bold text-gray-800 mb-4 pb-2 border-b">Course Information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 bg-gray-50 p-4 rounded-lg">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Course Title</p>
+                        <p id="detailsCourseTitle" class="text-base font-semibold text-gray-800"></p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Course Code</p>
+                        <p id="detailsSubjectCode" class="text-base font-semibold text-gray-800"></p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Course Type</p>
+                        <p id="detailsSubjectType" class="text-base font-semibold text-gray-800"></p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Credit Units</p>
+                        <p id="detailsSubjectUnit" class="text-base font-semibold text-gray-800"></p>
+                    </div>
+                     <div>
+                        <p class="text-sm font-medium text-gray-500">Contact Hours</p>
+                        <p id="detailsContactHours" class="text-base font-semibold text-gray-800">N/A</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Credit Prerequisites</p>
+                        <p id="detailsPrerequisites" class="text-base font-semibold text-gray-800">N/A</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Pre-requisite to</p>
+                        <p id="detailsPrereqTo" class="text-base font-semibold text-gray-800">N/A</p>
+                    </div>
+                    <div class="md:col-span-4">
+                        <p class="text-sm font-medium text-gray-500">Course Description</p>
+                        <div id="detailsCourseDescription" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700 whitespace-pre-line">N/A</div>
+                    </div>
                 </div>
                 
-                {{-- Modal Content Scrollable Area --}}
-                <div class="p-6 flex-1 overflow-y-auto">
+                {{-- 2. Mapping Grids --}}
+                <h3 class="text-xl font-bold text-gray-800 mb-4 pt-4 pb-2 border-b">Mapping Grids</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div>
+                         <p class="text-sm font-medium text-gray-500">PROGRAM MAPPING GRID</p>
+                        <div id="detailsProgramMapping" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700">Mapping Grid data is stored in the Course Builder.</div>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">COURSE MAPPING GRID</p>
+                        <div id="detailsCourseMapping" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700">Mapping Grid data is stored in the Course Builder.</div>
+                    </div>
+                </div>
 
-                    {{-- 1. Course Information --}}
-                    <h3 class="text-xl font-bold text-gray-800 mb-4 pb-2 border-b">Course Information</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 bg-gray-50 p-4 rounded-lg">
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Course Title</p>
-                            <p id="detailsCourseTitle" class="text-base font-semibold text-gray-800"></p>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Course Code</p>
-                            <p id="detailsSubjectCode" class="text-base font-semibold text-gray-800"></p>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Course Type</p>
-                            <p id="detailsSubjectType" class="text-base font-semibold text-gray-800"></p>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Credit Units</p>
-                            <p id="detailsSubjectUnit" class="text-base font-semibold text-gray-800"></p>
-                        </div>
-                         <div>
-                            <p class="text-sm font-medium text-gray-500">Contact Hours</p>
-                            <p id="detailsContactHours" class="text-base font-semibold text-gray-800">N/A</p>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Credit Prerequisites</p>
-                            <p id="detailsPrerequisites" class="text-base font-semibold text-gray-800">N/A</p>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Pre-requisite to</p>
-                            <p id="detailsPrereqTo" class="text-base font-semibold text-gray-800">N/A</p>
-                        </div>
-                        <div class="md:col-span-4">
-                            <p class="text-sm font-medium text-gray-500">Course Description</p>
-                            <div id="detailsCourseDescription" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700 whitespace-pre-line">N/A</div>
-                        </div>
+                {{-- 3. Learning Outcomes --}}
+                <h3 class="text-xl font-bold text-gray-800 mb-4 pt-4 pb-2 border-b">Learning Outcomes</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div>
+                         <p class="text-sm font-medium text-gray-500">PROGRAM INTENDED LEARNING OUTCOMES (PILO)</p>
+                        <div id="detailsPILO" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700 whitespace-pre-line">N/A</div>
                     </div>
-                    
-                    {{-- 2. Mapping Grids --}}
-                    <h3 class="text-xl font-bold text-gray-800 mb-4 pt-4 pb-2 border-b">Mapping Grids</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                        <div>
-                             <p class="text-sm font-medium text-gray-500">PROGRAM MAPPING GRID</p>
-                            <div id="detailsProgramMapping" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700">Mapping Grid data is stored in the Course Builder.</div>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">COURSE MAPPING GRID</p>
-                            <div id="detailsCourseMapping" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700">Mapping Grid data is stored in the Course Builder.</div>
-                        </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Course Intended Learning Outcomes (CILO)</p>
+                        <div id="detailsCILO" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700 whitespace-pre-line">N/A</div>
                     </div>
+                    <div class="md:col-span-2">
+                         <p class="text-sm font-medium text-gray-500">Learning Outcomes</p>
+                        <div id="detailsLearningOutcomes" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700 whitespace-pre-line">N/A</div>
+                    </div>
+                </div>
 
-                    {{-- 3. Learning Outcomes --}}
-                    <h3 class="text-xl font-bold text-gray-800 mb-4 pt-4 pb-2 border-b">Learning Outcomes</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                        <div>
-                             <p class="text-sm font-medium text-gray-500">PROGRAM INTENDED LEARNING OUTCOMES (PILO)</p>
-                            <div id="detailsPILO" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700 whitespace-pre-line">N/A</div>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Course Intended Learning Outcomes (CILO)</p>
-                            <div id="detailsCILO" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700 whitespace-pre-line">N/A</div>
-                        </div>
-                        <div class="md:col-span-2">
-                             <p class="text-sm font-medium text-gray-500">Learning Outcomes</p>
-                            <div id="detailsLearningOutcomes" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700 whitespace-pre-line">N/A</div>
-                        </div>
-                    </div>
+                {{-- 4. Weekly Plan (Lessons) --}}
+                <h3 class="text-xl font-bold text-gray-800 mb-4 pt-4 pb-2 border-b">Weekly Plan (Weeks 1-15)</h3>
+                <div class="space-y-3" id="detailsLessonsContainer">
+                    <p class="text-sm text-gray-500 mt-2">Loading weekly plan...</p>
+                </div>
 
-                    {{-- 4. Weekly Plan (Lessons) --}}
-                    <h3 class="text-xl font-bold text-gray-800 mb-4 pt-4 pb-2 border-b">Weekly Plan (Weeks 1-15)</h3>
-                    <div class="space-y-3" id="detailsLessonsContainer">
-                        <p class="text-sm text-gray-500 mt-2">Loading weekly plan...</p>
+                {{-- 5. Course Requirements and Policies --}}
+                <h3 class="text-xl font-bold text-gray-800 mb-4 pt-8 pb-2 border-b">Course Requirements and Policies</h3>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Basic Readings / Textbooks</p>
+                        <div id="detailsBasicReadings" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700 whitespace-pre-line">N/A</div>
                     </div>
-
-                    {{-- 5. Course Requirements and Policies --}}
-                    <h3 class="text-xl font-bold text-gray-800 mb-4 pt-8 pb-2 border-b">Course Requirements and Policies</h3>
-                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Basic Readings / Textbooks</p>
-                            <div id="detailsBasicReadings" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700 whitespace-pre-line">N/A</div>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Extended Readings / References</p>
-                            <div id="detailsExtendedReadings" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700 whitespace-pre-line">N/A</div>
-                        </div>
-                        <div class="md:col-span-2">
-                            <p class="text-sm font-medium text-gray-500">Course Assessment</p>
-                            <div id="detailsCourseAssessment" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700 whitespace-pre-line">N/A</div>
-                        </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Extended Readings / References</p>
+                        <div id="detailsExtendedReadings" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700 whitespace-pre-line">N/A</div>
                     </div>
-                    
-                    {{-- 6. Committee and Approval --}}
-                     <h3 class="text-xl font-bold text-gray-800 mb-4 pt-4 pb-2 border-b">Committee and Approval</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                         <div class="md:col-span-3">
-                            <p class="text-sm font-medium text-gray-500">Committee Members</p>
-                            <div id="detailsCommitteeMembers" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700 whitespace-pre-line">N/A</div>
-                        </div>
-                        <div class="md:col-span-3">
-                            <p class="text-sm font-medium text-gray-500">Consultation Schedule</p>
-                            <div id="detailsConsultationSchedule" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700 whitespace-pre-line">N/A</div>
-                        </div>
-                        <div>
-                             <p class="text-sm font-medium text-gray-500">Prepared By</p>
-                            <div id="detailsPreparedBy" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700">N/A</div>
-                        </div>
-                         <div>
-                             <p class="text-sm font-medium text-gray-500">Reviewed By</p>
-                            <div id="detailsReviewedBy" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700">N/A</div>
-                        </div>
-                         <div>
-                             <p class="text-sm font-medium text-gray-500">Approved By</p>
-                            <div id="detailsApprovedBy" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700">N/A</div>
-                        </div>
+                    <div class="md:col-span-2">
+                        <p class="text-sm font-medium text-gray-500">Course Assessment</p>
+                        <div id="detailsCourseAssessment" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700 whitespace-pre-line">N/A</div>
                     </div>
-
-                    <div id="detailsCreatedAtContainer" class="mt-8 pt-4 border-t border-gray-200">
-                        <p class="text-sm font-medium text-gray-500">Subject Record Created At</p>
-                        <p id="detailsCreatedAt" class="text-base font-semibold text-gray-800"></p>
-                    </div>
-
                 </div>
                 
-                {{-- Modal Footer (Sticky) --}}
-                <div class="flex justify-between items-center p-5 mt-auto border-t border-gray-200 bg-gray-50 rounded-b-2xl sticky bottom-0 z-10">
-                    <button id="closeDetailsModalButtonBottom" class="px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 hover:bg-gray-100 rounded-lg transition-colors shadow-sm">
-                        Close
-                    </button>
-                    <div class="flex items-center gap-4">
-                        <button id="importSubjectDetailsButton" class="px-4 py-2 text-sm font-semibold text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors shadow-sm flex items-center gap-2" data-subject-data="">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            Export to PDF
-                        </button>
-                        <button id="editSubjectDetailsButton" class="px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-sm flex items-center gap-2" data-subject-data="">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
-                            Edit Subject
-                        </button>
+                {{-- 6. Committee and Approval --}}
+                 <h3 class="text-xl font-bold text-gray-800 mb-4 pt-4 pb-2 border-b">Committee and Approval</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                     <div class="md:col-span-3">
+                        <p class="text-sm font-medium text-gray-500">Committee Members</p>
+                        <div id="detailsCommitteeMembers" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700 whitespace-pre-line">N/A</div>
                     </div>
+                    <div class="md:col-span-3">
+                        <p class="text-sm font-medium text-gray-500">Consultation Schedule</p>
+                        <div id="detailsConsultationSchedule" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700 whitespace-pre-line">N/A</div>
+                    </div>
+                    <div>
+                         <p class="text-sm font-medium text-gray-500">Prepared By</p>
+                        <div id="detailsPreparedBy" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700">N/A</div>
+                    </div>
+                     <div>
+                         <p class="text-sm font-medium text-gray-500">Reviewed By</p>
+                        <div id="detailsReviewedBy" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700">N/A</div>
+                    </div>
+                     <div>
+                         <p class="text-sm font-medium text-gray-500">Approved By</p>
+                        <div id="detailsApprovedBy" class="p-3 bg-white border rounded-lg min-h-[50px] text-sm text-gray-700">N/A</div>
+                    </div>
+                </div>
+
+                <div id="detailsCreatedAtContainer" class="mt-8 pt-4 border-t border-gray-200">
+                    <p class="text-sm font-medium text-gray-500">Subject Record Created At</p>
+                    <p id="detailsCreatedAt" class="text-base font-semibold text-gray-800"></p>
+                </div>
+
+            </div>
+            
+            {{-- Modal Footer (Sticky & Modified) --}}
+            <div class="flex justify-between items-center p-5 mt-auto border-t border-gray-200 bg-gray-50 rounded-b-2xl sticky bottom-0 z-10">
+                <div id="detailsCreatedAtContainer" class="text-sm text-gray-500">
+                    <span class="font-semibold">Created:</span>
+                    <span id="detailsCreatedAt"></span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button id="importSubjectDetailsButton" class="px-4 py-2 text-sm font-semibold text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors shadow-sm flex items-center gap-2" data-subject-data="">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Export to PDF
+                    </button>
+                    <button id="editSubjectDetailsButton" class="px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-sm flex items-center gap-2" data-subject-data="">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
+                        Edit Subject
+                    </button>
                 </div>
             </div>
         </div>
     </div>
+</div>
     
     {{-- Remove Subject Confirmation Modal --}}
     <div id="removeConfirmationModal" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 transition-opacity duration-300 ease-out hidden">
@@ -318,7 +321,6 @@
     <div id="saveMappingModal" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 hidden">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
-                {{-- ICON ADDED --}}
                 <div class="w-12 h-12 rounded-full bg-blue-100 p-2 flex items-center justify-center mx-auto mb-4">
                     <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
@@ -336,7 +338,6 @@
     <div id="proceedToPrerequisitesModal" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 hidden">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
-                {{-- ICON ADDED --}}
                 <div class="w-12 h-12 rounded-full bg-blue-100 p-2 flex items-center justify-center mx-auto mb-4">
                     <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
                 </div>
@@ -354,7 +355,6 @@
     <div id="mappingSuccessModal" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 hidden">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
-                {{-- ICON ADDED --}}
                 <div class="w-12 h-12 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
                     <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
@@ -372,7 +372,6 @@
         // --- MODAL ELEMENTS ---
         const subjectDetailsModal = document.getElementById('subjectDetailsModal');
         const closeDetailsModalButtonTop = document.getElementById('closeDetailsModalButtonTop');
-        const closeDetailsModalButtonBottom = document.getElementById('closeDetailsModalButtonBottom');
         const modalDetailsPanel = document.getElementById('modal-details-panel');
         const editSubjectDetailsButton = document.getElementById('editSubjectDetailsButton');
         const importSubjectDetailsButton = document.getElementById('importSubjectDetailsButton');
@@ -397,6 +396,7 @@
         const detailsPreparedBy = document.getElementById('detailsPreparedBy');
         const detailsReviewedBy = document.getElementById('detailsReviewedBy');
         const detailsApprovedBy = document.getElementById('detailsApprovedBy');
+        const detailsCreatedAt = document.getElementById('detailsCreatedAt');
 
         // --- CORE ELEMENTS & STATE ---
         const searchInput = document.getElementById('searchInput');
@@ -406,9 +406,10 @@
         const curriculumOverview = document.getElementById('curriculumOverview');
         let draggedItem = null;
         let subjectTagToRemove = null;
-        let isEditing = false; // State for edit mode
+        let isEditing = false;
+        let subjectToImport = null;
 
-        // --- SUBJECT DETAIL MODAL FUNCTIONS ---
+        // --- SUBJECT DETAIL MODAL FUNCTIONS (UPDATED) ---
 
         const hideDetailsModal = () => {
             subjectDetailsModal.classList.add('opacity-0');
@@ -416,17 +417,13 @@
             setTimeout(() => subjectDetailsModal.classList.add('hidden'), 300);
         };
         
-        // +++ NEW HELPER FUNCTION TO BUILD MAPPING GRIDS +++
         const createMappingGridHtml = (gridData, mainHeader) => {
-            // Check if data exists and is a non-empty array
             if (!gridData || !Array.isArray(gridData) || gridData.length === 0) {
-                return '<p class="text-sm text-gray-500">No mapping grid data available.</p>';
+                return '<p class="text-xs text-gray-500">No mapping grid data available.</p>';
             }
 
-            // Define table headers
             const headers = [mainHeader, 'CTPSS', 'ECC', 'EPP', 'GLC'];
             
-            // Start building the table HTML
             let tableHtml = `<div class="overflow-x-auto border rounded-md">
                                 <table class="min-w-full divide-y divide-gray-200 text-xs">
                                     <thead class="bg-gray-50">
@@ -434,9 +431,7 @@
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">`;
             
-            // Populate table rows with data
             gridData.forEach(row => {
-                // Access the main cell data dynamically using the header key (e.g., 'pilo' or 'cilo')
                 const mainCellData = row[mainHeader.toLowerCase()] || '';
                 tableHtml += `<tr>
                                 <td class="px-3 py-2 whitespace-normal">${mainCellData}</td>
@@ -451,74 +446,64 @@
             return tableHtml;
         };
 
-        // MODIFIED showDetailsModal FUNCTION
         const showDetailsModal = (data) => {
-            // Helper function to set text content, defaulting to 'N/A'
-            const setText = (elementId, value) => {
-                const element = document.getElementById(elementId);
+            const setText = (element, value) => {
                 if (element) {
                     element.textContent = value || 'N/A';
                 }
             };
 
-            // 1. Set basic course info
-            setText('detailsSubjectName', `${data.subject_name} (${data.subject_code})`);
-            setText('detailsCourseTitle', data.subject_name);
-            setText('detailsSubjectCode', data.subject_code);
-            setText('detailsSubjectType', data.subject_type);
-            setText('detailsSubjectUnit', data.subject_unit);
-            setText('detailsContactHours', data.contact_hours);
-            setText('detailsPrerequisites', data.prerequisites);
-            setText('detailsPrereqTo', data.pre_requisite_to);
-            setText('detailsCourseDescription', data.course_description);
-            setText('detailsPILO', data.pilo_outcomes);
-            setText('detailsCILO', data.cilo_outcomes);
-            setText('detailsLearningOutcomes', data.learning_outcomes);
-            setText('detailsBasicReadings', data.basic_readings);
-            setText('detailsExtendedReadings', data.extended_readings);
-            setText('detailsCourseAssessment', data.course_assessment);
-            setText('detailsCommitteeMembers', data.committee_members);
-            setText('detailsConsultationSchedule', data.consultation_schedule);
-            setText('detailsPreparedBy', data.prepared_by);
-            setText('detailsReviewedBy', data.reviewed_by);
-            setText('detailsApprovedBy', data.approved_by);
-            
-            // +++ DYNAMICALLY RENDER MAPPING GRIDS +++
-            // This replaces the old placeholder text
+            setText(document.getElementById('detailsSubjectName'), `${data.subject_name} (${data.subject_code})`);
+            setText(detailsCourseTitle, data.subject_name);
+            setText(document.getElementById('detailsSubjectCode'), data.subject_code);
+            setText(document.getElementById('detailsSubjectType'), data.subject_type);
+            setText(document.getElementById('detailsSubjectUnit'), data.subject_unit);
+            setText(detailsContactHours, data.contact_hours);
+            setText(detailsPrerequisites, data.prerequisites);
+            setText(detailsPrereqTo, data.pre_requisite_to);
+            setText(detailsCourseDescription, data.course_description);
+            setText(detailsPILO, data.pilo_outcomes);
+            setText(detailsCILO, data.cilo_outcomes);
+            setText(detailsLearningOutcomes, data.learning_outcomes);
+            setText(detailsBasicReadings, data.basic_readings);
+            setText(detailsExtendedReadings, data.extended_readings);
+            setText(detailsCourseAssessment, data.course_assessment);
+            setText(detailsCommitteeMembers, data.committee_members);
+            setText(detailsConsultationSchedule, data.consultation_schedule);
+            setText(detailsPreparedBy, data.prepared_by);
+            setText(detailsReviewedBy, data.reviewed_by);
+            setText(detailsApprovedBy, data.approved_by);
+
+            const createdAtDate = new Date(data.created_at);
+            const formattedDate = createdAtDate.toLocaleString('en-US', {
+                year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+            setText(detailsCreatedAt, formattedDate);
+
             detailsProgramMapping.innerHTML = createMappingGridHtml(data.program_mapping_grid, 'PILO');
             detailsCourseMapping.innerHTML = createMappingGridHtml(data.course_mapping_grid, 'CILO');
 
-            // 2. Format and display the Weekly Plan
             detailsLessonsContainer.innerHTML = '';
             if (data.lessons && typeof data.lessons === 'object' && Object.keys(data.lessons).length > 0) {
                 Object.keys(data.lessons).sort((a, b) => parseInt(a.replace('Week ', '')) - parseInt(b.replace('Week ', ''))).forEach(week => {
                     const lessonString = data.lessons[week];
                     const lessonData = {};
-
-                    // Parse the combined string back into an object
                     const parts = lessonString.split(',, ');
                     parts.forEach(part => {
                         if (part.startsWith('Detailed Lesson Content:')) lessonData.content = part.replace('Detailed Lesson Content:\n', '');
                         if (part.startsWith('Student Intended Learning Outcomes:')) lessonData.silo = part.replace('Student Intended Learning Outcomes:\n', '');
                         if (part.startsWith('Assessment:')) {
                             const match = part.match(/ONSITE: (.*) OFFSITE: (.*)/);
-                            if (match) {
-                                lessonData.at_onsite = match[1];
-                                lessonData.at_offsite = match[2];
-                            }
+                            if (match) { lessonData.at_onsite = match[1]; lessonData.at_offsite = match[2]; }
                         }
                         if (part.startsWith('Activities:')) {
                             const match = part.match(/ON-SITE: (.*) OFF-SITE: (.*)/);
-                            if (match) {
-                                lessonData.tla_onsite = match[1];
-                                lessonData.tla_offsite = match[2];
-                            }
+                            if (match) { lessonData.tla_onsite = match[1]; lessonData.tla_offsite = match[2]; }
                         }
                         if (part.startsWith('Learning and Teaching Support Materials:')) lessonData.ltsm = part.replace('Learning and Teaching Support Materials:\n', '');
                         if (part.startsWith('Output Materials:')) lessonData.output = part.replace('Output Materials:\n', '');
                     });
 
-                    // Create the HTML structure like in your image
                     const weekHTML = `
                         <div class="border border-gray-200 rounded-lg overflow-hidden">
                             <button type="button" class="w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 transition-colors week-toggle">
@@ -559,7 +544,6 @@
                 detailsLessonsContainer.innerHTML = '<p class="text-sm text-gray-500 mt-2">No lessons recorded for this subject.</p>';
             }
             
-            // Add event listeners for the new accordion toggles
             document.querySelectorAll('.week-toggle').forEach(button => {
                 button.addEventListener('click', () => {
                     const content = button.nextElementSibling;
@@ -568,7 +552,6 @@
                 });
             });
 
-            // 3. Show the modal
             subjectDetailsModal.classList.remove('hidden');
             setTimeout(() => {
                 subjectDetailsModal.classList.remove('opacity-0');
@@ -576,20 +559,14 @@
             }, 10);
         };
 
-
         // --- CORE EVENT LISTENERS ---
-        
         closeDetailsModalButtonTop.addEventListener('click', hideDetailsModal);
-        closeDetailsModalButtonBottom.addEventListener('click', hideDetailsModal);
         subjectDetailsModal.addEventListener('click', (e) => { if (e.target.id === 'subjectDetailsModal') hideDetailsModal(); });
         
         const addDoubleClickEvents = (item) => {
             item.addEventListener('dblclick', () => showDetailsModal(JSON.parse(item.dataset.subjectData)));
         };
 
-        // --- (The rest of your existing script remains the same) ---
-        // --- (createSubjectCard, createSubjectTag, updateUnitTotals, etc.) ---
-        
         const addDraggableEvents = (item) => {
             item.addEventListener('dragstart', (e) => {
                 if (!isEditing || item.dataset.status === 'removed') {
