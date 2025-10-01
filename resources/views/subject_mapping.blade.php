@@ -201,16 +201,11 @@
                     </div>
                 </div>
 
-                <div id="detailsCreatedAtContainer" class="mt-8 pt-4 border-t border-gray-200">
-                    <p class="text-sm font-medium text-gray-500">Subject Record Created At</p>
-                    <p id="detailsCreatedAt" class="text-base font-semibold text-gray-800"></p>
-                </div>
-
             </div>
             
             {{-- Modal Footer (Sticky & Modified) --}}
             <div class="flex justify-between items-center p-5 mt-auto border-t border-gray-200 bg-gray-50 rounded-b-2xl sticky bottom-0 z-10">
-                <div id="detailsCreatedAtContainer" class="text-sm text-gray-500">
+                <div class="text-sm text-gray-500">
                     <span class="font-semibold">Created:</span>
                     <span id="detailsCreatedAt"></span>
                 </div>
@@ -453,6 +448,7 @@
                 }
             };
 
+            // Set text content for all details
             setText(document.getElementById('detailsSubjectName'), `${data.subject_name} (${data.subject_code})`);
             setText(detailsCourseTitle, data.subject_name);
             setText(document.getElementById('detailsSubjectCode'), data.subject_code);
@@ -473,16 +469,24 @@
             setText(detailsPreparedBy, data.prepared_by);
             setText(detailsReviewedBy, data.reviewed_by);
             setText(detailsApprovedBy, data.approved_by);
-
+            
+            // Format and set the creation date
             const createdAtDate = new Date(data.created_at);
             const formattedDate = createdAtDate.toLocaleString('en-US', {
                 year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
             });
             setText(detailsCreatedAt, formattedDate);
 
+            // Store subject data on footer buttons
+            const subjectDataString = JSON.stringify(data);
+            editSubjectDetailsButton.dataset.subjectData = subjectDataString;
+            importSubjectDetailsButton.dataset.subjectData = subjectDataString;
+
+            // Render mapping grids
             detailsProgramMapping.innerHTML = createMappingGridHtml(data.program_mapping_grid, 'PILO');
             detailsCourseMapping.innerHTML = createMappingGridHtml(data.course_mapping_grid, 'CILO');
 
+            // Render lessons
             detailsLessonsContainer.innerHTML = '';
             if (data.lessons && typeof data.lessons === 'object' && Object.keys(data.lessons).length > 0) {
                 Object.keys(data.lessons).sort((a, b) => parseInt(a.replace('Week ', '')) - parseInt(b.replace('Week ', ''))).forEach(week => {
@@ -563,6 +567,24 @@
         closeDetailsModalButtonTop.addEventListener('click', hideDetailsModal);
         subjectDetailsModal.addEventListener('click', (e) => { if (e.target.id === 'subjectDetailsModal') hideDetailsModal(); });
         
+        // --- EDIT SUBJECT BUTTON FUNCTIONALITY ---
+        editSubjectDetailsButton.addEventListener('click', () => {
+            const subjectDataString = editSubjectDetailsButton.dataset.subjectData;
+            if (subjectDataString) {
+                try {
+                    const subjectData = JSON.parse(subjectDataString);
+                    // Redirect to the course builder page with the subject ID as a query parameter
+                    window.location.href = `/course-builder?subject_id=${subjectData.id}`;
+                } catch (e) {
+                    console.error('Failed to parse subject data for editing:', e);
+                    alert('Could not open subject for editing due to a data error.');
+                }
+            } else {
+                console.error('No subject data found on the edit button.');
+                alert('An error occurred. Subject data is missing.');
+            }
+        });
+
         const addDoubleClickEvents = (item) => {
             item.addEventListener('dblclick', () => showDetailsModal(JSON.parse(item.dataset.subjectData)));
         };
