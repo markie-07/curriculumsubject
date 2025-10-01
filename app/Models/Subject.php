@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany; // 1. Add this line
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Subject extends Model
 {
@@ -17,6 +17,23 @@ class Subject extends Model
         'subject_type',
         'subject_unit',
         'lessons',
+        'contact_hours',
+        'prerequisites',
+        'pre_requisite_to',
+        'course_description',
+        'program_mapping_grid',
+        'course_mapping_grid',
+        'pilo_outcomes',
+        'cilo_outcomes',
+        'learning_outcomes',
+        'basic_readings',
+        'extended_readings',
+        'course_assessment',
+        'committee_members',
+        'consultation_schedule',
+        'prepared_by',
+        'reviewed_by',
+        'approved_by',
     ];
 
     protected $casts = [
@@ -30,10 +47,6 @@ class Subject extends Model
             ->withTimestamps();
     }
 
-    // 2. Add this new function to define the relationship
-    /**
-     * Get the prerequisites for the subject.
-     */
     public function prerequisites(): HasMany
     {
         return $this->hasMany(Prerequisite::class, 'subject_code', 'subject_code');

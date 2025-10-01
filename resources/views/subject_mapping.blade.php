@@ -415,132 +415,131 @@
             modalDetailsPanel.classList.add('opacity-0', 'scale-95');
             setTimeout(() => subjectDetailsModal.classList.add('hidden'), 300);
         };
-
+        
+        // NEW, REWRITTEN FUNCTION
         const showDetailsModal = (data) => {
-             // Mock Data (Since the Subject model only stores the core fields and lessons JSON)
-            const mockData = {
-                contactHours: '54 hours',
-                prerequisites: 'CS 101',
-                prereqTo: 'CS 201 (Advanced Data Structures)',
-                courseDescription: 'This course introduces fundamental programming concepts, algorithmic thinking, and basic data structures required for software development.',
-                programMapping: 'Refer to the curriculum document for PILO mapping grids.',
-                courseMapping: 'Refer to the curriculum document for CILO mapping grids.',
-                pilo: 'Ability to apply knowledge of computing and mathematics appropriate to the discipline.',
-                cilo: 'Students can design and implement basic software modules using object-oriented principles.',
-                learningOutcomes: 'The learner will achieve foundational proficiency in Python programming and Git version control.',
-                basicReadings: 'Python Crash Course, 3rd Edition by Eric Matthes',
-                extendedReadings: 'Clean Code by Robert C. Martin, Head First Design Patterns',
-                courseAssessment: 'Major Exams: 50%\nQuizzes/Labs: 30%\nProject: 20%',
-                committeeMembers: 'A. Cruz (Cluster Leader), B. Dela Rosa (Program Head)',
-                consultationSchedule: 'MW 10:00-11:00 AM (F2F)',
-                preparedBy: 'Prof. A. Cruz',
-                reviewedBy: 'Dr. B. Dela Rosa',
-                approvedBy: 'VP C. Santos'
+            // Helper function to set text content, defaulting to 'N/A'
+            const setText = (elementId, value) => {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    element.textContent = value || 'N/A';
+                }
             };
 
-            // 1. Set Course Information
-            document.getElementById('detailsSubjectName').textContent = `${data.subject_name} (${data.subject_code})`;
-            detailsCourseTitle.textContent = data.subject_name || 'N/A';
-            document.getElementById('detailsSubjectCode').textContent = data.subject_code || 'N/A';
-            document.getElementById('detailsSubjectType').textContent = data.subject_type || 'N/A';
-            document.getElementById('detailsSubjectUnit').textContent = data.subject_unit || 'N/A';
+            // 1. Set basic course info
+            setText('detailsSubjectName', `${data.subject_name} (${data.subject_code})`);
+            setText('detailsCourseTitle', data.subject_name);
+            setText('detailsSubjectCode', data.subject_code);
+            setText('detailsSubjectType', data.subject_type);
+            setText('detailsSubjectUnit', data.subject_unit);
+            setText('detailsContactHours', data.contact_hours);
+            setText('detailsPrerequisites', data.prerequisites);
+            setText('detailsPrereqTo', data.pre_requisite_to);
+            setText('detailsCourseDescription', data.course_description);
+            setText('detailsPILO', data.pilo_outcomes);
+            setText('detailsCILO', data.cilo_outcomes);
+            setText('detailsLearningOutcomes', data.learning_outcomes);
+            setText('detailsBasicReadings', data.basic_readings);
+            setText('detailsExtendedReadings', data.extended_readings);
+            setText('detailsCourseAssessment', data.course_assessment);
+            setText('detailsCommitteeMembers', data.committee_members);
+            setText('detailsConsultationSchedule', data.consultation_schedule);
+            setText('detailsPreparedBy', data.prepared_by);
+            setText('detailsReviewedBy', data.reviewed_by);
+            setText('detailsApprovedBy', data.approved_by);
             
-            // Use saved data if present, otherwise use mock/placeholder
-            detailsContactHours.textContent = data.contact_hours || mockData.contactHours;
-            detailsPrerequisites.textContent = data.prerequisites || mockData.prerequisites;
-            detailsPrereqTo.textContent = data.pre_requisite_to || mockData.prereqTo;
-            detailsCourseDescription.textContent = data.course_description || mockData.courseDescription;
+            // Set placeholder text for mapping grids
+            detailsProgramMapping.textContent = "Mapping Grid data is stored in the Course Builder.";
+            detailsCourseMapping.textContent = "Mapping Grid data is stored in the Course Builder.";
 
-            // 2. Set Mapping Grids (Placeholders)
-            detailsProgramMapping.textContent = mockData.programMapping;
-            detailsCourseMapping.textContent = mockData.courseMapping;
-            
-            // 3. Set Learning Outcomes
-            detailsPILO.textContent = data.pilo_outcomes || mockData.pilo;
-            detailsCILO.textContent = data.cilo_outcomes || mockData.cilo;
-            detailsLearningOutcomes.textContent = data.learning_outcomes || mockData.learningOutcomes;
-
-            // 5. Set Course Requirements and Policies
-            detailsBasicReadings.textContent = data.basic_readings || mockData.basicReadings;
-            detailsExtendedReadings.textContent = data.extended_readings || mockData.extendedReadings;
-            detailsCourseAssessment.textContent = data.course_assessment || mockData.courseAssessment;
-            detailsCommitteeMembers.textContent = data.committee_members || mockData.committeeMembers;
-            detailsConsultationSchedule.textContent = data.consultation_schedule || mockData.consultationSchedule;
-
-            // 6. Set Approval
-            detailsPreparedBy.textContent = data.prepared_by || mockData.preparedBy;
-            detailsReviewedBy.textContent = data.reviewed_by || mockData.reviewedBy;
-            detailsApprovedBy.textContent = data.approved_by || mockData.approvedBy;
-
-            // Set creation date
-            const createdAtContainer = document.getElementById('detailsCreatedAtContainer');
-            if (data.created_at) {
-                const date = new Date(data.created_at);
-                const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true };
-                document.getElementById('detailsCreatedAt').textContent = date.toLocaleDateString('en-US', options);
-                createdAtContainer.style.display = 'block';
-            } else {
-                createdAtContainer.style.display = 'none';
-            }
-
-            // Set buttons data
-            editSubjectDetailsButton.dataset.subjectData = JSON.stringify(data);
-            importSubjectDetailsButton.dataset.subjectData = JSON.stringify(data);
-
-            // 4. Set Weekly Plan (Lessons)
+            // 2. Format and display the Weekly Plan
             detailsLessonsContainer.innerHTML = '';
             if (data.lessons && typeof data.lessons === 'object' && Object.keys(data.lessons).length > 0) {
-                const sortedWeeks = Object.keys(data.lessons).sort((a, b) => parseInt(a.replace('Week ', '')) - parseInt(b.replace('Week ', '')));
-                
-                sortedWeeks.forEach(week => {
-                    const lessonContent = data.lessons[week];
-                    const accordionItem = document.createElement('div');
-                    accordionItem.className = 'border border-gray-200 rounded-lg';
+                Object.keys(data.lessons).sort((a, b) => parseInt(a.replace('Week ', '')) - parseInt(b.replace('Week ', ''))).forEach(week => {
+                    const lessonString = data.lessons[week];
+                    const lessonData = {};
 
-                    const button = document.createElement('button');
-                    button.type = 'button';
-                    button.className = 'w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 transition-colors';
-                    button.innerHTML = `
-                        <span class="font-semibold text-gray-700">${week}</span>
-                        <svg class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    `;
-
-                    const contentDiv = document.createElement('div');
-                    contentDiv.className = 'p-5 border-t border-gray-200 hidden bg-white';
-                    
-                    // Logic to format the content from Course Builder:
-                    let formattedContent = lessonContent.replace(/,, /g, '\n\n'); // Replace separator with line breaks
-
-                    // Find and bold the section headers (your custom formatting)
-                    formattedContent = formattedContent.replace(/(Detailed Lesson Content:|Learning Objectives:|Assessment:|Activities:|Learning and Teaching Support Materials:|Output Materials:)/g, '\n\n<strong class="block mt-3 mb-1 text-gray-800">$1</strong>');
-                    
-                    // Specific replacements for ATs and TLAs (which were saved as composite strings)
-                    formattedContent = formattedContent.replace(/Assessment: ONSITE: (.*) OFFSITE: (.*)/g, `<strong>Assessment Tasks (ATs):</strong>\n- ONSITE: $1\n- OFFSITE: $2`);
-                    formattedContent = formattedContent.replace(/Activities: ON-SITE: (.*) OFF-SITE: (.*)/g, `<strong>Suggested Teaching/Learning Activities (TLAs):</strong>\n- Face to Face (On-Site): $1\n- Online (Off-Site): $2`);
-                    
-                    // Final content insertion
-                    contentDiv.innerHTML = `<div class="prose prose-sm max-w-none text-gray-600 whitespace-pre-line">${formattedContent}</div>`;
-                    
-                    button.addEventListener('click', () => {
-                        contentDiv.classList.toggle('hidden');
-                        button.querySelector('svg').classList.toggle('rotate-180');
+                    // Parse the combined string back into an object
+                    const parts = lessonString.split(',, ');
+                    parts.forEach(part => {
+                        if (part.startsWith('Detailed Lesson Content:')) lessonData.content = part.replace('Detailed Lesson Content:\n', '');
+                        if (part.startsWith('Student Intended Learning Outcomes:')) lessonData.silo = part.replace('Student Intended Learning Outcomes:\n', '');
+                        if (part.startsWith('Assessment:')) {
+                            const match = part.match(/ONSITE: (.*) OFFSITE: (.*)/);
+                            if (match) {
+                                lessonData.at_onsite = match[1];
+                                lessonData.at_offsite = match[2];
+                            }
+                        }
+                        if (part.startsWith('Activities:')) {
+                            const match = part.match(/ON-SITE: (.*) OFF-SITE: (.*)/);
+                            if (match) {
+                                lessonData.tla_onsite = match[1];
+                                lessonData.tla_offsite = match[2];
+                            }
+                        }
+                        if (part.startsWith('Learning and Teaching Support Materials:')) lessonData.ltsm = part.replace('Learning and Teaching Support Materials:\n', '');
+                        if (part.startsWith('Output Materials:')) lessonData.output = part.replace('Output Materials:\n', '');
                     });
 
-                    accordionItem.appendChild(button);
-                    accordionItem.appendChild(contentDiv);
-                    detailsLessonsContainer.appendChild(accordionItem);
+                    // Create the HTML structure like in your image
+                    const weekHTML = `
+                        <div class="border border-gray-200 rounded-lg overflow-hidden">
+                            <button type="button" class="w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 transition-colors week-toggle">
+                                <span class="font-semibold text-gray-700">${week}</span>
+                                <svg class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div class="p-5 border-t border-gray-200 bg-white hidden week-content space-y-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div><label class="block text-sm font-semibold text-gray-600 mb-2">Content</label><div class="p-3 bg-gray-50 border rounded-md min-h-[100px] text-sm whitespace-pre-wrap">${lessonData.content || ''}</div></div>
+                                    <div><label class="block text-sm font-semibold text-gray-600 mb-2">Student Intended Learning Outcomes</label><div class="p-3 bg-gray-50 border rounded-md min-h-[100px] text-sm whitespace-pre-wrap">${lessonData.silo || ''}</div></div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-600 mb-2">Assessment Tasks (ATs)</label>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-md bg-gray-50">
+                                        <div><label class="block text-xs font-bold text-gray-500 mb-1">ONSITE</label><div class="p-2 bg-white border rounded-md min-h-[80px] text-sm whitespace-pre-wrap">${lessonData.at_onsite || ''}</div></div>
+                                        <div><label class="block text-xs font-bold text-gray-500 mb-1">OFFSITE</label><div class="p-2 bg-white border rounded-md min-h-[80px] text-sm whitespace-pre-wrap">${lessonData.at_offsite || ''}</div></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-600 mb-2">Suggested Teaching/Learning Activities (TLAs)</label>
+                                    <div class="p-4 border rounded-md bg-gray-50">
+                                        <p class="text-xs font-bold text-gray-500 mb-2">Blended Learning Delivery Modality (BLDM)</p>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div><label class="block text-xs font-bold text-gray-500 mb-1">Face to Face (On-Site)</label><div class="p-2 bg-white border rounded-md min-h-[80px] text-sm whitespace-pre-wrap">${lessonData.tla_onsite || ''}</div></div>
+                                            <div><label class="block text-xs font-bold text-gray-500 mb-1">Online (Off-Site)</label><div class="p-2 bg-white border rounded-md min-h-[80px] text-sm whitespace-pre-wrap">${lessonData.tla_offsite || ''}</div></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div><label class="block text-sm font-semibold text-gray-600 mb-2">Learning and Teaching Support Materials (LTSM)</label><div class="p-3 bg-gray-50 border rounded-md min-h-[100px] text-sm whitespace-pre-wrap">${lessonData.ltsm || ''}</div></div>
+                                    <div><label class="block text-sm font-semibold text-gray-600 mb-2">Output Materials</label><div class="p-3 bg-gray-50 border rounded-md min-h-[100px] text-sm whitespace-pre-wrap">${lessonData.output || ''}</div></div>
+                                </div>
+                            </div>
+                        </div>`;
+                    detailsLessonsContainer.innerHTML += weekHTML;
                 });
             } else {
                 detailsLessonsContainer.innerHTML = '<p class="text-sm text-gray-500 mt-2">No lessons recorded for this subject.</p>';
             }
+            
+            // Add event listeners for the new accordion toggles
+            document.querySelectorAll('.week-toggle').forEach(button => {
+                button.addEventListener('click', () => {
+                    const content = button.nextElementSibling;
+                    content.classList.toggle('hidden');
+                    button.querySelector('svg').classList.toggle('rotate-180');
+                });
+            });
 
-            // Show the modal
+            // 3. Show the modal
             subjectDetailsModal.classList.remove('hidden');
             setTimeout(() => {
                 subjectDetailsModal.classList.remove('opacity-0');
                 modalDetailsPanel.classList.remove('opacity-0', 'scale-95');
             }, 10);
         };
+
 
         // --- CORE EVENT LISTENERS ---
         
@@ -552,8 +551,9 @@
             item.addEventListener('dblclick', () => showDetailsModal(JSON.parse(item.dataset.subjectData)));
         };
 
-        // --- RENDERING & UTILITY FUNCTIONS (RESTORED) ---
-
+        // --- (The rest of your existing script remains the same) ---
+        // --- (createSubjectCard, createSubjectTag, updateUnitTotals, etc.) ---
+        
         const addDraggableEvents = (item) => {
             item.addEventListener('dragstart', (e) => {
                 if (!isEditing || item.dataset.status === 'removed') {
@@ -692,11 +692,9 @@
                 });
                 deleteButtons.forEach(button => button.classList.add('hidden'));
                 saveButton.setAttribute('disabled', 'disabled');
-                editButton.innerHTML = `<svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg> Edit`;
+                editButton.innerHTML = `<svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 A-Z0-9a2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg> Edit`;
             }
         };
-
-        // --- DRAG & DROP HANDLERS (DEFINED) ---
 
         const dragOverHandler = (e) => {
             e.preventDefault();
@@ -766,8 +764,6 @@
             });
         };
         
-        // --- REMOVE SUBJECT MODAL LOGIC ---
-        
         const showRemoveConfirmationModal = () => {
             const removeConfirmationModal = document.getElementById('removeConfirmationModal');
             const removeModalPanel = document.getElementById('remove-modal-panel');
@@ -801,7 +797,6 @@
             const semester = dropzone.dataset.semester;
 
             try {
-                // Mock API call for removal (replace with actual fetch to /api/curriculum/remove-subject)
                 await new Promise(resolve => setTimeout(resolve, 300));
 
                 subjectTagToRemove.remove();
@@ -814,7 +809,7 @@
                     
                     const statusIndicator = originalSubjectCard.querySelector('div:last-child');
                     if (statusIndicator) {
-                        statusIndicator.innerHTML = `<i class="fas fa-bars text-gray-400"></i>`; // Restore default icon
+                        statusIndicator.innerHTML = `<i class="fas fa-bars text-gray-400"></i>`;
                     }
                 }
 
@@ -828,9 +823,6 @@
                 hideRemoveConfirmationModal();
             }
         });
-
-
-        // --- PDF EXPORT LOGIC ---
         
         const hideImportConfirmationModal = () => {
             const importConfirmationModal = document.getElementById('importConfirmationModal');
@@ -846,8 +838,6 @@
         
         document.getElementById('confirmImportButton').addEventListener('click', () => {
             if (subjectToImport) {
-                // Assuming jsPDF is loaded via CDN in your layouts/app.blade.php
-                // generatePDF(subjectToImport);
                 alert(`Preparing to generate PDF for ${subjectToImport.subject_name}... (PDF logic placeholder)`);
             }
             hideImportConfirmationModal();
@@ -864,9 +854,6 @@
             hideDetailsModal(); 
         });
 
-
-        // --- SAVE CURRICULUM LOGIC ---
-
         document.getElementById('saveCurriculumButton').addEventListener('click', () => {
             if (!curriculumSelector.value) {
                 alert('Please select a curriculum to save.');
@@ -881,8 +868,6 @@
 
         document.getElementById('confirmSaveMapping').addEventListener('click', () => {
             document.getElementById('saveMappingModal').classList.add('hidden');
-            // ... (Your actual API fetch save logic here) ...
-            // Mocking success:
             document.getElementById('proceedToPrerequisitesModal').classList.remove('hidden');
         });
 
@@ -900,8 +885,6 @@
             document.getElementById('mappingSuccessModal').classList.add('hidden');
         });
 
-
-        // --- FETCH & RENDER LOGIC ---
 
         function filterSubjects() {
             const searchTerm = searchInput.value.toLowerCase();
@@ -994,10 +977,8 @@
             updateUnitTotals();
         }
 
-        // --- API FETCH CALLS ---
-
         function fetchCurriculums() {
-            fetch('/api/curriculums') // Correct API call to fetch curriculum list
+            fetch('/api/curriculums')
                 .then(response => response.json())
                 .then(curriculums => {
                     curriculumSelector.innerHTML = '<option value="">Select a Curriculum</option>';
@@ -1027,17 +1008,14 @@
             const yearLevel = selectedOption.dataset.yearLevel;
             renderCurriculumOverview(yearLevel);
 
-            fetch(`/api/curriculums/${id}`) // Correct API call to fetch mapped subjects for a curriculum
+            fetch(`/api/curriculums/${id}`)
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
+                    if (!response.ok) throw new Error('Network response was not ok');
                     return response.json();
                 })
                 .then(data => {
-                    if (!data || !data.curriculum || !data.allSubjects) {
-                        throw new Error('Invalid data structure from server.');
-                    }
+                    if (!data || !data.curriculum || !data.allSubjects) throw new Error('Invalid data structure from server.');
+                    
                     renderAvailableSubjects(data.allSubjects, data.curriculum.subjects, data.removedSubjectCodes);
                     populateMappedSubjects(data.curriculum.subjects);
                     
@@ -1061,7 +1039,7 @@
 
         function fetchAllSubjects() {
              availableSubjectsContainer.innerHTML = '<p class="text-gray-500 text-center mt-4">Loading subjects...</p>';
-            fetch('/api/subjects') // Correct API call to fetch all available subjects
+            fetch('/api/subjects')
                 .then(response => response.json())
                 .then(subjects => {
                     renderAvailableSubjects(subjects);
@@ -1085,7 +1063,6 @@
             }
         });
 
-        // --- INITIALIZATION ---
         fetchCurriculums();
         fetchAllSubjects();
     });
