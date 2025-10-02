@@ -3,15 +3,11 @@
 @section('content')
 <style>
     .assigned-card {
-        background-color: #2d3748; /* Dark gray */
-        color: white;
+        background-color: #e0e7ff; 
+        border-color: #a5b4fc;
     }
-    .assigned-card p {
-        color: white;
-    }
-    .assigned-badge {
-        background-color: #4a5568;
-        color: white;
+    .assigned-card .subject-name {
+        color: #4338ca;
     }
 </style>
 <main class="flex-1 overflow-hidden bg-gray-100 p-6 flex flex-col">
@@ -19,8 +15,8 @@
         
         <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center">
             <div class="mb-4 sm:mb-0">
-                <h1 class="text-3xl font-bold text-gray-800"><i class="fas fa-sitemap mr-2"></i>Subject Mapping</h1>
-                <p class="text-sm text-gray-500 mt-1"><i class="fas fa-hand-rock mr-2"></i>Drag and drop subjects to build the curriculum.</p>
+                <h1 class="text-3xl font-bold text-gray-800">Subject Mapping</h1>
+                <p class="text-sm text-gray-500 mt-1">Drag and drop subjects to build the curriculum.</p>
             </div>
         </div>
 
@@ -28,8 +24,8 @@
             
             <div class="lg:col-span-1 bg-gray-50 border border-gray-200 rounded-xl p-6 flex flex-col h-[calc(100vh-200px)]">
                 <div class="pb-4 border-b border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-800"><i class="fas fa-book mr-2"></i>Available Subjects</h2>
-                    <p class="text-sm text-gray-500"><i class="fas fa-search mr-2"></i>Find and select subjects to add to the curriculum.</p>
+                    <h2 class="text-xl font-semibold text-gray-800">Available Subjects</h2>
+                    <p class="text-sm text-gray-500">Find and select subjects to add to the curriculum.</p>
                 </div>
                 
                 <div class="flex flex-col sm:flex-row gap-3 my-4">
@@ -42,10 +38,11 @@
                         <option value="Major">Major</option>
                         <option value="Minor">Minor</option>
                         <option value="Elective">Elective</option>
+                        <option value="GE">GE</option>
                     </select>
                 </div>
 
-                <div id="availableSubjects" class="flex-1 overflow-y-auto pr-2 -mr-2 space-y-2">
+                <div id="availableSubjects" class="flex-1 overflow-y-auto pr-2 -mr-2 space-y-3">
                     <p class="text-gray-500 text-center mt-4">Select a curriculum to view subjects.</p>
                 </div>
             </div>
@@ -624,35 +621,46 @@
             newSubjectCard.dataset.subjectData = JSON.stringify(subject);
             newSubjectCard.dataset.status = status;
 
-            let cardClasses = 'subject-card flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg transition-all';
+            let cardClasses = 'subject-card p-4 bg-white border border-gray-200 rounded-xl shadow-sm transition-all duration-200';
             let statusHTML = '';
             let isDraggable = true;
+            let typeColorClass = 'bg-gray-400';
+            let typeTextColorClass = 'text-gray-600';
+
+            switch(subject.subject_type) {
+                case 'Major': typeColorClass = 'bg-blue-100'; typeTextColorClass = 'text-blue-700'; break;
+                case 'Minor': typeColorClass = 'bg-green-100'; typeTextColorClass = 'text-green-700'; break;
+                case 'Elective': typeColorClass = 'bg-yellow-100'; typeTextColorClass = 'text-yellow-700'; break;
+                case 'GE': typeColorClass = 'bg-indigo-100'; typeTextColorClass = 'text-indigo-700'; break;
+            }
 
             if (isMapped) {
                 cardClasses += ' assigned-card cursor-not-allowed';
-                statusHTML = '<span class="status-badge text-xs font-semibold px-2 py-1 rounded-full assigned-badge">Assigned</span>';
+                statusHTML = `<span class="status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-200 text-gray-700">Assigned</span>`;
                 isDraggable = false;
             } else if (status === 'removed') {
-                cardClasses += ' opacity-50 cursor-not-allowed removed-subject-card';
-                statusHTML = '<span class="text-xs font-semibold text-red-500 bg-red-100 px-2 py-1 rounded-full">Removed</span>';
+                cardClasses += ' opacity-60 cursor-not-allowed removed-subject-card';
+                statusHTML = '<span class="text-xs font-semibold text-red-700 bg-red-100 px-2.5 py-1 rounded-full">Removed</span>';
                 isDraggable = false;
             } else {
-                cardClasses += ' hover:bg-blue-50 cursor-grab';
-                statusHTML = '<span class="status-badge text-xs font-semibold text-green-500 bg-green-100 px-2 py-1 rounded-full">Available</span>';
+                cardClasses += ' hover:shadow-md hover:border-blue-400 cursor-grab active:cursor-grabbing';
+                statusHTML = '<span class="status-badge text-xs font-semibold text-green-700 bg-green-100 px-2.5 py-1 rounded-full">Available</span>';
             }
             
             newSubjectCard.className = cardClasses;
             newSubjectCard.setAttribute('draggable', isDraggable);
             
             newSubjectCard.innerHTML = `
-                <div>
-                    <p class="font-semibold text-gray-700">${subject.subject_name}</p>
-                    <p class="text-xs text-gray-500">${subject.subject_code}</p>
-                    <p class="text-xs text-gray-500">Unit: ${subject.subject_unit}</p>
+                <div class="flex justify-between items-start">
+                    <p class="subject-name font-bold text-gray-800">${subject.subject_name}</p>
+                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${typeColorClass} ${typeTextColorClass}">${subject.subject_type}</span>
                 </div>
-                <div class="flex items-center space-x-2">
+                <div class="mt-3 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs text-gray-500 font-mono">${subject.subject_code}</p>
+                        <p class="text-sm font-semibold text-gray-600 mt-1">Units: ${subject.subject_unit}</p>
+                    </div>
                     ${statusHTML}
-                    ${isDraggable ? '<i class="fas fa-bars text-gray-400"></i>' : ''}
                 </div>`;
             
             if(isDraggable) {
@@ -674,6 +682,7 @@
                 case 'Major': typeColorClass = 'bg-blue-500'; break;
                 case 'Minor': typeColorClass = 'bg-green-500'; break;
                 case 'Elective': typeColorClass = 'bg-yellow-500'; break;
+                case 'GE': typeColorClass = 'bg-indigo-500'; break;
             }
 
             subjectTag.innerHTML = `
@@ -780,14 +789,13 @@
                     targetContainer.appendChild(subjectTag);
                     draggedItem.setAttribute('draggable', 'false');
                     draggedItem.classList.add('assigned-card', 'cursor-not-allowed');
-                    draggedItem.classList.remove('hover:bg-blue-50', 'cursor-grab');
+                    draggedItem.classList.remove('hover:shadow-md', 'hover:border-blue-400', 'cursor-grab', 'active:cursor-grabbing');
         
                     const statusBadge = draggedItem.querySelector('.status-badge');
                     if (statusBadge) {
                         statusBadge.textContent = 'Assigned';
-                        statusBadge.className = 'status-badge text-xs font-semibold px-2 py-1 rounded-full assigned-badge';
+                        statusBadge.className = 'status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-200 text-gray-700';
                     }
-                    draggedItem.querySelector('i')?.remove();
                 } else if (draggedItem.classList.contains('subject-tag')) {
                     draggedItem.parentNode.removeChild(draggedItem);
                     const subjectTag = createSubjectTag(droppedSubjectData, isEditing);
@@ -823,17 +831,12 @@
                     if (originalSubjectCard) {
                         originalSubjectCard.setAttribute('draggable', 'true');
                         originalSubjectCard.classList.remove('assigned-card', 'cursor-not-allowed');
-                        originalSubjectCard.classList.add('hover:bg-blue-50', 'cursor-grab');
+                        originalSubjectCard.classList.add('hover:shadow-md', 'hover:border-blue-400', 'cursor-grab', 'active:cursor-grabbing');
             
                         const statusBadge = originalSubjectCard.querySelector('.status-badge');
                         if (statusBadge) {
                             statusBadge.textContent = 'Available';
-                            statusBadge.className = 'status-badge text-xs font-semibold text-green-500 bg-green-100 px-2 py-1 rounded-full';
-                        }
-                        if (!originalSubjectCard.querySelector('i')) {
-                            const dragIcon = document.createElement('i');
-                            dragIcon.className = 'fas fa-bars text-gray-400';
-                            originalSubjectCard.querySelector('div:last-child').appendChild(dragIcon);
+                            statusBadge.className = 'status-badge text-xs font-semibold text-green-700 bg-green-100 px-2.5 py-1 rounded-full';
                         }
                     }
                     draggedItem.remove();
@@ -883,17 +886,12 @@
                 if (originalSubjectCard) {
                     originalSubjectCard.setAttribute('draggable', 'true');
                     originalSubjectCard.classList.remove('assigned-card', 'cursor-not-allowed');
-                    originalSubjectCard.classList.add('hover:bg-blue-50', 'cursor-grab');
+                    originalSubjectCard.classList.add('hover:shadow-md', 'hover:border-blue-400', 'cursor-grab', 'active:cursor-grabbing');
         
                     const statusBadge = originalSubjectCard.querySelector('.status-badge');
                     if (statusBadge) {
                         statusBadge.textContent = 'Available';
-                        statusBadge.className = 'status-badge text-xs font-semibold text-green-500 bg-green-100 px-2 py-1 rounded-full';
-                    }
-                    if (!originalSubjectCard.querySelector('i')) {
-                        const dragIcon = document.createElement('i');
-                        dragIcon.className = 'fas fa-bars text-gray-400';
-                        originalSubjectCard.querySelector('div:last-child').appendChild(dragIcon);
+                        statusBadge.className = 'status-badge text-xs font-semibold text-green-700 bg-green-100 px-2.5 py-1 rounded-full';
                     }
                 }
 
@@ -979,7 +977,7 @@
                 const subjectData = JSON.parse(card.dataset.subjectData);
                 const searchMatch = subjectData.subject_name.toLowerCase().includes(searchTerm) || subjectData.subject_code.toLowerCase().includes(searchTerm);
                 const typeMatch = (selectedType === 'All Types' || subjectData.subject_type === selectedType);
-                card.style.display = (searchMatch && typeMatch) ? 'flex' : 'none';
+                card.style.display = (searchMatch && typeMatch) ? 'block' : 'none';
             });
         }
         searchInput.addEventListener('input', filterSubjects);
