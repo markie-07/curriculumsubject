@@ -38,7 +38,7 @@
                         <option value="Major">Major</option>
                         <option value="Minor">Minor</option>
                         <option value="Elective">Elective</option>
-                        <option value="GE">GE</option>
+                        <option value="GE">General Education</option>
                     </select>
                 </div>
 
@@ -615,37 +615,16 @@
             });
         };
 
-        // UPDATED: createSubjectCard function
         const createSubjectCard = (subject, isMapped = false, status = '') => {
             const newSubjectCard = document.createElement('div');
             newSubjectCard.id = `subject-${subject.subject_code.toLowerCase()}`;
             newSubjectCard.dataset.subjectData = JSON.stringify(subject);
             newSubjectCard.dataset.status = status;
-
+        
             let cardClasses = 'subject-card p-4 bg-white border border-gray-200 rounded-xl shadow-sm transition-all duration-200 flex items-center gap-4';
             let statusHTML = '';
             let isDraggable = true;
-            let typeColorClass, typeTextColorClass, iconSVG;
-
-            switch(subject.subject_type) {
-                case 'Major':
-                    typeColorClass = 'bg-blue-100'; typeTextColorClass = 'text-blue-700';
-                    iconSVG = `<div class="w-12 h-12 flex-shrink-0 bg-blue-100 rounded-lg flex items-center justify-center"><svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-5.747-5.747H17.747"></path></svg></div>`;
-                    break;
-                case 'Minor':
-                    typeColorClass = 'bg-green-100'; typeTextColorClass = 'text-green-700';
-                    iconSVG = `<div class="w-12 h-12 flex-shrink-0 bg-green-100 rounded-lg flex items-center justify-center"><svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg></div>`;
-                    break;
-                case 'Elective':
-                    typeColorClass = 'bg-yellow-100'; typeTextColorClass = 'text-yellow-700';
-                    iconSVG = `<div class="w-12 h-12 flex-shrink-0 bg-yellow-100 rounded-lg flex items-center justify-center"><svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h2zm0 0V3m0 0h.01"></path></svg></div>`;
-                    break;
-                default: // GE and others
-                    typeColorClass = 'bg-indigo-100'; typeTextColorClass = 'text-indigo-700';
-                    iconSVG = `<div class="w-12 h-12 flex-shrink-0 bg-indigo-100 rounded-lg flex items-center justify-center"><svg class="w-6 h-6 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-5.747-5.747H17.747"></path></svg></div>`;
-                    break;
-            }
-
+        
             if (isMapped) {
                 cardClasses += ' assigned-card cursor-not-allowed';
                 statusHTML = `<span class="status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-200 text-gray-700">Assigned</span>`;
@@ -663,14 +642,18 @@
             newSubjectCard.setAttribute('draggable', isDraggable);
             
             newSubjectCard.innerHTML = `
-                ${iconSVG}
+                <div class="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                </div>
                 <div class="flex-grow">
                     <p class="subject-name font-bold text-gray-800">${subject.subject_name}</p>
                     <p class="text-sm text-gray-500">${subject.subject_code}</p>
                     <p class="text-sm font-semibold text-gray-600 mt-1">Units: ${subject.subject_unit}</p>
                 </div>
                 <div class="flex flex-col items-end gap-2">
-                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${typeColorClass} ${typeTextColorClass}">${subject.subject_type}</span>
+                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full">${subject.subject_type}</span>
                     ${statusHTML}
                 </div>`;
             
@@ -682,32 +665,74 @@
             return newSubjectCard;
         };
         
-        // UPDATED: createSubjectTag function
         const createSubjectTag = (subjectData, isEditing = false) => {
             const subjectTag = document.createElement('div');
-            subjectTag.className = 'subject-tag bg-white border border-gray-200 shadow-sm rounded-lg p-3 flex items-center justify-between w-full transition-all hover:shadow-md hover:border-blue-500';
             subjectTag.setAttribute('draggable', isEditing);
             subjectTag.dataset.subjectData = JSON.stringify(subjectData);
 
-            let iconSVG;
-            switch (subjectData.subject_type) {
-                case 'Major': iconSVG = `<svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-5.747-5.747H17.747"></path></svg>`; break;
-                case 'Minor': iconSVG = `<svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>`; break;
-                case 'Elective': iconSVG = `<svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h2zm0 0V3m0 0h.01"></path></svg>`; break;
-                default: iconSVG = `<svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-5.747-5.747H17.747"></path></svg>`; break;
+            let baseClasses = 'subject-tag shadow-sm rounded-lg p-3 flex items-center justify-between w-full transition-all border';
+            let colorClasses = '';
+            let textClasses = '';
+            let unitClasses = '';
+            let iconClasses = '';
+            let codeClasses = '';
+            let deleteBtnClasses = '';
+
+            const geIdentifiers = ["GE", "General Education", "Gen Ed"];
+            const subjectType = subjectData.subject_type;
+
+            if (subjectType === 'Major') {
+                colorClasses = 'bg-blue-100 border-blue-200 hover:bg-blue-200';
+                textClasses = 'text-blue-800 font-bold';
+                unitClasses = 'bg-blue-200 text-blue-800';
+                iconClasses = 'text-blue-500';
+                codeClasses = 'text-blue-700';
+                deleteBtnClasses = 'text-blue-400 hover:text-blue-600';
+            } else if (subjectType === 'Minor') {
+                colorClasses = 'bg-purple-100 border-purple-200 hover:bg-purple-200';
+                textClasses = 'text-purple-800 font-bold';
+                unitClasses = 'bg-purple-200 text-purple-800';
+                iconClasses = 'text-purple-500';
+                codeClasses = 'text-purple-700';
+                deleteBtnClasses = 'text-purple-400 hover:text-purple-600';
+            } else if (subjectType === 'Elective') {
+                colorClasses = 'bg-red-100 border-red-200 hover:bg-red-200';
+                textClasses = 'text-red-800 font-bold';
+                unitClasses = 'bg-red-200 text-red-800';
+                iconClasses = 'text-red-500';
+                codeClasses = 'text-red-700';
+                deleteBtnClasses = 'text-red-400 hover:text-red-600';
+            } else if (geIdentifiers.includes(subjectType)) {
+                colorClasses = 'bg-orange-50 border-orange-200 hover:bg-orange-100';
+                textClasses = 'text-orange-800 font-bold';
+                unitClasses = 'bg-orange-200 text-orange-800';
+                iconClasses = 'text-orange-500';
+                codeClasses = 'text-orange-700';
+                deleteBtnClasses = 'text-orange-400 hover:text-orange-600';
+            } else {
+                colorClasses = 'bg-white border-gray-200 hover:shadow-md hover:border-blue-500';
+                textClasses = 'text-gray-800 font-bold';
+                unitClasses = 'bg-gray-200 text-gray-700';
+                iconClasses = 'text-gray-400';
+                codeClasses = 'text-gray-500';
+                deleteBtnClasses = 'text-gray-400 hover:text-red-600';
             }
+
+            subjectTag.className = `${baseClasses} ${colorClasses}`;
 
             subjectTag.innerHTML = `
                 <div class="flex items-center gap-3 flex-grow">
-                    ${iconSVG}
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ${iconClasses}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
                     <div class="flex-grow">
-                        <p class="font-bold text-sm text-gray-800 leading-tight">${subjectData.subject_name}</p>
-                        <p class="text-xs text-gray-500 font-mono">${subjectData.subject_code}</p>
+                        <p class="text-sm leading-tight ${textClasses}">${subjectData.subject_name}</p>
+                        <p class="text-xs font-mono ${codeClasses}">${subjectData.subject_code}</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-3 ml-2 flex-shrink-0">
-                    <span class="text-xs font-semibold px-2 py-1 rounded-full bg-gray-200 text-gray-700">${subjectData.subject_unit} units</span>
-                    <button class="delete-subject-tag ${isEditing ? '' : 'hidden'} text-gray-400 hover:text-red-600 transition-colors">
+                    <span class="text-xs font-semibold px-2 py-1 rounded-full ${unitClasses}">${subjectData.subject_unit} units</span>
+                    <button class="delete-subject-tag ${isEditing ? '' : 'hidden'} ${deleteBtnClasses} transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
@@ -984,12 +1009,24 @@
             const searchTerm = searchInput.value.toLowerCase();
             const selectedType = typeFilter.value;
             const subjectCards = availableSubjectsContainer.querySelectorAll('.subject-card');
+            const geIdentifiers = ["ge", "general education", "gen ed"];
 
             subjectCards.forEach(card => {
                 const subjectData = JSON.parse(card.dataset.subjectData);
+                const subjectType = subjectData.subject_type.toLowerCase();
+                
                 const searchMatch = subjectData.subject_name.toLowerCase().includes(searchTerm) || subjectData.subject_code.toLowerCase().includes(searchTerm);
-                const typeMatch = (selectedType === 'All Types' || subjectData.subject_type === selectedType);
-                card.style.display = (searchMatch && typeMatch) ? 'block' : 'none';
+                
+                let typeMatch = false;
+                if (selectedType === 'All Types') {
+                    typeMatch = true;
+                } else if (selectedType === 'GE') {
+                    typeMatch = geIdentifiers.some(id => subjectType.includes(id));
+                } else {
+                    typeMatch = (subjectType === selectedType.toLowerCase());
+                }
+
+                card.style.display = (searchMatch && typeMatch) ? 'flex' : 'none';
             });
         }
         searchInput.addEventListener('input', filterSubjects);
