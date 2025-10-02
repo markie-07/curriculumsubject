@@ -615,6 +615,7 @@
             });
         };
 
+        // UPDATED: createSubjectCard function
         const createSubjectCard = (subject, isMapped = false, status = '') => {
             const newSubjectCard = document.createElement('div');
             newSubjectCard.id = `subject-${subject.subject_code.toLowerCase()}`;
@@ -624,14 +625,25 @@
             let cardClasses = 'subject-card p-4 bg-white border border-gray-200 rounded-xl shadow-sm transition-all duration-200';
             let statusHTML = '';
             let isDraggable = true;
-            let typeColorClass = 'bg-gray-400';
-            let typeTextColorClass = 'text-gray-600';
+            let typeColorClass, typeTextColorClass, iconSVG;
 
             switch(subject.subject_type) {
-                case 'Major': typeColorClass = 'bg-blue-100'; typeTextColorClass = 'text-blue-700'; break;
-                case 'Minor': typeColorClass = 'bg-green-100'; typeTextColorClass = 'text-green-700'; break;
-                case 'Elective': typeColorClass = 'bg-yellow-100'; typeTextColorClass = 'text-yellow-700'; break;
-                case 'GE': typeColorClass = 'bg-indigo-100'; typeTextColorClass = 'text-indigo-700'; break;
+                case 'Major':
+                    typeColorClass = 'bg-blue-100'; typeTextColorClass = 'text-blue-700';
+                    iconSVG = `<svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-5.747-5.747H17.747"></path></svg>`; // Placeholder, e.g., Book icon
+                    break;
+                case 'Minor':
+                    typeColorClass = 'bg-green-100'; typeTextColorClass = 'text-green-700';
+                    iconSVG = `<svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>`; // Folder icon
+                    break;
+                case 'Elective':
+                    typeColorClass = 'bg-yellow-100'; typeTextColorClass = 'text-yellow-700';
+                    iconSVG = `<svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h2zm0 0V3m0 0h.01"></path></svg>`; // Tag icon
+                    break;
+                default: // GE and others
+                    typeColorClass = 'bg-indigo-100'; typeTextColorClass = 'text-indigo-700';
+                    iconSVG = `<svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-5.747-5.747H17.747"></path></svg>`; // Placeholder, e.g., Academic Cap icon
+                    break;
             }
 
             if (isMapped) {
@@ -652,7 +664,10 @@
             
             newSubjectCard.innerHTML = `
                 <div class="flex justify-between items-start">
-                    <p class="subject-name font-bold text-gray-800">${subject.subject_name}</p>
+                    <div class="flex items-center gap-3">
+                        ${iconSVG}
+                        <p class="subject-name font-bold text-gray-800">${subject.subject_name}</p>
+                    </div>
                     <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${typeColorClass} ${typeTextColorClass}">${subject.subject_type}</span>
                 </div>
                 <div class="mt-3 flex justify-between items-center">
@@ -670,31 +685,32 @@
             
             return newSubjectCard;
         };
-
+        
+        // UPDATED: createSubjectTag function
         const createSubjectTag = (subjectData, isEditing = false) => {
             const subjectTag = document.createElement('div');
-            subjectTag.className = 'subject-tag bg-white border border-gray-300 shadow-sm rounded-lg p-2 flex items-center justify-between w-full transition-all hover:shadow-md hover:border-blue-500';
+            subjectTag.className = 'subject-tag bg-white border border-gray-200 shadow-sm rounded-lg p-3 flex items-center justify-between w-full transition-all hover:shadow-md hover:border-blue-500';
             subjectTag.setAttribute('draggable', isEditing);
             subjectTag.dataset.subjectData = JSON.stringify(subjectData);
 
-            let typeColorClass = 'bg-gray-400';
+            let iconSVG;
             switch (subjectData.subject_type) {
-                case 'Major': typeColorClass = 'bg-blue-500'; break;
-                case 'Minor': typeColorClass = 'bg-green-500'; break;
-                case 'Elective': typeColorClass = 'bg-yellow-500'; break;
-                case 'GE': typeColorClass = 'bg-indigo-500'; break;
+                case 'Major': iconSVG = `<svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-5.747-5.747H17.747"></path></svg>`; break;
+                case 'Minor': iconSVG = `<svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>`; break;
+                case 'Elective': iconSVG = `<svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h2zm0 0V3m0 0h.01"></path></svg>`; break;
+                default: iconSVG = `<svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-5.747-5.747H17.747"></path></svg>`; break;
             }
 
             subjectTag.innerHTML = `
-                <div class="flex items-center gap-3">
-                    <span class="w-2 h-2 rounded-full ${typeColorClass}"></span>
-                    <div>
-                        <p class="font-bold text-sm text-gray-800">${subjectData.subject_code}</p>
-                        <p class="text-xs text-gray-600">${subjectData.subject_name}</p>
+                <div class="flex items-center gap-3 flex-grow">
+                    ${iconSVG}
+                    <div class="flex-grow">
+                        <p class="font-bold text-sm text-gray-800 leading-tight">${subjectData.subject_name}</p>
+                        <p class="text-xs text-gray-500 font-mono">${subjectData.subject_code}</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3">
-                    <span class="text-sm font-semibold text-gray-700">${subjectData.subject_unit} units</span>
+                <div class="flex items-center gap-3 ml-2 flex-shrink-0">
+                    <span class="text-xs font-semibold px-2 py-1 rounded-full bg-gray-200 text-gray-700">${subjectData.subject_unit} units</span>
                     <button class="delete-subject-tag ${isEditing ? '' : 'hidden'} text-gray-400 hover:text-red-600 transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
