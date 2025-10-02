@@ -622,7 +622,7 @@
             newSubjectCard.dataset.subjectData = JSON.stringify(subject);
             newSubjectCard.dataset.status = status;
 
-            let cardClasses = 'subject-card p-4 bg-white border border-gray-200 rounded-xl shadow-sm transition-all duration-200';
+            let cardClasses = 'subject-card p-4 bg-white border border-gray-200 rounded-xl shadow-sm transition-all duration-200 flex items-center gap-4';
             let statusHTML = '';
             let isDraggable = true;
             let typeColorClass, typeTextColorClass, iconSVG;
@@ -630,19 +630,19 @@
             switch(subject.subject_type) {
                 case 'Major':
                     typeColorClass = 'bg-blue-100'; typeTextColorClass = 'text-blue-700';
-                    iconSVG = `<svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-5.747-5.747H17.747"></path></svg>`; // Placeholder, e.g., Book icon
+                    iconSVG = `<div class="w-12 h-12 flex-shrink-0 bg-blue-100 rounded-lg flex items-center justify-center"><svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-5.747-5.747H17.747"></path></svg></div>`;
                     break;
                 case 'Minor':
                     typeColorClass = 'bg-green-100'; typeTextColorClass = 'text-green-700';
-                    iconSVG = `<svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>`; // Folder icon
+                    iconSVG = `<div class="w-12 h-12 flex-shrink-0 bg-green-100 rounded-lg flex items-center justify-center"><svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg></div>`;
                     break;
                 case 'Elective':
                     typeColorClass = 'bg-yellow-100'; typeTextColorClass = 'text-yellow-700';
-                    iconSVG = `<svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h2zm0 0V3m0 0h.01"></path></svg>`; // Tag icon
+                    iconSVG = `<div class="w-12 h-12 flex-shrink-0 bg-yellow-100 rounded-lg flex items-center justify-center"><svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h2zm0 0V3m0 0h.01"></path></svg></div>`;
                     break;
                 default: // GE and others
                     typeColorClass = 'bg-indigo-100'; typeTextColorClass = 'text-indigo-700';
-                    iconSVG = `<svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-5.747-5.747H17.747"></path></svg>`; // Placeholder, e.g., Academic Cap icon
+                    iconSVG = `<div class="w-12 h-12 flex-shrink-0 bg-indigo-100 rounded-lg flex items-center justify-center"><svg class="w-6 h-6 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-5.747-5.747H17.747"></path></svg></div>`;
                     break;
             }
 
@@ -663,18 +663,14 @@
             newSubjectCard.setAttribute('draggable', isDraggable);
             
             newSubjectCard.innerHTML = `
-                <div class="flex justify-between items-start">
-                    <div class="flex items-center gap-3">
-                        ${iconSVG}
-                        <p class="subject-name font-bold text-gray-800">${subject.subject_name}</p>
-                    </div>
-                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${typeColorClass} ${typeTextColorClass}">${subject.subject_type}</span>
+                ${iconSVG}
+                <div class="flex-grow">
+                    <p class="subject-name font-bold text-gray-800">${subject.subject_name}</p>
+                    <p class="text-sm text-gray-500">${subject.subject_code}</p>
+                    <p class="text-sm font-semibold text-gray-600 mt-1">Units: ${subject.subject_unit}</p>
                 </div>
-                <div class="mt-3 flex justify-between items-center">
-                    <div>
-                        <p class="text-xs text-gray-500 font-mono">${subject.subject_code}</p>
-                        <p class="text-sm font-semibold text-gray-600 mt-1">Units: ${subject.subject_unit}</p>
-                    </div>
+                <div class="flex flex-col items-end gap-2">
+                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${typeColorClass} ${typeTextColorClass}">${subject.subject_type}</span>
                     ${statusHTML}
                 </div>`;
             
