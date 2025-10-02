@@ -15,7 +15,7 @@
         
         <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center">
             <div class="mb-4 sm:mb-0">
-                <h1 class="text-3xl font-bold text-gray-800">Subject Mapping</h1>
+                <h1 class="text-3xl font-bold text-gray-800">Subject Mappingss</h1>
                 <p class="text-sm text-gray-500 mt-1">Drag and drop subjects to build the curriculum.</p>
             </div>
         </div>
