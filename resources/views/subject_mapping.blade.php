@@ -225,7 +225,7 @@
                         Export to PDF
                     </button>
                     <button id="editSubjectDetailsButton" class="px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-sm flex items-center gap-2" data-subject-data="">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
                         Edit Subject
                     </button>
                 </div>
@@ -265,8 +265,8 @@
                 <h3 class="text-lg font-semibold text-gray-800">Export Subject</h3>
                 <p class="text-sm text-gray-500 mt-2">Are you sure you want to download a PDF file of this subject's details and lessons?</p>
                 <div class="mt-6 flex justify-center gap-4">
-                    <button id="cancelImportButton" class="w-full px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all">Cancel</button>
-                    <button id="confirmImportButton" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-all">Yes, Export</button>
+                    <button id="cancelImportButton" class="w-full px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Cancel</button>
+                    <button id="confirmImportButton" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">Yes, Export</button>
                 </div>
             </div>
         </div>
@@ -678,8 +678,8 @@
             let codeClasses = '';
             let deleteBtnClasses = '';
 
-            const geIdentifiers = ["GE", "General Education", "Gen Ed"];
             const subjectType = subjectData.subject_type;
+            const geIdentifiers = ["GE", "General Education", "Gen Ed", "General"];
 
             if (subjectType === 'Major') {
                 colorClasses = 'bg-blue-100 border-blue-200 hover:bg-blue-200';
@@ -702,10 +702,10 @@
                 iconClasses = 'text-red-500';
                 codeClasses = 'text-red-700';
                 deleteBtnClasses = 'text-red-400 hover:text-red-600';
-            } else if (geIdentifiers.includes(subjectType)) {
-                colorClasses = 'bg-orange-50 border-orange-200 hover:bg-orange-100';
-                textClasses = 'text-orange-800 font-bold';
-                unitClasses = 'bg-orange-200 text-orange-800';
+            } else if (geIdentifiers.map(id => id.toLowerCase()).includes(subjectType.toLowerCase())) {
+                colorClasses = 'bg-orange-50 text-orange-700 hover:bg-orange-100 border-orange-200';
+                textClasses = 'text-orange-700 font-bold';
+                unitClasses = 'bg-orange-200 text-orange-700';
                 iconClasses = 'text-orange-500';
                 codeClasses = 'text-orange-700';
                 deleteBtnClasses = 'text-orange-400 hover:text-orange-600';
