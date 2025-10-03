@@ -546,6 +546,11 @@
 
         const removeSuccessModal = document.getElementById('removeSuccessModal');
         const closeRemoveSuccessModal = document.getElementById('closeRemoveSuccessModal');
+        
+        // --- NEW STATE VARIABLES ---
+        let isAddingSubjectsMode = false;
+        let activeSemesterForAdding = null;
+
 
         // --- NEW: State variables for reassignment
         let itemToReassign = null;
@@ -823,6 +828,9 @@
             <div class="flex flex-col items-end gap-2">
                 <span class="text-xs font-semibold px-2.5 py-1 rounded-full">${subject.subject_type}</span>
                 ${statusHTML}
+            </div>
+            <div class="add-subject-checkbox hidden ml-2">
+                <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
             </div>`;
         
         if(isDraggable) {
@@ -949,7 +957,9 @@
             const deleteButtons = document.querySelectorAll('.delete-subject-tag');
             const saveButton = document.getElementById('saveCurriculumButton');
             const editButton = document.getElementById('editCurriculumButton');
-            const subjectTags = document.querySelectorAll('.subject-tag'); 
+            const subjectTags = document.querySelectorAll('.subject-tag');
+            const addSubjectButtons = document.querySelectorAll('.add-subject-btn-placeholder');
+
 
             if (isEditing) {
                 dropzones.forEach(dropzone => {
@@ -957,6 +967,7 @@
                     addDragAndDropListeners(dropzone);
                 });
                 deleteButtons.forEach(button => button.classList.remove('hidden'));
+                addSubjectButtons.forEach(button => button.classList.remove('hidden'));
                 saveButton.removeAttribute('disabled');
                 editButton.innerHTML = `<svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg> Cancel`;
                 
@@ -968,10 +979,17 @@
                     removeDragAndDropListeners(dropzone);
                 });
                 deleteButtons.forEach(button => button.classList.add('hidden'));
+                addSubjectButtons.forEach(button => button.classList.add('hidden'));
+
                 saveButton.setAttribute('disabled', 'disabled');
                 editButton.innerHTML = `<svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg> Edit`;
 
                 subjectTags.forEach(tag => tag.setAttribute('draggable', 'false'));
+                
+                // NEW: Ensure adding subjects mode is turned off
+                if (isAddingSubjectsMode) {
+                    toggleAddSubjectsMode(null);
+                }
             }
         };
 
@@ -1069,6 +1087,51 @@
             dropzone.removeEventListener('dragleave', dragLeaveHandler);
             dropzone.removeEventListener('drop', dropHandler);
         };
+        
+        // --- THIS IS THE FIXED FUNCTION ---
+        const toggleAddSubjectsMode = (semesterDropzone) => {
+            // If we are turning the mode on
+            if (semesterDropzone && !isAddingSubjectsMode) {
+                isAddingSubjectsMode = true;
+                activeSemesterForAdding = semesterDropzone;
+                
+                // Show checkboxes ONLY for available subjects
+                availableSubjectsContainer.querySelectorAll('.subject-card').forEach(card => {
+                    if (card.getAttribute('draggable') === 'true') {
+                        const checkboxDiv = card.querySelector('.add-subject-checkbox');
+                        if (checkboxDiv) {
+                            checkboxDiv.classList.remove('hidden');
+                        }
+                    }
+                });
+
+                semesterDropzone.querySelector('.add-subject-controls').classList.remove('hidden');
+                semesterDropzone.querySelector('.add-subject-btn-placeholder').classList.add('hidden');
+
+            // If we are turning the mode off
+            } else {
+                isAddingSubjectsMode = false;
+                
+                // Hide ALL checkboxes and uncheck them
+                document.querySelectorAll('.add-subject-checkbox').forEach(cb => {
+                    cb.classList.add('hidden');
+                    cb.querySelector('input').checked = false;
+                });
+
+                if (activeSemesterForAdding) {
+                    activeSemesterForAdding.querySelector('.add-subject-controls').classList.add('hidden');
+                    activeSemesterForAdding.querySelector('.add-subject-btn-placeholder').classList.remove('hidden');
+                }
+                 // Also hide for all other semesters just in case
+                document.querySelectorAll('.add-subject-controls').forEach(div => div.classList.add('hidden'));
+                document.querySelectorAll('.add-subject-btn-placeholder').forEach(div => {
+                    if (isEditing) div.classList.remove('hidden');
+                });
+                
+                activeSemesterForAdding = null;
+            }
+        };
+
 
         const initDragAndDrop = () => {
             document.querySelectorAll('.semester-dropzone').forEach(dropzone => {
@@ -1355,6 +1418,13 @@
                                     <div class="semester-unit-total text-sm font-bold text-gray-700">Units: 0</div>
                                 </div>
                                 <div class="flex-wrap space-y-2 min-h-[80px]"></div>
+                                 <div class="add-subject-btn-placeholder mt-2 text-center hidden">
+                                    <button class="add-subject-btn text-blue-600 hover:text-blue-800 font-semibold text-sm py-2 px-4 rounded-lg hover:bg-blue-100 transition-all">+ Add Subject</button>
+                                </div>
+                                <div class="add-subject-controls mt-3 pt-3 border-t hidden">
+                                    <button class="save-selection-btn w-full bg-green-500 text-white px-3 py-2 rounded-md hover:bg-green-600">Save</button>
+                                    <button class="cancel-selection-btn w-full bg-gray-200 mt-2 px-3 py-2 rounded-md hover:bg-gray-300">Cancel</button>
+                                </div>
                             </div>
                             <div class="semester-dropzone bg-white border-2 border-solid border-gray-300 rounded-lg p-4 transition-colors" data-year="${i}" data-semester="2">
                                 <div class="flex justify-between items-center border-b border-gray-200 pb-2 mb-3">
@@ -1362,11 +1432,59 @@
                                     <div class="semester-unit-total text-sm font-bold text-gray-700">Units: 0</div>
                                 </div>
                                 <div class="flex-wrap space-y-2 min-h-[80px]"></div>
+                                 <div class="add-subject-btn-placeholder mt-2 text-center hidden">
+                                    <button class="add-subject-btn text-blue-600 hover:text-blue-800 font-semibold text-sm py-2 px-4 rounded-lg hover:bg-blue-100 transition-all">+ Add Subject</button>
+                                </div>
+                                <div class="add-subject-controls mt-3 pt-3 border-t hidden">
+                                    <button class="save-selection-btn w-full bg-green-500 text-white px-3 py-2 rounded-md hover:bg-green-600">Save</button>
+                                    <button class="cancel-selection-btn w-full bg-gray-200 mt-2 px-3 py-2 rounded-md hover:bg-gray-300">Cancel</button>
+                                </div>
                             </div>
                         </div>
                     </div>`;
             }
             curriculumOverview.innerHTML = html;
+             // --- NEW: Add event listeners for the new buttons ---
+            curriculumOverview.querySelectorAll('.add-subject-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const semesterDropzone = e.target.closest('.semester-dropzone');
+                    toggleAddSubjectsMode(semesterDropzone);
+                });
+            });
+
+            curriculumOverview.querySelectorAll('.cancel-selection-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    toggleAddSubjectsMode(null); // Cancel turns off the mode
+                });
+            });
+
+            curriculumOverview.querySelectorAll('.save-selection-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const selectedCheckboxes = availableSubjectsContainer.querySelectorAll('.add-subject-checkbox input:checked');
+                    const targetContainer = activeSemesterForAdding.querySelector('.flex-wrap');
+                    
+                    selectedCheckboxes.forEach(checkbox => {
+                        const subjectCard = checkbox.closest('.subject-card');
+                        const subjectData = JSON.parse(subjectCard.dataset.subjectData);
+                        
+                        // Check for duplicates before adding
+                        const isDuplicate = Array.from(targetContainer.querySelectorAll('.subject-tag')).some(tag => JSON.parse(tag.dataset.subjectData).subject_code === subjectData.subject_code);
+
+                        if (!isDuplicate) {
+                             const subjectTag = createSubjectTag(subjectData, true);
+                             subjectTag.dataset.isNew = 'true';
+                             targetContainer.appendChild(subjectTag);
+                             subjectCard.classList.add('assigned-card');
+                             subjectCard.setAttribute('draggable', false);
+                             subjectCard.querySelector('.status-badge').textContent = 'Assigned';
+                             subjectCard.querySelector('.status-badge').className = 'status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-200 text-gray-700';
+                        }
+                    });
+
+                    updateUnitTotals();
+                    toggleAddSubjectsMode(null); // Turn off mode after saving
+                });
+            });
             initDragAndDrop();
         }
 
