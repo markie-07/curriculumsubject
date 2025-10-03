@@ -390,6 +390,28 @@
             </div>
         </div>
     </div>
+
+    </main>
+
+{{-- START: ADD THIS NEW MODAL --}}
+<div id="editConfirmationModal" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
+            <div class="w-12 h-12 rounded-full bg-blue-100 p-2 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800">Enable Editing?</h3>
+            <p class="text-sm text-gray-500 mt-2">Are you sure you want to edit this curriculum? This will allow you to drag, drop, and remove subjects.</p>
+            <div class="mt-6 flex justify-center gap-4">
+                <button id="cancelEditBtn" class="w-full px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Cancel</button>
+                <button id="confirmEditBtn" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">Yes, Enable Editing</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{-- END: ADD THIS NEW MODAL --}}
 </main>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -602,7 +624,6 @@
             if (subjectDataString) {
                 try {
                     const subjectData = JSON.parse(subjectDataString);
-                    // Redirect to the course builder page with the subject ID as a query parameter
                     window.location.href = `/course-builder?subject_id=${subjectData.id}`;
                 } catch (e) {
                     console.error('Failed to parse subject data for editing:', e);
@@ -634,84 +655,83 @@
             });
         };
 
-const createSubjectCard = (subject, isMapped = false, status = '') => {
-    const newSubjectCard = document.createElement('div');
-    newSubjectCard.id = `subject-${subject.subject_code.toLowerCase()}`;
-    newSubjectCard.dataset.subjectData = JSON.stringify(subject);
-    newSubjectCard.dataset.status = status;
+    const createSubjectCard = (subject, isMapped = false, status = '') => {
+        const newSubjectCard = document.createElement('div');
+        newSubjectCard.id = `subject-${subject.subject_code.toLowerCase()}`;
+        newSubjectCard.dataset.subjectData = JSON.stringify(subject);
+        newSubjectCard.dataset.status = status;
 
-    let cardClasses = 'subject-card p-4 border border-gray-200 rounded-xl shadow-sm transition-all duration-200 flex items-center gap-4';
-    let statusHTML = '';
-    let isDraggable = true;
-    
-    // Default icon styles
-    let iconContainerClasses = 'icon-bg-default';
-    let iconSvgClasses = 'text-gray-500';
+        let cardClasses = 'subject-card p-4 border border-gray-200 rounded-xl shadow-sm transition-all duration-200 flex items-center gap-4';
+        let statusHTML = '';
+        let isDraggable = true;
+        
+        let iconContainerClasses = 'icon-bg-default';
+        let iconSvgClasses = 'text-gray-500';
 
-    if (isMapped) {
-        const geIdentifiers = ["GE", "General Education", "Gen Ed", "General"];
-        let assignedClass = 'assigned-card'; 
+        if (isMapped) {
+            const geIdentifiers = ["GE", "General Education", "Gen Ed", "General"];
+            let assignedClass = 'assigned-card'; 
 
-        switch (true) {
-            case subject.subject_type === 'Major':
-                assignedClass = 'assigned-major';
-                iconContainerClasses = 'icon-bg-major';
-                iconSvgClasses = 'icon-major';
-                break;
-            case subject.subject_type === 'Minor':
-                assignedClass = 'assigned-minor';
-                iconContainerClasses = 'icon-bg-minor';
-                iconSvgClasses = 'icon-minor';
-                break;
-            case subject.subject_type === 'Elective':
-                assignedClass = 'assigned-elective';
-                iconContainerClasses = 'icon-bg-elective';
-                iconSvgClasses = 'icon-elective';
-                break;
-            case geIdentifiers.map(id => id.toLowerCase()).includes(subject.subject_type.toLowerCase()):
-                assignedClass = 'assigned-general';
-                iconContainerClasses = 'icon-bg-general';
-                iconSvgClasses = 'icon-general';
-                break;
+            switch (true) {
+                case subject.subject_type === 'Major':
+                    assignedClass = 'assigned-major';
+                    iconContainerClasses = 'icon-bg-major';
+                    iconSvgClasses = 'icon-major';
+                    break;
+                case subject.subject_type === 'Minor':
+                    assignedClass = 'assigned-minor';
+                    iconContainerClasses = 'icon-bg-minor';
+                    iconSvgClasses = 'icon-minor';
+                    break;
+                case subject.subject_type === 'Elective':
+                    assignedClass = 'assigned-elective';
+                    iconContainerClasses = 'icon-bg-elective';
+                    iconSvgClasses = 'icon-elective';
+                    break;
+                case geIdentifiers.map(id => id.toLowerCase()).includes(subject.subject_type.toLowerCase()):
+                    assignedClass = 'assigned-general';
+                    iconContainerClasses = 'icon-bg-general';
+                    iconSvgClasses = 'icon-general';
+                    break;
+            }
+            cardClasses += ` ${assignedClass} cursor-not-allowed`;
+            statusHTML = `<span class="status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-200 text-gray-700">Assigned</span>`;
+            isDraggable = false;
+        } else if (status === 'removed') {
+            cardClasses += ' bg-white opacity-60 cursor-not-allowed removed-subject-card';
+            statusHTML = '<span class="text-xs font-semibold text-red-700 bg-red-100 px-2.5 py-1 rounded-full">Removed</span>';
+            isDraggable = false;
+        } else {
+            cardClasses += ' bg-white hover:shadow-md hover:border-blue-400 cursor-grab active:cursor-grabbing';
+            statusHTML = '<span class="status-badge text-xs font-semibold text-green-700 bg-green-100 px-2.5 py-1 rounded-full">Available</span>';
         }
-        cardClasses += ` ${assignedClass} cursor-not-allowed`;
-        statusHTML = `<span class="status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-200 text-gray-700">Assigned</span>`;
-        isDraggable = false;
-    } else if (status === 'removed') {
-        cardClasses += ' bg-white opacity-60 cursor-not-allowed removed-subject-card';
-        statusHTML = '<span class="text-xs font-semibold text-red-700 bg-red-100 px-2.5 py-1 rounded-full">Removed</span>';
-        isDraggable = false;
-    } else {
-        cardClasses += ' bg-white hover:shadow-md hover:border-blue-400 cursor-grab active:cursor-grabbing';
-        statusHTML = '<span class="status-badge text-xs font-semibold text-green-700 bg-green-100 px-2.5 py-1 rounded-full">Available</span>';
-    }
-    
-    newSubjectCard.className = cardClasses;
-    newSubjectCard.setAttribute('draggable', isDraggable);
-    
-    newSubjectCard.innerHTML = `
-        <div class="flex-shrink-0 w-12 h-12 ${iconContainerClasses} rounded-lg flex items-center justify-center transition-colors duration-300">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ${iconSvgClasses} transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-        </div>
-        <div class="flex-grow">
-            <p class="subject-name font-bold text-gray-800">${subject.subject_name}</p>
-            <p class="text-sm text-gray-500">${subject.subject_code}</p>
-            <p class="text-sm font-semibold text-gray-600 mt-1">Units: ${subject.subject_unit}</p>
-        </div>
-        <div class="flex flex-col items-end gap-2">
-            <span class="text-xs font-semibold px-2.5 py-1 rounded-full">${subject.subject_type}</span>
-            ${statusHTML}
-        </div>`;
-    
-    if(isDraggable) {
-        addDraggableEvents(newSubjectCard);
-    }
-    addDoubleClickEvents(newSubjectCard);
-    
-    return newSubjectCard;
-};
+        
+        newSubjectCard.className = cardClasses;
+        newSubjectCard.setAttribute('draggable', isDraggable);
+        
+        newSubjectCard.innerHTML = `
+            <div class="flex-shrink-0 w-12 h-12 ${iconContainerClasses} rounded-lg flex items-center justify-center transition-colors duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ${iconSvgClasses} transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+            </div>
+            <div class="flex-grow">
+                <p class="subject-name font-bold text-gray-800">${subject.subject_name}</p>
+                <p class="text-sm text-gray-500">${subject.subject_code}</p>
+                <p class="text-sm font-semibold text-gray-600 mt-1">Units: ${subject.subject_unit}</p>
+            </div>
+            <div class="flex flex-col items-end gap-2">
+                <span class="text-xs font-semibold px-2.5 py-1 rounded-full">${subject.subject_type}</span>
+                ${statusHTML}
+            </div>`;
+        
+        if(isDraggable) {
+            addDraggableEvents(newSubjectCard);
+        }
+        addDoubleClickEvents(newSubjectCard);
+        
+        return newSubjectCard;
+    };
         
         const createSubjectTag = (subjectData, isEditing = false) => {
             const subjectTag = document.createElement('div');
@@ -852,83 +872,78 @@ const createSubjectCard = (subject, isMapped = false, status = '') => {
             e.currentTarget.classList.remove('border-blue-500', 'bg-blue-50');
         };
 
-const dropHandler = (e) => {
-    e.preventDefault();
-    const dropzone = e.currentTarget;
-    dropzone.classList.remove('border-blue-500', 'bg-blue-50');
-    if (!draggedItem) return;
-    
-    const droppedSubjectData = JSON.parse(e.dataTransfer.getData('text/plain'));
-    const targetContainer = dropzone.querySelector('.flex-wrap');
-    
-    const isDuplicateInSameSemester = Array.from(targetContainer.querySelectorAll('.subject-tag')).some(tag => JSON.parse(tag.dataset.subjectData).subject_code === droppedSubjectData.subject_code);
-    
-    if (!isDuplicateInSameSemester) {
-        if (draggedItem.classList.contains('subject-card')) {
-            const subjectTag = createSubjectTag(droppedSubjectData, isEditing);
-            targetContainer.appendChild(subjectTag);
-            draggedItem.setAttribute('draggable', 'false');
-            
-            // Remove default card styling
-            draggedItem.classList.remove('bg-white', 'hover:shadow-md', 'hover:border-blue-400', 'cursor-grab', 'active:cursor-grabbing');
-            
-            // Define variables for card and icon colors
-            const geIdentifiers = ["GE", "General Education", "Gen Ed", "General"];
-            let assignedClass = 'assigned-card';
-            let iconBgClass = 'bg-gray-100'; // Default icon bg
-            let iconSvgClass = 'text-gray-500'; // Default icon color
+    const dropHandler = (e) => {
+        e.preventDefault();
+        const dropzone = e.currentTarget;
+        dropzone.classList.remove('border-blue-500', 'bg-blue-50');
+        if (!draggedItem) return;
+        
+        const droppedSubjectData = JSON.parse(e.dataTransfer.getData('text/plain'));
+        const targetContainer = dropzone.querySelector('.flex-wrap');
+        
+        const isDuplicateInSameSemester = Array.from(targetContainer.querySelectorAll('.subject-tag')).some(tag => JSON.parse(tag.dataset.subjectData).subject_code === droppedSubjectData.subject_code);
+        
+        if (!isDuplicateInSameSemester) {
+            if (draggedItem.classList.contains('subject-card')) {
+                const subjectTag = createSubjectTag(droppedSubjectData, isEditing);
+                targetContainer.appendChild(subjectTag);
+                draggedItem.setAttribute('draggable', 'false');
+                
+                draggedItem.classList.remove('bg-white', 'hover:shadow-md', 'hover:border-blue-400', 'cursor-grab', 'active:cursor-grabbing');
+                
+                const geIdentifiers = ["GE", "General Education", "Gen Ed", "General"];
+                let assignedClass = 'assigned-card';
+                let iconBgClass = 'bg-gray-100';
+                let iconSvgClass = 'text-gray-500';
 
-            // Set the correct color classes based on the subject's type
-            switch (true) {
-                case droppedSubjectData.subject_type === 'Major':
-                    assignedClass = 'assigned-major';
-                    iconBgClass = 'icon-bg-major';
-                    iconSvgClass = 'icon-major';
-                    break;
-                case droppedSubjectData.subject_type === 'Minor':
-                    assignedClass = 'assigned-minor';
-                    iconBgClass = 'icon-bg-minor';
-                    iconSvgClass = 'icon-minor';
-                    break;
-                case droppedSubjectData.subject_type === 'Elective':
-                    assignedClass = 'assigned-elective';
-                    iconBgClass = 'icon-bg-elective';
-                    iconSvgClass = 'icon-elective';
-                    break;
-                case geIdentifiers.map(id => id.toLowerCase()).includes(droppedSubjectData.subject_type.toLowerCase()):
-                    assignedClass = 'assigned-general';
-                    iconBgClass = 'icon-bg-general';
-                    iconSvgClass = 'icon-general';
-                    break;
+                switch (true) {
+                    case droppedSubjectData.subject_type === 'Major':
+                        assignedClass = 'assigned-major';
+                        iconBgClass = 'icon-bg-major';
+                        iconSvgClass = 'icon-major';
+                        break;
+                    case droppedSubjectData.subject_type === 'Minor':
+                        assignedClass = 'assigned-minor';
+                        iconBgClass = 'icon-bg-minor';
+                        iconSvgClass = 'icon-minor';
+                        break;
+                    case droppedSubjectData.subject_type === 'Elective':
+                        assignedClass = 'assigned-elective';
+                        iconBgClass = 'icon-bg-elective';
+                        iconSvgClass = 'icon-elective';
+                        break;
+                    case geIdentifiers.map(id => id.toLowerCase()).includes(droppedSubjectData.subject_type.toLowerCase()):
+                        assignedClass = 'assigned-general';
+                        iconBgClass = 'icon-bg-general';
+                        iconSvgClass = 'icon-general';
+                        break;
+                }
+                
+                draggedItem.classList.add(assignedClass, 'cursor-not-allowed');
+
+                const iconContainer = draggedItem.querySelector('.flex-shrink-0');
+                const iconSvg = iconContainer.querySelector('svg');
+                
+                iconContainer.classList.remove('bg-gray-100');
+                iconSvg.classList.remove('text-gray-500');
+                
+                iconContainer.classList.add(iconBgClass);
+                iconSvg.classList.add(iconSvgClass);
+
+                const statusBadge = draggedItem.querySelector('.status-badge');
+                if (statusBadge) {
+                    statusBadge.textContent = 'Assigned';
+                    statusBadge.className = 'status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-200 text-gray-700';
+                }
+
+            } else if (draggedItem.classList.contains('subject-tag')) {
+                draggedItem.parentNode.removeChild(draggedItem);
+                const subjectTag = createSubjectTag(droppedSubjectData, isEditing);
+                targetContainer.appendChild(subjectTag);
             }
-            
-            // Apply the new classes to the card and icon
-            draggedItem.classList.add(assignedClass, 'cursor-not-allowed');
-
-            const iconContainer = draggedItem.querySelector('.flex-shrink-0');
-            const iconSvg = iconContainer.querySelector('svg');
-            
-            iconContainer.classList.remove('bg-gray-100');
-            iconSvg.classList.remove('text-gray-500');
-            
-            iconContainer.classList.add(iconBgClass);
-            iconSvg.classList.add(iconSvgClass);
-
-            // Update the status badge
-            const statusBadge = draggedItem.querySelector('.status-badge');
-            if (statusBadge) {
-                statusBadge.textContent = 'Assigned';
-                statusBadge.className = 'status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-200 text-gray-700';
-            }
-
-        } else if (draggedItem.classList.contains('subject-tag')) {
-            draggedItem.parentNode.removeChild(draggedItem);
-            const subjectTag = createSubjectTag(droppedSubjectData, isEditing);
-            targetContainer.appendChild(subjectTag);
+            updateUnitTotals();
         }
-        updateUnitTotals();
-    }
-};
+    };
         
         const addDragAndDropListeners = (dropzone) => {
             dropzone.addEventListener('dragover', dragOverHandler);
@@ -997,41 +1012,33 @@ const dropHandler = (e) => {
             if (!subjectTagToRemove) return;
 
             const subjectData = JSON.parse(subjectTagToRemove.dataset.subjectData);
-            const curriculumId = curriculumSelector.value;
-            const dropzone = subjectTagToRemove.closest('.semester-dropzone');
-            const year = dropzone.dataset.year;
-            const semester = dropzone.dataset.semester;
-
+            
             try {
                 await new Promise(resolve => setTimeout(resolve, 300));
 
                 subjectTagToRemove.remove();
 
                 const originalSubjectCard = document.getElementById(`subject-${subjectData.subject_code.toLowerCase()}`);
-if (originalSubjectCard) {
-    originalSubjectCard.setAttribute('draggable', 'true');
-    
-    // Remove all assigned color classes from the card
-    originalSubjectCard.classList.remove('assigned-card', 'assigned-major', 'assigned-minor', 'assigned-elective', 'assigned-general', 'cursor-not-allowed');
-    
-    // Add back default classes for an available card
-    originalSubjectCard.classList.add('bg-white', 'hover:shadow-md', 'hover:border-blue-400', 'cursor-grab', 'active:cursor-grabbing');
+                if (originalSubjectCard) {
+                    originalSubjectCard.setAttribute('draggable', 'true');
+                    
+                    originalSubjectCard.classList.remove('assigned-card', 'assigned-major', 'assigned-minor', 'assigned-elective', 'assigned-general', 'cursor-not-allowed');
+                    
+                    originalSubjectCard.classList.add('bg-white', 'hover:shadow-md', 'hover:border-blue-400', 'cursor-grab', 'active:cursor-grabbing');
 
-    // Revert icon to default gray style
-    const iconContainer = originalSubjectCard.querySelector('.flex-shrink-0');
-    const iconSvg = iconContainer.querySelector('svg');
-    iconContainer.classList.remove('icon-bg-major', 'icon-bg-minor', 'icon-bg-elective', 'icon-bg-general');
-    iconSvg.classList.remove('icon-major', 'icon-minor', 'icon-elective', 'icon-general');
-    iconContainer.classList.add('icon-bg-default');
-    iconSvg.classList.add('text-gray-500');
+                    const iconContainer = originalSubjectCard.querySelector('.flex-shrink-0');
+                    const iconSvg = iconContainer.querySelector('svg');
+                    iconContainer.classList.remove('icon-bg-major', 'icon-bg-minor', 'icon-bg-elective', 'icon-bg-general');
+                    iconSvg.classList.remove('icon-major', 'icon-minor', 'icon-elective', 'icon-general');
+                    iconContainer.classList.add('icon-bg-default');
+                    iconSvg.classList.add('text-gray-500');
 
-    // Update the status badge
-    const statusBadge = originalSubjectCard.querySelector('.status-badge');
-    if (statusBadge) {
-        statusBadge.textContent = 'Available';
-        statusBadge.className = 'status-badge text-xs font-semibold text-green-700 bg-green-100 px-2.5 py-1 rounded-full';
-    }
-}
+                    const statusBadge = originalSubjectCard.querySelector('.status-badge');
+                    if (statusBadge) {
+                        statusBadge.textContent = 'Available';
+                        statusBadge.className = 'status-badge text-xs font-semibold text-green-700 bg-green-100 px-2.5 py-1 rounded-full';
+                    }
+                }
 
                 updateUnitTotals();
                 alert('Subject removed successfully!');
@@ -1086,10 +1093,73 @@ if (originalSubjectCard) {
             document.getElementById('saveMappingModal').classList.add('hidden');
         });
 
-        document.getElementById('confirmSaveMapping').addEventListener('click', () => {
+        // ===================================================================
+        // START: UPDATED SAVE FUNCTIONALITY
+        // ===================================================================
+        
+        // This new function handles collecting data and sending it to the server.
+        const saveCurriculumData = async () => {
+            const curriculumId = curriculumSelector.value;
+            if (!curriculumId) {
+                alert('Please select a curriculum first.');
+                return null; // Return null to indicate failure
+            }
+
+            const curriculumData = [];
+            document.querySelectorAll('.semester-dropzone').forEach(dropzone => {
+                const year = dropzone.dataset.year;
+                const semester = dropzone.dataset.semester;
+                const subjects = [];
+                
+                dropzone.querySelectorAll('.subject-tag').forEach(tag => {
+                    subjects.push(JSON.parse(tag.dataset.subjectData));
+                });
+                
+                curriculumData.push({ year, semester, subjects });
+            });
+
+            try {
+                const response = await fetch('/api/curriculums/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ curriculumId, curriculumData }),
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Failed to save the curriculum mapping.');
+                }
+                
+                return await response.json();
+
+            } catch (error) {
+                console.error('Error during save:', error);
+                alert('An error occurred while saving: ' + error.message);
+                return null; // Return null to indicate failure
+            }
+        };
+
+        // This is the updated event listener for the "Yes, Save it" button.
+        document.getElementById('confirmSaveMapping').addEventListener('click', async () => {
             document.getElementById('saveMappingModal').classList.add('hidden');
-            document.getElementById('proceedToPrerequisitesModal').classList.remove('hidden');
+            
+            const saveResult = await saveCurriculumData(); // Call the new save function
+
+            if (saveResult) { // Only proceed if the save was successful
+                console.log('Save successful:', saveResult.message);
+                document.getElementById('proceedToPrerequisitesModal').classList.remove('hidden');
+            } else {
+                console.log('Save failed. The prerequisites modal will not be shown.');
+            }
         });
+
+        // ===================================================================
+        // END: UPDATED SAVE FUNCTIONALITY
+        // ===================================================================
 
         document.getElementById('declineProceedToPrerequisites').addEventListener('click', () => {
             document.getElementById('proceedToPrerequisitesModal').classList.add('hidden');

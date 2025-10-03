@@ -113,7 +113,7 @@ class CurriculumController extends Controller
         }
     }
 
-    /**
+/**
      * Saves the subject mapping for a curriculum.
      */
     public function saveSubjects(Request $request)
@@ -124,36 +124,32 @@ class CurriculumController extends Controller
         ]);
 
         $curriculum = Curriculum::findOrFail($validated['curriculumId']);
-        $curriculum->subjects()->detach();
+        $curriculum->subjects()->detach(); // Clear existing subjects for a fresh save
 
         foreach ($validated['curriculumData'] as $data) {
-            foreach ($data['subjects'] as $subject) {
-                $dbSubject = Subject::firstOrCreate(
-                    ['subject_code' => $subject['subjectCode']],
-                    [
-                        'subject_name' => $subject['subjectName'],
-                        'subject_type' => $subject['subjectType'],
-                        'subject_unit' => $subject['subjectUnit'],
-                        'lessons' => $subject['lessons'] ?? [],
-                    ]
-                );
+            if (empty($data['subjects'])) {
+                continue; // Skip if a semester has no subjects
+            }
+            
+            foreach ($data['subjects'] as $subjectData) {
+                // Find the subject by its unique code
+                $subject = Subject::where('subject_code', $subjectData['subject_code'])->first();
 
-                $curriculum->subjects()->attach($dbSubject->id, [
-                    'year' => $data['year'],
-                    'semester' => $data['semester'],
-                ]);
+                // If the subject exists, attach it to the curriculum
+                if ($subject) {
+                    $curriculum->subjects()->attach($subject->id, [
+                        'year' => $data['year'],
+                        'semester' => $data['semester'],
+                    ]);
+                }
+                // If it doesn't exist, you might want to log an error or handle it,
+                // but for now, we'll just skip it to prevent crashes.
             }
         }
+
         return response()->json(['message' => 'Curriculum saved successfully!', 'curriculumId' => $curriculum->id]);
-        
     }
 
-    // =================================================================
-    // == ✨ NEW FUNCTION ADDED HERE ✨ ==
-    // =================================================================
-    /**
-     * Removes a subject from a curriculum and logs the action to history.
-     */
     public function removeSubject(Request $request)
     {
         $validated = $request->validate([
