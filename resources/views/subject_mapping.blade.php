@@ -2,18 +2,18 @@
 
 @section('content')
 <style>
-/* START: REPLACE your old icon styles with these new ones */
-.icon-bg-default { background-color: #F3F4F6; border: 2px solid #E5E7EB; } /* Default Gray */
-.icon-bg-major { background-color: #DBEAFE; border: 2px solid #BFDBFE; }   /* Blue */
-.icon-bg-minor { background-color: #E9D5FF; border: 2px solid #D8B4FE; }   /* Violet */
-.icon-bg-elective { background-color: #FEE2E2; border: 2px solid #FECACA; } /* Red */
-.icon-bg-general { background-color: #FFEDD5; border: 2px solid #FED7AA; } /* Orange */
+    /* START: REPLACE your old icon styles with these new ones */
+    .icon-bg-default { background-color: #F3F4F6; border: 2px solid #E5E7EB; } /* Default Gray */
+    .icon-bg-major { background-color: #DBEAFE; border: 2px solid #BFDBFE; }   /* Blue */
+    .icon-bg-minor { background-color: #E9D5FF; border: 2px solid #D8B4FE; }   /* Violet */
+    .icon-bg-elective { background-color: #FEE2E2; border: 2px solid #FECACA; } /* Red */
+    .icon-bg-general { background-color: #FFEDD5; border: 2px solid #FED7AA; } /* Orange */
 
-.icon-major { color: #3B82F6; }
-.icon-minor { color: #8B5CF6; }
-.icon-elective { color: #EF4444; }
-.icon-general { color: #F97316; }
-/* END: REPLACEMENT */
+    .icon-major { color: #3B82F6; }
+    .icon-minor { color: #8B5CF6; }
+    .icon-elective { color: #EF4444; }
+    .icon-general { color: #F97316; }
+    /* END: REPLACEMENT */
 
     /* --- Existing styles below --- */
     .assigned-major { background-color: #DBEAFE; border-color: #BFDBFE; }
@@ -488,6 +488,11 @@
         let isEditing = false;
         let subjectToImport = null;
 
+        // --- NEW: State variables for reassignment
+        let itemToReassign = null;
+        let reassignTargetContainer = null;
+
+
         // --- SUBJECT DETAIL MODAL FUNCTIONS (UPDATED) ---
 
         const hideDetailsModal = () => {
@@ -674,7 +679,7 @@
 
         const addDraggableEvents = (item) => {
             item.addEventListener('dragstart', (e) => {
-                if (!isEditing || item.dataset.status === 'removed' || item.classList.contains('assigned-card')) {
+                if (!isEditing || item.dataset.status === 'removed' || (item.classList.contains('subject-card') && item.classList.contains('assigned-card'))) {
                     e.preventDefault();
                     return;
                 }
@@ -683,7 +688,9 @@
                 setTimeout(() => item.classList.add('opacity-50', 'bg-gray-200'), 0);
             });
             item.addEventListener('dragend', () => {
-                item.classList.remove('opacity-50', 'bg-gray-200');
+                if (draggedItem) {
+                    draggedItem.classList.remove('opacity-50', 'bg-gray-200');
+                }
                 draggedItem = null;
             });
         };
@@ -876,6 +883,7 @@
             const deleteButtons = document.querySelectorAll('.delete-subject-tag');
             const saveButton = document.getElementById('saveCurriculumButton');
             const editButton = document.getElementById('editCurriculumButton');
+            const subjectTags = document.querySelectorAll('.subject-tag'); // Get all subject tags
 
             if (isEditing) {
                 dropzones.forEach(dropzone => {
@@ -885,6 +893,10 @@
                 deleteButtons.forEach(button => button.classList.remove('hidden'));
                 saveButton.removeAttribute('disabled');
                 editButton.innerHTML = `<svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg> Cancel`;
+                
+                // Make all subject tags draggable
+                subjectTags.forEach(tag => tag.setAttribute('draggable', 'true'));
+
             } else {
                 dropzones.forEach(dropzone => {
                     dropzone.classList.add('locked');
@@ -893,6 +905,9 @@
                 deleteButtons.forEach(button => button.classList.add('hidden'));
                 saveButton.setAttribute('disabled', 'disabled');
                 editButton.innerHTML = `<svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg> Edit`;
+
+                // Make all subject tags not draggable
+                subjectTags.forEach(tag => tag.setAttribute('draggable', 'false'));
             }
         };
 
@@ -968,13 +983,16 @@
                     statusBadge.textContent = 'Assigned';
                     statusBadge.className = 'status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-200 text-gray-700';
                 }
-
+                 updateUnitTotals();
             } else if (draggedItem.classList.contains('subject-tag')) {
-                draggedItem.parentNode.removeChild(draggedItem);
-                const subjectTag = createSubjectTag(droppedSubjectData, isEditing);
-                targetContainer.appendChild(subjectTag);
+                // *** MODIFICATION START ***
+                // Instead of handling the move here, store the state and show the modal.
+                itemToReassign = draggedItem;
+                reassignTargetContainer = targetContainer; // Note: targetContainer is the destination's flex-wrap div
+                
+                document.getElementById('reassignConfirmationModal').classList.remove('hidden');
+                // *** MODIFICATION END ***
             }
-            updateUnitTotals();
         }
     };
         
@@ -1389,6 +1407,42 @@
             toggleEditMode(true);
         });
 
+        // *** NEW: Centralized Reassign Modal Logic ***
+        const reassignModal = document.getElementById('reassignConfirmationModal');
+        const confirmReassignBtn = document.getElementById('confirmReassignBtn');
+        const cancelReassignBtn = document.getElementById('cancelReassignBtn');
+
+        confirmReassignBtn.addEventListener('click', () => {
+            if (!itemToReassign || !reassignTargetContainer) return;
+
+            const droppedSubjectData = JSON.parse(itemToReassign.dataset.subjectData);
+            
+            // Perform the move
+            itemToReassign.parentNode.removeChild(itemToReassign);
+            const subjectTag = createSubjectTag(droppedSubjectData, isEditing);
+            reassignTargetContainer.appendChild(subjectTag);
+            updateUnitTotals();
+            
+            // Hide confirmation and show success
+            reassignModal.classList.add('hidden');
+            document.getElementById('reassignSuccessModal').classList.remove('hidden');
+
+            // Reset state variables
+            itemToReassign = null;
+            reassignTargetContainer = null;
+        });
+
+        cancelReassignBtn.addEventListener('click', () => {
+            reassignModal.classList.add('hidden');
+            // Reset state variables
+            itemToReassign = null;
+            reassignTargetContainer = null;
+        });
+
+
+        document.getElementById('closeReassignSuccessBtn').addEventListener('click', () => {
+            document.getElementById('reassignSuccessModal').classList.add('hidden');
+        });
 
         function fetchAllSubjects() {
              availableSubjectsContainer.innerHTML = '<p class="text-gray-500 text-center mt-4">Loading subjects...</p>';
