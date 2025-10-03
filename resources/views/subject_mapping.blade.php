@@ -903,8 +903,14 @@
             
             subjectTag.querySelector('.delete-subject-tag').onclick = (e) => {
                 e.stopPropagation();
-                subjectTagToRemove = subjectTag;
-                showRemoveConfirmationModal();
+                const subjectTag = e.currentTarget.closest('.subject-tag');
+                if (subjectTag.dataset.isNew === 'true') {
+                    subjectTag.remove();
+                    updateUnitTotals();
+                } else {
+                    subjectTagToRemove = subjectTag;
+                    showRemoveConfirmationModal();
+                }
             };
 
             addDraggableEvents(subjectTag);
@@ -992,6 +998,7 @@
         if (!isDuplicateInSameSemester) {
             if (draggedItem.classList.contains('subject-card')) {
                 const subjectTag = createSubjectTag(droppedSubjectData, isEditing);
+                subjectTag.dataset.isNew = 'true'; // Mark as new
                 targetContainer.appendChild(subjectTag);
                 draggedItem.setAttribute('draggable', 'false');
                 
