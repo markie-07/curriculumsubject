@@ -924,7 +924,7 @@
             const deleteButtons = document.querySelectorAll('.delete-subject-tag');
             const saveButton = document.getElementById('saveCurriculumButton');
             const editButton = document.getElementById('editCurriculumButton');
-            const subjectTags = document.querySelectorAll('.subject-tag'); // Get all subject tags
+            const subjectTags = document.querySelectorAll('.subject-tag'); 
 
             if (isEditing) {
                 dropzones.forEach(dropzone => {
@@ -935,7 +935,6 @@
                 saveButton.removeAttribute('disabled');
                 editButton.innerHTML = `<svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg> Cancel`;
                 
-                // Make all subject tags draggable
                 subjectTags.forEach(tag => tag.setAttribute('draggable', 'true'));
 
             } else {
@@ -947,7 +946,6 @@
                 saveButton.setAttribute('disabled', 'disabled');
                 editButton.innerHTML = `<svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg> Edit`;
 
-                // Make all subject tags not draggable
                 subjectTags.forEach(tag => tag.setAttribute('draggable', 'false'));
             }
         };
@@ -1027,7 +1025,7 @@
                  updateUnitTotals();
             } else if (draggedItem.classList.contains('subject-tag')) {
                 itemToReassign = draggedItem;
-                reassignTargetContainer = targetContainer;
+                reassignTargetContainer = targetContainer; 
                 
                 document.getElementById('reassignConfirmationModal').classList.remove('hidden');
             }
@@ -1097,30 +1095,49 @@
 
         document.getElementById('cancelRemoveButton').addEventListener('click', hideRemoveConfirmationModal);
         
+        // --- THIS IS THE UPDATED PART ---
         document.getElementById('confirmRemoveButton').addEventListener('click', async () => {
             if (!subjectTagToRemove) return;
 
             const subjectData = JSON.parse(subjectTagToRemove.dataset.subjectData);
-            
+            const dropzone = subjectTagToRemove.closest('.semester-dropzone');
+            const curriculumId = curriculumSelector.value;
+            const year = dropzone.dataset.year;
+            const semester = dropzone.dataset.semester;
+
             try {
-                await new Promise(resolve => setTimeout(resolve, 300));
+                const response = await fetch('/api/curriculum/remove-subject', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        curriculumId: curriculumId,
+                        subjectId: subjectData.id,
+                        year: year,
+                        semester: semester
+                    }),
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Failed to remove the subject.');
+                }
 
                 subjectTagToRemove.remove();
 
                 const originalSubjectCard = document.getElementById(`subject-${subjectData.subject_code.toLowerCase()}`);
                 if (originalSubjectCard) {
                     originalSubjectCard.setAttribute('draggable', 'true');
-                    
                     originalSubjectCard.classList.remove('assigned-card', 'assigned-major', 'assigned-minor', 'assigned-elective', 'assigned-general', 'cursor-not-allowed');
-                    
                     originalSubjectCard.classList.add('bg-white', 'hover:shadow-md', 'hover:border-blue-400', 'cursor-grab', 'active:cursor-grabbing');
 
                     const iconContainer = originalSubjectCard.querySelector('.flex-shrink-0');
                     const iconSvg = iconContainer.querySelector('svg');
-                    iconContainer.classList.remove('icon-bg-major', 'icon-bg-minor', 'icon-bg-elective', 'icon-bg-general');
-                    iconSvg.classList.remove('icon-major', 'icon-minor', 'icon-elective', 'icon-general');
-                    iconContainer.classList.add('icon-bg-default');
-                    iconSvg.classList.add('text-gray-500');
+                    iconContainer.className = 'flex-shrink-0 w-12 h-12 icon-bg-default rounded-lg flex items-center justify-center transition-colors duration-300';
+                    iconSvg.className = 'h-6 w-6 text-gray-500 transition-colors duration-300';
 
                     const statusBadge = originalSubjectCard.querySelector('.status-badge');
                     if (statusBadge) {
@@ -1130,7 +1147,7 @@
                 }
 
                 updateUnitTotals();
-                alert('Subject removed successfully!');
+                alert('Subject removed successfully and moved to history!');
 
             } catch (error) {
                 console.error('Error removing subject:', error);
@@ -1139,6 +1156,7 @@
                 hideRemoveConfirmationModal();
             }
         });
+
         
         const hideImportConfirmationModal = () => {
             const importConfirmationModal = document.getElementById('importConfirmationModal');
@@ -1186,7 +1204,7 @@
             const curriculumId = curriculumSelector.value;
             if (!curriculumId) {
                 alert('Please select a curriculum first.');
-                return null;
+                return null; 
             }
 
             const curriculumData = [];
@@ -1230,9 +1248,9 @@
         document.getElementById('confirmSaveMapping').addEventListener('click', async () => {
             document.getElementById('saveMappingModal').classList.add('hidden');
             
-            const saveResult = await saveCurriculumData();
+            const saveResult = await saveCurriculumData(); 
 
-            if (saveResult) {
+            if (saveResult) { 
                 console.log('Save successful:', saveResult.message);
                 document.getElementById('proceedToPrerequisitesModal').classList.remove('hidden');
             } else {
@@ -1512,11 +1530,9 @@
                     throw new Error(error.message || 'Failed to delete the subject.');
                 }
                 
-                // On successful deletion
                 deleteConfirmationModal.classList.add('hidden');
                 deleteSuccessModal.classList.remove('hidden');
 
-                // Remove the subject card from the UI
                 const subjectCardToRemove = document.getElementById(`subject-${subjectToDelete.subject_code.toLowerCase()}`);
                 if (subjectCardToRemove) {
                     subjectCardToRemove.remove();
@@ -1527,7 +1543,7 @@
             } catch (error) {
                 console.error('Error deleting subject:', error);
                 alert('An error occurred: ' + error.message);
-                deleteConfirmationModal.classList.add('hidden'); // Also hide on error
+                deleteConfirmationModal.classList.add('hidden'); 
                 subjectToDelete = null;
             }
         });

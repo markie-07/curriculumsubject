@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Curriculum;
 use App\Models\Subject;
+use App\Models\SubjectHistory;
 use Illuminate\Http\Request;
-use App\Models\SubjectHistory; // ADDED: For logging removed subjects
-use Illuminate\Support\Facades\DB; // ADDED: For database transactions
-use Carbon\Carbon; // ADDED: For handling dates
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class CurriculumController extends Controller
 {
@@ -41,7 +42,6 @@ class CurriculumController extends Controller
             'yearLevel' => 'required|in:Senior High,College',
         ]);
 
-        // FIX: Explicitly create the curriculum to map the request field names to the database column names.
         $curriculum = Curriculum::create([
             'curriculum' => $validated['curriculum'],
             'program_code' => $validated['programCode'],
@@ -65,7 +65,6 @@ class CurriculumController extends Controller
             'yearLevel' => 'required|in:Senior High,College',
         ]);
         
-        // FIX: The update method also needs to map the request field names.
         $curriculum->update([
             'curriculum' => $validated['curriculum'],
             'program_code' => $validated['programCode'],
@@ -93,19 +92,20 @@ class CurriculumController extends Controller
     {
         try {
             $curriculum = Curriculum::with('subjects')->findOrFail($id);
-            $allSubjects = Subject::all(); // Always fetch all subjects
+            $allSubjects = Subject::all(); 
 
-            // **NEW**: Get the codes of subjects that have been removed for this curriculum
             $removedSubjectCodes = SubjectHistory::where('curriculum_id', $id)
-                                                 ->pluck('subject_code')
-                                                 ->unique();
+                                                  ->where('action', 'removed')
+                                                  ->pluck('subject_code')
+                                                  ->unique();
 
             return response()->json([
                 'curriculum' => $curriculum,
                 'allSubjects' => $allSubjects,
-                'removedSubjectCodes' => $removedSubjectCodes, // **NEW**: Pass this to the frontend
+                'removedSubjectCodes' => $removedSubjectCodes,
             ]);
         } catch (\Exception $e) {
+            Log::error('Error fetching curriculum data: ' . $e->getMessage());
             return response()->json([
                 'message' => 'A database error occurred while fetching curriculum data.',
                 'error' => $e->getMessage()
@@ -113,7 +113,7 @@ class CurriculumController extends Controller
         }
     }
 
-/**
+    /**
      * Saves the subject mapping for a curriculum.
      */
     public function saveSubjects(Request $request)
@@ -128,96 +128,82 @@ class CurriculumController extends Controller
 
         foreach ($validated['curriculumData'] as $data) {
             if (empty($data['subjects'])) {
-                continue; // Skip if a semester has no subjects
+                continue; 
             }
             
             foreach ($data['subjects'] as $subjectData) {
-                // Find the subject by its unique code
                 $subject = Subject::where('subject_code', $subjectData['subject_code'])->first();
 
-                // If the subject exists, attach it to the curriculum
                 if ($subject) {
                     $curriculum->subjects()->attach($subject->id, [
                         'year' => $data['year'],
                         'semester' => $data['semester'],
                     ]);
                 }
-                // If it doesn't exist, you might want to log an error or handle it,
-                // but for now, we'll just skip it to prevent crashes.
             }
         }
 
         return response()->json(['message' => 'Curriculum saved successfully!', 'curriculumId' => $curriculum->id]);
     }
 
+    /**
+     * REMOVE a subject from a curriculum and log it to history.
+     */
     public function removeSubject(Request $request)
     {
         $validated = $request->validate([
             'curriculumId' => 'required|exists:curriculums,id',
-            'subjectId'    => 'required|exists:subjects,id', // Validating based on subject ID
-            'year'         => 'required|integer',
-            'semester'     => 'required|integer',
+            'subjectId' => 'required|exists:subjects,id',
+            'year' => 'required|integer',
+            'semester' => 'required|integer',
         ]);
 
         try {
-            // Use a database transaction to ensure data integrity
             DB::transaction(function () use ($validated) {
                 $curriculum = Curriculum::findOrFail($validated['curriculumId']);
                 $subject = Subject::findOrFail($validated['subjectId']);
 
-                // Find the original pivot record to get its creation date
-                $pivotRecord = DB::table('curriculum_subject')
-                    ->where('curriculum_id', $validated['curriculumId'])
-                    ->where('subject_id', $validated['subjectId'])
-                    ->where('year', $validated['year'])
-                    ->where('semester', $validated['semester'])
-                    ->first();
+                // Detach the subject from the pivot table.
+                $detached = $curriculum->subjects()
+                           ->wherePivot('year', $validated['year'])
+                           ->wherePivot('semester', $validated['semester'])
+                           ->detach($validated['subjectId']);
 
-                if (!$pivotRecord) {
-                    // This case should ideally not happen if the frontend is correct
-                    throw new \Exception('Subject not found in the specified semester for this curriculum.');
+                if ($detached == 0) {
+                     throw new \Exception('Subject could not be found in the specified curriculum to remove.');
                 }
 
-                // Detach the subject from the pivot table based on all criteria
-                $curriculum->subjects()->wherePivot('year', $validated['year'])->wherePivot('semester', $validated['semester'])->detach($validated['subjectId']);
-
-                // Construct the academic year range for the history log
-                $startYear = Carbon::parse($pivotRecord->created_at)->year;
-                $endYear = Carbon::now()->year;
-                $academicYearRange = ($startYear === $endYear) ? (string)$startYear : "{$startYear}-{$endYear}";
-
-                // Create the history log entry
+                // Create a record in the subject history table
                 SubjectHistory::create([
-                    'curriculum_id' => $curriculum->id,
-                    'subject_id'    => $subject->id,
-                    'academic_year' => $academicYearRange,
+                    'curriculum_id' => $validated['curriculumId'],
+                    'subject_id'    => $validated['subjectId'],
+                    'academic_year' => $curriculum->academic_year,
                     'subject_name'  => $subject->subject_name,
                     'subject_code'  => $subject->subject_code,
                     'year'          => $validated['year'],
                     'semester'      => $validated['semester'],
-                    'action'        => 'removed', // You can track different actions later
+                    'action'        => 'removed',
                 ]);
             });
 
-            return response()->json(['message' => 'Subject removed and history logged successfully.']);
+            return response()->json(['message' => 'Subject removed and recorded in history.']);
 
         } catch (\Exception $e) {
-            // Return a detailed error message for easier debugging
-            return response()->json(['message' => 'Failed to remove subject: ' . $e->getMessage()], 500);
+            Log::error('Error removing subject from curriculum: ' . $e->getMessage());
+            return response()->json(['message' => 'An error occurred while removing the subject.'], 500);
         }
     }
 
     public function getCurriculumDetailsForExport($id)
-{
-    try {
-        // Eager load subjects and their prerequisites
-        $curriculum = Curriculum::with('subjects.prerequisites')->findOrFail($id);
-        return response()->json($curriculum);
-    } catch (\Exception $e) {
-        return response()->json([
-            'message' => 'A database error occurred while fetching curriculum details.',
-            'error' => $e->getMessage()
-        ], 500);
+    {
+        try {
+            $curriculum = Curriculum::with('subjects.prerequisites')->findOrFail($id);
+            return response()->json($curriculum);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'A database error occurred while fetching curriculum details.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
-}
 }
