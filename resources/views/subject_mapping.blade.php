@@ -247,6 +247,11 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
                         Edit Subject
                     </button>
+                    {{-- NEW: Delete Button --}}
+                    <button id="deleteSubjectButton" class="px-4 py-2 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors shadow-sm flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        Delete Subject
+                    </button>
                 </div>
             </div>
         </div>
@@ -444,6 +449,39 @@
             </div>
         </div>
     </div>
+
+    {{-- NEW: Delete Subject Confirmation Modal --}}
+    <div id="deleteConfirmationModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900 bg-opacity-75 hidden">
+        <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
+            <div class="w-12 h-12 rounded-full bg-red-100 p-2 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800">Delete Subject</h3>
+            <p class="text-sm text-gray-500 mt-2">Are you sure you want to permanently delete this subject? This action cannot be undone.</p>
+            <div class="mt-6 flex justify-center gap-4">
+                <button id="cancelDeleteBtn" class="w-full px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Cancel</button>
+                <button id="confirmDeleteBtn" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+    {{-- NEW: Delete Success Modal --}}
+    <div id="deleteSuccessModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900 bg-opacity-75 hidden">
+        <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
+            <div class="w-12 h-12 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800">Success!</h3>
+            <p class="text-sm text-gray-500 mt-2">You successfully deleted the subject.</p>
+            <div class="mt-6">
+                <button id="closeDeleteSuccessBtn" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">OK</button>
+            </div>
+        </div>
+    </div>
 </main>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -454,6 +492,7 @@
         const editSubjectDetailsButton = document.getElementById('editSubjectDetailsButton');
         const importSubjectDetailsButton = document.getElementById('importSubjectDetailsButton');
         const editConfirmationModal = document.getElementById('editConfirmationModal');
+        const deleteSubjectButton = document.getElementById('deleteSubjectButton'); // New
 
         // Detailed Content Elements
         const detailsCourseTitle = document.getElementById('detailsCourseTitle');
@@ -487,6 +526,7 @@
         let subjectTagToRemove = null;
         let isEditing = false;
         let subjectToImport = null;
+        let subjectToDelete = null; // New state for deletion
 
         // --- NEW: State variables for reassignment
         let itemToReassign = null;
@@ -570,6 +610,7 @@
             const subjectDataString = JSON.stringify(data);
             editSubjectDetailsButton.dataset.subjectData = subjectDataString;
             importSubjectDetailsButton.dataset.subjectData = subjectDataString;
+            deleteSubjectButton.dataset.subjectData = subjectDataString; // New
 
             // Render mapping grids
             detailsProgramMapping.innerHTML = createMappingGridHtml(data.program_mapping_grid, 'PILO');
@@ -985,13 +1026,10 @@
                 }
                  updateUnitTotals();
             } else if (draggedItem.classList.contains('subject-tag')) {
-                // *** MODIFICATION START ***
-                // Instead of handling the move here, store the state and show the modal.
                 itemToReassign = draggedItem;
-                reassignTargetContainer = targetContainer; // Note: targetContainer is the destination's flex-wrap div
+                reassignTargetContainer = targetContainer;
                 
                 document.getElementById('reassignConfirmationModal').classList.remove('hidden');
-                // *** MODIFICATION END ***
             }
         }
     };
@@ -1144,16 +1182,11 @@
             document.getElementById('saveMappingModal').classList.add('hidden');
         });
 
-        // ===================================================================
-        // START: UPDATED SAVE FUNCTIONALITY
-        // ===================================================================
-        
-        // This new function handles collecting data and sending it to the server.
         const saveCurriculumData = async () => {
             const curriculumId = curriculumSelector.value;
             if (!curriculumId) {
                 alert('Please select a curriculum first.');
-                return null; // Return null to indicate failure
+                return null;
             }
 
             const curriculumData = [];
@@ -1190,27 +1223,22 @@
             } catch (error) {
                 console.error('Error during save:', error);
                 alert('An error occurred while saving: ' + error.message);
-                return null; // Return null to indicate failure
+                return null;
             }
         };
 
-        // This is the updated event listener for the "Yes, Save it" button.
         document.getElementById('confirmSaveMapping').addEventListener('click', async () => {
             document.getElementById('saveMappingModal').classList.add('hidden');
             
-            const saveResult = await saveCurriculumData(); // Call the new save function
+            const saveResult = await saveCurriculumData();
 
-            if (saveResult) { // Only proceed if the save was successful
+            if (saveResult) {
                 console.log('Save successful:', saveResult.message);
                 document.getElementById('proceedToPrerequisitesModal').classList.remove('hidden');
             } else {
                 console.log('Save failed. The prerequisites modal will not be shown.');
             }
         });
-
-        // ===================================================================
-        // END: UPDATED SAVE FUNCTIONALITY
-        // ===================================================================
 
         document.getElementById('declineProceedToPrerequisites').addEventListener('click', () => {
             document.getElementById('proceedToPrerequisitesModal').classList.add('hidden');
@@ -1407,7 +1435,6 @@
             toggleEditMode(true);
         });
 
-        // *** NEW: Centralized Reassign Modal Logic ***
         const reassignModal = document.getElementById('reassignConfirmationModal');
         const confirmReassignBtn = document.getElementById('confirmReassignBtn');
         const cancelReassignBtn = document.getElementById('cancelReassignBtn');
@@ -1417,24 +1444,20 @@
 
             const droppedSubjectData = JSON.parse(itemToReassign.dataset.subjectData);
             
-            // Perform the move
             itemToReassign.parentNode.removeChild(itemToReassign);
             const subjectTag = createSubjectTag(droppedSubjectData, isEditing);
             reassignTargetContainer.appendChild(subjectTag);
             updateUnitTotals();
             
-            // Hide confirmation and show success
             reassignModal.classList.add('hidden');
             document.getElementById('reassignSuccessModal').classList.remove('hidden');
 
-            // Reset state variables
             itemToReassign = null;
             reassignTargetContainer = null;
         });
 
         cancelReassignBtn.addEventListener('click', () => {
             reassignModal.classList.add('hidden');
-            // Reset state variables
             itemToReassign = null;
             reassignTargetContainer = null;
         });
@@ -1443,6 +1466,72 @@
         document.getElementById('closeReassignSuccessBtn').addEventListener('click', () => {
             document.getElementById('reassignSuccessModal').classList.add('hidden');
         });
+
+        // ===================================================================
+        // NEW: DELETE SUBJECT LOGIC
+        // ===================================================================
+        const deleteConfirmationModal = document.getElementById('deleteConfirmationModal');
+        const deleteSuccessModal = document.getElementById('deleteSuccessModal');
+
+        deleteSubjectButton.addEventListener('click', () => {
+            const subjectDataString = deleteSubjectButton.dataset.subjectData;
+            if (subjectDataString) {
+                subjectToDelete = JSON.parse(subjectDataString);
+                hideDetailsModal();
+                deleteConfirmationModal.classList.remove('hidden');
+            } else {
+                alert('Error: Could not find subject data to delete.');
+            }
+        });
+
+        document.getElementById('cancelDeleteBtn').addEventListener('click', () => {
+            deleteConfirmationModal.classList.add('hidden');
+            subjectToDelete = null;
+        });
+
+        document.getElementById('closeDeleteSuccessBtn').addEventListener('click', () => {
+            deleteSuccessModal.classList.add('hidden');
+        });
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+            if (!subjectToDelete) return;
+
+            const subjectId = subjectToDelete.id;
+            
+            try {
+                const response = await fetch(`/api/subjects/${subjectId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json',
+                    }
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Failed to delete the subject.');
+                }
+                
+                // On successful deletion
+                deleteConfirmationModal.classList.add('hidden');
+                deleteSuccessModal.classList.remove('hidden');
+
+                // Remove the subject card from the UI
+                const subjectCardToRemove = document.getElementById(`subject-${subjectToDelete.subject_code.toLowerCase()}`);
+                if (subjectCardToRemove) {
+                    subjectCardToRemove.remove();
+                }
+
+                subjectToDelete = null;
+
+            } catch (error) {
+                console.error('Error deleting subject:', error);
+                alert('An error occurred: ' + error.message);
+                deleteConfirmationModal.classList.add('hidden'); // Also hide on error
+                subjectToDelete = null;
+            }
+        });
+
 
         function fetchAllSubjects() {
              availableSubjectsContainer.innerHTML = '<p class="text-gray-500 text-center mt-4">Loading subjects...</p>';

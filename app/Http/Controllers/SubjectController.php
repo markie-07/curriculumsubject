@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Subject;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class SubjectController extends Controller
 {
@@ -135,5 +136,28 @@ class SubjectController extends Controller
             'message' => 'Subject updated successfully!',
             'subject' => $subject,
         ], 200);
+    }
+    
+    /**
+     * Remove the specified subject from storage.
+     *
+     * @param  \App\Models\Subject  $subject
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Subject $subject)
+    {
+        try {
+            // The subject is already loaded thanks to route model binding.
+            $subject->delete();
+            
+            return response()->json(['message' => 'Subject deleted successfully.'], 200);
+
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            Log::error('Error deleting subject: '.$e->getMessage());
+
+            // Return a generic error response
+            return response()->json(['message' => 'An error occurred while deleting the subject.'], 500);
+        }
     }
 }
