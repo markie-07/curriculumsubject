@@ -10,8 +10,6 @@ use App\Http\Controllers\GradeController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\SubjectExportController;
 
-
-
 Route::get('/', function () {
     return view('dashboard');
 })->name('dashboard');

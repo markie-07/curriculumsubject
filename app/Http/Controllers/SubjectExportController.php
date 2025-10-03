@@ -16,8 +16,9 @@ class SubjectExportController extends Controller
             return redirect()->back()->with('error', 'Subject not found.');
         }
 
+        // The view name should be 'subject_pdf'
         $pdf = PDF::loadView('subject_pdf', ['subject' => $subject]);
 
-        return $pdf->download($subject->subject_code . '.pdf');
+        return $pdf->download($subject->subject_code . '_details.pdf');
     }
 }
