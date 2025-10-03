@@ -393,25 +393,57 @@
 
     </main>
 
-{{-- START: ADD THIS NEW MODAL --}}
-<div id="editConfirmationModal" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 hidden">
-    <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
-            <div class="w-12 h-12 rounded-full bg-blue-100 p-2 flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path>
-                </svg>
-            </div>
-            <h3 class="text-lg font-semibold text-gray-800">Enable Editing?</h3>
-            <p class="text-sm text-gray-500 mt-2">Are you sure you want to edit this curriculum? This will allow you to drag, drop, and remove subjects.</p>
-            <div class="mt-6 flex justify-center gap-4">
-                <button id="cancelEditBtn" class="w-full px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Cancel</button>
-                <button id="confirmEditBtn" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">Yes, Enable Editing</button>
+    {{-- edit --}}
+    <div id="editConfirmationModal" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
+                <div class="w-12 h-12 rounded-full bg-blue-100 p-2 flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800">Enable Editing?</h3>
+                <p class="text-sm text-gray-500 mt-2">Are you sure you want to edit this curriculum? This will allow you to drag, drop, and remove subjects.</p>
+                <div class="mt-6 flex justify-center gap-4">
+                    <button id="cancelEditBtn" class="w-full px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Cancel</button>
+                    <button id="confirmEditBtn" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">Yes</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-{{-- END: ADD THIS NEW MODAL --}}
+
+    {{-- Reassign Subject Confirmation Modal --}}
+    <div id="reassignConfirmationModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900 bg-opacity-75 hidden">
+        <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
+            <div class="w-12 h-12 rounded-full bg-yellow-100 p-2 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800">Reassign Subject</h3>
+            <p class="text-sm text-gray-500 mt-2">Are you sure you want to move this subject to a different semester?</p>
+            <div class="mt-6 flex justify-center gap-4">
+                <button id="cancelReassignBtn" class="w-full px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Cancel</button>
+                <button id="confirmReassignBtn" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700">Yes, Reassign</button>
+            </div>
+        </div>
+    </div>
+
+    {{-- Reassign Success Modal --}}
+    <div id="reassignSuccessModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900 bg-opacity-75 hidden">
+        <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
+            <div class="w-12 h-12 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800">Success!</h3>
+            <p class="text-sm text-gray-500 mt-2">Subject has been successfully reassigned.</p>
+            <div class="mt-6">
+                <button id="closeReassignSuccessBtn" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">OK</button>
+            </div>
+        </div>
+    </div>
 </main>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -421,6 +453,7 @@
         const modalDetailsPanel = document.getElementById('modal-details-panel');
         const editSubjectDetailsButton = document.getElementById('editSubjectDetailsButton');
         const importSubjectDetailsButton = document.getElementById('importSubjectDetailsButton');
+        const editConfirmationModal = document.getElementById('editConfirmationModal');
 
         // Detailed Content Elements
         const detailsCourseTitle = document.getElementById('detailsCourseTitle');
@@ -1338,6 +1371,24 @@
                     availableSubjectsContainer.innerHTML = '<p class="text-red-500 text-center mt-4">Could not load subjects.</p>';
                 });
         }
+        
+        document.getElementById('editCurriculumButton').addEventListener('click', (e) => {
+            if (isEditing) {
+                toggleEditMode(false);
+            } else {
+                editConfirmationModal.classList.remove('hidden');
+            }
+        });
+
+        document.getElementById('cancelEditBtn').addEventListener('click', () => {
+            editConfirmationModal.classList.add('hidden');
+        });
+
+        document.getElementById('confirmEditBtn').addEventListener('click', () => {
+            editConfirmationModal.classList.add('hidden');
+            toggleEditMode(true);
+        });
+
 
         function fetchAllSubjects() {
              availableSubjectsContainer.innerHTML = '<p class="text-gray-500 text-center mt-4">Loading subjects...</p>';
