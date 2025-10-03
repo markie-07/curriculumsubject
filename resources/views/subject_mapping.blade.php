@@ -395,6 +395,22 @@
             </div>
         </div>
     </div>
+    
+    {{-- Remove Success Modal --}}
+    <div id="removeSuccessModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900 bg-opacity-75 hidden">
+        <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
+            <div class="w-12 h-12 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800">Success!</h3>
+            <p class="text-sm text-gray-500 mt-2">Subject removed successfully and moved to history!</p>
+            <div class="mt-6">
+                <button id="closeRemoveSuccessModal" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">OK</button>
+            </div>
+        </div>
+    </div>
 
     </main>
 
@@ -527,6 +543,9 @@
         let isEditing = false;
         let subjectToImport = null;
         let subjectToDelete = null; // New state for deletion
+
+        const removeSuccessModal = document.getElementById('removeSuccessModal');
+        const closeRemoveSuccessModal = document.getElementById('closeRemoveSuccessModal');
 
         // --- NEW: State variables for reassignment
         let itemToReassign = null;
@@ -1130,24 +1149,25 @@
 
                 const originalSubjectCard = document.getElementById(`subject-${subjectData.subject_code.toLowerCase()}`);
                 if (originalSubjectCard) {
-                    originalSubjectCard.setAttribute('draggable', 'true');
-                    originalSubjectCard.classList.remove('assigned-card', 'assigned-major', 'assigned-minor', 'assigned-elective', 'assigned-general', 'cursor-not-allowed');
-                    originalSubjectCard.classList.add('bg-white', 'hover:shadow-md', 'hover:border-blue-400', 'cursor-grab', 'active:cursor-grabbing');
+                    originalSubjectCard.dataset.status = 'removed';
+                    originalSubjectCard.setAttribute('draggable', 'false');
+                    originalSubjectCard.classList.add('bg-white', 'opacity-60', 'cursor-not-allowed', 'removed-subject-card');
+                    originalSubjectCard.classList.remove('assigned-card', 'assigned-major', 'assigned-minor', 'assigned-elective', 'assigned-general');
 
                     const iconContainer = originalSubjectCard.querySelector('.flex-shrink-0');
                     const iconSvg = iconContainer.querySelector('svg');
                     iconContainer.className = 'flex-shrink-0 w-12 h-12 icon-bg-default rounded-lg flex items-center justify-center transition-colors duration-300';
                     iconSvg.className = 'h-6 w-6 text-gray-500 transition-colors duration-300';
-
+                    
                     const statusBadge = originalSubjectCard.querySelector('.status-badge');
                     if (statusBadge) {
-                        statusBadge.textContent = 'Available';
-                        statusBadge.className = 'status-badge text-xs font-semibold text-green-700 bg-green-100 px-2.5 py-1 rounded-full';
+                        statusBadge.textContent = 'Removed';
+                        statusBadge.className = 'status-badge text-xs font-semibold text-red-700 bg-red-100 px-2.5 py-1 rounded-full';
                     }
                 }
 
                 updateUnitTotals();
-                alert('Subject removed successfully and moved to history!');
+                removeSuccessModal.classList.remove('hidden');
 
             } catch (error) {
                 console.error('Error removing subject:', error);
@@ -1157,6 +1177,9 @@
             }
         });
 
+        closeRemoveSuccessModal.addEventListener('click', () => {
+            removeSuccessModal.classList.add('hidden');
+        });
         
         const hideImportConfirmationModal = () => {
             const importConfirmationModal = document.getElementById('importConfirmationModal');
