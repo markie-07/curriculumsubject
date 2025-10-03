@@ -1265,7 +1265,8 @@
         
         document.getElementById('confirmImportButton').addEventListener('click', () => {
             if (subjectToImport) {
-                alert(`Preparing to generate PDF for ${subjectToImport.subject_name}... (PDF logic placeholder)`);
+                // Redirect to the export route
+                window.location.href = `/subjects/${subjectToImport.id}/export-pdf`;
             }
             hideImportConfirmationModal();
         });

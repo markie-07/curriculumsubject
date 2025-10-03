@@ -8,6 +8,8 @@ use App\Http\Controllers\EquivalencyToolController;
 use App\Http\Controllers\CurriculumExportToolController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\SubjectExportController;
+
 
 
 Route::get('/', function () {
@@ -51,3 +53,5 @@ Route::post('/compliance-validator/validate', function () {
 // CURRICULUM EXPORT
 Route::get('/curriculum_export_tool', [CurriculumExportToolController::class, 'index'])->name('curriculum_export_tool');
 Route::post('/curriculum_export_tool', [CurriculumExportToolController::class, 'store'])->name('curriculum_export_tool.store');
+
+Route::get('/subjects/{subjectId}/export-pdf', [SubjectExportController::class, 'exportPdf'])->name('subjects.export-pdf');
