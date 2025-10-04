@@ -78,7 +78,7 @@
                         </button>
                         
                         <div class="text-center mb-8">
-                            <img src="{{ asset('/images/sms3.png') }}" alt="SMS3 Logo" class="mx-auto h-16 w-auto mb-4">
+                            <img src="{{ asset('/images/SMSIII LOGO.png') }}" alt="SMS3 Logo" class="mx-auto h-16 w-auto mb-4">
                             <h2 id="modal-title" class="text-2xl font-bold text-slate-800">Create New Curriculum</h2>
                             <p class="text-sm text-slate-500 mt-1">Fill in the details below to add a new curriculum.</p>
                         </div>

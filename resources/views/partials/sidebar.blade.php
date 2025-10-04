@@ -2,7 +2,7 @@
     <div class="flex items-center justify-between p-4 border-b border-blue-800">
         <div class="flex items-center space-x-3">
             <div class="w-10 h-10 flex items-center justify-center flex-shrink-0">
-                <img src="{{ asset('/images/sms3.png') }}" alt="SMS3 Logo" class="object-contain" style="width: 150px; height: 50px; max-width:none; max-height:none;">
+                <img src="{{ asset('/images/SMSIII LOGO.png') }}" alt="SMS3 Logo" class="object-contain" style="width: 150px; height: 50px; max-width:none; max-height:none;">
             </div>
             <h1 class="text-sm font-semibold whitespace-nowrap sidebar-title">Curriculum & Subject<br>Management System</h1>
         </div>

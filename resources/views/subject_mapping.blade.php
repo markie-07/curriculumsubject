@@ -926,30 +926,86 @@
             return subjectTag;
         };
 
-        const updateUnitTotals = () => {
-            let grandTotal = 0;
-            const curriculumId = curriculumSelector.value;
-            const grandTotalContainer = document.getElementById('grand-total-container');
+ const updateUnitTotals = () => {
+    let grandTotal = 0;
+    const curriculumId = curriculumSelector.value;
+    const grandTotalContainer = document.getElementById('grand-total-container');
 
-            if (!curriculumId) {
-                grandTotalContainer.classList.add('hidden');
-                return;
-            }
+    if (!curriculumId) {
+        grandTotalContainer.classList.add('hidden');
+        return;
+    }
 
-            document.querySelectorAll('.semester-dropzone').forEach(dropzone => {
-                let semesterTotal = 0;
-                dropzone.querySelectorAll('.subject-tag').forEach(tag => {
-                    const subjectData = JSON.parse(tag.dataset.subjectData);
-                    semesterTotal += parseInt(subjectData.subject_unit, 10) || 0;
-                });
-                dropzone.querySelector('.semester-unit-total').textContent = `Units: ${semesterTotal}`;
-                grandTotal += semesterTotal;
-            });
-            
-            const grandTotalSpan = document.getElementById('grand-total-units');
-            grandTotalSpan.textContent = grandTotal;
-            grandTotalContainer.classList.remove('hidden');
+    document.querySelectorAll('.semester-dropzone').forEach(dropzone => {
+        let semesterTotal = 0;
+        dropzone.querySelectorAll('.subject-tag').forEach(tag => {
+            const subjectData = JSON.parse(tag.dataset.subjectData);
+            semesterTotal += parseInt(subjectData.subject_unit, 10) || 0;
+        });
+        dropzone.querySelector('.semester-unit-total').textContent = `Units: ${semesterTotal}`;
+        grandTotal += semesterTotal;
+    });
+    
+    const grandTotalSpan = document.getElementById('grand-total-units');
+    grandTotalSpan.textContent = grandTotal;
+    grandTotalContainer.classList.remove('hidden');
+    
+    // These calls are now correctly placed before the function's end
+    updateSubjectCountTotals(); 
+    updateTypeTotals(); 
+}; 
+
+const updateSubjectCountTotals = () => {
+    document.querySelectorAll('.semester-dropzone').forEach(dropzone => {
+        const subjectCount = dropzone.querySelectorAll('.subject-tag').length;
+        const totalElement = dropzone.querySelector('.semester-subject-total');
+        if (totalElement) {
+            totalElement.textContent = `Total Subjects: ${subjectCount}`;
+        }
+    });
+};
+
+const updateTypeTotals = () => {
+    document.querySelectorAll('.semester-dropzone').forEach(dropzone => {
+        const typeCounts = {
+            Major: 0,
+            Minor: 0,
+            Elective: 0,
+            General: 0,
         };
+        const geIdentifiers = ["GE", "General Education", "Gen Ed", "General"];
+
+        dropzone.querySelectorAll('.subject-tag').forEach(tag => {
+            const subjectData = JSON.parse(tag.dataset.subjectData);
+            const subjectType = subjectData.subject_type;
+
+            if (geIdentifiers.map(id => id.toLowerCase()).includes(subjectType.toLowerCase())) {
+                typeCounts.General++;
+            } else if (typeCounts.hasOwnProperty(subjectType)) {
+                typeCounts[subjectType]++;
+            }
+        });
+
+        const totalsContainer = dropzone.querySelector('.semester-type-totals');
+        totalsContainer.innerHTML = ''; // Clear previous totals
+
+        const typeStyles = {
+            Major: 'bg-blue-100 text-blue-800',
+            Minor: 'bg-purple-100 text-purple-800',
+            Elective: 'bg-red-100 text-red-800',
+            General: 'bg-orange-100 text-orange-800',
+        };
+
+        for (const type in typeCounts) {
+            if (typeCounts[type] > 0) {
+                const badge = document.createElement('span');
+                badge.className = `px-2 py-1 rounded-full font-semibold ${typeStyles[type]}`;
+                badge.textContent = `${type}: ${typeCounts[type]}`;
+                totalsContainer.appendChild(badge);
+            }
+        }
+    });
+};
 
         const toggleEditMode = (enableEdit) => {
             isEditing = enableEdit;
@@ -1364,6 +1420,7 @@
 
         document.getElementById('closeMappingSuccessModal').addEventListener('click', () => {
             document.getElementById('mappingSuccessModal').classList.add('hidden');
+            toggleEditMode(false); 
         });
 
 
@@ -1395,55 +1452,67 @@
         typeFilter.addEventListener('change', filterSubjects);
 
 
-        function renderCurriculumOverview(yearLevel) {
-            let html = '';
-            const isSeniorHigh = yearLevel === 'Senior High';
-            const maxYear = isSeniorHigh ? 2 : 4;
+function renderCurriculumOverview(yearLevel) {
+    let html = '';
+    const isSeniorHigh = yearLevel === 'Senior High';
+    const maxYear = isSeniorHigh ? 2 : 4;
 
-            const getYearSuffix = (year) => {
-                if (year === 1) return 'st';
-                if (year === 2) return 'nd';
-                if (year === 3) return 'rd';
-                return 'th';
-            };
+    const getYearSuffix = (year) => {
+        if (year === 1) return 'st';
+        if (year === 2) return 'nd';
+        if (year === 3) return 'rd';
+        return 'th';
+    };
 
-            for (let i = 1; i <= maxYear; i++) {
-                const yearTitle = `${i}${getYearSuffix(i)} Year`;
-                html += `
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-700 mb-3">${yearTitle}</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="semester-dropzone bg-white border-2 border-solid border-gray-300 rounded-lg p-4 transition-colors" data-year="${i}" data-semester="1">
-                                <div class="flex justify-between items-center border-b border-gray-200 pb-2 mb-3">
+    for (let i = 1; i <= maxYear; i++) {
+        const yearTitle = `${i}${getYearSuffix(i)} Year`;
+        html += `
+            <div>
+                <h3 class="text-lg font-semibold text-gray-700 mb-3">${yearTitle}</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="semester-dropzone bg-white border-2 border-solid border-gray-300 rounded-lg p-4 transition-colors" data-year="${i}" data-semester="1">
+                        <div class="border-b border-gray-200 pb-2 mb-3">
+                            <div class="flex justify-between items-center">
+                                <div>
                                     <h4 class="font-semibold text-gray-600">First Semester</h4>
-                                    <div class="semester-unit-total text-sm font-bold text-gray-700">Units: 0</div>
+                                    <div class="semester-subject-total text-sm text-gray-500">Total Subjects: 0</div>
                                 </div>
-                                <div class="flex-wrap space-y-2 min-h-[80px]"></div>
-                                 <div class="add-subject-btn-placeholder mt-2 text-center hidden">
-                                    <button class="add-subject-btn text-blue-600 hover:text-blue-800 font-semibold text-sm py-2 px-4 rounded-lg hover:bg-blue-100 transition-all">+ Add Subject</button>
-                                </div>
-                                <div class="add-subject-controls mt-3 pt-3 border-t hidden">
-                                    <button class="save-selection-btn w-full bg-green-500 text-white px-3 py-2 rounded-md hover:bg-green-600">Save</button>
-                                    <button class="cancel-selection-btn w-full bg-gray-200 mt-2 px-3 py-2 rounded-md hover:bg-gray-300">Cancel</button>
-                                </div>
+                                <div class="semester-unit-total text-sm font-bold text-gray-700">Units: 0</div>
                             </div>
-                            <div class="semester-dropzone bg-white border-2 border-solid border-gray-300 rounded-lg p-4 transition-colors" data-year="${i}" data-semester="2">
-                                <div class="flex justify-between items-center border-b border-gray-200 pb-2 mb-3">
-                                    <h4 class="font-semibold text-gray-600">Second Semester</h4>
-                                    <div class="semester-unit-total text-sm font-bold text-gray-700">Units: 0</div>
-                                </div>
-                                <div class="flex-wrap space-y-2 min-h-[80px]"></div>
-                                 <div class="add-subject-btn-placeholder mt-2 text-center hidden">
-                                    <button class="add-subject-btn text-blue-600 hover:text-blue-800 font-semibold text-sm py-2 px-4 rounded-lg hover:bg-blue-100 transition-all">+ Add Subject</button>
-                                </div>
-                                <div class="add-subject-controls mt-3 pt-3 border-t hidden">
-                                    <button class="save-selection-btn w-full bg-green-500 text-white px-3 py-2 rounded-md hover:bg-green-600">Save</button>
-                                    <button class="cancel-selection-btn w-full bg-gray-200 mt-2 px-3 py-2 rounded-md hover:bg-gray-300">Cancel</button>
-                                </div>
-                            </div>
+                            <div class="semester-type-totals mt-2 flex gap-x-3 gap-y-1 text-xs"></div>
                         </div>
-                    </div>`;
-            }
+                        <div class="flex-wrap space-y-2 min-h-[80px]"></div>
+                         <div class="add-subject-btn-placeholder mt-2 text-center hidden">
+                            <button class="add-subject-btn text-blue-600 hover:text-blue-800 font-semibold text-sm py-2 px-4 rounded-lg hover:bg-blue-100 transition-all">+ Add Subject</button>
+                        </div>
+                        <div class="add-subject-controls mt-3 pt-3 border-t hidden">
+                            <button class="save-selection-btn w-full bg-green-500 text-white px-3 py-2 rounded-md hover:bg-green-600">Save</button>
+                            <button class="cancel-selection-btn w-full bg-gray-200 mt-2 px-3 py-2 rounded-md hover:bg-gray-300">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="semester-dropzone bg-white border-2 border-solid border-gray-300 rounded-lg p-4 transition-colors" data-year="${i}" data-semester="2">
+                        <div class="border-b border-gray-200 pb-2 mb-3">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-semibold text-gray-600">Second Semester</h4>
+                                    <div class="semester-subject-total text-sm text-gray-500">Total Subjects: 0</div>
+                                </div>
+                                <div class="semester-unit-total text-sm font-bold text-gray-700">Units: 0</div>
+                            </div>
+                            <div class="semester-type-totals mt-2 flex gap-x-3 gap-y-1 text-xs"></div>
+                        </div>
+                        <div class="flex-wrap space-y-2 min-h-[80px]"></div>
+                         <div class="add-subject-btn-placeholder mt-2 text-center hidden">
+                            <button class="add-subject-btn text-blue-600 hover:text-blue-800 font-semibold text-sm py-2 px-4 rounded-lg hover:bg-blue-100 transition-all">+ Add Subject</button>
+                        </div>
+                        <div class="add-subject-controls mt-3 pt-3 border-t hidden">
+                            <button class="save-selection-btn w-full bg-green-500 text-white px-3 py-2 rounded-md hover:bg-green-600">Save</button>
+                            <button class="cancel-selection-btn w-full bg-gray-200 mt-2 px-3 py-2 rounded-md hover:bg-gray-300">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+    }
             curriculumOverview.innerHTML = html;
              // --- NEW: Add event listeners for the new buttons ---
             curriculumOverview.querySelectorAll('.add-subject-btn').forEach(btn => {
