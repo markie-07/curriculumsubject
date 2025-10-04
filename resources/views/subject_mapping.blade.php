@@ -949,23 +949,10 @@
     const grandTotalSpan = document.getElementById('grand-total-units');
     grandTotalSpan.textContent = grandTotal;
     grandTotalContainer.classList.remove('hidden');
-    
-    // These calls are now correctly placed before the function's end
-    updateSubjectCountTotals(); 
-    updateTypeTotals(); 
+    updateAllTotals(); 
 }; 
 
-const updateSubjectCountTotals = () => {
-    document.querySelectorAll('.semester-dropzone').forEach(dropzone => {
-        const subjectCount = dropzone.querySelectorAll('.subject-tag').length;
-        const totalElement = dropzone.querySelector('.semester-subject-total');
-        if (totalElement) {
-            totalElement.textContent = `Total Subjects: ${subjectCount}`;
-        }
-    });
-};
-
-const updateTypeTotals = () => {
+const updateAllTotals = () => {
     document.querySelectorAll('.semester-dropzone').forEach(dropzone => {
         const typeCounts = {
             Major: 0,
@@ -974,8 +961,10 @@ const updateTypeTotals = () => {
             General: 0,
         };
         const geIdentifiers = ["GE", "General Education", "Gen Ed", "General"];
+        const subjectTags = dropzone.querySelectorAll('.subject-tag');
+        const totalSubjectCount = subjectTags.length;
 
-        dropzone.querySelectorAll('.subject-tag').forEach(tag => {
+        subjectTags.forEach(tag => {
             const subjectData = JSON.parse(tag.dataset.subjectData);
             const subjectType = subjectData.subject_type;
 
@@ -987,7 +976,10 @@ const updateTypeTotals = () => {
         });
 
         const totalsContainer = dropzone.querySelector('.semester-type-totals');
-        totalsContainer.innerHTML = ''; // Clear previous totals
+        if (!totalsContainer) return;
+
+        // Clear all previous badges
+        totalsContainer.innerHTML = '';
 
         const typeStyles = {
             Major: 'bg-blue-100 text-blue-800',
@@ -996,13 +988,22 @@ const updateTypeTotals = () => {
             General: 'bg-orange-100 text-orange-800',
         };
 
-        for (const type in typeCounts) {
+        // Add the type-specific badges first
+        ['Major', 'Minor', 'Elective', 'General'].forEach(type => {
             if (typeCounts[type] > 0) {
                 const badge = document.createElement('span');
                 badge.className = `px-2 py-1 rounded-full font-semibold ${typeStyles[type]}`;
                 badge.textContent = `${type}: ${typeCounts[type]}`;
                 totalsContainer.appendChild(badge);
             }
+        });
+
+        // Add the "Total Subjects" badge at the end
+        if (totalSubjectCount > 0) {
+            const totalBadge = document.createElement('span');
+            totalBadge.className = 'px-2 py-1 rounded-full font-semibold bg-gray-200 text-gray-800';
+            totalBadge.textContent = `Total Subjects: ${totalSubjectCount}`;
+            totalsContainer.appendChild(totalBadge);
         }
     });
 };
@@ -1475,7 +1476,6 @@ function renderCurriculumOverview(yearLevel) {
                             <div class="flex justify-between items-center">
                                 <div>
                                     <h4 class="font-semibold text-gray-600">First Semester</h4>
-                                    <div class="semester-subject-total text-sm text-gray-500">Total Subjects: 0</div>
                                 </div>
                                 <div class="semester-unit-total text-sm font-bold text-gray-700">Units: 0</div>
                             </div>
@@ -1495,7 +1495,6 @@ function renderCurriculumOverview(yearLevel) {
                             <div class="flex justify-between items-center">
                                 <div>
                                     <h4 class="font-semibold text-gray-600">Second Semester</h4>
-                                    <div class="semester-subject-total text-sm text-gray-500">Total Subjects: 0</div>
                                 </div>
                                 <div class="semester-unit-total text-sm font-bold text-gray-700">Units: 0</div>
                             </div>
