@@ -53,3 +53,4 @@ Route::get('/curriculum_export_tool', [CurriculumExportToolController::class, 'i
 Route::post('/curriculum_export_tool', [CurriculumExportToolController::class, 'store'])->name('curriculum_export_tool.store');
 
 Route::get('/subjects/{subjectId}/export-pdf', [SubjectExportController::class, 'exportPdf'])->name('subjects.export-pdf');
+Route::post('/subjects/export', [SubjectExportController::class, 'export'])->name('subjects.export');
