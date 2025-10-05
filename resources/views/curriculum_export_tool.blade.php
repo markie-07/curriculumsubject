@@ -78,9 +78,6 @@
     </div>
 </main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const exportButton = document.getElementById('export-curriculum-btn');
@@ -100,20 +97,17 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        // Redirect to a new route that will handle the PDF generation
+        window.open(`/curriculum/${curriculumId}/export-pdf`, '_blank');
+
         try {
-            const response = await fetch(`/api/curriculum/${curriculumId}/details`);
-            if (!response.ok) throw new Error('Failed to fetch curriculum details.');
-            const curriculum = await response.json();
-            const fileName = `${curriculum.program_code}_${curriculum.curriculum}.pdf`;
-            
-            generatePdf(curriculum, fileName);
-            
+            const curriculumName = curriculumSelect.options[curriculumSelect.selectedIndex].text;
+            const fileName = `${curriculumName}.pdf`;
             const newHistory = await saveExportHistory(curriculumId, fileName, 'PDF');
             addHistoryItemToDOM(newHistory);
-
         } catch (error) {
-            console.error('Export Error:', error);
-            alert('An error occurred while exporting the curriculum. Please check the console for details.');
+            console.error('Error saving export history:', error);
+            alert('An error occurred while saving the export history. Please check the console for details.');
         }
     });
 
@@ -129,205 +123,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
-
-    const addHeader = (doc) => {
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const margin = 15;
-        
-        const newLogo = `{{ 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/bcp logo.png'))) }}`;
-        doc.addImage(newLogo, 'PNG', margin, 5, 20, 20);
-
-        doc.setFontSize(14);
-        doc.setTextColor(0, 0, 0);
-        doc.setFont('helvetica', 'bold');
-        doc.text('BESTLINK COLLEGE OF THE PHILIPPINES', pageWidth / 2, 12, { align: 'center' });
-
-        doc.setFontSize(9);
-        doc.setFont('helvetica', 'normal');
-        doc.text('#1071 Brgy. Kaligayahan, Quirino Hi-way, Novaliches, Quezon City', pageWidth / 2, 17, { align: 'center' });
-    };
-
-    function generatePdf(curriculum, fileName) {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
-
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const pageHeight = doc.internal.pageSize.getHeight();
-        const margin = 15;
-        let y = 0;
-
-        const addFooter = (doc) => {
-            const pageCount = doc.internal.getNumberOfPages();
-            for (let i = 1; i <= pageCount; i++) {
-                doc.setPage(i);
-                doc.setFontSize(8);
-                doc.setTextColor(150);
-                doc.text(`Page ${i} of ${pageCount}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
-            }
-        };
-
-        const checkPageBreak = (currentY, title) => {
-            if (currentY > pageHeight - 30) {
-                doc.addPage();
-                addHeader(doc, title);
-                return 30; // Reset Y to top margin
-            }
-            return currentY;
-        };
-        
-        // --- Title Page ---
-        addHeader(doc);
-        let yPos = 80;
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(26);
-        doc.setTextColor(40);
-        const curriculumTitle = curriculum.curriculum;
-        const titleOptions = { align: 'center', maxWidth: pageWidth - (margin * 2) };
-        doc.text(curriculumTitle, pageWidth / 2, yPos, titleOptions);
-        const titleHeight = doc.getTextDimensions(curriculumTitle, titleOptions).h;
-        yPos += titleHeight + 10;
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(16);
-        doc.setTextColor(100);
-        doc.text(`Program Code: ${curriculum.program_code}`, pageWidth / 2, yPos, { align: 'center' });
-        yPos += 8;
-        doc.text(`Academic Year: ${curriculum.academic_year}`, pageWidth / 2, yPos, { align: 'center' });
-        yPos += 8;
-        doc.text(`Year: ${curriculum.year_level}`, pageWidth / 2, yPos, { align: 'center' });
-        
-        // --- Curriculum Details Page ---
-        doc.addPage();
-        addHeader(doc, 'Curriculum Details');
-        y = 30;
-
-        doc.setFontSize(18);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Curriculum Details', margin, y);
-        y += 15;
-
-        const subjectsByYearAndSem = {};
-        curriculum.subjects.forEach(subject => {
-            const key = `${subject.pivot.year}-${subject.pivot.semester}`;
-            if (!subjectsByYearAndSem[key]) subjectsByYearAndSem[key] = [];
-            subjectsByYearAndSem[key].push(subject);
-        });
-        const sortedKeys = Object.keys(subjectsByYearAndSem).sort();
-
-        for (const key of sortedKeys) {
-            y = checkPageBreak(y, 'Curriculum Details');
-            const [year, semester] = key.split('-');
-            const semesterText = semester == 1 ? 'First Semester' : (semester == 2 ? 'Second Semester' : 'Summer');
-            
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.text(`${getYearOrdinal(year)} Year - ${semesterText}`, margin, y);
-            y += 10;
-
-            for (const subject of subjectsByYearAndSem[key]) {
-                y = checkPageBreak(y, 'Curriculum Details');
-                
-                // Subject Summary
-                const prerequisites = subject.prerequisites.map(p => p.prerequisite_subject_code).join(', ') || 'None';
-                doc.autoTable({
-                    startY: y,
-                    head: [['Code', 'Subject Name', 'Units', 'Prerequisites']],
-                    body: [[subject.subject_code, subject.subject_name, subject.subject_unit, prerequisites]],
-                    theme: 'striped',
-                    headStyles: { fillColor: [22, 160, 133], textColor: 255 },
-                    styles: { font: 'helvetica', fontSize: 10 },
-                    margin: { left: margin, right: margin }
-                });
-                y = doc.lastAutoTable.finalY + 10;
-                y = checkPageBreak(y, 'Curriculum Details');
-
-                // Subject Syllabus Details
-                doc.autoTable({
-                    startY: y,
-                    body: [
-                        ['Subject Name:', subject.subject_name],
-                        ['Subject Code:', subject.subject_code],
-                        ['Subject Type:', subject.subject_type],
-                        ['Units:', subject.subject_unit.toString()]
-                    ],
-                    theme: 'grid',
-                    styles: { font: 'helvetica', fontSize: 11, cellPadding: 3 },
-                    columnStyles: { 0: { fontStyle: 'bold', fillColor: '#f0f0f0' } },
-                    margin: { left: margin, right: margin }
-                });
-                y = doc.lastAutoTable.finalY + 10;
-                y = checkPageBreak(y, 'Curriculum Details');
-
-                // Weekly Topics
-                const lessonsData = [];
-                if (subject.lessons && typeof subject.lessons === 'object') {
-                    for (let i = 1; i <= 15; i++) {
-                        const week = `Week ${i}`;
-                        const lessonText = subject.lessons[week] || 'N/A';
-                        const formattedLesson = lessonText.includes("Learning Objectives:") ? formatLessonPlan(lessonText, doc, margin, pageWidth) : [lessonText];
-                        lessonsData.push([week, formattedLesson.join('\n')]);
-                    }
-                }
-                
-                doc.autoTable({
-                    startY: y,
-                    head: [['Week', 'Lesson / Topics']],
-                    body: lessonsData,
-                    theme: 'grid',
-                    headStyles: { fillColor: [44, 62, 80], textColor: 255 },
-                    styles: { font: 'helvetica', fontSize: 9, cellPadding: 2, valign: 'middle' },
-                    columnStyles: { 0: { cellWidth: 20, fontStyle: 'bold' }, 1: { cellWidth: 'auto' } },
-                    margin: { left: margin, right: margin }
-                });
-                y = doc.lastAutoTable.finalY + 20; // Add space after each subject
-            }
-        }
-
-        addFooter(doc);
-        doc.save(fileName);
-    }
-    
-    function formatLessonPlan(lessonText, doc, margin, pageWidth) {
-        const formattedLines = [];
-        const sections = {
-            "Learning Objectives:": [],
-            "Detailed Lesson Content:": [],
-            "Activities:": [],
-            "Assessment:": []
-        };
-        let currentSection = null;
-
-        const lines = lessonText.split(',, ');
-        lines.forEach(line => {
-            const trimmedLine = line.trim();
-            if (sections.hasOwnProperty(trimmedLine)) {
-                currentSection = trimmedLine;
-            } else if (currentSection) {
-                sections[currentSection].push(trimmedLine);
-            } else {
-                formattedLines.push(trimmedLine);
-            }
-        });
-
-        for (const section in sections) {
-            if (sections[section].length > 0) {
-                formattedLines.push(`\n**${section}**`);
-                sections[section].forEach(item => {
-                    const bulletPoints = item.split('- ');
-                    if(bulletPoints.length > 1){
-                        bulletPoints.slice(1).forEach(point => {
-                             const wrappedText = doc.splitTextToSize(`- ${point.trim()}`, pageWidth - margin * 2 - 30);
-                             formattedLines.push(...wrappedText);
-                        });
-                    } else {
-                        const wrappedText = doc.splitTextToSize(item.trim(), pageWidth - margin * 2 - 30);
-                        formattedLines.push(...wrappedText);
-                    }
-                });
-            }
-        }
-        
-        return formattedLines;
-    }
 
     async function saveExportHistory(curriculumId, fileName, format) {
         const response = await fetch('{{ route('curriculum_export_tool.store') }}', {
@@ -361,13 +156,6 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
         `;
         exportHistoryContainer.prepend(item);
-    }
-
-    function getYearOrdinal(year) {
-        if (year === '1') return '1st';
-        if (year === '2') return '2nd';
-        if (year === '3') return '3rd';
-        return `${year}th`;
     }
 });
 </script>

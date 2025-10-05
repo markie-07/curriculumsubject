@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Curriculum;
 use App\Models\ExportHistory;
 use Illuminate\Http\Request;
+use PDF;
 
 class CurriculumExportToolController extends Controller
 {
@@ -35,4 +36,37 @@ class CurriculumExportToolController extends Controller
         // Return the new history item with its related curriculum info
         return response()->json($exportHistory->load('curriculum'));
     }
+
+    /**
+     * Export the curriculum data as a PDF.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function exportPdf($id)
+    {
+        $curriculum = Curriculum::with([
+            'subjects' => function ($query) {
+                // Order subjects by year and then by semester for a structured layout
+                $query->orderBy('pivot_year', 'asc')->orderBy('pivot_semester', 'asc');
+            }, 
+            'subjects.prerequisites', 
+            'subjects.grades' // Eager load grades for each subject
+        ])->findOrFail($id);
+    
+        // Safeguard against null relationships.
+        $curriculum->subjects->each(function ($subject) {
+            if (is_null($subject->prerequisites)) {
+                $subject->setRelation('prerequisites', collect());
+            }
+        });
+
+        $pdf = PDF::loadView('curriculum_pdf', compact('curriculum'));
+        
+        // Sanitize the curriculum name to create a valid filename
+        $fileName = preg_replace('/[^A-Za-z0-9\-]/', '_', $curriculum->program_code);
+        
+        return $pdf->download($fileName . '_curriculum.pdf');
+    }
 }
+
