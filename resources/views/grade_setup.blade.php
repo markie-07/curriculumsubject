@@ -6,6 +6,9 @@
     .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
     .component-row input { background-color: transparent; }
     .grade-history-card { cursor: pointer; }
+    #grade-modal.opacity-0 { opacity: 0; }
+    #grade-modal-panel.opacity-0 { opacity: 0; }
+    #grade-modal-panel.scale-95 { transform: scale(0.95); }
 </style>
 
 <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 sm:p-6 md:p-8">
@@ -57,7 +60,7 @@
                                 <circle id="progress-circle" class="progress-ring__circle text-indigo-500" stroke-width="10" stroke-linecap="round" stroke="currentColor" fill="transparent" r="45" cx="50" cy="50" />
                             </svg>
                             <div class="absolute inset-0 flex items-center justify-center">
-                                <span id="total-weight" class="text-2xl font-bold text-gray-700">100%</span>
+                                <span id="total-weight" class="text-xl font-bold text-gray-700">100%</span>
                             </div>
                         </div>
                         <p class="ml-4 font-semibold text-gray-600">Total Weight</p>
@@ -68,6 +71,10 @@
                     <button id="add-grade-btn" type="button" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-700 hover:to-blue-600 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6a1 1 0 10-2 0v5.586L7.707 10.293zM10 18a8 8 0 100-16 8 8 0 000 16z" /></svg>
                         Set Grade Scheme
+                    </button>
+                    <button id="update-grade-setup-btn" class="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed hidden">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
+                        Update Grade Scheme
                     </button>
                 </div>
             </form>
@@ -93,16 +100,33 @@
 </main>
 
 {{-- Grade Details Modal --}}
-<div id="grade-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-    <div class="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
-        <div class="flex justify-between items-center pb-3 border-b">
-            <h3 class="text-lg font-bold text-gray-800">Grade Component Details</h3>
-            <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+<div id="grade-modal" class="fixed inset-0 bg-gray-900 bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden transition-opacity duration-300 opacity-0">
+    <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl transform transition-all duration-300 scale-95 opacity-0" id="grade-modal-panel">
+        {{-- Modal Header --}}
+        <div class="flex justify-between items-center p-5 border-b border-gray-200">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 flex-shrink-0 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M12 21a9 9 0 110-18 9 9 0 010 18z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800">Grade Component Details</h3>
+            </div>
+            <button id="close-modal-btn" class="text-gray-400 hover:text-gray-700 transition-colors rounded-full p-1 hover:bg-gray-100">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
-        <div id="modal-content" class="mt-4 text-sm">
+
+        {{-- Modal Content --}}
+        <div id="modal-content" class="p-8 max-h-[60vh] overflow-y-auto bg-gray-50">
             {{-- Grade details will be loaded here --}}
+        </div>
+
+        {{-- Modal Footer --}}
+        <div class="flex justify-end p-5 bg-white border-t border-gray-200 rounded-b-2xl">
+            <button id="edit-grade-setup-btn" class="text-white bg-blue-600 hover:bg-blue-700 font-semibold py-2 px-5 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Edit
+            </button>
         </div>
     </div>
 </div>
@@ -117,15 +141,24 @@ document.addEventListener('DOMContentLoaded', () => {
         finals: { weight: 40, components: [] }
     };
 
+    // Main form elements
     const accordionContainer = document.getElementById('semestral-grade-accordion');
     const totalWeightSpan = document.getElementById('total-weight');
     const progressCircle = document.getElementById('progress-circle');
     const addGradeBtn = document.getElementById('add-grade-btn');
+    const updateGradeSetupBtn = document.getElementById('update-grade-setup-btn');
     const subjectSelect = document.getElementById('subject-select');
     const gradeHistoryContainer = document.getElementById('grade-history-container');
+
+    // Modal elements
     const gradeModal = document.getElementById('grade-modal');
     const closeModalBtn = document.getElementById('close-modal-btn');
     const modalContent = document.getElementById('modal-content');
+    const editGradeSetupBtn = document.getElementById('edit-grade-setup-btn');
+    
+    // State
+    let isEditMode = false;
+    let currentSubjectId = null;
 
     const createRow = (isSub, period, component = { name: '', weight: 0 }) => {
         const tr = document.createElement('tr');
@@ -229,8 +262,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
-
-        addGradeBtn.disabled = semestralTotal !== 100 || !allSubTotalsCorrect || !subjectSelect.value;
+        
+        const saveButtonIsDisabled = semestralTotal !== 100 || !allSubTotalsCorrect || !subjectSelect.value;
+        addGradeBtn.disabled = saveButtonIsDisabled;
+        updateGradeSetupBtn.disabled = saveButtonIsDisabled;
     };
 
     const getGradeDataFromDOM = () => {
@@ -282,10 +317,32 @@ document.addEventListener('DOMContentLoaded', () => {
         calculateAndUpdateTotals();
     };
 
-    // --- THIS IS THE UPDATED FUNCTION ---
+    const toggleGradeComponents = (disabled) => {
+        document.querySelectorAll('.semestral-input, .main-input, .sub-input, .component-name-input, .add-sub-btn, .remove-row-btn, .add-component-btn').forEach(el => {
+            el.disabled = disabled;
+        });
+    };
+    
+    const showModal = (modalId) => {
+        const modal = document.getElementById(modalId);
+        const panel = document.getElementById(`${modalId}-panel`);
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            panel.classList.remove('opacity-0', 'scale-95');
+        }, 10);
+    };
+
+    const hideModal = (modalId) => {
+        const modal = document.getElementById(modalId);
+        const panel = document.getElementById(`${modalId}-panel`);
+        modal.classList.add('opacity-0');
+        panel.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => modal.classList.add('hidden'), 300);
+    };
+
     const fetchAPI = async (url, options = {}) => {
         try {
-            // Add "/api/" to the start of the URL.
             const apiUrl = `/api/${url}`;
             options.headers = { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value, 'Accept': 'application/json', ...options.headers };
             const response = await fetch(apiUrl, options);
@@ -327,23 +384,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const fetchGradeSetupForSubject = (subjectId) => {
         if (!subjectId) {
             loadGradeDataToDOM(defaultStructure);
+            toggleGradeComponents(true);
             return;
         }
+        currentSubjectId = subjectId;
+        isEditMode = false; 
+        updateGradeSetupBtn.classList.add('hidden'); 
+        addGradeBtn.classList.remove('hidden');
+
         fetchAPI(`grades/${subjectId}`).then(data => {
             if (data && data.components && Object.keys(data.components).length > 0) {
                  loadGradeDataToDOM(data.components);
+                 toggleGradeComponents(true); // Disable form if grade exists
+                 addGradeBtn.disabled = true;
             } else {
                  loadGradeDataToDOM(defaultStructure);
+                 toggleGradeComponents(false); // Enable form if no grade exists
+                 addGradeBtn.disabled = false;
             }
-        }).catch(() => loadGradeDataToDOM(defaultStructure));
+            calculateAndUpdateTotals();
+        }).catch(() => {
+            loadGradeDataToDOM(defaultStructure);
+            toggleGradeComponents(false);
+            addGradeBtn.disabled = false;
+            calculateAndUpdateTotals();
+        });
     };
     
     const addSubjectToHistory = (subject) => {
         const noHistoryMessage = document.getElementById('no-history-message');
         if (noHistoryMessage) noHistoryMessage.remove();
-
         if (document.querySelector(`.grade-history-card[data-subject-id="${subject.id}"]`)) return;
-
         const card = document.createElement('div');
         card.className = 'grade-history-card p-4 border rounded-lg hover:bg-gray-50 transition-colors duration-200';
         card.dataset.subjectId = subject.id;
@@ -357,10 +428,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const content = toggleButton.nextElementSibling;
             const icon = toggleButton.querySelector('svg');
             const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
-
             document.querySelectorAll('.accordion-content').forEach(c => { c.style.maxHeight = null });
             document.querySelectorAll('.accordion-toggle svg').forEach(i => i.classList.remove('rotate-180'));
-
             if (!isOpen) {
                 content.style.maxHeight = content.scrollHeight + "px";
                 icon.classList.add('rotate-180');
@@ -386,7 +455,45 @@ document.addEventListener('DOMContentLoaded', () => {
                     addSubjectToHistory(data.subject);
                     subjectSelect.value = '';
                     loadGradeDataToDOM(defaultStructure);
+                    toggleGradeComponents(true);
+                    addGradeBtn.disabled = true;
                 } catch(e) { /* Error is handled in fetchAPI */ }
+            }
+        });
+    });
+
+    editGradeSetupBtn.addEventListener('click', () => {
+        Swal.fire({
+            title: 'Are you sure?', text: "You are about to update the grade setup.", icon: 'warning', showCancelButton: true,
+            confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes, update it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                isEditMode = true;
+                toggleGradeComponents(false);
+                hideModal('grade-modal');
+                addGradeBtn.classList.add('hidden');
+                updateGradeSetupBtn.classList.remove('hidden');
+                calculateAndUpdateTotals();
+            }
+        });
+    });
+
+    updateGradeSetupBtn.addEventListener('click', () => {
+        Swal.fire({
+            title: 'Confirm Grade Scheme Update', text: 'Are you sure you want to update this for the selected subject?', icon: 'question',
+            showCancelButton: true, confirmButtonText: 'Yes, update it!', confirmButtonColor: '#4f46e5', cancelButtonColor: '#d33',
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                const payload = { subject_id: currentSubjectId, components: getGradeDataFromDOM() };
+                try {
+                    const data = await fetchAPI('grades', { method: 'POST', body: JSON.stringify(payload) });
+                    Swal.fire('Updated!', data.message, 'success');
+                    isEditMode = false;
+                    toggleGradeComponents(true);
+                    addGradeBtn.classList.remove('hidden');
+                    updateGradeSetupBtn.classList.add('hidden');
+                    addGradeBtn.disabled = true;
+                } catch (e) { /* Error is handled in fetchAPI */ }
             }
         });
     });
@@ -394,32 +501,65 @@ document.addEventListener('DOMContentLoaded', () => {
     gradeHistoryContainer.addEventListener('click', async (e) => {
         const card = e.target.closest('.grade-history-card');
         if (card) {
+            const subjectId = card.dataset.subjectId;
+            subjectSelect.value = subjectId;
+            fetchGradeSetupForSubject(subjectId);
             try {
-                const gradeData = await fetchAPI(`grades/${card.dataset.subjectId}`);
-                let contentHtml = '<div class="space-y-4">';
+                const gradeData = await fetchAPI(`grades/${subjectId}`);
+                
+                // --- MODIFIED: Font weight changes ---
+                let contentHtml = '<div class="space-y-6">';
                 for (const [period, data] of Object.entries(gradeData.components)) {
-                    contentHtml += `<div class="border rounded-lg p-3 bg-gray-50"><h4 class="font-bold capitalize text-md text-gray-700">${period} (${data.weight}%)</h4><ul class="list-disc pl-5 mt-2 space-y-1 text-gray-600">`;
-                    (data.components || []).forEach(comp => {
-                        contentHtml += `<li><strong>${comp.name}</strong>: ${comp.weight}%</li>`;
-                        if (comp.sub_components && comp.sub_components.length > 0) {
-                            contentHtml += `<ul class="list-disc pl-6">`;
-                            comp.sub_components.forEach(sub => { contentHtml += `<li>${sub.name}: ${sub.weight}%</li>`; });
-                            contentHtml += `</ul>`;
-                        }
-                    });
-                    contentHtml += `</ul></div>`;
+                    contentHtml += `
+                        <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+                            <h4 class="font-bold text-lg capitalize text-gray-800 flex items-center gap-3 border-b pb-3 mb-3">
+                                ${period} <span class="text-sm font-bold text-gray-500 ml-auto">${data.weight}%</span>
+                            </h4>
+                            <div class="flow-root">
+                                <div class="-my-2 divide-y divide-gray-100">`;
+
+                    if (!data.components || data.components.length === 0) {
+                        contentHtml += '<p class="text-sm text-gray-500 py-3">No components for this period.</p>';
+                    } else {
+                        (data.components || []).forEach(comp => {
+                            contentHtml += `
+                                <div class="py-3">
+                                    <div class="flex items-center justify-between gap-4">
+                                        <p class="font-medium text-gray-700">${comp.name}</p>
+                                        <p class="font-mono text-base text-gray-900">${comp.weight}%</p>
+                                    </div>`;
+                            if (comp.sub_components && comp.sub_components.length > 0) {
+                                contentHtml += '<div class="mt-2 pl-6 border-l-2 border-gray-200 space-y-2">';
+                                comp.sub_components.forEach(sub => {
+                                    contentHtml += `
+                                        <div class="flex items-center justify-between text-sm">
+                                            <p class="text-gray-600">${sub.name}</p>
+                                            <p class="font-mono text-gray-600">${sub.weight}%</p>
+                                        </div>`;
+                                });
+                                contentHtml += '</div>';
+                            }
+                            contentHtml += '</div>';
+                        });
+                    }
+                    contentHtml += `</div></div></div>`;
                 }
                 contentHtml += '</div>';
+                // --- END ---
+
                 modalContent.innerHTML = contentHtml;
-                gradeModal.classList.remove('hidden');
+                showModal('grade-modal');
+
             } catch (error) { Swal.fire('Error', 'Could not fetch grade details.', 'error'); }
         }
     });
-
-    closeModalBtn.addEventListener('click', () => gradeModal.classList.add('hidden'));
+    
+    closeModalBtn.addEventListener('click', () => hideModal('grade-modal'));
+    gradeModal.addEventListener('click', (e) => { if (e.target.id === 'grade-modal') hideModal('grade-modal'); });
 
     fetchAndPopulateSubjects();
     loadGradeDataToDOM(defaultStructure);
+    toggleGradeComponents(true);
 });
 </script>
 @endsection

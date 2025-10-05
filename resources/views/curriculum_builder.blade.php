@@ -410,22 +410,30 @@
             const attachActionListeners = () => {
                 // Edit button
                 document.querySelectorAll('.edit-btn').forEach(button => {
-                    button.addEventListener('click', async (e) => {
+                    button.addEventListener('click', (e) => {
                         e.stopPropagation();
                         const id = e.currentTarget.dataset.id;
-                        try {
-                            const response = await fetch(`/api/curriculums/${id}`);
-                            const data = await response.json();
-                            if (!response.ok) throw data;
-                            if (data.curriculum) {
-                                showAddEditModal(true, data.curriculum);
-                            } else {
-                                throw new Error('Invalid data format received.');
+                        showConfirmationModal({
+                            title: 'Edit Curriculum?',
+                            message: 'Are you sure you want to edit this curriculum?',
+                            icon: `<svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>`,
+                            confirmButtonClass: 'bg-blue-600 hover:bg-blue-700',
+                            async onConfirm() {
+                                try {
+                                    const response = await fetch(`/api/curriculums/${id}`);
+                                    const data = await response.json();
+                                    if (!response.ok) throw data;
+                                    if (data.curriculum) {
+                                        showAddEditModal(true, data.curriculum);
+                                    } else {
+                                        throw new Error('Invalid data format received.');
+                                    }
+                                } catch (error) {
+                                   console.error('Error fetching curriculum data:', error);
+                                   alert('Error: ' + (error.message || 'Failed to load curriculum data.'));
+                                }
                             }
-                        } catch (error) {
-                           console.error('Error fetching curriculum data:', error);
-                           alert('Error: ' + (error.message || 'Failed to load curriculum data.'));
-                        }
+                        });
                     });
                 });
                 
