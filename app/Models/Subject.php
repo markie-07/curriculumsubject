@@ -29,6 +29,7 @@ class Subject extends Model
         'basic_readings',
         'extended_readings',
         'course_assessment',
+        'course_policies',
         'committee_members',
         'consultation_schedule',
         'prepared_by',
@@ -43,19 +44,33 @@ class Subject extends Model
      */
     protected $casts = [
         'lessons' => 'array',
-        'program_mapping_grid' => 'array', // This line was added
-        'course_mapping_grid' => 'array',  // This line was added
+        'program_mapping_grid' => 'array',
+        'course_mapping_grid' => 'array',
     ];
 
+    /**
+     * The curriculums that belong to the subject.
+     */
     public function curriculums(): BelongsToMany
     {
-        return $this->belongsToMany(Curriculum::class)
+        return $this->belongsToMany(Curriculum::class, 'curriculum_subject')
             ->withPivot('year', 'semester')
             ->withTimestamps();
     }
 
+    /**
+     * Get the prerequisites for the subject.
+     */
     public function prerequisites(): HasMany
     {
         return $this->hasMany(Prerequisite::class, 'subject_code', 'subject_code');
+    }
+
+    /**
+     * Get the grades for the subject.
+     */
+    public function grades(): HasMany
+    {
+        return $this->hasMany(Grade::class);
     }
 }

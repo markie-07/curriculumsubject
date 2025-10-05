@@ -321,7 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- NEW: Export Modal and PDF Generation Logic ---
+    // --- NEW: Export Modal Logic ---
     const exportModal = document.getElementById('exportConfirmationModal');
     const cancelExportButton = document.getElementById('cancelExportButton');
     const confirmExportButton = document.getElementById('confirmExportButton');
@@ -343,61 +343,11 @@ document.addEventListener('DOMContentLoaded', () => {
     exportModal.addEventListener('click', (e) => { if (e.target === exportModal) hideExportModal(); });
     
     confirmExportButton.addEventListener('click', () => {
-        if (!subjectToExport) return;
-        generatePDF(subjectToExport);
+        if (subjectToExport) {
+            window.location.href = `/subjects/${subjectToExport.id}/export-pdf`;
+        }
         hideExportModal();
     });
-
-    const generatePDF = (subject) => {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-
-        // Title
-        doc.setFontSize(20);
-        doc.setFont("helvetica", "bold");
-        doc.text("Subject Syllabus", 105, 20, null, null, "center");
-
-        // Subject Details Table
-        const detailsData = [
-            ['Subject Name:', subject.subject_name],
-            ['Subject Code:', subject.subject_code],
-            ['Subject Type:', subject.subject_type],
-            ['Units:', subject.subject_unit.toString()]
-        ];
-        
-        doc.autoTable({
-            startY: 30,
-            head: [['Attribute', 'Value']],
-            body: detailsData,
-            theme: 'grid',
-            headStyles: { fillColor: [22, 160, 133] },
-            styles: { fontSize: 12 },
-        });
-
-        // Lessons Table
-        const lessonsData = [];
-        if (subject.lessons) {
-            for (let i = 1; i <= 15; i++) {
-                const week = `Week ${i}`;
-                lessonsData.push([week, subject.lessons[week] || 'N/A']);
-            }
-        }
-        
-        doc.autoTable({
-            startY: doc.lastAutoTable.finalY + 15,
-            head: [['Week', 'Lesson / Topics']],
-            body: lessonsData,
-            theme: 'grid',
-            headStyles: { fillColor: [44, 62, 80] },
-            styles: { fontSize: 10, cellPadding: 3 },
-            columnStyles: {
-                0: { cellWidth: 25 },
-                1: { cellWidth: 'auto' }
-            }
-        });
-
-        doc.save(`${subject.subject_code}_${subject.subject_name}_Syllabus.pdf`);
-    };
 
     // --- Details Modal Logic ---
     const detailsModal = document.getElementById('subjectDetailsModal');
