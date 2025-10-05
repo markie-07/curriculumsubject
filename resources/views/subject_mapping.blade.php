@@ -258,10 +258,10 @@
     </div>
 </div>
     
-    {{-- Remove Subject Confirmation Modal --}}
-    <div id="removeConfirmationModal" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 transition-opacity duration-300 ease-out hidden">
+{{-- Remove Subject Confirmation Modal --}}
+    <div id="removeConfirmationModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 ease-out hidden">
         <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center transform scale-95 opacity-0 transition-all duration-300 ease-out" id="remove-modal-panel">
+            <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center transform scale-95 opacity-0 transition-all duration-500 ease-out" id="remove-modal-panel">
                 <div class="w-12 h-12 rounded-full bg-red-100 p-2 flex items-center justify-center mx-auto mb-4">
                     <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
@@ -278,9 +278,9 @@
     </div>
     
     {{-- Import Confirmation Modal --}}
-    <div id="importConfirmationModal" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 transition-opacity duration-300 ease-out hidden">
+    <div id="importConfirmationModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 ease-out hidden">
         <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center transform scale-95 opacity-0 transition-all duration-300 ease-out" id="import-modal-panel">
+            <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center transform scale-95 opacity-0 transition-all duration-500 ease-out" id="import-modal-panel">
                 <div class="w-12 h-12 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
                     <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
@@ -295,59 +295,9 @@
             </div>
         </div>
     </div>
-    
-    {{-- Create Subject Confirmation Modal --}}
-    <div id="createConfirmationModal" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 hidden">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
-                <div class="w-12 h-12 rounded-full bg-blue-100 p-2 flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-800">Create Subject</h3>
-                <p class="text-sm text-gray-500 mt-2">Do you want to create this new subject?</p>
-                <div class="mt-6 flex justify-center gap-4">
-                    <button id="cancelCreateBtn" class="w-full px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Cancel</button>
-                    <button id="confirmCreateBtn" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">Yes, create it!</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Grade Setup Confirmation Modal --}}
-    <div id="gradeSetupConfirmationModal" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 hidden">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
-                <div class="w-12 h-12 rounded-full bg-indigo-100 p-2 flex items-center justify-center mx-auto mb-4">
-                     <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-800">Set Up Grades?</h3>
-                <p class="text-sm text-gray-500 mt-2">Do you want to set up the grade components for this subject now?</p>
-                <div class="mt-6 flex justify-center gap-4">
-                    <button id="declineGradeSetupBtn" class="w-full px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">No</button>
-                    <button id="confirmGradeSetupBtn" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">Yes</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Creation Success Modal --}}
-    <div id="creationSuccessModal" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 hidden">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
-                <div class="w-12 h-12 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-800">Success!</h3>
-                <p class="text-sm text-gray-500 mt-2">You successfully created a new subject.</p>
-                <div class="mt-6">
-                    <button id="successOkBtn" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">OK</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     {{-- Save Mapping Confirmation Modal --}}
-    <div id="saveMappingModal" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 hidden">
+    <div id="saveMappingModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
                 <div class="w-12 h-12 rounded-full bg-blue-100 p-2 flex items-center justify-center mx-auto mb-4">
@@ -364,7 +314,7 @@
     </div>
 
     {{-- Proceed to Prerequisites Confirmation Modal --}}
-    <div id="proceedToPrerequisitesModal" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 hidden">
+    <div id="proceedToPrerequisitesModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
                 <div class="w-12 h-12 rounded-full bg-blue-100 p-2 flex items-center justify-center mx-auto mb-4">
@@ -381,7 +331,7 @@
     </div>
 
     {{-- Mapping Success Modal --}}
-    <div id="mappingSuccessModal" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 hidden">
+    <div id="mappingSuccessModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
                 <div class="w-12 h-12 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
@@ -397,7 +347,7 @@
     </div>
     
     {{-- Remove Success Modal --}}
-    <div id="removeSuccessModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900 bg-opacity-75 hidden">
+    <div id="removeSuccessModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
         <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
             <div class="w-12 h-12 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
                 <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -415,9 +365,9 @@
     </main>
 
     {{-- edit --}}
-    <div id="editConfirmationModal" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 hidden">
+    <div id="editConfirmationModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
         <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
+            <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center transform scale-95 transition-all duration-500 ease-out">
                 <div class="w-12 h-12 rounded-full bg-blue-100 p-2 flex items-center justify-center mx-auto mb-4">
                     <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path>
@@ -434,7 +384,7 @@
     </div>
 
     {{-- Reassign Subject Confirmation Modal --}}
-    <div id="reassignConfirmationModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900 bg-opacity-75 hidden">
+    <div id="reassignConfirmationModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
         <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
             <div class="w-12 h-12 rounded-full bg-yellow-100 p-2 flex items-center justify-center mx-auto mb-4">
                 <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -451,7 +401,7 @@
     </div>
 
     {{-- Reassign Success Modal --}}
-    <div id="reassignSuccessModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900 bg-opacity-75 hidden">
+    <div id="reassignSuccessModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
         <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
             <div class="w-12 h-12 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
                 <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -467,7 +417,7 @@
     </div>
 
     {{-- NEW: Delete Subject Confirmation Modal --}}
-    <div id="deleteConfirmationModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900 bg-opacity-75 hidden">
+    <div id="deleteConfirmationModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
         <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
             <div class="w-12 h-12 rounded-full bg-red-100 p-2 flex items-center justify-center mx-auto mb-4">
                 <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -484,7 +434,7 @@
     </div>
 
     {{-- NEW: Delete Success Modal --}}
-    <div id="deleteSuccessModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900 bg-opacity-75 hidden">
+    <div id="deleteSuccessModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
         <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
             <div class="w-12 h-12 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
                 <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
