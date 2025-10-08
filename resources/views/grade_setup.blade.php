@@ -40,17 +40,23 @@
 
                 {{-- Grade Components --}}
                 <div class="mt-8">
-                    <div class="flex items-center gap-3 pb-3 mb-6">
-                       <div class="w-10 h-10 flex-shrink-0 bg-teal-100 text-teal-600 rounded-lg flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M12 21a9 9 0 110-18 9 9 0 010 18z" /></svg>
+                    <div class="flex items-center justify-between gap-3 pb-3 mb-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 flex-shrink-0 bg-teal-100 text-teal-600 rounded-lg flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M12 21a9 9 0 110-18 9 9 0 010 18z" /></svg>
+                            </div>
+                            <h2 class="text-xl font-semibold text-gray-700">Semestral Grade Components</h2>
                         </div>
-                        <h2 class="text-xl font-semibold text-gray-700">Semestral Grade Components</h2>
+                        <button id="add-grade-component-btn" type="button" class="flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-800 transition-colors py-2 px-3 rounded-lg hover:bg-indigo-50">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                            </svg>
+                            Add Grade Component
+                        </button>
                     </div>
 
                     <div class="space-y-4" id="semestral-grade-accordion">
-                        @include('partials.grade_component_table', ['period' => 'prelim', 'weight' => 30])
-                        @include('partials.grade_component_table', ['period' => 'midterm', 'weight' => 30])
-                        @include('partials.grade_component_table', ['period' => 'finals', 'weight' => 40])
+                        {{-- Grade components will be dynamically inserted here --}}
                     </div>
 
                     <div class="mt-8 flex justify-center items-center p-4 bg-gray-100 rounded-lg border border-gray-200">
@@ -60,7 +66,7 @@
                                 <circle id="progress-circle" class="progress-ring__circle text-indigo-500" stroke-width="10" stroke-linecap="round" stroke="currentColor" fill="transparent" r="45" cx="50" cy="50" />
                             </svg>
                             <div class="absolute inset-0 flex items-center justify-center">
-                                <span id="total-weight" class="text-xl font-bold text-gray-700">100%</span>
+                                <span id="total-weight" class="text-xl font-bold text-gray-700">0%</span>
                             </div>
                         </div>
                         <p class="ml-4 font-semibold text-gray-600">Total Weight</p>
@@ -135,11 +141,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     let subjects = [];
-    const defaultStructure = {
-        prelim: { weight: 30, components: [] },
-        midterm: { weight: 30, components: [] },
-        finals: { weight: 40, components: [] }
-    };
+    const defaultStructure = {}; // Start with an empty structure
 
     // Main form elements
     const accordionContainer = document.getElementById('semestral-grade-accordion');
@@ -149,6 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateGradeSetupBtn = document.getElementById('update-grade-setup-btn');
     const subjectSelect = document.getElementById('subject-select');
     const gradeHistoryContainer = document.getElementById('grade-history-container');
+    const addGradeComponentBtn = document.getElementById('add-grade-component-btn');
 
     // Modal elements
     const gradeModal = document.getElementById('grade-modal');
@@ -159,6 +162,68 @@ document.addEventListener('DOMContentLoaded', () => {
     // State
     let isEditMode = false;
     let currentSubjectId = null;
+    let componentCounter = 0;
+
+    const createGradeComponent = (period = `component${++componentCounter}`, weight = 0, components = []) => {
+        const componentContainer = document.createElement('div');
+        componentContainer.className = 'period-container border border-gray-200/80 bg-white rounded-xl shadow-sm overflow-hidden';
+        componentContainer.dataset.period = period;
+        
+        componentContainer.innerHTML = `
+            <div class="accordion-toggle w-full flex justify-between items-center p-4 bg-white hover:bg-gray-50 transition-colors duration-200 cursor-pointer">
+                <div class="flex items-center gap-4">
+                    <input type="text" value="${period.startsWith('component') ? '' : period}" placeholder="Component Name (e.g., Midterm)" class="component-name-input font-semibold text-lg text-gray-700 capitalize border-gray-300 rounded-md shadow-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500">
+                    <div class="flex items-center">
+                        <input type="number" value="${weight}" class="semestral-input w-20 text-center font-bold border-gray-300 rounded-md shadow-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500">
+                        <span class="ml-2 text-lg text-gray-600">%</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm text-gray-500">Sub-total: <span class="sub-total font-bold text-gray-700">100%</span></span>
+                     <button type="button" class="remove-component-btn flex items-center justify-center w-8 h-8 text-gray-400 hover:text-red-600 hover:bg-red-100 rounded-full transition-colors" title="Remove Component">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd" /></svg>
+                    </button>
+                    <svg class="w-6 h-6 text-gray-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+            </div>
+            <div class="accordion-content bg-gray-50/50 border-t border-gray-200/80">
+                <div class="p-4">
+                    <table class="w-full text-sm">
+                        <thead class="border-b border-gray-200">
+                            <tr>
+                                <th class="p-2 text-left font-semibold text-gray-600">Sub-Component</th>
+                                <th class="p-2 text-center font-semibold text-gray-600 w-28">Weight (%)</th>
+                                <th class="p-2 text-center font-semibold text-gray-600 w-28">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="component-tbody"></tbody>
+                    </table>
+                    <div class="mt-4 flex justify-end">
+                        <button type="button" class="add-component-btn inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-800 transition-colors py-2 px-3 rounded-lg hover:bg-indigo-50">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" /></svg>
+                            Add Main Component
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+            
+        const tbody = componentContainer.querySelector('.component-tbody');
+        components.forEach(comp => {
+            const mainRow = createRow(false, period, comp);
+            tbody.appendChild(mainRow);
+            (comp.sub_components || []).forEach(sub => {
+                const subRow = createRow(true, period, sub);
+                tbody.appendChild(subRow);
+            });
+        });
+        
+        return componentContainer;
+    };
+
+    addGradeComponentBtn.addEventListener('click', () => {
+        accordionContainer.appendChild(createGradeComponent());
+        calculateAndUpdateTotals();
+    });
 
     const createRow = (isSub, period, component = { name: '', weight: 0 }) => {
         const tr = document.createElement('tr');
@@ -216,6 +281,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (accordionContent && accordionContent.style.maxHeight && accordionContent.style.maxHeight !== '0px') {
                 accordionContent.style.maxHeight = accordionContent.scrollHeight + "px";
             }
+        } else if (target.closest('.remove-component-btn')) {
+            target.closest('.period-container').remove();
         }
         calculateAndUpdateTotals();
     };
@@ -271,8 +338,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const getGradeDataFromDOM = () => {
         const data = {};
         document.querySelectorAll('.period-container').forEach(container => {
-            const period = container.dataset.period;
-            data[period] = {
+            const periodName = container.querySelector('.component-name-input').value.trim() || container.dataset.period;
+            data[periodName] = {
                 weight: Number(container.querySelector('.semestral-input').value) || 0,
                 components: []
             };
@@ -290,35 +357,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                     nextRow = nextRow.nextElementSibling;
                 }
-                data[period].components.push(mainComponent);
+                data[periodName].components.push(mainComponent);
             });
         });
         return data;
     };
 
     const loadGradeDataToDOM = (componentsData) => {
-        const dataToLoad = componentsData || defaultStructure;
+        accordionContainer.innerHTML = ''; // Clear existing components
+        const dataToLoad = componentsData && Object.keys(componentsData).length > 0 ? componentsData : defaultStructure;
+        
         Object.keys(dataToLoad).forEach(period => {
             const periodData = dataToLoad[period];
-            const container = document.querySelector(`.period-container[data-period="${period}"]`);
-            if (!container) return;
-            container.querySelector('.semestral-input').value = periodData.weight || 0;
-            const tbody = container.querySelector('.component-tbody');
-            tbody.innerHTML = ''; 
-            (periodData.components || []).forEach(component => {
-                const mainRow = createRow(false, period, component);
-                tbody.appendChild(mainRow);
-                (component.sub_components || []).forEach(sub => {
-                    const subRow = createRow(true, period, sub);
-                    tbody.appendChild(subRow);
-                });
-            });
+            const newComponent = createGradeComponent(period, periodData.weight, periodData.components);
+            accordionContainer.appendChild(newComponent);
         });
         calculateAndUpdateTotals();
     };
 
     const toggleGradeComponents = (disabled) => {
-        document.querySelectorAll('.semestral-input, .main-input, .sub-input, .component-name-input, .add-sub-btn, .remove-row-btn, .add-component-btn').forEach(el => {
+        document.querySelectorAll('.semestral-input, .main-input, .sub-input, .component-name-input, .add-sub-btn, .remove-row-btn, .add-component-btn, .remove-component-btn, #add-grade-component-btn').forEach(el => {
             el.disabled = disabled;
         });
     };
@@ -426,13 +484,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const toggleButton = e.target.closest('.accordion-toggle');
         if (toggleButton) {
             const content = toggleButton.nextElementSibling;
-            const icon = toggleButton.querySelector('svg');
+            const icon = toggleButton.querySelector('svg:last-child');
             const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
-            document.querySelectorAll('.accordion-content').forEach(c => { c.style.maxHeight = null });
-            document.querySelectorAll('.accordion-toggle svg').forEach(i => i.classList.remove('rotate-180'));
+            
+            // This allows only one accordion to be open at a time.
+            // If you want multiple, remove this block.
+            document.querySelectorAll('.accordion-content').forEach(c => { 
+                if (c !== content) c.style.maxHeight = null;
+            });
+            document.querySelectorAll('.accordion-toggle svg:last-child').forEach(i => {
+                if (i !== icon) i.classList.remove('rotate-180');
+            });
+
             if (!isOpen) {
                 content.style.maxHeight = content.scrollHeight + "px";
                 icon.classList.add('rotate-180');
+            } else {
+                content.style.maxHeight = null;
+                icon.classList.remove('rotate-180');
             }
         } else {
             handleDynamicEvents(e);
@@ -507,7 +576,6 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const gradeData = await fetchAPI(`grades/${subjectId}`);
                 
-                // --- MODIFIED: Font weight changes ---
                 let contentHtml = '<div class="space-y-6">';
                 for (const [period, data] of Object.entries(gradeData.components)) {
                     contentHtml += `
@@ -545,7 +613,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     contentHtml += `</div></div></div>`;
                 }
                 contentHtml += '</div>';
-                // --- END ---
 
                 modalContent.innerHTML = contentHtml;
                 showModal('grade-modal');
