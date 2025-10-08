@@ -23,7 +23,7 @@ class PrerequisiteController extends Controller
      */
     public function fetchData(Curriculum $curriculum)
     {
-        // **THE FIX IS HERE**: Load subjects and explicitly ORDER THEM by their year and semester
+        // Load subjects and explicitly ORDER THEM by their year and semester
         // from the curriculum mapping (the pivot table). This is the key to correct sorting.
         $curriculum->load(['subjects' => function ($query) {
             $query->orderBy('pivot_year', 'asc')->orderBy('pivot_semester', 'asc');

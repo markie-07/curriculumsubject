@@ -9,6 +9,8 @@ use App\Http\Controllers\CurriculumExportToolController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\SubjectExportController;
+use App\Http\Controllers\CurriculumVersionController;
+
 
 Route::get('/', function () {
     return view('dashboard');
@@ -54,3 +56,7 @@ Route::post('/curriculum_export_tool', [CurriculumExportToolController::class, '
 
 Route::get('/subjects/{subjectId}/export-pdf', [SubjectExportController::class, 'exportPdf'])->name('subjects.export-pdf');
 Route::get('/curriculum/{id}/export-pdf', [CurriculumExportToolController::class, 'exportPdf'])->name('curriculum.export-pdf');
+
+Route::get('/subject_mapping_history', function () {
+    return view('subject_mapping_history');
+})->name('subject_mapping_history');

@@ -38,6 +38,10 @@
             <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.494h18"></path></svg>
             <span class="nav-text">Subject Offering History</span>  
         </a>
+        <a href="{{ route('subject_mapping_history') }}" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg hover:bg-blue-800 transition-colors nav-link">
+    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+    <span class="nav-text">Mapping History</span>
+</a>
         <a href="{{ route('equivalency_tool') }}" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg hover:bg-blue-800 transition-colors nav-link">
             <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
             <span class="nav-text">Subject Equivalency Tool</span>

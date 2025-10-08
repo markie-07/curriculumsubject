@@ -361,9 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * **THIS IS THE FINAL CORRECTED FUNCTION FOR DISPLAYING THE CHAIN**
-     * It uses the pre-sorted 'subjects' array to guarantee the display order.
-     * It also applies color-coding based on the subject type.
+     * Renders the prerequisite chain with the corrected order.
      */
     function renderPrerequisiteChain(prerequisites, subjects) {
         prerequisiteChainContainer.innerHTML = '';
@@ -378,7 +376,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         savePrerequisiteChainBtn.classList.remove('hidden');
 
-        // Create a map for quick subject data lookup (name, type, etc.)
         const subjectMap = new Map(subjects.map(s => [s.subject_code, s]));
 
         const getSubjectColorClass = (subjectType) => {
@@ -391,42 +388,50 @@ document.addEventListener('DOMContentLoaded', () => {
             return 'subject-tag-default';
         };
         
-        // **THE FIX**: Iterate over the 'subjects' array which is already correctly sorted by the controller.
         subjects.forEach(subject => {
             const subjectCode = subject.subject_code;
             
-            // Check if this subject has any prerequisites defined for it.
             if (prerequisites[subjectCode] && prerequisites[subjectCode].length > 0) {
                 const prereqs = prerequisites[subjectCode];
                 
+                // --- START: MODIFICATION FOR SORTING AND ORDER ---
+                const subjectOrderMap = new Map(subjects.map((s, index) => [s.subject_code, index]));
+
+                const sortedPrereqs = [...prereqs].sort((a, b) => {
+                    const orderA = subjectOrderMap.get(a.prerequisite_subject_code);
+                    const orderB = subjectOrderMap.get(b.prerequisite_subject_code);
+                    return orderA - orderB;
+                });
+
                 const chainDiv = document.createElement('div');
                 chainDiv.className = 'flex items-center justify-between gap-2 p-3 bg-gray-50 rounded-lg border';
                 
-                // Get details for the main subject
                 const subjectName = subject.subject_name;
                 const subjectColorClass = getSubjectColorClass(subject.subject_type);
                 const subjectHtml = `<span class="font-semibold px-3 py-1.5 rounded-md ${subjectColorClass}">${subjectName}</span>`;
 
-                // Build the HTML for all of its prerequisites
-                const prereqHtml = prereqs.map(p => {
+                const prereqHtml = sortedPrereqs.map(p => {
                     const prereqSubject = subjectMap.get(p.prerequisite_subject_code);
-                    if (!prereqSubject) return ''; // Failsafe
+                    if (!prereqSubject) return ''; 
                     
                     const prereqName = prereqSubject.subject_name;
                     const prereqColorClass = getSubjectColorClass(prereqSubject.subject_type);
                     return `<span class="font-semibold px-3 py-1.5 rounded-md ${prereqColorClass}">${prereqName}</span>`;
                 }).join(' <span class="font-bold text-2xl text-gray-400 mx-2">&rarr;</span> ');
 
+                // *** THIS IS THE FIX FOR THE DISPLAY ORDER ***
                 chainDiv.innerHTML = `
                     <div class="flex-grow flex flex-wrap items-center gap-2">
-                        ${prereqHtml}
-                        <span class="font-bold text-2xl text-gray-400 mx-2">&rarr;</span>
                         ${subjectHtml}
+                        <span class="font-bold text-2xl text-gray-400 mx-2">&rarr;</span>
+                        ${prereqHtml}
                     </div>
                     <button class="edit-prereq-btn p-2 text-blue-600 hover:text-blue-800 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" data-subject-code="${subjectCode}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
                     </button>
                 `;
+                // *** END OF FIX ***
+
                 prerequisiteChainContainer.appendChild(chainDiv);
             }
         });
