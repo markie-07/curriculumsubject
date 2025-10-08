@@ -23,10 +23,14 @@ class PrerequisiteController extends Controller
      */
     public function fetchData(Curriculum $curriculum)
     {
-        // Eager load subjects to improve performance
-        $curriculum->load('subjects');
+        // **THE FIX IS HERE**: Load subjects and explicitly ORDER THEM by their year and semester
+        // from the curriculum mapping (the pivot table). This is the key to correct sorting.
+        $curriculum->load(['subjects' => function ($query) {
+            $query->orderBy('pivot_year', 'asc')->orderBy('pivot_semester', 'asc');
+        }]);
 
-        $subjects = $curriculum->subjects->sortBy('subject_code')->values();
+        // The subjects collection is now correctly sorted according to your mapping.
+        $subjects = $curriculum->subjects;
 
         $prerequisites = Prerequisite::where('curriculum_id', $curriculum->id)
             ->get()

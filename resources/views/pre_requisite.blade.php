@@ -1,6 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    /* Color styles for subject types, consistent with the mapping page */
+    .subject-tag-major { background-color: #DBEAFE; color: #1E40AF; border: 1px solid #BFDBFE; }
+    .subject-tag-minor { background-color: #E9D5FF; color: #5B21B6; border: 1px solid #D8B4FE;}
+    .subject-tag-elective { background-color: #FEE2E2; color: #991B1B; border: 1px solid #FECACA;}
+    .subject-tag-general { background-color: #FFEDD5; color: #9A3412; border: 1px solid #FED7AA;}
+    .subject-tag-default { background-color: #F3F4F6; color: #374151; border: 1px solid #E5E7EB;}
+</style>
+
 <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-8">
     <div>
         <div class="bg-white p-6 rounded-2xl shadow-lg mb-8">
@@ -44,13 +53,11 @@
                 <p class="text-center text-gray-500 py-8">Select a curriculum from the dropdown above to view its prerequisite chain.</p>
             </div>
             
-            {{-- *** START: NEW SAVE BUTTON *** --}}
             <div class="mt-6 text-right">
                 <button id="savePrerequisiteChainBtn" class="bg-green-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-green-700 transition-colors shadow-md hidden">
                     Save
                 </button>
             </div>
-            {{-- *** END: NEW SAVE BUTTON *** --}}
 
         </div>
     </div>
@@ -105,7 +112,6 @@
 <div id="savePrerequisiteModal" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 hidden">
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
-            {{-- ICON ADDED --}}
             <div class="w-12 h-12 rounded-full bg-blue-100 p-2 flex items-center justify-center mx-auto mb-4">
                 <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
@@ -123,7 +129,6 @@
 <div id="proceedToComplianceValidatorModal" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 hidden">
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
-            {{-- ICON ADDED --}}
             <div class="w-12 h-12 rounded-full bg-blue-100 p-2 flex items-center justify-center mx-auto mb-4">
                  <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
             </div>
@@ -147,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Main Page Elements ---
     const setPrerequisiteBtn = document.getElementById('setPrerequisiteBtn');
     const prerequisiteChainContainer = document.getElementById('prerequisiteChain');
-    const savePrerequisiteChainBtn = document.getElementById('savePrerequisiteChainBtn'); // New save button
+    const savePrerequisiteChainBtn = document.getElementById('savePrerequisiteChainBtn');
     
     // --- Main Curriculum Searchable Dropdown Elements ---
     const mainCustomSelector = document.getElementById('custom-curriculum-selector');
@@ -181,7 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const proceedToComplianceValidatorModal = document.getElementById('proceedToComplianceValidatorModal');
     const declineProceedToComplianceValidator = document.getElementById('declineProceedToComplianceValidator');
     const confirmProceedToComplianceValidator = document.getElementById('confirmProceedToComplianceValidator');
-
 
     // --- Main Curriculum Dropdown Logic ---
     mainSelectorButton.addEventListener('click', (e) => {
@@ -356,57 +360,89 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    /**
+     * **THIS IS THE FINAL CORRECTED FUNCTION FOR DISPLAYING THE CHAIN**
+     * It uses the pre-sorted 'subjects' array to guarantee the display order.
+     * It also applies color-coding based on the subject type.
+     */
     function renderPrerequisiteChain(prerequisites, subjects) {
         prerequisiteChainContainer.innerHTML = '';
-        if (Object.keys(prerequisites).length === 0) {
+
+        const hasPrerequisites = Object.keys(prerequisites).some(key => prerequisites[key].length > 0);
+
+        if (!hasPrerequisites) {
             prerequisiteChainContainer.innerHTML = '<p class="text-center text-gray-500 py-8">No prerequisites have been set for this curriculum yet.</p>';
-            savePrerequisiteChainBtn.classList.add('hidden'); // Hide save button if no data
+            savePrerequisiteChainBtn.classList.add('hidden');
             return;
         }
 
-        savePrerequisiteChainBtn.classList.remove('hidden'); // Show save button if there is data
+        savePrerequisiteChainBtn.classList.remove('hidden');
 
-        const subjectMap = new Map(subjects.map(s => [s.subject_code, s.subject_name]));
-        for (const subjectCode in prerequisites) {
-            const prereqs = prerequisites[subjectCode];
-            if (prereqs.length > 0) {
+        // Create a map for quick subject data lookup (name, type, etc.)
+        const subjectMap = new Map(subjects.map(s => [s.subject_code, s]));
+
+        const getSubjectColorClass = (subjectType) => {
+            const type = (subjectType || 'default').toLowerCase();
+            const geIdentifiers = ["ge", "general education", "gen ed", "general"];
+            if (type.includes('major')) return 'subject-tag-major';
+            if (type.includes('minor')) return 'subject-tag-minor';
+            if (type.includes('elective')) return 'subject-tag-elective';
+            if (geIdentifiers.some(id => type.includes(id))) return 'subject-tag-general';
+            return 'subject-tag-default';
+        };
+        
+        // **THE FIX**: Iterate over the 'subjects' array which is already correctly sorted by the controller.
+        subjects.forEach(subject => {
+            const subjectCode = subject.subject_code;
+            
+            // Check if this subject has any prerequisites defined for it.
+            if (prerequisites[subjectCode] && prerequisites[subjectCode].length > 0) {
+                const prereqs = prerequisites[subjectCode];
+                
                 const chainDiv = document.createElement('div');
                 chainDiv.className = 'flex items-center justify-between gap-2 p-3 bg-gray-50 rounded-lg border';
                 
-                const subjectName = subjectMap.get(subjectCode) || subjectCode;
-                const subjectHtml = `<span class="font-semibold bg-blue-200 text-blue-800 px-2 py-1 rounded">${subjectName}</span>`;
+                // Get details for the main subject
+                const subjectName = subject.subject_name;
+                const subjectColorClass = getSubjectColorClass(subject.subject_type);
+                const subjectHtml = `<span class="font-semibold px-3 py-1.5 rounded-md ${subjectColorClass}">${subjectName}</span>`;
 
+                // Build the HTML for all of its prerequisites
                 const prereqHtml = prereqs.map(p => {
-                    const prereqName = subjectMap.get(p.prerequisite_subject_code) || p.prerequisite_subject_code;
-                    return `<span class="font-semibold bg-yellow-200 text-yellow-800 px-2 py-1 rounded">${prereqName}</span>`;
+                    const prereqSubject = subjectMap.get(p.prerequisite_subject_code);
+                    if (!prereqSubject) return ''; // Failsafe
+                    
+                    const prereqName = prereqSubject.subject_name;
+                    const prereqColorClass = getSubjectColorClass(prereqSubject.subject_type);
+                    return `<span class="font-semibold px-3 py-1.5 rounded-md ${prereqColorClass}">${prereqName}</span>`;
                 }).join(' <span class="font-bold text-2xl text-gray-400 mx-2">&rarr;</span> ');
 
                 chainDiv.innerHTML = `
                     <div class="flex-grow flex flex-wrap items-center gap-2">
-                        ${subjectHtml}
-                        <span class="font-bold text-2xl text-gray-400 mx-2">&rarr;</span>
                         ${prereqHtml}
+                        <span class="font-bold text-2xl text-gray-400 mx-2">&rarr;</span>
+                        ${subjectHtml}
                     </div>
                     <button class="edit-prereq-btn p-2 text-blue-600 hover:text-blue-800 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" data-subject-code="${subjectCode}">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
                     </button>
                 `;
                 prerequisiteChainContainer.appendChild(chainDiv);
             }
-        }
+        });
+
         addEditButtonListeners();
     }
     
     function addEditButtonListeners() {
         document.querySelectorAll('.edit-prereq-btn').forEach(button => {
             button.addEventListener('click', (e) => {
-                const subjectCodeToEdit = e.target.closest('button').dataset.subjectCode;
+                const subjectCodeToEdit = e.currentTarget.dataset.subjectCode;
                 showModal(subjectCodeToEdit);
             });
         });
     }
 
-    // --- Event Listeners & Handlers ---
     async function handleSubjectSelection(subjectCode) {
         modalSubjectCodeInput.value = subjectCode;
         savePrerequisitesBtn.disabled = !subjectCode;
@@ -444,7 +480,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Failed to save prerequisites.');
             }
-            // *** CHANGE: Do not alert, just hide and refresh data ***
             hideModal();
             fetchPrerequisiteData(data.curriculum_id);
         } catch (error) {
@@ -455,7 +490,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- New Modal Workflow for Saving ---
     savePrerequisiteChainBtn.addEventListener('click', () => {
         savePrerequisiteModal.classList.remove('hidden');
     });
@@ -466,7 +500,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     confirmSavePrerequisite.addEventListener('click', () => {
         savePrerequisiteModal.classList.add('hidden');
-        // On success, show the next modal
         proceedToComplianceValidatorModal.classList.remove('hidden');
     });
 
@@ -475,12 +508,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     confirmProceedToComplianceValidator.addEventListener('click', () => {
-        // Redirect to the compliance validator page
         window.location.href = '{{ route('compliance.validator') }}';
     });
 
-
-    // --- Initial Load ---
     const urlParams = new URLSearchParams(window.location.search);
     const curriculumIdFromUrl = urlParams.get('curriculumId');
     if (curriculumIdFromUrl) {
@@ -491,7 +521,6 @@ document.addEventListener('DOMContentLoaded', () => {
             mainSelectorButton.querySelector('span').textContent = selectedCurriculum.name;
             mainSelectorButton.querySelector('span').classList.remove('text-gray-500');
             fetchPrerequisiteData(curriculumIdFromUrl);
-            // *** CHANGE: Automatically show the modal ***
             showModal();
         }
     }
