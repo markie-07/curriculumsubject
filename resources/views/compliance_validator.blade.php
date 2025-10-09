@@ -291,4 +291,104 @@
     });
  });
  </script>
+
+{{-- External Link Confirmation Modal --}}
+<div id="externalLinkModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 ease-out hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="relative bg-white w-full max-w-lg rounded-2xl shadow-2xl p-6 md:p-8 transform scale-95 opacity-0 transition-all duration-300 ease-out" id="external-link-modal-panel">
+            <button id="closeExternalLinkModalButton" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none transition-colors duration-200 rounded-full p-1 hover:bg-slate-100" aria-label="Close modal">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            
+            <div class="text-center mb-8">
+                <img src="{{ asset('/images/SMSIII LOGO.png') }}" alt="SMS3 Logo" class="mx-auto h-16 w-auto mb-4">
+                <h2 class="text-2xl font-bold text-slate-800">External Document</h2>
+                <p class="text-sm text-slate-500 mt-1">You are about to view an official government document.</p>
+            </div>
+
+            <div class="bg-blue-50 rounded-lg p-4 mb-6 border border-blue-200">
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-blue-600 mt-0.5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div class="text-sm text-blue-700">
+                        <p class="font-semibold">Official Document Notice:</p>
+                        <p>This will open an official government document in a new tab. The document is hosted on the official agency website.</p>
+                        <p class="mt-2"><strong>Document:</strong> <span id="document-title" class="break-words"></span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-4 pt-4">
+                <button type="button" id="cancelExternalLinkButton" class="flex-1 px-6 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition-all">Cancel</button>
+                <button type="button" id="confirmExternalLinkButton" class="flex-1 px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    <span>Open Document</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Modal elements
+    const externalLinkModal = document.getElementById('externalLinkModal');
+    const externalLinkModalPanel = document.getElementById('external-link-modal-panel');
+    const closeExternalLinkModalButton = document.getElementById('closeExternalLinkModalButton');
+    const cancelExternalLinkButton = document.getElementById('cancelExternalLinkButton');
+    const confirmExternalLinkButton = document.getElementById('confirmExternalLinkButton');
+    const documentTitle = document.getElementById('document-title');
+
+    let currentLink = null;
+
+    // Modal helper functions
+    const showExternalLinkModal = (link, title) => {
+        currentLink = link;
+        documentTitle.textContent = title || 'Official Document';
+        
+        externalLinkModal.classList.remove('hidden');
+        setTimeout(() => {
+            externalLinkModal.classList.remove('opacity-0');
+            externalLinkModalPanel.classList.remove('opacity-0', 'scale-95');
+        }, 10);
+    };
+
+    const hideExternalLinkModal = () => {
+        externalLinkModal.classList.add('opacity-0');
+        externalLinkModalPanel.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => externalLinkModal.classList.add('hidden'), 300);
+    };
+
+    // Event listeners for all external links
+    document.addEventListener('click', function(e) {
+        const link = e.target.closest('a[href^="http"]');
+        if (link && link.getAttribute('target') === '_blank') {
+            e.preventDefault();
+            const title = link.textContent.trim();
+            showExternalLinkModal(link.href, title);
+        }
+    });
+
+    // Modal close event listeners
+    closeExternalLinkModalButton.addEventListener('click', hideExternalLinkModal);
+    cancelExternalLinkButton.addEventListener('click', hideExternalLinkModal);
+
+    // Confirm external link
+    confirmExternalLinkButton.addEventListener('click', function() {
+        if (currentLink) {
+            window.open(currentLink, '_blank');
+            hideExternalLinkModal();
+        }
+    });
+
+    // Close modal when clicking outside
+    externalLinkModal.addEventListener('click', function(e) {
+        if (e.target === this) hideExternalLinkModal();
+    });
+});
+</script>
+
  @endsection

@@ -20,7 +20,10 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'username',
         'password',
+        'role',
+        'status',
     ];
 
     /**
@@ -43,6 +46,124 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'last_activity' => 'datetime',
         ];
+    }
+
+    /**
+     * Check if user is super admin
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'super_admin';
+    }
+
+    /**
+     * Check if user is admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if user is admin or super admin
+     */
+    public function isAdminOrSuperAdmin(): bool
+    {
+        return in_array($this->role, ['admin', 'super_admin']);
+    }
+
+    /**
+     * Check if user is regular user
+     */
+    public function isUser(): bool
+    {
+        return $this->role === 'user';
+    }
+
+    /**
+     * Check if user is employee
+     */
+    public function isEmployee(): bool
+    {
+        return $this->role === 'employee';
+    }
+
+    /**
+     * Get the notifications for the user.
+     */
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+    /**
+     * Get the activity logs for the user.
+     */
+    public function activityLogs()
+    {
+        return $this->hasMany(EmployeeActivityLog::class);
+    }
+
+    /**
+     * Check if user is active
+     */
+    public function isActive(): bool
+    {
+        return $this->status === 'active';
+    }
+
+    /**
+     * Check if user is inactive
+     */
+    public function isInactive(): bool
+    {
+        return $this->status === 'inactive';
+    }
+
+    /**
+     * Get status badge color
+     */
+    public function getStatusBadgeColorAttribute(): string
+    {
+        return match($this->status) {
+            'active' => 'bg-green-100 text-green-800',
+            'inactive' => 'bg-red-100 text-red-800',
+            default => 'bg-gray-100 text-gray-800'
+        };
+    }
+
+    /**
+     * Get recent activity logs
+     */
+    public function recentActivity($days = 7)
+    {
+        return $this->activityLogs()
+                   ->recent($days)
+                   ->orderBy('created_at', 'desc')
+                   ->limit(10);
+    }
+
+    /**
+     * Update last activity timestamp
+     */
+    public function updateLastActivity()
+    {
+        $this->update(['last_activity' => now()]);
+    }
+
+    /**
+     * Log user activity
+     */
+    public function logActivity(string $type, string $description, array $metadata = [])
+    {
+        return $this->activityLogs()->create([
+            'activity_type' => $type,
+            'description' => $description,
+            'metadata' => $metadata,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ]);
     }
 }

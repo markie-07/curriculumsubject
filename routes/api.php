@@ -37,6 +37,7 @@ Route::get('/grades/{subjectId}', [GradeController::class, 'show']);
 
 
 // --- Equivalency Tool Routes ---
+Route::get('/equivalencies', [EquivalencyToolController::class, 'getEquivalencies']);
 Route::post('/equivalencies', [EquivalencyToolController::class, 'store']);
 Route::patch('/equivalencies/{equivalency}', [EquivalencyToolController::class, 'update']);
 Route::delete('/equivalencies/{equivalency}', [EquivalencyToolController::class, 'destroy']);

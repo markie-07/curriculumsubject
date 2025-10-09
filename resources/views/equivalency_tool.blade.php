@@ -123,63 +123,78 @@
     </div>
 </div>
 
-{{-- Modals --}}
-<div id="modal-backdrop" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
-
-{{-- Success Modal --}}
-<div id="success-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
-    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm text-center">
-        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-            <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+{{-- Confirmation Modal --}}
+<div id="confirmationModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 ease-out hidden">
+    <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center transform scale-95 opacity-0 transition-all duration-300 ease-out" id="confirmation-modal-panel">
+        <div id="confirmation-modal-icon" class="w-12 h-12 rounded-full p-2 flex items-center justify-center mx-auto mb-4">
+            {{-- Icon will be set by JS --}}
         </div>
-        <h3 class="text-lg leading-6 font-medium text-gray-900 mt-4" id="success-modal-title">Success!</h3>
-        <div class="mt-2">
-            <p class="text-sm text-gray-500" id="success-modal-message"></p>
-        </div>
-        <div class="mt-4">
-            <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700" onclick="closeModal('success-modal')">
-                Got it, thanks!
-            </button>
+        <h3 id="confirmation-modal-title" class="text-lg font-semibold text-slate-800"></h3>
+        <p id="confirmation-modal-message" class="text-sm text-slate-500 mt-2"></p>
+        <div class="mt-6 flex justify-center gap-4">
+            <button id="cancel-confirmation-button" class="w-full px-6 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition-all">Cancel</button>
+            <button id="confirm-action-button" class="w-full px-6 py-2.5 text-sm font-medium text-white rounded-lg transition-all">Confirm</button>
         </div>
     </div>
 </div>
 
-{{-- Delete Confirmation Modal --}}
-<div id="delete-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
-     <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md text-center">
-        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-            <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+{{-- Success Modal --}}
+<div id="successModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 ease-out hidden">
+     <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center transform scale-95 opacity-0 transition-all duration-300 ease-out" id="success-modal-panel">
+        <div class="w-12 h-12 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
+             <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </div>
-        <h3 class="text-lg leading-6 font-medium text-gray-900 mt-4">Delete Equivalency</h3>
-        <p class="mt-2 text-sm text-gray-500">Are you sure you want to delete this equivalency? This action cannot be undone.</p>
-        <div class="mt-6 flex justify-center space-x-4">
-            <button type="button" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300" onclick="closeModal('delete-modal')">Cancel</button>
-            <button type="button" id="confirm-delete-btn" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Delete</button>
+        <h3 id="success-modal-title" class="text-lg font-semibold text-slate-800"></h3>
+        <p id="success-modal-message" class="text-sm text-slate-500 mt-2"></p>
+        <div class="mt-6">
+            <button id="closeSuccessModalButton" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-all">OK</button>
         </div>
     </div>
 </div>
 
 {{-- Edit Modal --}}
-<div id="edit-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
-    <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-lg">
-        <h2 class="text-xl font-bold text-gray-800 mb-6">Edit Equivalency</h2>
-        <div class="space-y-6">
-            <div>
-                <label for="edit-source-subject" class="block text-sm font-medium text-gray-700">Source Subject Name</label>
-                <input type="text" id="edit-source-subject" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-50 rounded-md shadow-sm">
+<div id="editModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 ease-out hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="relative bg-white w-full max-w-lg rounded-2xl shadow-2xl p-6 md:p-8 transform scale-95 opacity-0 transition-all duration-300 ease-out" id="edit-modal-panel">
+            <button id="closeEditModalButton" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none transition-colors duration-200 rounded-full p-1 hover:bg-slate-100" aria-label="Close modal">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            
+            <div class="text-center mb-8">
+                <img src="{{ asset('/images/SMSIII LOGO.png') }}" alt="SMS3 Logo" class="mx-auto h-16 w-auto mb-4">
+                <h2 class="text-2xl font-bold text-slate-800">Edit Equivalency</h2>
+                <p class="text-sm text-slate-500 mt-1">Update the subject equivalency mapping.</p>
             </div>
-            <div>
-                <label for="edit-equivalent-subject" class="block text-sm font-medium text-gray-700">Equivalent BCP Subject</label>
-                <select id="edit-equivalent-subject" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm">
-                    @foreach($subjects as $subject)
-                        <option value="{{ $subject->id }}">{{ $subject->subject_code }} - {{ $subject->subject_name }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-        <div class="mt-8 flex justify-end space-x-4">
-            <button type="button" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300" onclick="closeModal('edit-modal')">Cancel</button>
-            <button type="button" id="save-edit-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Save Changes</button>
+
+            <form id="editEquivalencyForm" class="space-y-6">
+                @csrf
+                <div>
+                    <label for="edit-source-subject" class="block text-sm font-medium text-slate-700 mb-2">Source Subject Name</label>
+                    <input type="text" id="edit-source-subject" name="source_subject" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                </div>
+
+                <div>
+                    <label for="edit-equivalent-subject" class="block text-sm font-medium text-slate-700 mb-2">Equivalent BCP Subject</label>
+                    <select id="edit-equivalent-subject" name="equivalent_subject_id" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        <option value="">Select a subject...</option>
+                        @foreach($subjects as $subject)
+                            <option value="{{ $subject->id }}">{{ $subject->subject_code }} - {{ $subject->subject_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="flex gap-4 pt-4">
+                    <button type="button" id="cancelEditModalButton" class="flex-1 px-6 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition-all">Cancel</button>
+                    <button type="submit" id="save-edit-button" class="flex-1 px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Update Equivalency</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -195,36 +210,92 @@ document.addEventListener('DOMContentLoaded', function () {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     
     // Modal elements
-    const backdrop = document.getElementById('modal-backdrop');
-    const successModal = document.getElementById('success-modal');
+    const confirmationModal = document.getElementById('confirmationModal');
+    const confirmationModalPanel = document.getElementById('confirmation-modal-panel');
+    const confirmationModalTitle = document.getElementById('confirmation-modal-title');
+    const confirmationModalMessage = document.getElementById('confirmation-modal-message');
+    const confirmationModalIcon = document.getElementById('confirmation-modal-icon');
+    const cancelConfirmationButton = document.getElementById('cancel-confirmation-button');
+    const confirmActionButton = document.getElementById('confirm-action-button');
+
+    const successModal = document.getElementById('successModal');
+    const successModalPanel = document.getElementById('success-modal-panel');
+    const successModalTitle = document.getElementById('success-modal-title');
     const successModalMessage = document.getElementById('success-modal-message');
-    const deleteModal = document.getElementById('delete-modal');
-    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
-    const editModal = document.getElementById('edit-modal');
+    const closeSuccessModalButton = document.getElementById('closeSuccessModalButton');
+
+    const editModal = document.getElementById('editModal');
+    const editModalPanel = document.getElementById('edit-modal-panel');
+    const closeEditModalButton = document.getElementById('closeEditModalButton');
+    const cancelEditModalButton = document.getElementById('cancelEditModalButton');
+    const editEquivalencyForm = document.getElementById('editEquivalencyForm');
     const editSourceSubjectInput = document.getElementById('edit-source-subject');
     const editEquivalentSubjectSelect = document.getElementById('edit-equivalent-subject');
-    const saveEditBtn = document.getElementById('save-edit-btn');
 
     let itemToDelete = null;
     let itemToEdit = null;
+    let currentAction = null;
 
-    // --- MODAL HELPER FUNCTIONS ---
-    window.openModal = (modalId) => {
-        const modal = document.getElementById(modalId);
-        backdrop.classList.remove('hidden');
-        modal.classList.remove('hidden');
-    };
-
-    window.closeModal = (modalId) => {
-        const modal = document.getElementById(modalId);
-        backdrop.classList.add('hidden');
-        modal.classList.add('hidden');
-    };
-
-    const showSuccessModal = (message) => {
+    // Modal Helper Functions
+    const showSuccessModal = (title, message) => {
+        successModalTitle.textContent = title;
         successModalMessage.textContent = message;
-        openModal('success-modal');
+        successModal.classList.remove('hidden');
+        setTimeout(() => {
+            successModal.classList.remove('opacity-0');
+            successModalPanel.classList.remove('opacity-0', 'scale-95');
+        }, 10);
     };
+
+    const hideSuccessModal = () => {
+        successModal.classList.add('opacity-0');
+        successModalPanel.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => successModal.classList.add('hidden'), 300);
+    };
+
+    const showConfirmationModal = (config) => {
+        confirmationModalTitle.textContent = config.title;
+        confirmationModalMessage.textContent = config.message;
+        confirmationModalIcon.innerHTML = config.icon;
+        confirmActionButton.className = `w-full px-6 py-2.5 text-sm font-medium text-white rounded-lg transition-all ${config.confirmButtonClass}`;
+        currentAction = config.onConfirm;
+
+        confirmationModal.classList.remove('hidden');
+        setTimeout(() => {
+            confirmationModal.classList.remove('opacity-0');
+            confirmationModalPanel.classList.remove('opacity-0', 'scale-95');
+        }, 10);
+    };
+
+    const hideConfirmationModal = () => {
+        confirmationModal.classList.add('opacity-0');
+        confirmationModalPanel.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => confirmationModal.classList.add('hidden'), 300);
+    };
+
+    const showEditModal = () => {
+        editModal.classList.remove('hidden');
+        setTimeout(() => {
+            editModal.classList.remove('opacity-0');
+            editModalPanel.classList.remove('opacity-0', 'scale-95');
+        }, 10);
+    };
+
+    const hideEditModal = () => {
+        editModal.classList.add('opacity-0');
+        editModalPanel.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => editModal.classList.add('hidden'), 300);
+    };
+
+    // Modal Event Listeners
+    cancelConfirmationButton.addEventListener('click', hideConfirmationModal);
+    confirmActionButton.addEventListener('click', () => {
+        if (currentAction) currentAction();
+        hideConfirmationModal();
+    });
+    closeSuccessModalButton.addEventListener('click', hideSuccessModal);
+    closeEditModalButton.addEventListener('click', hideEditModal);
+    cancelEditModalButton.addEventListener('click', hideEditModal);
 
     // --- CARD CREATION ---
     const createEquivalencyCard = (equivalency) => {
@@ -278,33 +349,53 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- API ACTIONS ---
     
     // CREATE
-    createBtn.addEventListener('click', async function () {
+    createBtn.addEventListener('click', function () {
         const sourceSubject = sourceSubjectInput.value.trim();
         const equivalentSubjectId = equivalentSubjectSelect.value;
 
         if (sourceSubject === '' || equivalentSubjectId === '') {
-            alert('Please fill out both subject fields.');
+            showConfirmationModal({
+                title: 'Missing Information',
+                message: 'Please fill out both subject fields before creating an equivalency.',
+                icon: `<svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`,
+                confirmButtonClass: 'bg-yellow-600 hover:bg-yellow-700',
+                onConfirm: () => {}
+            });
             return;
         }
 
-        try {
-            const response = await fetch('/api/equivalencies', { // CORRECTED URL
-                method: 'POST',
-                headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json'},
-                body: JSON.stringify({ source_subject_name: sourceSubject, equivalent_subject_id: equivalentSubjectId })
-            });
+        showConfirmationModal({
+            title: 'Create Equivalency?',
+            message: 'Are you sure you want to create this subject equivalency?',
+            icon: `<svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
+            confirmButtonClass: 'bg-blue-600 hover:bg-blue-700',
+            onConfirm: async () => {
+                try {
+                    const response = await fetch('/api/equivalencies', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json'},
+                        body: JSON.stringify({ source_subject_name: sourceSubject, equivalent_subject_id: equivalentSubjectId })
+                    });
 
-            if (!response.ok) throw new Error((await response.json()).message || 'Failed to create.');
+                    if (!response.ok) throw new Error((await response.json()).message || 'Failed to create.');
 
-            const newEquivalency = await response.json();
-            addEquivalencyToDOM(newEquivalency);
-            showSuccessModal('Equivalency created successfully!');
-            sourceSubjectInput.value = '';
-            equivalentSubjectSelect.value = '';
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred: ' + error.message);
-        }
+                    const newEquivalency = await response.json();
+                    addEquivalencyToDOM(newEquivalency);
+                    showSuccessModal('Equivalency Created!', 'The subject equivalency has been successfully created.');
+                    sourceSubjectInput.value = '';
+                    equivalentSubjectSelect.value = '';
+                } catch (error) {
+                    console.error('Error:', error);
+                    showConfirmationModal({
+                        title: 'Error',
+                        message: `An error occurred: ${error.message}`,
+                        icon: `<svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"></path></svg>`,
+                        confirmButtonClass: 'bg-red-600 hover:bg-red-700',
+                        onConfirm: () => {}
+                    });
+                }
+            }
+        });
     });
 
     // Event Delegation for EDIT and DELETE
@@ -316,17 +407,63 @@ document.addEventListener('DOMContentLoaded', function () {
             itemToEdit = editButton.closest('.equivalency-item');
             editSourceSubjectInput.value = itemToEdit.dataset.sourceName;
             editEquivalentSubjectSelect.value = itemToEdit.dataset.equivalentId;
-            openModal('edit-modal');
+            showEditModal();
         }
 
         if (deleteButton) {
             itemToDelete = deleteButton.closest('.equivalency-item');
-            openModal('delete-modal');
+            showConfirmationModal({
+                title: 'Delete Equivalency?',
+                message: 'Are you sure you want to delete this equivalency? This action cannot be undone.',
+                icon: `<svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"></path></svg>`,
+                confirmButtonClass: 'bg-red-600 hover:bg-red-700',
+                onConfirm: async () => {
+                    const equivalencyId = itemToDelete.dataset.id;
+                    try {
+                        const response = await fetch(`/api/equivalencies/${equivalencyId}`, {
+                            method: 'DELETE',
+                            headers: {'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json'}
+                        });
+
+                        if (!response.ok) throw new Error((await response.json()).message || 'Failed to delete.');
+                        
+                        // Animate out
+                        itemToDelete.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+                        itemToDelete.style.transform = 'translateX(100%)';
+                        itemToDelete.style.opacity = '0';
+                        
+                        setTimeout(() => {
+                            itemToDelete.remove();
+                            if (equivalencyList.children.length === 0) {
+                                 equivalencyList.innerHTML = `
+                                    <div id="no-equivalencies-message" class="text-center text-gray-500 py-10 border-2 border-dashed rounded-lg">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
+                                        <h3 class="mt-2 text-sm font-medium text-gray-900">No equivalencies created yet.</h3>
+                                        <p class="mt-1 text-sm text-gray-500">Get started by creating a new equivalency.</p>
+                                    </div>`;
+                            }
+                        }, 300);
+                        
+                        showSuccessModal('Equivalency Deleted!', 'The equivalency has been successfully deleted.');
+                    } catch (error) {
+                        console.error('Error:', error);
+                        showConfirmationModal({
+                            title: 'Error',
+                            message: `An error occurred: ${error.message}`,
+                            icon: `<svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"></path></svg>`,
+                            confirmButtonClass: 'bg-red-600 hover:bg-red-700',
+                            onConfirm: () => {}
+                        });
+                    }
+                }
+            });
         }
     });
 
-    // UPDATE (Save Changes)
-    saveEditBtn.addEventListener('click', async () => {
+    // UPDATE (Edit Form Submission)
+    editEquivalencyForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
         const equivalencyId = itemToEdit.dataset.id;
         const updatedData = {
             source_subject_name: editSourceSubjectInput.value.trim(),
@@ -334,7 +471,7 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         try {
-            const response = await fetch(`/api/equivalencies/${equivalencyId}`, { // CORRECTED URL
+            const response = await fetch(`/api/equivalencies/${equivalencyId}`, {
                 method: 'PATCH',
                 headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json'},
                 body: JSON.stringify(updatedData)
@@ -346,50 +483,20 @@ document.addEventListener('DOMContentLoaded', function () {
             const updatedCard = createEquivalencyCard(updatedEquivalency);
             itemToEdit.replaceWith(updatedCard);
             
-            closeModal('edit-modal');
-            showSuccessModal('Equivalency updated successfully!');
+            hideEditModal();
+            showSuccessModal('Equivalency Updated!', 'The equivalency has been successfully updated.');
         } catch (error) {
             console.error('Error:', error);
-            alert('An error occurred: ' + error.message);
-        }
-    });
-
-    // DELETE
-    confirmDeleteBtn.addEventListener('click', async () => {
-        const equivalencyId = itemToDelete.dataset.id;
-
-        try {
-            const response = await fetch(`/api/equivalencies/${equivalencyId}`, { // CORRECTED URL
-                method: 'DELETE',
-                headers: {'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json'}
+            showConfirmationModal({
+                title: 'Error',
+                message: `An error occurred: ${error.message}`,
+                icon: `<svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"></path></svg>`,
+                confirmButtonClass: 'bg-red-600 hover:bg-red-700',
+                onConfirm: () => {}
             });
-
-            if (!response.ok) throw new Error((await response.json()).message || 'Failed to delete.');
-            
-            // Animate out
-            itemToDelete.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-            itemToDelete.style.transform = 'translateX(100%)';
-            itemToDelete.style.opacity = '0';
-            
-            setTimeout(() => {
-                itemToDelete.remove();
-                if (equivalencyList.children.length === 0) {
-                     equivalencyList.innerHTML = `
-                        <div id="no-equivalencies-message" class="text-center text-gray-500 py-10 border-2 border-dashed rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">No equivalencies created yet.</h3>
-                            <p class="mt-1 text-sm text-gray-500">Get started by creating a new equivalency.</p>
-                        </div>`;
-                }
-            }, 300);
-            
-            closeModal('delete-modal');
-            showSuccessModal('Equivalency deleted successfully!');
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred: ' + error.message);
         }
     });
+
     
     // --- SEARCH ---
     searchInput.addEventListener('input', function () {

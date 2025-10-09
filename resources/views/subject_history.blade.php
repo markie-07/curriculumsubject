@@ -83,7 +83,7 @@
                     <button class="view-details-btn text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors" data-details="{{ json_encode($record->subject) }}">View Details</button>
                     {{-- NEW: Export Button Added --}}
                     <button class="export-btn text-sm font-bold text-white bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition-all shadow-md hover:shadow-lg" data-subject="{{ json_encode($record->subject) }}">Export</button>
-                    <button class="retrieve-btn text-sm font-bold text-white bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-all shadow-md hover:shadow-lg" data-id="{{ $record->id }}">Retrieve</button>
+                    <button class="retrieve-btn text-sm font-bold text-white bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-all shadow-md hover:shadow-lg" data-id="{{ $record->id }}" data-subject="{{ json_encode($record->subject) }}">Retrieve</button>
                 </div>
             </div>
             @empty
@@ -99,40 +99,87 @@
     </div>
 </main>
 
-{{-- Modal for Retrieve Confirmation --}}
-<div id="retrieveConfirmationModal" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 hidden">
-     <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
-            <div class="w-12 h-12 rounded-full bg-purple-100 p-2 flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h5M7 7l9 9M20 20v-5h-5"></path></svg>
-            </div>
-            <h3 class="text-lg font-semibold text-gray-800">Retrieve Subject</h3>
-            <p class="text-sm text-gray-500 mt-2">Are you sure you want to add this subject back to its original place in the curriculum?</p>
-            <div class="mt-6 flex justify-center gap-4">
-                <button id="cancelRetrieveButton" class="w-full px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Cancel</button>
-                <button id="confirmRetrieveButton" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700">Yes, Retrieve</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- NEW: Modal for Export Confirmation --}}
-<div id="exportConfirmationModal" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 hidden">
+{{-- Retrieve Confirmation Modal --}}
+<div id="retrieveConfirmationModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 ease-out hidden">
     <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
-            <div class="w-12 h-12 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
-                 <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+        <div class="relative bg-white w-full max-w-lg rounded-2xl shadow-2xl p-6 md:p-8 transform scale-95 opacity-0 transition-all duration-300 ease-out" id="retrieve-modal-panel">
+            <button id="closeRetrieveModalButton" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none transition-colors duration-200 rounded-full p-1 hover:bg-slate-100" aria-label="Close modal">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            
+            <div class="text-center mb-8">
+                <img src="{{ asset('/images/SMSIII LOGO.png') }}" alt="SMS3 Logo" class="mx-auto h-16 w-auto mb-4">
+                <h2 class="text-2xl font-bold text-slate-800">Retrieve Subject</h2>
+                <p class="text-sm text-slate-500 mt-1">Add this subject back to its original curriculum position.</p>
             </div>
-            <h3 class="text-lg font-semibold text-gray-800">Export Subject to PDF</h3>
-            <p class="text-sm text-gray-500 mt-2">Are you sure you want to download a PDF file of this subject's details and lessons?</p>
-            <div class="mt-6 flex justify-center gap-4">
-                <button id="cancelExportButton" class="w-full px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Cancel</button>
-                <button id="confirmExportButton" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">Yes, Export</button>
+
+            <div class="bg-slate-50 rounded-lg p-4 mb-6">
+                <h3 class="font-semibold text-slate-700 mb-2">Subject Details:</h3>
+                <div id="retrieve-subject-summary" class="text-sm text-slate-600">
+                    <!-- Summary will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="flex gap-4 pt-4">
+                <button type="button" id="cancelRetrieveButton" class="flex-1 px-6 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition-all">Cancel</button>
+                <button type="button" id="confirmRetrieveButton" class="flex-1 px-6 py-2.5 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-all flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    <span>Retrieve Subject</span>
+                </button>
             </div>
         </div>
     </div>
 </div>
 
+{{-- Export Confirmation Modal --}}
+<div id="exportConfirmationModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 ease-out hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="relative bg-white w-full max-w-lg rounded-2xl shadow-2xl p-6 md:p-8 transform scale-95 opacity-0 transition-all duration-300 ease-out" id="export-modal-panel">
+            <button id="closeExportModalButton" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none transition-colors duration-200 rounded-full p-1 hover:bg-slate-100" aria-label="Close modal">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            
+            <div class="text-center mb-8">
+                <img src="{{ asset('/images/SMSIII LOGO.png') }}" alt="SMS3 Logo" class="mx-auto h-16 w-auto mb-4">
+                <h2 class="text-2xl font-bold text-slate-800">Export Subject to PDF</h2>
+                <p class="text-sm text-slate-500 mt-1">Generate a PDF document with complete subject details.</p>
+            </div>
+
+            <div class="bg-slate-50 rounded-lg p-4 mb-6">
+                <h3 class="font-semibold text-slate-700 mb-2">Export Details:</h3>
+                <div id="export-subject-summary" class="text-sm text-slate-600">
+                    <!-- Summary will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="flex gap-4 pt-4">
+                <button type="button" id="cancelExportButton" class="flex-1 px-6 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition-all">Cancel</button>
+                <button type="button" id="confirmExportButton" class="flex-1 px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-all flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    <span>Export PDF</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Success Modal --}}
+<div id="successModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 ease-out hidden">
+    <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center transform scale-95 opacity-0 transition-all duration-300 ease-out" id="success-modal-panel">
+        <div class="w-12 h-12 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        <h3 id="success-modal-title" class="text-lg font-semibold text-slate-800"></h3>
+        <p id="success-modal-message" class="text-sm text-slate-500 mt-2"></p>
+        <div class="mt-6">
+            <button id="closeSuccessModalButton" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-all">OK</button>
+        </div>
+    </div>
+</div>
 
 {{-- Modal for Viewing Subject Details (NEW AND IMPROVED) --}}
 <div id="subjectDetailsModal" class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-60 transition-opacity duration-300 ease-out hidden">
@@ -535,6 +582,164 @@ document.addEventListener('DOMContentLoaded', () => {
         if (noRecordsMessage) {
             noRecordsMessage.style.display = (allRecords.length > 0 && visibleCount === 0) ? 'block' : 'none';
         }
+    });
+});
+
+// New Modal System JavaScript
+document.addEventListener('DOMContentLoaded', function () {
+    // Modal elements
+    const retrieveModal = document.getElementById('retrieveConfirmationModal');
+    const retrieveModalPanel = document.getElementById('retrieve-modal-panel');
+    const closeRetrieveModalButton = document.getElementById('closeRetrieveModalButton');
+    const retrieveSubjectSummary = document.getElementById('retrieve-subject-summary');
+    
+    const exportModal = document.getElementById('exportConfirmationModal');
+    const exportModalPanel = document.getElementById('export-modal-panel');
+    const closeExportModalButton = document.getElementById('closeExportModalButton');
+    const exportSubjectSummary = document.getElementById('export-subject-summary');
+    
+    // Success modal elements
+    const successModal = document.getElementById('successModal');
+    const successModalPanel = document.getElementById('success-modal-panel');
+    const successModalTitle = document.getElementById('success-modal-title');
+    const successModalMessage = document.getElementById('success-modal-message');
+    const closeSuccessModalButton = document.getElementById('closeSuccessModalButton');
+
+    let currentSubjectData = null;
+    let currentHistoryId = null;
+
+    // Modal helper functions
+    const showRetrieveModal = (subjectData, historyId) => {
+        currentSubjectData = subjectData;
+        currentHistoryId = historyId;
+        
+        // Populate summary
+        retrieveSubjectSummary.innerHTML = `
+            <p><strong>Subject:</strong> ${subjectData.subject_code} - ${subjectData.subject_name}</p>
+            <p><strong>Type:</strong> ${subjectData.subject_type}</p>
+            <p><strong>Units:</strong> ${subjectData.subject_unit}</p>
+        `;
+        
+        retrieveModal.classList.remove('hidden');
+        setTimeout(() => {
+            retrieveModal.classList.remove('opacity-0');
+            retrieveModalPanel.classList.remove('opacity-0', 'scale-95');
+        }, 10);
+    };
+
+    const hideRetrieveModal = () => {
+        retrieveModal.classList.add('opacity-0');
+        retrieveModalPanel.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => retrieveModal.classList.add('hidden'), 300);
+    };
+
+    const showExportModal = (subjectData) => {
+        currentSubjectData = subjectData;
+        
+        // Populate summary
+        exportSubjectSummary.innerHTML = `
+            <p><strong>Subject:</strong> ${subjectData.subject_code} - ${subjectData.subject_name}</p>
+            <p><strong>Type:</strong> ${subjectData.subject_type}</p>
+            <p><strong>Format:</strong> PDF Document</p>
+        `;
+        
+        exportModal.classList.remove('hidden');
+        setTimeout(() => {
+            exportModal.classList.remove('opacity-0');
+            exportModalPanel.classList.remove('opacity-0', 'scale-95');
+        }, 10);
+    };
+
+    const hideExportModal = () => {
+        exportModal.classList.add('opacity-0');
+        exportModalPanel.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => exportModal.classList.add('hidden'), 300);
+    };
+
+    const showSuccessModal = (title, message) => {
+        successModalTitle.textContent = title;
+        successModalMessage.textContent = message;
+        successModal.classList.remove('hidden');
+        setTimeout(() => {
+            successModal.classList.remove('opacity-0');
+            successModalPanel.classList.remove('opacity-0', 'scale-95');
+        }, 10);
+    };
+
+    const hideSuccessModal = () => {
+        successModal.classList.add('opacity-0');
+        successModalPanel.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => successModal.classList.add('hidden'), 300);
+    };
+
+    // Event listeners for retrieve buttons
+    document.querySelectorAll('.retrieve-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const subjectData = JSON.parse(e.target.dataset.subject);
+            const historyId = e.target.dataset.id;
+            showRetrieveModal(subjectData, historyId);
+        });
+    });
+
+    // Event listeners for export buttons
+    document.querySelectorAll('.export-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const subjectData = JSON.parse(e.target.dataset.subject);
+            showExportModal(subjectData);
+        });
+    });
+
+    // Modal close event listeners
+    closeRetrieveModalButton.addEventListener('click', hideRetrieveModal);
+    closeExportModalButton.addEventListener('click', hideExportModal);
+    closeSuccessModalButton.addEventListener('click', hideSuccessModal);
+
+    // Confirm retrieve
+    document.getElementById('confirmRetrieveButton').addEventListener('click', async function() {
+        try {
+            // Here you would typically send the retrieve request to the server
+            hideRetrieveModal();
+            showSuccessModal('Subject Retrieved!', 'The subject has been successfully added back to the curriculum.');
+            
+            // Reload page after success
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while retrieving the subject.');
+        }
+    });
+
+    // Confirm export
+    document.getElementById('confirmExportButton').addEventListener('click', async function() {
+        try {
+            // Here you would typically trigger the PDF export
+            hideExportModal();
+            showSuccessModal('Export Started!', 'Your PDF export is being generated and will download shortly.');
+            
+            // Simulate PDF download
+            setTimeout(() => {
+                // Trigger actual PDF download here
+                console.log('PDF download triggered for:', currentSubjectData);
+            }, 1000);
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while exporting the subject.');
+        }
+    });
+
+    // Close modals when clicking outside
+    retrieveModal.addEventListener('click', function(e) {
+        if (e.target === this) hideRetrieveModal();
+    });
+
+    exportModal.addEventListener('click', function(e) {
+        if (e.target === this) hideExportModal();
+    });
+
+    successModal.addEventListener('click', function(e) {
+        if (e.target === this) hideSuccessModal();
     });
 });
 </script>

@@ -376,6 +376,35 @@
     </div>
 </div>
 
+{{-- Confirmation Modal --}}
+<div id="confirmationModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 ease-out hidden">
+    <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center transform scale-95 opacity-0 transition-all duration-300 ease-out" id="confirmation-modal-panel">
+        <div id="confirmation-modal-icon" class="w-12 h-12 rounded-full p-2 flex items-center justify-center mx-auto mb-4">
+            {{-- Icon will be set by JS --}}
+        </div>
+        <h3 id="confirmation-modal-title" class="text-lg font-semibold text-slate-800"></h3>
+        <p id="confirmation-modal-message" class="text-sm text-slate-500 mt-2"></p>
+        <div class="mt-6 flex justify-center gap-4">
+            <button id="cancel-confirmation-button" class="w-full px-6 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition-all">Cancel</button>
+            <button id="confirm-action-button" class="w-full px-6 py-2.5 text-sm font-medium text-white rounded-lg transition-all">Confirm</button>
+        </div>
+    </div>
+</div>
+
+{{-- Success Modal --}}
+<div id="successModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 ease-out hidden">
+     <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center transform scale-95 opacity-0 transition-all duration-300 ease-out" id="success-modal-panel">
+        <div class="w-12 h-12 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
+             <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        <h3 id="success-modal-title" class="text-lg font-semibold text-slate-800"></h3>
+        <p id="success-modal-message" class="text-sm text-slate-500 mt-2"></p>
+        <div class="mt-6">
+            <button id="closeSuccessModalButton" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-all">OK</button>
+        </div>
+    </div>
+</div>
+
 <script>
 function toggleAccordion(button) {
     const content = button.nextElementSibling;
@@ -394,6 +423,68 @@ document.addEventListener('DOMContentLoaded', function () {
     const subjectIdField = document.getElementById('subject_id');
     const saveButton = document.getElementById('saveCourseButton');
     const pageTitle = document.querySelector('h1.text-4xl');
+
+    // Modal elements
+    const confirmationModal = document.getElementById('confirmationModal');
+    const confirmationModalPanel = document.getElementById('confirmation-modal-panel');
+    const confirmationModalTitle = document.getElementById('confirmation-modal-title');
+    const confirmationModalMessage = document.getElementById('confirmation-modal-message');
+    const confirmationModalIcon = document.getElementById('confirmation-modal-icon');
+    const cancelConfirmationButton = document.getElementById('cancel-confirmation-button');
+    const confirmActionButton = document.getElementById('confirm-action-button');
+
+    const successModal = document.getElementById('successModal');
+    const successModalPanel = document.getElementById('success-modal-panel');
+    const successModalTitle = document.getElementById('success-modal-title');
+    const successModalMessage = document.getElementById('success-modal-message');
+    const closeSuccessModalButton = document.getElementById('closeSuccessModalButton');
+
+    let currentAction = null;
+
+    // Modal Helper Functions
+    const showSuccessModal = (title, message) => {
+        successModalTitle.textContent = title;
+        successModalMessage.textContent = message;
+        successModal.classList.remove('hidden');
+        setTimeout(() => {
+            successModal.classList.remove('opacity-0');
+            successModalPanel.classList.remove('opacity-0', 'scale-95');
+        }, 10);
+    };
+
+    const hideSuccessModal = () => {
+        successModal.classList.add('opacity-0');
+        successModalPanel.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => successModal.classList.add('hidden'), 300);
+    };
+
+    const showConfirmationModal = (config) => {
+        confirmationModalTitle.textContent = config.title;
+        confirmationModalMessage.textContent = config.message;
+        confirmationModalIcon.innerHTML = config.icon;
+        confirmActionButton.className = `w-full px-6 py-2.5 text-sm font-medium text-white rounded-lg transition-all ${config.confirmButtonClass}`;
+        currentAction = config.onConfirm;
+
+        confirmationModal.classList.remove('hidden');
+        setTimeout(() => {
+            confirmationModal.classList.remove('opacity-0');
+            confirmationModalPanel.classList.remove('opacity-0', 'scale-95');
+        }, 10);
+    };
+
+    const hideConfirmationModal = () => {
+        confirmationModal.classList.add('opacity-0');
+        confirmationModalPanel.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => confirmationModal.classList.add('hidden'), 300);
+    };
+
+    // Modal Event Listeners
+    cancelConfirmationButton.addEventListener('click', hideConfirmationModal);
+    confirmActionButton.addEventListener('click', () => {
+        if (currentAction) currentAction();
+        hideConfirmationModal();
+    });
+    closeSuccessModalButton.addEventListener('click', hideSuccessModal);
 
     // --- HELPER FUNCTIONS ---
 
@@ -538,6 +629,18 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        const isUpdating = !!subjectIdField.value;
+        showConfirmationModal({
+            title: isUpdating ? 'Update Course?' : 'Save Course?',
+            message: `Are you sure you want to ${isUpdating ? 'update' : 'save'} this course?`,
+            icon: `<svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
+            confirmButtonClass: 'bg-blue-600 hover:bg-blue-700',
+            onConfirm: performSubmit
+        });
+    });
+
+    const performSubmit = async () => {
+
         const payload = {
             course_title: document.getElementById('course_title').value,
             subject_code: document.getElementById('course_code').value,
@@ -583,19 +686,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const action = subjectId ? 'updated' : 'created';
             if (action === 'updated') {
-                alert(`Subject updated successfully!`);
-                window.location.href = `/subject_mapping`;
+                showSuccessModal('Course Updated!', 'The course has been successfully updated.');
+                setTimeout(() => window.location.href = `/subject_mapping`, 2000);
             } else {
-                if (confirm("Subject created successfully! Do you want to set up the grade components now?")) {
+                showSuccessModal('Course Created!', 'The course has been successfully created.');
+                setTimeout(() => {
                     const newSubjectName = encodeURIComponent(`${result.subject.subject_name} (${result.subject.subject_code})`);
                     window.location.href = `/grade-setup?new_subject_id=${result.subject.id}&new_subject_name=${newSubjectName}`;
-                } else {
-                    window.location.href = `/subject_mapping`;
-                }
+                }, 2000);
             }
         } catch (error) {
-            alert(`Error saving course: ${error.message}`);
+            showConfirmationModal({
+                title: 'Error',
+                message: `Error saving course: ${error.message}`,
+                icon: `<svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"></path></svg>`,
+                confirmButtonClass: 'bg-red-600 hover:bg-red-700',
+                onConfirm: () => {}
+            });
         }
+    };
     });
 
     // --- MAPPING GRID ROW LOGIC ---

@@ -5,7 +5,7 @@
     <title>Curriculum Details</title>
     <style>
         @page { margin: 25px; }
-        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 9.5px; color: #333; line-height: 1.4; }
+        body { font-family: Arial, sans-serif; font-size: 9.5px; color: #333; line-height: 1.4; }
 
         /* --- HEADER --- */
         .header { text-align: center; margin-bottom: 25px; }
@@ -340,4 +340,3 @@
     @endforeach
 </body>
 </html>
-

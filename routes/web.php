@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CurriculumController;
+use App\Http\Controllers\EmployeeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PrerequisiteController;
 use App\Http\Controllers\SubjectHistoryController;
@@ -10,53 +11,122 @@ use App\Http\Controllers\GradeController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\SubjectExportController;
 use App\Http\Controllers\CurriculumVersionController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\NotificationController;
 
+// Authentication Routes
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/', function () {
-    return view('dashboard');
-})->name('dashboard');
+// OTP Routes
+Route::get('/otp-verify', [AuthController::class, 'showOtpForm'])->name('otp.verify');
+Route::post('/otp-verify', [AuthController::class, 'verifyOtp'])->name('otp.verify.submit');
+Route::get('/otp-resend', [AuthController::class, 'resendOtp'])->name('otp.resend');
 
-Route::get('/curriculum_builder', function () {
-    return view('curriculum_builder');
-})->name('curriculum_builder');
+// Debug routes (temporary)
+Route::get('/debug', function () {
+    return response()->json([
+        'status' => 'Laravel is working',
+        'user' => auth()->user() ? auth()->user()->toArray() : 'Not authenticated',
+        'time' => now()->toDateTimeString()
+    ]);
+});
 
-Route::get('/course-builder', function () {
-    return view('course_builder');
-})->name('course_builder');
+Route::get('/test-view', function () {
+    return view('dashboard', [
+        'user' => (object)['name' => 'Test User', 'role' => 'admin'],
+        'dashboardData' => [
+            'role' => 'admin',
+            'welcome_message' => 'Test message',
+            'stats' => [
+                'curriculum_senior_high' => 0,
+                'curriculum_college' => 0,
+                'total_curriculums' => 0,
+                'total_subjects' => 0,
+                'total_prerequisites' => 0,
+                'total_mapping_history' => 0,
+                'removed_subjects' => 0,
+                'total_equivalencies' => 0,
+                'curriculum_exports' => 0,
+                'employees_active' => 0,
+                'employees_inactive' => 0,
+            ],
+            'recent_activities' => collect([])
+        ]
+    ]);
+});
 
-Route::get('/subject_mapping', function () {
-    return view('subject_mapping');
-})->name('subject_mapping');
+// Protected Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // Profile Routes
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
-Route::get('/pre_requisite', [PrerequisiteController::class, 'index'])->name('pre_requisite');
+    // Notification Routes
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+    Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadCount'])->name('notifications.unread-count');
 
-// This is the only route needed for the grade setup page itself.
-Route::get('/grade-setup', [GradeController::class, 'setup'])->name('grade_setup');
+    // Curriculum Export Tool - Accessible to all authenticated users (employees, admin, super admin)
+    Route::get('/curriculum_export_tool', [CurriculumExportToolController::class, 'index'])->name('curriculum_export_tool');
+    Route::post('/curriculum_export_tool', [CurriculumExportToolController::class, 'store'])->name('curriculum_export_tool.store');
+    Route::get('/subjects/{subjectId}/export-pdf', [SubjectExportController::class, 'exportPdf'])->name('subjects.export-pdf');
+    Route::get('/curriculum/{id}/export-pdf', [CurriculumExportToolController::class, 'exportPdf'])->name('curriculum.export-pdf');
 
-Route::get('/equivalency_tool', [EquivalencyToolController::class, 'index'])->name('equivalency_tool');
+    // Admin-only routes
+    Route::middleware('admin')->group(function () {
+        Route::get('/curriculum_builder', function () {
+            return view('curriculum_builder');
+        })->name('curriculum_builder');
 
-Route::get('/subject_history', [SubjectHistoryController::class, 'index'])->name('subject_history');
-Route::post('/subject_history/{history}/retrieve', [SubjectHistoryController::class, 'retrieve'])->name('subject_history.retrieve');
+        Route::get('/subject_mapping', function () {
+            return view('subject_mapping');
+        })->name('subject_mapping');
 
+        Route::get('/pre_requisite', function () {
+            $curriculums = \App\Models\Curriculum::all();
+            return view('pre_requisite', compact('curriculums'));
+        })->name('pre_requisite');
 
-// CHED Compliance Validator
-Route::get('/compliance-validator', function () {
-    $curriculums = [];
-    $cmos = [];
-    return view('compliance_validator', compact('curriculums', 'cmos'));
-})->name('compliance.validator');
+        Route::get('/grade-setup', [GradeController::class, 'setup'])->name('grade_setup');
 
-Route::post('/compliance-validator/validate', function () {
-    // Handle validation logic here
-})->name('ched.validator.validate');
+        Route::get('/equivalency_tool', function () {
+            $subjects = \App\Models\Subject::all();
+            $equivalencies = \App\Models\Equivalency::with('equivalentSubject')->get();
+            return view('equivalency_tool', compact('subjects', 'equivalencies'));
+        })->name('equivalency_tool');
 
-// CURRICULUM EXPORT
-Route::get('/curriculum_export_tool', [CurriculumExportToolController::class, 'index'])->name('curriculum_export_tool');
-Route::post('/curriculum_export_tool', [CurriculumExportToolController::class, 'store'])->name('curriculum_export_tool.store');
+        Route::get('/subject_history', [SubjectHistoryController::class, 'index'])->name('subject_history');
+        Route::post('/subject_history/{id}/retrieve', [SubjectHistoryController::class, 'retrieve'])->name('subject_history.retrieve');
 
-Route::get('/subjects/{subjectId}/export-pdf', [SubjectExportController::class, 'exportPdf'])->name('subjects.export-pdf');
-Route::get('/curriculum/{id}/export-pdf', [CurriculumExportToolController::class, 'exportPdf'])->name('curriculum.export-pdf');
+        // CHED Compliance Validator
+        Route::get('/compliance-validator', function () {
+            return view('compliance_validator');
+        })->name('compliance.validator');
 
-Route::get('/subject_mapping_history', function () {
-    return view('subject_mapping_history');
-})->name('subject_mapping_history');
+        Route::get('/subject_mapping_history', function () {
+            return view('subject_mapping_history');
+        })->name('subject_mapping_history');
+
+        Route::get('/course-builder', function () {
+            return view('course_builder');
+        })->name('course_builder');
+
+        // Employee Management Routes (Admin and Super Admin only)
+        Route::resource('employees', EmployeeController::class)->except(['show']);
+        
+        // Employee Activity Logs and Status Management
+        Route::get('/employees/{id}/activity-logs', [EmployeeController::class, 'activityLogs'])->name('employees.activity-logs');
+        Route::patch('/employees/{id}/toggle-status', [EmployeeController::class, 'toggleStatus'])->name('employees.toggle-status');
+        Route::get('/employee-activities', [EmployeeController::class, 'allActivities'])->name('employees.all-activities');
+        Route::get('/employee-activities/export', [EmployeeController::class, 'exportActivities'])->name('employees.export-activities');
+    });
+}); // End of auth middleware group

@@ -7,6 +7,8 @@ use App\Models\Subject;
 use App\Models\SubjectHistory;
 use Illuminate\Http\Request; // Import the Request class
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use App\Services\NotificationService;
 
 class SubjectHistoryController extends Controller
 {
@@ -59,6 +61,13 @@ class SubjectHistoryController extends Controller
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
+
+                // Create notification for subject retrieval
+                NotificationService::subjectRetrieved(
+                    $historyRecord->subject_name, 
+                    $curriculum->curriculum, 
+                    Auth::user()->name
+                );
 
                 // Delete the history record since it has been retrieved
                 $historyRecord->delete();

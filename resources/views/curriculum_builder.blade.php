@@ -277,9 +277,6 @@
                         <button class="edit-btn p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-100 rounded-md transition-colors" data-id="${curriculum.id}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
                         </button>
-                        <button class="delete-btn p-2 text-slate-400 hover:text-red-600 hover:bg-red-100 rounded-md transition-colors" data-id="${curriculum.id}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
                     </div>
                 `;
                 return card;
@@ -437,40 +434,7 @@
                     });
                 });
                 
-                // Delete button
-                document.querySelectorAll('.delete-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const id = e.currentTarget.dataset.id;
-                        
-                        const performDelete = async () => {
-                             try {
-                                const response = await fetch(`/api/curriculums/${id}`, { 
-                                    method: 'DELETE',
-                                    headers: {
-                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                                        'Accept': 'application/json',
-                                    }
-                                });
-                                if (!response.ok) throw new Error('Failed to delete.');
-                                
-                                showSuccessModal('Deleted!', 'The curriculum has been successfully deleted.');
-                                fetchCurriculums();
-                            } catch (error) {
-                                alert('Error deleting curriculum.');
-                                console.error('Error deleting curriculum:', error);
-                            }
-                        };
-
-                        showConfirmationModal({
-                            title: 'Delete Curriculum?',
-                            message: 'Are you sure you want to delete this? This action cannot be undone.',
-                            icon: `<svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"></path></svg>`,
-                            confirmButtonClass: 'bg-red-600 hover:bg-red-700',
-                            onConfirm: performDelete
-                        });
-                    });
-                });
+                // Delete functionality removed
             };
 
             searchBar.addEventListener('input', (e) => {

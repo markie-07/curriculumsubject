@@ -27,6 +27,18 @@ class EquivalencyToolController extends Controller
     }
 
     /**
+     * Get all equivalencies for API calls.
+     */
+    public function getEquivalencies(): JsonResponse
+    {
+        $equivalencies = Equivalency::with('equivalentSubject')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($equivalencies);
+    }
+
+    /**
      * Store a newly created equivalency in the database.
      */
     public function store(Request $request): JsonResponse

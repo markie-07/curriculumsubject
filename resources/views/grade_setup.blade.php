@@ -74,7 +74,7 @@
                 </div>
 
                 <div class="mt-10 pt-6 border-t border-gray-200">
-                    <button id="add-grade-btn" type="button" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-700 hover:to-blue-600 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <button id="setGradeSchemeButton" type="button" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-700 hover:to-blue-600 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6a1 1 0 10-2 0v5.586L7.707 10.293zM10 18a8 8 0 100-16 8 8 0 000 16z" /></svg>
                         Set Grade Scheme
                     </button>
@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const accordionContainer = document.getElementById('semestral-grade-accordion');
     const totalWeightSpan = document.getElementById('total-weight');
     const progressCircle = document.getElementById('progress-circle');
-    const addGradeBtn = document.getElementById('add-grade-btn');
+    const addGradeBtn = document.getElementById('setGradeSchemeButton');
     const updateGradeSetupBtn = document.getElementById('update-grade-setup-btn');
     const subjectSelect = document.getElementById('subject-select');
     const gradeHistoryContainer = document.getElementById('grade-history-container');
@@ -402,31 +402,72 @@ document.addEventListener('DOMContentLoaded', () => {
     const fetchAPI = async (url, options = {}) => {
         try {
             const apiUrl = `/api/${url}`;
-            options.headers = { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value, 'Accept': 'application/json', ...options.headers };
+            console.log(`Making API request to: ${apiUrl}`);
+            
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                            document.querySelector('input[name="_token"]')?.value;
+            
+            options.headers = { 
+                'Content-Type': 'application/json', 
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json', 
+                ...options.headers 
+            };
+            
             const response = await fetch(apiUrl, options);
+            console.log(`API Response status: ${response.status} ${response.statusText}`);
+            
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'API Error');
+                let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.message || errorMessage;
+                } catch (e) {
+                    // If response is not JSON, use status text
+                }
+                throw new Error(errorMessage);
             }
-            return response.json();
+            
+            const data = await response.json();
+            console.log('API Response data:', data);
+            return data;
         } catch (error) {
-            Swal.fire('Error', error.message, 'error');
+            console.error('API Error:', error);
+            // Don't show Swal here, let the calling function handle it
             throw error;
         }
     };
     
-    const fetchAndPopulateSubjects = () => {
+    const fetchAndPopulateSubjects = async () => {
         const urlParams = new URLSearchParams(window.location.search);
         const newSubjectId = urlParams.get('new_subject_id');
         const newSubjectName = urlParams.get('new_subject_name');
 
-        fetchAPI('subjects').then(data => {
+        try {
+            // Show loading state
+            subjectSelect.innerHTML = '<option value="">Loading subjects...</option>';
+            subjectSelect.disabled = true;
+            
+            console.log('Fetching subjects from API...');
+            const data = await fetchAPI('subjects');
+            console.log('Subjects received:', data);
+            
             subjects = data;
+            
+            // Clear loading and populate subjects
             subjectSelect.innerHTML = '<option value="" disabled selected>Select a Subject</option>';
-            subjects.forEach(subject => {
-                const option = new Option(`${subject.subject_name} (${subject.subject_code})`, subject.id);
-                subjectSelect.add(option);
-            });
+            subjectSelect.disabled = false;
+            
+            if (subjects && subjects.length > 0) {
+                subjects.forEach(subject => {
+                    const option = new Option(`${subject.subject_name} (${subject.subject_code})`, subject.id);
+                    subjectSelect.add(option);
+                });
+                console.log(`Successfully loaded ${subjects.length} subjects`);
+            } else {
+                subjectSelect.innerHTML = '<option value="" disabled>No subjects available</option>';
+                console.log('No subjects found in database');
+            }
 
             if (newSubjectId && newSubjectName) {
                 if (![...subjectSelect.options].some(opt => opt.value == newSubjectId)) {
@@ -436,7 +477,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 subjectSelect.value = newSubjectId;
                 subjectSelect.dispatchEvent(new Event('change'));
             }
-        });
+        } catch (error) {
+            console.error('Failed to load subjects:', error);
+            subjectSelect.disabled = false;
+            
+            // Show error state with better messaging
+            subjectSelect.innerHTML = '<option value="" disabled selected>Failed to load subjects - Please refresh the page</option>';
+            
+            // Show user-friendly error
+            Swal.fire({
+                title: 'Loading Error',
+                text: `Failed to load subjects: ${error.message}. Please check your connection and refresh the page.`,
+                icon: 'error',
+                confirmButtonText: 'Refresh Page',
+                cancelButtonText: 'Try Again',
+                showCancelButton: true,
+                confirmButtonColor: '#4f46e5'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.reload();
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    fetchAndPopulateSubjects(); // Retry
+                }
+            });
+        }
     };
 
     const fetchGradeSetupForSubject = (subjectId) => {
@@ -519,14 +583,19 @@ document.addEventListener('DOMContentLoaded', () => {
             if (result.isConfirmed) {
                 const payload = { subject_id: subjectSelect.value, components: getGradeDataFromDOM() };
                 try {
+                    console.log('Saving grade scheme with payload:', payload);
                     const data = await fetchAPI('grades', { method: 'POST', body: JSON.stringify(payload) });
+                    console.log('Grade scheme saved successfully:', data);
                     Swal.fire('Saved!', data.message, 'success');
                     addSubjectToHistory(data.subject);
                     subjectSelect.value = '';
                     loadGradeDataToDOM(defaultStructure);
                     toggleGradeComponents(true);
                     addGradeBtn.disabled = true;
-                } catch(e) { /* Error is handled in fetchAPI */ }
+                } catch(e) { 
+                    console.error('Failed to save grade scheme:', e);
+                    Swal.fire('Error!', 'Failed to save grade scheme: ' + e.message, 'error');
+                }
             }
         });
     });
@@ -629,4 +698,9 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleGradeComponents(true);
 });
 </script>
+
+{{-- Removed duplicate confirmation and success modals - using SweetAlert instead --}}
+
+{{-- Removed duplicate JavaScript - the main script above handles all grade scheme functionality properly --}}
+
 @endsection
