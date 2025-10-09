@@ -77,8 +77,11 @@ class DashboardController extends Controller
      */
     private function getSystemStats()
     {
-        return [
-            // Curriculum Statistics
+        // Log that we're fetching stats
+        \Log::info('Fetching dashboard statistics');
+        
+        $stats = [
+            // Curriculum Statistics - Based on year_level column
             'curriculum_senior_high' => $this->getCurriculumCount('Senior High'),
             'curriculum_college' => $this->getCurriculumCount('College'),
             'total_curriculums' => Curriculum::count(),
@@ -90,7 +93,7 @@ class DashboardController extends Controller
             // Pre-requisite Statistics
             'total_prerequisites' => $this->getPrerequisiteCount(),
             
-            // Mapping History Statistics
+            // Mapping History Statistics (Curriculum-Subject relationships)
             'total_mapping_history' => $this->getMappingHistoryCount(),
             
             // Subject Offering History (Removed Subjects)
@@ -99,16 +102,16 @@ class DashboardController extends Controller
             // Subject Equivalency Statistics
             'total_equivalencies' => $this->getEquivalencyCount(),
             
-            // Export Statistics
-            'total_exports' => $this->safeCount('ExportHistory'),
-            'exports_this_month' => $this->safeCountWithCondition('ExportHistory', function($query) {
-                return $query->whereMonth('created_at', now()->month);
-            }),
+            // Export Statistics - Based on actual activity logs
             'curriculum_exports' => EmployeeActivityLog::where('activity_type', 'export')->count(),
+            'exports_this_month' => EmployeeActivityLog::where('activity_type', 'export')
+                                                      ->whereMonth('created_at', now()->month)
+                                                      ->count(),
+            'total_exports' => EmployeeActivityLog::where('activity_type', 'export')->count(),
             
-            // Employee Statistics
-            'employees_active' => User::where('role', 'employee')->where('status', 'active')->count(),
-            'employees_inactive' => User::where('role', 'employee')->where('status', 'inactive')->count(),
+            // Employee Statistics - Based on actual user roles and status
+            'employees_active' => $this->getActiveEmployeesCount(),
+            'employees_inactive' => $this->getInactiveEmployeesCount(),
             'total_employees' => User::where('role', 'employee')->count(),
             
             // System Statistics
@@ -117,6 +120,11 @@ class DashboardController extends Controller
             'activities_today' => EmployeeActivityLog::whereDate('created_at', today())->count(),
             'activities_this_week' => EmployeeActivityLog::where('created_at', '>=', now()->subWeek())->count(),
         ];
+        
+        // Log the final stats for debugging
+        \Log::info('Dashboard statistics:', $stats);
+        
+        return $stats;
     }
 
     /**
@@ -124,9 +132,18 @@ class DashboardController extends Controller
      */
     private function getCurriculumCount($level)
     {
-        return Curriculum::where('curriculum', 'LIKE', "%{$level}%")
-                        ->orWhere('program_code', 'LIKE', "%{$level}%")
-                        ->count();
+        try {
+            // Use the year_level column to properly count curriculums
+            $count = Curriculum::where('year_level', $level)->count();
+            
+            // Log the count for debugging
+            \Log::info("Curriculum count for {$level}: {$count}");
+            
+            return $count;
+        } catch (\Exception $e) {
+            \Log::error("Error counting curriculums for {$level}: " . $e->getMessage());
+            return 0;
+        }
     }
 
     /**
@@ -146,16 +163,17 @@ class DashboardController extends Controller
     }
 
     /**
-     * Get mapping history count
+     * Get mapping history count (curriculum-subject relationships)
      */
     private function getMappingHistoryCount()
     {
         try {
-            return DB::table('mapping_history')->count();
+            // First try to get from curriculum_subject pivot table (most likely to exist)
+            return DB::table('curriculum_subject')->count();
         } catch (\Exception $e) {
-            // If mapping_history table doesn't exist, check for curriculum-subject relationships
+            // If pivot table doesn't exist, try mapping_history table
             try {
-                return DB::table('curriculum_subject')->count();
+                return DB::table('mapping_history')->count();
             } catch (\Exception $e2) {
                 // If no mapping tables exist, return 0
                 return 0;
@@ -239,6 +257,32 @@ class DashboardController extends Controller
             }
             return 0;
         } catch (\Exception $e) {
+            return 0;
+        }
+    }
+
+    /**
+     * Get active employees count
+     */
+    private function getActiveEmployeesCount()
+    {
+        try {
+            return User::where('role', 'employee')->where('status', 'active')->count();
+        } catch (\Exception $e) {
+            // If status column doesn't exist, count all employees as active
+            return User::where('role', 'employee')->count();
+        }
+    }
+
+    /**
+     * Get inactive employees count
+     */
+    private function getInactiveEmployeesCount()
+    {
+        try {
+            return User::where('role', 'employee')->where('status', 'inactive')->count();
+        } catch (\Exception $e) {
+            // If status column doesn't exist, return 0
             return 0;
         }
     }
