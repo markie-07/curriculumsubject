@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CurriculumController;
 use App\Http\Controllers\EmployeeController;
 use Illuminate\Support\Facades\Route;
@@ -11,27 +12,28 @@ use App\Http\Controllers\GradeController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\SubjectExportController;
 use App\Http\Controllers\CurriculumVersionController;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NotificationController;
 
 // Authentication Routes
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-// OTP Routes
-Route::get('/otp-verify', [AuthController::class, 'showOtpForm'])->name('otp.verify');
-Route::post('/otp-verify', [AuthController::class, 'verifyOtp'])->name('otp.verify.submit');
-Route::get('/otp-resend', [AuthController::class, 'resendOtp'])->name('otp.resend');
-
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+    Route::get('/otp-verify', [AuthController::class, 'showOtpForm'])->name('otp.verify');
+    Route::post('/otp-verify', [AuthController::class, 'verifyOtp'])->name('otp.verify.submit');
+    Route::post('/otp-resend', [AuthController::class, 'resendOtp'])->name('otp.resend');
+    
+    // CSRF token refresh route
+    Route::get('/csrf-token', function () {
+        return response()->json(['csrf_token' => csrf_token()]);
+    });
+});
 // Debug routes (temporary)
 Route::get('/debug', function () {
     return response()->json([
         'status' => 'Laravel is working',
         'user' => auth()->user() ? auth()->user()->toArray() : 'Not authenticated',
-        'time' => now()->toDateTimeString()
     ]);
 });
 
@@ -62,6 +64,7 @@ Route::get('/test-view', function () {
 // Protected Routes
 Route::middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     
     // Profile Routes
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');

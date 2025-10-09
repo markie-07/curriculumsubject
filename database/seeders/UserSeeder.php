@@ -40,6 +40,16 @@ class UserSeeder extends Seeder
             'role' => 'user',
         ]);
 
+        // Employee User - Only has access to curriculum export tool
+        User::create([
+            'name' => 'Employee User',
+            'username' => 'employee',
+            'email' => 'employee@sms.edu',
+            'password' => Hash::make('employee123'),
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+
         // Additional Admin User
         User::create([
             'name' => 'John Admin',

@@ -81,6 +81,9 @@ class AuthController extends Controller
             // Logout user temporarily until OTP is verified
             Auth::logout();
             
+            // Regenerate session to prevent CSRF token issues
+            $request->session()->regenerate();
+            
             return redirect()->route('otp.verify')->with('success', 'OTP has been sent to your email (' . $user->email . '). Please check your inbox.');
         }
 
@@ -169,6 +172,8 @@ class AuthController extends Controller
             if ($user->isEmployee()) {
                 ActivityLogService::logLogin($user);
                 $user->updateLastActivity();
+                // Redirect employees directly to curriculum export tool
+                return redirect()->route('curriculum_export_tool');
             }
             
             return redirect()->intended(route('dashboard'));
