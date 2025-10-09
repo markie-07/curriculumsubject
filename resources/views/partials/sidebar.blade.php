@@ -43,6 +43,8 @@
         </a>
         @endif
 
+        <div class="border-t border-blue-600/30 my-3"></div>
+
         <!-- Curriculum Builder -->
         @if($isEmployee)
         <div class="locked-item group flex items-center px-4 py-3 text-sm font-medium rounded-xl bg-gray-600/20 border border-gray-500/30 cursor-not-allowed opacity-60 relative">
@@ -116,7 +118,7 @@
         @endif
 
         <!-- Separator Line -->
-        <div class="border-t border-gray-600/30 my-3"></div>
+        <div class="border-t border-blue-600/30 my-3"></div>
 
         <!-- Course Builder -->
         @if($isEmployee)
@@ -173,7 +175,7 @@
         @endif
 
         <!-- Separator Line -->
-        <div class="border-t border-gray-600/30 my-3"></div>
+        <div class="border-t border-blue-600/30 my-3"></div>
 
         <!-- Mapping History -->
         @if($isEmployee)
@@ -212,19 +214,18 @@
         @endif
 
         <!-- Separator Line -->
-        <div class="border-t border-gray-600/30 my-3"></div>
+        <div class="border-t border-blue-600/30 my-3"></div>
 
         <!-- Curriculum Export Tool - Accessible to ALL roles (Activity logging for employees only) -->
-        <a href="{{ route('curriculum_export_tool') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-xl bg-gradient-to-r from-blue-600/30 to-blue-500/30 border border-green-500/50 hover:from-green-600/50 hover:to-green-500/50 transition-all duration-300 nav-link hover:border-green-400/70 hover:shadow-lg hover:shadow-green-900/20">
-            <div class="w-8 h-8 bg-green-600/40 rounded-lg flex items-center justify-center mr-3 group-hover:bg-green-500/60 transition-all duration-300 group-hover:scale-110">
-                <svg class="w-4 h-4 text-green-200 group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+        <a href="{{ route('curriculum_export_tool') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-xl hover:bg-gradient-to-r hover:from-blue-800/50 hover:to-blue-700/50 transition-all duration-300 nav-link border border-transparent hover:border-blue-600/30 hover:shadow-lg hover:shadow-blue-900/20">
+            <div class="w-8 h-8 bg-blue-800/30 rounded-lg flex items-center justify-center mr-3 group-hover:bg-blue-600/40 transition-all duration-300 group-hover:scale-110">
+                <svg class="w-4 h-4 text-blue-300 group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
             </div>
-            <span class="nav-text text-green-200 group-hover:text-white transition-colors duration-300 font-semibold">Curriculum Export Tool</span>
-            <svg class="w-4 h-4 text-green-300 ml-auto group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span class="nav-text group-hover:text-white transition-colors duration-300">Curriculum Export Tool</span>
         </a>
 
         <!-- Separator Line -->
-        <div class="border-t border-gray-600/30 my-3"></div>
+        <div class="border-t border-blue-600/30 my-3"></div>
 
         <!-- Employee Management -->
         @if($isEmployee)
