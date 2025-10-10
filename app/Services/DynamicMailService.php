@@ -31,24 +31,7 @@ class DynamicMailService
             'host' => 'smtp.gmail.com',
             'port' => 587,
             'username' => 'markjamesp11770@gmail.com',
-            'password' => 'eyaf pyve ggzy lpge', // App password for Mark James superadmin
-            'encryption' => 'tls',
-            'from_name' => 'Student Management System'
-        ],
-        // Add more email configurations here - REPLACE WITH ACTUAL EMAILS AND APP PASSWORDS
-        'admin@yourdomain.com' => [
-            'host' => 'smtp.gmail.com',
-            'port' => 587,
-            'username' => 'admin@yourdomain.com',
-            'password' => 'REPLACE-WITH-APP-PASSWORD', // Generate app password for this Gmail
-            'encryption' => 'tls',
-            'from_name' => 'Student Management System'
-        ],
-        'manager@yourdomain.com' => [
-            'host' => 'smtp.gmail.com',
-            'port' => 587,
-            'username' => 'manager@yourdomain.com',
-            'password' => 'REPLACE-WITH-APP-PASSWORD', // Generate app password for this Gmail
+            'password' => 'eyafpyveggzylpge', // App password for Mark James superadmin (spaces removed)
             'encryption' => 'tls',
             'from_name' => 'Student Management System'
         ],

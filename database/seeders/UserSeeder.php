@@ -18,8 +18,17 @@ class UserSeeder extends Seeder
             'name' => 'Super Administrator',
             'username' => 'superadmin',
             'email' => 'lhandelpamisa0@gmail.com',
+            'password' => Hash::make('superadmin24'),
+            'role' => 'super_admin',
+        ]);
+
+        User::create([
+            'name' => 'Mark James',
+            'username' => 'markjames',
+            'email' => 'markjamesp11770@gmail.com', // Must match DynamicMailService config
             'password' => Hash::make('superadmin123'),
             'role' => 'super_admin',
+            'status' => 'active',
         ]);
 
         // Admin
@@ -31,75 +40,8 @@ class UserSeeder extends Seeder
             'role' => 'admin',
         ]);
 
-        // Regular User
-        User::create([
-            'name' => 'Test User',
-            'username' => 'testuser',
-            'email' => 'test@sms.edu',
-            'password' => Hash::make('password123'),
-            'role' => 'user',
-        ]);
-
-        // Employee User - Only has access to curriculum export tool
-        User::create([
-            'name' => 'Employee User',
-            'username' => 'employee',
-            'email' => 'employee@sms.edu',
-            'password' => Hash::make('employee123'),
-            'role' => 'employee',
-            'status' => 'active',
-        ]);
-
-        // Additional Admin User
-        User::create([
-            'name' => 'John Admin',
-            'username' => 'johnadmin',
-            'email' => 'john@sms.edu',
-            'password' => Hash::make('admin123'),
-            'role' => 'admin',
-        ]);
-
         // Additional Super Admin Users
-        User::create([
-            'name' => 'Mark James',
-            'username' => 'markjames',
-            'email' => 'markjamesp11770@gmail.com', // Must match DynamicMailService config
-            'password' => Hash::make('superadmin123'),
-            'role' => 'super_admin',
-            'status' => 'active',
-        ]);
 
-        User::create([
-            'name' => 'Secondary Super Admin',
-            'username' => 'superadmin2',
-            'email' => 'admin@yourdomain.com', // Must match DynamicMailService config
-            'password' => Hash::make('superadmin123'),
-            'role' => 'super_admin',
-        ]);
 
-        User::create([
-            'name' => 'Third Super Admin',
-            'username' => 'superadmin3',
-            'email' => 'manager@yourdomain.com', // Must match DynamicMailService config
-            'password' => Hash::make('superadmin123'),
-            'role' => 'super_admin',
-        ]);
-
-        // Sample Employee Users (No app passwords needed)
-        User::create([
-            'name' => 'John Employee',
-            'username' => 'johnemployee',
-            'email' => 'john.employee@gmail.com', // Employee's personal Gmail
-            'password' => Hash::make('employee123'),
-            'role' => 'employee',
-        ]);
-
-        User::create([
-            'name' => 'Jane Employee',
-            'username' => 'janeemployee',
-            'email' => 'jane.employee@gmail.com', // Employee's personal Gmail
-            'password' => Hash::make('employee123'),
-            'role' => 'employee',
-        ]);
     }
 }

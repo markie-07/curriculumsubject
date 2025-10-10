@@ -18,7 +18,7 @@ return new class extends Migration
             'name' => 'Super Administrator',
             'username' => 'superadmin',
             'email' => 'lhandelpamisa0@gmail.com',
-            'password' => Hash::make('superadmin123'),
+            'password' => Hash::make('superadmin24'),
             'role' => 'super_admin',
         ]);
 
