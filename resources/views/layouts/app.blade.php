@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Line Awesome Icons -->
+    <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
     <meta name="csrf-token" content="{{ csrf_token() }}">
      {{-- ADD THESE TWO SCRIPT TAGS FOR PDF EXPORT --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -18,6 +20,294 @@
         /* Use the Inter font family */
         body {
             font-family: 'Inter', sans-serif;
+        }
+        
+        /* Global zoom-friendly responsive styles */
+        * {
+            box-sizing: border-box;
+        }
+        
+        html {
+            font-size: 16px; /* Base font size */
+        }
+        
+        /* Responsive form elements */
+        input, select, textarea, button {
+            font-size: clamp(0.875rem, 1.5vw, 1rem);
+            line-height: 1.5;
+        }
+        
+        /* Responsive containers */
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding-left: clamp(0.5rem, 2vw, 1rem);
+            padding-right: clamp(0.5rem, 2vw, 1rem);
+        }
+        
+        /* Responsive text sizing */
+        h1 { font-size: clamp(1.5rem, 3vw, 2rem); }
+        h2 { font-size: clamp(1.25rem, 2.5vw, 1.75rem); }
+        h3 { font-size: clamp(1.125rem, 2vw, 1.5rem); }
+        h4 { font-size: clamp(1rem, 1.8vw, 1.25rem); }
+        h5 { font-size: clamp(0.875rem, 1.6vw, 1.125rem); }
+        h6 { font-size: clamp(0.75rem, 1.4vw, 1rem); }
+        
+        /* Responsive spacing */
+        .responsive-padding {
+            padding: clamp(0.5rem, 2vw, 1rem);
+        }
+        
+        .responsive-margin {
+            margin: clamp(0.5rem, 2vw, 1rem);
+        }
+        
+        /* Form synchronization styles */
+        .form-container {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        .form-grid {
+            display: grid;
+            gap: clamp(0.75rem, 2vw, 1.5rem);
+            grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+        }
+        
+        /* Button responsive sizing */
+        .btn {
+            padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(1rem, 3vw, 1.5rem);
+            font-size: clamp(0.875rem, 1.5vw, 1rem);
+            border-radius: clamp(0.25rem, 0.5vw, 0.5rem);
+        }
+        
+        /* Table responsive */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .table-responsive table {
+            min-width: 600px;
+            font-size: clamp(0.75rem, 1.3vw, 0.875rem);
+        }
+        
+        /* Modal responsive */
+        .modal-content {
+            max-width: min(90vw, 600px);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        /* Method 2: Pure CSS Container Queries Zoom Synchronization */
+        
+        /* Enable container queries on main containers */
+        .dashboard-content,
+        .form-container,
+        .stats-grid,
+        body {
+            container-type: inline-size;
+        }
+        
+        /* Base responsive typography using container queries */
+        @container (min-width: 320px) {
+            .container-text {
+                font-size: clamp(0.875rem, 2cqw, 1rem);
+                line-height: clamp(1.3, 2cqw, 1.6);
+            }
+            
+            .container-heading {
+                font-size: clamp(1.125rem, 3cqw, 1.5rem);
+                line-height: clamp(1.2, 2.5cqw, 1.4);
+            }
+            
+            .container-subheading {
+                font-size: clamp(0.75rem, 1.8cqw, 0.875rem);
+                line-height: clamp(1.3, 2cqw, 1.5);
+            }
+        }
+        
+        /* Form elements container queries */
+        @container (min-width: 300px) {
+            input, select, textarea {
+                font-size: clamp(0.875rem, 2.5cqw, 1rem);
+                padding: clamp(0.5rem, 2cqw, 0.75rem);
+                border-radius: clamp(0.25rem, 1cqw, 0.5rem);
+            }
+            
+            button, .btn {
+                font-size: clamp(0.875rem, 2.2cqw, 1rem);
+                padding: clamp(0.5rem, 2cqw, 0.75rem) clamp(1rem, 3cqw, 1.5rem);
+                border-radius: clamp(0.375rem, 1.2cqw, 0.5rem);
+            }
+        }
+        
+        /* Enhanced Grid system with container queries for stats-grid synchronization */
+        @container (min-width: 300px) {
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(clamp(140px, 22cqw, 180px), 1fr));
+                gap: clamp(0.5rem, 2cqw, 1rem);
+                padding: clamp(0.25rem, 1cqw, 0.5rem);
+            }
+        }
+        
+        @container (min-width: 400px) {
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(clamp(150px, 25cqw, 200px), 1fr));
+                gap: clamp(0.75rem, 2.5cqw, 1.5rem);
+                padding: clamp(0.5rem, 1.5cqw, 0.75rem);
+            }
+            
+            .stat-card {
+                padding: clamp(0.75rem, 2.5cqw, 1.25rem);
+                min-height: clamp(100px, 20cqw, 140px);
+            }
+            
+            .stat-icon-container {
+                width: clamp(3rem, 6cqw, 4rem);
+                height: clamp(3rem, 6cqw, 4rem);
+            }
+            
+            .stat-icon {
+                width: clamp(1.25rem, 2.5cqw, 2rem);
+                height: clamp(1.25rem, 2.5cqw, 2rem);
+            }
+        }
+        
+        @container (min-width: 600px) {
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(clamp(160px, 20cqw, 220px), 1fr));
+                gap: clamp(1rem, 3cqw, 1.75rem);
+                padding: clamp(0.75rem, 2cqw, 1rem);
+            }
+        }
+        
+        /* Dashboard header container queries */
+        @container (min-width: 350px) {
+            .dashboard-header {
+                padding: clamp(0.75rem, 2cqw, 1.25rem);
+                border-radius: clamp(0.5rem, 1.2cqw, 0.75rem);
+            }
+            
+            .dashboard-title {
+                font-size: clamp(1.125rem, 3.5cqw, 1.75rem);
+            }
+            
+            .dashboard-subtitle {
+                font-size: clamp(0.75rem, 2cqw, 1rem);
+            }
+        }
+        
+        /* Statistics numbers and labels */
+        @container (min-width: 200px) {
+            .stat-number {
+                font-size: clamp(1.25rem, 4cqw, 2rem);
+                font-weight: 700;
+                line-height: 1.1;
+            }
+            
+            .stat-label {
+                font-size: clamp(0.75rem, 2.2cqw, 0.95rem);
+                line-height: 1.3;
+            }
+        }
+        
+        /* Container queries for larger screen sizes and high zoom levels */
+        @container (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(clamp(180px, 18cqw, 240px), 1fr));
+                gap: clamp(1.25rem, 3.5cqw, 2rem);
+                padding: clamp(1rem, 2.5cqw, 1.5rem);
+            }
+        }
+        
+        @container (min-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(clamp(200px, 16cqw, 260px), 1fr));
+                gap: clamp(1.5rem, 4cqw, 2.25rem);
+                padding: clamp(1.25rem, 3cqw, 1.75rem);
+                max-width: clamp(1200px, 90cqw, 1400px);
+                margin: 0 auto;
+            }
+        }
+        
+        @container (min-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(6, 1fr);
+                gap: clamp(1.75rem, 4.5cqw, 2.5rem);
+                padding: clamp(1.5rem, 3.5cqw, 2rem);
+                max-width: clamp(1300px, 85cqw, 1500px);
+            }
+        }
+        
+        /* Tables with container queries */
+        @container (min-width: 500px) {
+            table {
+                font-size: clamp(0.75rem, 1.8cqw, 0.9rem);
+            }
+            
+            th, td {
+                padding: clamp(0.5rem, 1.5cqw, 0.75rem);
+            }
+        }
+        
+        /* Modal container queries */
+        @container (min-width: 400px) {
+            .modal-content {
+                max-width: clamp(300px, 80cqw, 600px);
+                padding: clamp(1rem, 3cqw, 2rem);
+                border-radius: clamp(0.5rem, 1.5cqw, 1rem);
+            }
+        }
+        
+        /* Line Awesome icon scaling with container queries */
+        @container (min-width: 200px) {
+            .stat-icon {
+                font-size: clamp(1.5rem, 3.5cqw, 2.25rem) !important;
+            }
+            
+            .stat-icon-container {
+                width: clamp(3.5rem, 7cqw, 4.5rem);
+                height: clamp(3.5rem, 7cqw, 4.5rem);
+                border-radius: clamp(0.75rem, 1.5cqw, 1rem);
+            }
+        }
+        
+        @container (min-width: 400px) {
+            .stat-icon {
+                font-size: clamp(1.75rem, 4cqw, 2.5rem) !important;
+            }
+            
+            .stat-icon-container {
+                width: clamp(4rem, 8cqw, 5rem);
+                height: clamp(4rem, 8cqw, 5rem);
+                border-radius: clamp(1rem, 2cqw, 1.25rem);
+            }
+        }
+        
+        /* Ensure Line Awesome icons inherit container sizing and perfect centering */
+        .las {
+            line-height: 1;
+            vertical-align: baseline;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Enhanced icon container styling */
+        .stat-icon-container {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover .stat-icon-container {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Smooth transitions for all container query changes */
+        * {
+            transition: font-size 0.2s ease, padding 0.2s ease, gap 0.2s ease;
         }
         /* Custom scrollbar for a better look */
         ::-webkit-scrollbar {
@@ -526,6 +816,71 @@
                     .catch(error => console.error('Error polling notifications:', error));
             }, 30000);
         });
+
+        // Prevent back navigation for authenticated pages
+        function preventBackAfterLogout() {
+            // Check if user is authenticated by checking for auth token or session
+            if (document.querySelector('meta[name="csrf-token"]')) {
+                // Add cache control meta tags
+                const cacheControlMeta = document.createElement('meta');
+                cacheControlMeta.setAttribute('http-equiv', 'Cache-Control');
+                cacheControlMeta.setAttribute('content', 'no-cache, no-store, must-revalidate');
+                document.head.appendChild(cacheControlMeta);
+
+                const pragmaMeta = document.createElement('meta');
+                pragmaMeta.setAttribute('http-equiv', 'Pragma');
+                pragmaMeta.setAttribute('content', 'no-cache');
+                document.head.appendChild(pragmaMeta);
+
+                const expiresMeta = document.createElement('meta');
+                expiresMeta.setAttribute('http-equiv', 'Expires');
+                expiresMeta.setAttribute('content', '0');
+                document.head.appendChild(expiresMeta);
+
+                // Handle page visibility change (when user comes back from another tab/window)
+                document.addEventListener('visibilitychange', function() {
+                    if (document.visibilityState === 'visible') {
+                        // Check if user is still authenticated
+                        fetch('/csrf-token', {
+                            method: 'GET',
+                            credentials: 'same-origin'
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                // User is no longer authenticated, redirect to login
+                                window.location.href = '/login';
+                            }
+                        })
+                        .catch(() => {
+                            // Network error or session expired, redirect to login
+                            window.location.href = '/login';
+                        });
+                    }
+                });
+
+                // Handle browser back/forward navigation
+                window.addEventListener('pageshow', function(event) {
+                    // If page is loaded from cache (back button), check authentication
+                    if (event.persisted) {
+                        fetch('/csrf-token', {
+                            method: 'GET',
+                            credentials: 'same-origin'
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                window.location.href = '/login';
+                            }
+                        })
+                        .catch(() => {
+                            window.location.href = '/login';
+                        });
+                    }
+                });
+            }
+        }
+
+        // Initialize back navigation prevention
+        document.addEventListener('DOMContentLoaded', preventBackAfterLogout);
     </script>
 </body>
 </html>

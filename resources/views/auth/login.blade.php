@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Login - Student Management System</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -17,9 +18,18 @@
             background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
         }
         .bg-white-left {
-            background: linear-gradient(135deg, #f0f0dc 0%, #e5e5d1 25%, #e9dec1 50%, #f0cb9f 75%, #acc7b7 100%);
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 30%, #e9ecef 70%, #dee2e6 100%);
             position: relative;
             overflow: hidden;
+        }
+        
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
         }
         
         .stars {
@@ -33,9 +43,10 @@
         
         .star {
             position: absolute;
-            background: #2d3748;
+            background: #4f46e5;
             transform: rotate(45deg);
             animation: twinkle 3s infinite;
+            box-shadow: 0 0 6px rgba(79, 70, 229, 0.5);
         }
         
         .star:nth-child(odd) {
@@ -69,9 +80,9 @@
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(ellipse at 20% 30%, rgba(117, 212, 29, 0.1) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 70%, rgba(180, 255, 125, 0.1) 0%, transparent 50%),
-                radial-gradient(ellipse at 40% 80%, rgba(230, 230, 143, 0.1) 0%, transparent 50%);
+                radial-gradient(ellipse at 20% 30%, rgba(79, 70, 229, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(99, 102, 241, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 40% 80%, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
             animation: nebula-drift 20s infinite linear;
         }
         
@@ -83,6 +94,11 @@
         .login-card {
             backdrop-filter: blur(10px);
             background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .login-container {
+            position: relative;
+            z-index: 10;
         }
         .input-field {
             transition: all 0.3s ease;
@@ -118,16 +134,38 @@
     <div class="min-h-screen flex">
         <!-- Left Side - Login Form -->
         <div class="flex-1 flex items-center justify-end px-4 sm:px-6 lg:px-20 bg-white-left">
-            <!-- Space Background Effects -->
-            <div class="nebula"></div>
-            <div class="stars" id="stars-container"></div>
+            <!-- Particles.js Background -->
+            <div id="particles-js"></div>
             
-            <div class="max-w-md w-full space-y-8 relative z-10">
+            <div class="max-w-md w-full space-y-8 login-container">
                 <!-- Logo and Title -->
                 <div class="text-center logo-container">
                     <img src="{{ asset('images/SMSIII LOGO.png') }}" alt="SMSIII Logo" class="mx-auto h-28 w-auto mb-6">
                     <h2 class="text-3xl font-bold text-gray-800 mb-2">Sign in</h2>
                 </div>
+
+                <!-- Success Messages -->
+                @if (session('logout_success'))
+                    <div class="mb-4 bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-lg">
+                        <div class="flex items-center">
+                            <svg class="h-5 w-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            {{ session('logout_success') }}
+                        </div>
+                    </div>
+                @endif
+
+                @if (session('success'))
+                    <div class="mb-4 bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-lg">
+                        <div class="flex items-center">
+                            <svg class="h-5 w-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            {{ session('success') }}
+                        </div>
+                    </div>
+                @endif
 
                 <!-- Login Fields -->
                 @if ($errors->any())
@@ -249,29 +287,110 @@
             }
         }
 
-        // Generate stars for space background
-        function createStars() {
-            const starsContainer = document.getElementById('stars-container');
-            const numberOfStars = 100;
-            
-            for (let i = 0; i < numberOfStars; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                
-                // Random size
-                const sizes = ['small', 'medium', 'large'];
-                const randomSize = sizes[Math.floor(Math.random() * sizes.length)];
-                star.classList.add(randomSize);
-                
-                // Random position
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                
-                // Random animation delay
-                star.style.animationDelay = Math.random() * 2 + 's';
-                
-                starsContainer.appendChild(star);
-            }
+        // Initialize Particles.js
+        function initParticles() {
+            particlesJS('particles-js', {
+                "particles": {
+                    "number": {
+                        "value": 80,
+                        "density": {
+                            "enable": true,
+                            "value_area": 800
+                        }
+                    },
+                    "color": {
+                        "value": "#000000"
+                    },
+                    "shape": {
+                        "type": "circle",
+                        "stroke": {
+                            "width": 0,
+                            "color": "#000000"
+                        }
+                    },
+                    "opacity": {
+                        "value": 0.5,
+                        "random": false,
+                        "anim": {
+                            "enable": false,
+                            "speed": 1,
+                            "opacity_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "size": {
+                        "value": 3,
+                        "random": true,
+                        "anim": {
+                            "enable": false,
+                            "speed": 40,
+                            "size_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "line_linked": {
+                        "enable": true,
+                        "distance": 150,
+                        "color": "#000000",
+                        "opacity": 0.3,
+                        "width": 1
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 6,
+                        "direction": "none",
+                        "random": false,
+                        "straight": false,
+                        "out_mode": "out",
+                        "bounce": false,
+                        "attract": {
+                            "enable": false,
+                            "rotateX": 600,
+                            "rotateY": 1200
+                        }
+                    }
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": {
+                        "onhover": {
+                            "enable": true,
+                            "mode": "grab"
+                        },
+                        "onclick": {
+                            "enable": false,
+                            "mode": "push"
+                        },
+                        "resize": true
+                    },
+                    "modes": {
+                        "grab": {
+                            "distance": 325,
+                            "line_linked": {
+                                "opacity": 1
+                            }
+                        },
+                        "bubble": {
+                            "distance": 400,
+                            "size": 40,
+                            "duration": 2,
+                            "opacity": 8,
+                            "speed": 3
+                        },
+                        "repulse": {
+                            "distance": 200,
+                            "duration": 0.4
+                        },
+                        "push": {
+                            "particles_nb": 4
+                        },
+                        "remove": {
+                            "particles_nb": 2
+                        }
+                    }
+                },
+                "retina_detect": true
+            });
         }
 
         // Lockout countdown timer
@@ -325,10 +444,57 @@
             }, 1000);
         }
 
+        // Prevent back navigation after logout
+        function preventBackNavigation() {
+            // Clear browser history
+            if (window.history && window.history.pushState) {
+                // Replace current history entry
+                window.history.replaceState(null, null, window.location.href);
+                
+                // Add a new history entry
+                window.history.pushState(null, null, window.location.href);
+                
+                // Listen for back button
+                window.addEventListener('popstate', function(event) {
+                    // Push forward again to prevent going back
+                    window.history.pushState(null, null, window.location.href);
+                    
+                    // Show alert if user tries to go back
+                    alert('You have been logged out. Please login again to access the system.');
+                });
+            }
+            
+            // Disable right-click context menu on login page
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+            });
+            
+            // Disable F5 refresh and other shortcuts that might bypass security
+            document.addEventListener('keydown', function(e) {
+                // Disable F5, Ctrl+R, Ctrl+F5
+                if (e.key === 'F5' || (e.ctrlKey && e.key === 'r') || (e.ctrlKey && e.key === 'F5')) {
+                    e.preventDefault();
+                }
+                
+                // Disable Ctrl+Shift+I (Developer Tools)
+                if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+                    e.preventDefault();
+                }
+                
+                // Disable F12 (Developer Tools)
+                if (e.key === 'F12') {
+                    e.preventDefault();
+                }
+            });
+        }
+
         // Add some interactive effects
         document.addEventListener('DOMContentLoaded', function() {
-            // Create stars
-            createStars();
+            // Prevent back navigation
+            preventBackNavigation();
+            
+            // Initialize particles
+            initParticles();
             
             // Start lockout timer if needed
             startLockoutTimer();
