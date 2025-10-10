@@ -117,84 +117,94 @@ class CurriculumController extends Controller
     /**
      * Saves the subject mapping for a curriculum.
      */
-    public function saveSubjects(Request $request)
-    {
-        $validated = $request->validate([
-            'curriculumId' => 'required|exists:curriculums,id',
-            'curriculumData' => 'required|array',
-        ]);
+public function saveSubjects(Request $request)
+{
+    $validated = $request->validate([
+        'curriculumId' => 'required|exists:curriculums,id',
+        'curriculumData' => 'required|array',
+    ]);
 
-        $curriculum = Curriculum::findOrFail($validated['curriculumId']);
-        
-        // Get existing subjects before clearing to track changes
-        $existingSubjects = $curriculum->subjects()->get()->keyBy('id');
-        $newSubjectIds = collect();
-        
-        $curriculum->subjects()->detach(); // Clear existing subjects for a fresh save
-
+    $curriculum = Curriculum::findOrFail($validated['curriculumId']);
+    
+    // Get existing subjects before clearing to track changes
+    $existingSubjects = $curriculum->subjects()->get()->keyBy('id');
+    
+    // Use a transaction to ensure data integrity
+    DB::transaction(function () use ($curriculum, $validated, $existingSubjects) {
+        $newSubjectMappings = [];
         foreach ($validated['curriculumData'] as $data) {
             if (empty($data['subjects'])) {
-                continue; 
+                continue;
             }
             
             foreach ($data['subjects'] as $subjectData) {
                 $subject = Subject::where('subject_code', $subjectData['subject_code'])->first();
 
                 if ($subject) {
-                    $curriculum->subjects()->attach($subject->id, [
+                    $newSubjectMappings[$subject->id] = [
                         'year' => $data['year'],
                         'semester' => $data['semester'],
-                    ]);
-                    
-                    $newSubjectIds->push($subject->id);
-                    
-                    // Create snapshot for newly added subjects
-                    if (!$existingSubjects->has($subject->id)) {
-                        CurriculumVersionService::createSnapshotOnSubjectAdd(
-                            $validated['curriculumId'], 
-                            $subject->subject_name
-                        );
-                        
-                        // Log the addition for debugging
-                        \Log::info("Created snapshot for subject addition: {$subject->subject_name} to curriculum {$validated['curriculumId']}");
-                    }
+                    ];
                 }
             }
         }
+        
+        // Detach all subjects first
+        $curriculum->subjects()->detach();
 
-        // Create snapshots for removed subjects
-        $removedSubjects = $existingSubjects->whereNotIn('id', $newSubjectIds);
-        foreach ($removedSubjects as $removedSubject) {
-            // Prepare removed subject data
-            $removedSubjectData = [
-                'subject_name' => $removedSubject->subject_name,
-                'subject_code' => $removedSubject->subject_code,
-                'subject_type' => $removedSubject->subject_type,
-                'subject_unit' => $removedSubject->subject_unit,
-                'year' => $removedSubject->pivot->year ?? 1,
-                'semester' => $removedSubject->pivot->semester ?? 1,
-            ];
-            
+        // Re-attach subjects with new mappings
+        foreach ($newSubjectMappings as $subjectId => $mapping) {
+            $curriculum->subjects()->attach($subjectId, $mapping);
+        }
+
+        $newSubjectIds = collect(array_keys($newSubjectMappings));
+
+        // Identify added subjects
+        $addedSubjects = $newSubjectIds->diff($existingSubjects->keys());
+        foreach ($addedSubjects as $subjectId) {
+            $subject = Subject::find($subjectId);
+            CurriculumVersionService::createSnapshotOnSubjectAdd(
+                $curriculum->id, 
+                $subject->subject_name
+            );
+        }
+
+        // Identify removed subjects
+        $removedSubjects = $existingSubjects->keys()->diff($newSubjectIds);
+        foreach ($removedSubjects as $subjectId) {
+            $subject = $existingSubjects[$subjectId];
             CurriculumVersionService::createSnapshotOnSubjectRemove(
-                $validated['curriculumId'], 
-                $removedSubject->subject_name,
-                $removedSubjectData
-            );
-            
-            // Log the removal for debugging
-            \Log::info("Created snapshot for subject removal: {$removedSubject->subject_name} from curriculum {$validated['curriculumId']}");
-        }
-
-        // Create general update snapshot if no individual changes were tracked
-        if ($removedSubjects->isEmpty() && $newSubjectIds->isEmpty()) {
-            CurriculumVersionService::createSnapshotOnUpdate(
-                $validated['curriculumId'], 
-                'Curriculum subjects updated via subject mapping'
+                $curriculum->id, 
+                $subject->subject_name,
+                [
+                    'subject_name' => $subject->subject_name,
+                    'subject_code' => $subject->subject_code,
+                    'subject_type' => $subject->subject_type,
+                    'subject_unit' => $subject->subject_unit,
+                    'year' => $subject->pivot->year,
+                    'semester' => $subject->pivot->semester,
+                ]
             );
         }
 
-        return response()->json(['message' => 'Curriculum saved successfully!', 'curriculumId' => $curriculum->id]);
-    }
+        // Identify moved subjects
+        foreach ($existingSubjects as $subject) {
+            if (isset($newSubjectMappings[$subject->id])) {
+                $oldMapping = $subject->pivot;
+                $newMapping = (object)$newSubjectMappings[$subject->id];
+                
+                if ($oldMapping->year != $newMapping->year || $oldMapping->semester != $newMapping->semester) {
+                    CurriculumVersionService::createSnapshotOnUpdate(
+                        $curriculum->id,
+                        "Moved subject '{$subject->subject_name}' from Year {$oldMapping->year}, Sem {$oldMapping->semester} to Year {$newMapping->year}, Sem {$newMapping->semester}"
+                    );
+                }
+            }
+        }
+    });
+
+    return response()->json(['message' => 'Curriculum saved successfully!', 'curriculumId' => $curriculum->id]);
+}
 
     /**
      * REMOVE a subject from a curriculum and log it to history.
