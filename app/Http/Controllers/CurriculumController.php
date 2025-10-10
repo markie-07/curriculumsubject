@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Curriculum;
 use App\Models\Subject;
 use App\Models\SubjectHistory;
+use App\Services\CurriculumVersionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -124,6 +125,11 @@ class CurriculumController extends Controller
         ]);
 
         $curriculum = Curriculum::findOrFail($validated['curriculumId']);
+        
+        // Get existing subjects before clearing to track changes
+        $existingSubjects = $curriculum->subjects()->get()->keyBy('id');
+        $newSubjectIds = collect();
+        
         $curriculum->subjects()->detach(); // Clear existing subjects for a fresh save
 
         foreach ($validated['curriculumData'] as $data) {
@@ -139,8 +145,52 @@ class CurriculumController extends Controller
                         'year' => $data['year'],
                         'semester' => $data['semester'],
                     ]);
+                    
+                    $newSubjectIds->push($subject->id);
+                    
+                    // Create snapshot for newly added subjects
+                    if (!$existingSubjects->has($subject->id)) {
+                        CurriculumVersionService::createSnapshotOnSubjectAdd(
+                            $validated['curriculumId'], 
+                            $subject->subject_name
+                        );
+                        
+                        // Log the addition for debugging
+                        \Log::info("Created snapshot for subject addition: {$subject->subject_name} to curriculum {$validated['curriculumId']}");
+                    }
                 }
             }
+        }
+
+        // Create snapshots for removed subjects
+        $removedSubjects = $existingSubjects->whereNotIn('id', $newSubjectIds);
+        foreach ($removedSubjects as $removedSubject) {
+            // Prepare removed subject data
+            $removedSubjectData = [
+                'subject_name' => $removedSubject->subject_name,
+                'subject_code' => $removedSubject->subject_code,
+                'subject_type' => $removedSubject->subject_type,
+                'subject_unit' => $removedSubject->subject_unit,
+                'year' => $removedSubject->pivot->year ?? 1,
+                'semester' => $removedSubject->pivot->semester ?? 1,
+            ];
+            
+            CurriculumVersionService::createSnapshotOnSubjectRemove(
+                $validated['curriculumId'], 
+                $removedSubject->subject_name,
+                $removedSubjectData
+            );
+            
+            // Log the removal for debugging
+            \Log::info("Created snapshot for subject removal: {$removedSubject->subject_name} from curriculum {$validated['curriculumId']}");
+        }
+
+        // Create general update snapshot if no individual changes were tracked
+        if ($removedSubjects->isEmpty() && $newSubjectIds->isEmpty()) {
+            CurriculumVersionService::createSnapshotOnUpdate(
+                $validated['curriculumId'], 
+                'Curriculum subjects updated via subject mapping'
+            );
         }
 
         return response()->json(['message' => 'Curriculum saved successfully!', 'curriculumId' => $curriculum->id]);
@@ -184,6 +234,13 @@ class CurriculumController extends Controller
                     'semester'      => $validated['semester'],
                     'action'        => 'removed',
                 ]);
+
+
+                // Create version snapshot after removing subject
+                CurriculumVersionService::createSnapshotOnSubjectRemove(
+                    $validated['curriculumId'], 
+                    $subject->subject_name
+                );
             });
 
             return response()->json(['message' => 'Subject removed and recorded in history.']);

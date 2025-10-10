@@ -61,6 +61,15 @@ class UserSeeder extends Seeder
 
         // Additional Super Admin Users
         User::create([
+            'name' => 'Mark James',
+            'username' => 'markjames',
+            'email' => 'markjamesp11770@gmail.com', // Must match DynamicMailService config
+            'password' => Hash::make('superadmin123'),
+            'role' => 'super_admin',
+            'status' => 'active',
+        ]);
+
+        User::create([
             'name' => 'Secondary Super Admin',
             'username' => 'superadmin2',
             'email' => 'admin@yourdomain.com', // Must match DynamicMailService config

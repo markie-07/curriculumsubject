@@ -27,6 +27,14 @@ class DynamicMailService
             'encryption' => 'tls',
             'from_name' => 'Student Management System'
         ],
+        'markjamesp11770@gmail.com' => [
+            'host' => 'smtp.gmail.com',
+            'port' => 587,
+            'username' => 'markjamesp11770@gmail.com',
+            'password' => 'eyaf pyve ggzy lpge', // App password for Mark James superadmin
+            'encryption' => 'tls',
+            'from_name' => 'Student Management System'
+        ],
         // Add more email configurations here - REPLACE WITH ACTUAL EMAILS AND APP PASSWORDS
         'admin@yourdomain.com' => [
             'host' => 'smtp.gmail.com',

@@ -324,49 +324,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Retrieve Modal Logic ---
-    const retrieveModal = document.getElementById('retrieveConfirmationModal');
-    const cancelRetrieveButton = document.getElementById('cancelRetrieveButton');
-    const confirmRetrieveButton = document.getElementById('confirmRetrieveButton');
-    let historyIdToRetrieve = null;
-
-    document.querySelectorAll('.retrieve-btn').forEach(button => {
-        button.addEventListener('click', (e) => {
-            historyIdToRetrieve = e.target.dataset.id;
-            retrieveModal.classList.remove('hidden');
-        });
-    });
-
-    const hideRetrieveModal = () => {
-        retrieveModal.classList.add('hidden');
-        historyIdToRetrieve = null;
-    };
-
-    cancelRetrieveButton.addEventListener('click', hideRetrieveModal);
-    retrieveModal.addEventListener('click', (e) => { if (e.target === retrieveModal) hideRetrieveModal(); });
-
-    confirmRetrieveButton.addEventListener('click', async () => {
-        if (!historyIdToRetrieve) return;
-        try {
-            const response = await fetch(`/subject_history/${historyIdToRetrieve}/retrieve`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Accept': 'application/json'
-                },
-            });
-            const result = await response.json();
-            if (!response.ok) throw new Error(result.message || 'Failed to retrieve the subject.');
-            alert('Subject retrieved successfully!');
-            window.location.reload();
-        } catch (error) {
-            console.error('Error retrieving subject:', error);
-            alert('Error: ' + error.message);
-        } finally {
-            hideRetrieveModal();
-        }
-    });
+    // --- Retrieve Modal Logic moved to newer implementation below ---
 
     // --- NEW: Export Modal Logic ---
     const exportModal = document.getElementById('exportConfirmationModal');
@@ -696,18 +654,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Confirm retrieve
     document.getElementById('confirmRetrieveButton').addEventListener('click', async function() {
+        if (!currentHistoryId) return;
+        
         try {
-            // Here you would typically send the retrieve request to the server
-            hideRetrieveModal();
-            showSuccessModal('Subject Retrieved!', 'The subject has been successfully added back to the curriculum.');
-            
-            // Reload page after success
-            setTimeout(() => {
-                window.location.reload();
-            }, 2000);
+            const response = await fetch(`/subject_history/${currentHistoryId}/retrieve`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                },
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                hideRetrieveModal();
+                showSuccessModal('Subject Retrieved!', data.message + ' You can now view it in the Subject Mapping page.');
+                
+                // Redirect to subject mapping page after success
+                setTimeout(() => {
+                    window.location.href = '{{ route("subject_mapping") }}';
+                }, 2500);
+            } else {
+                throw new Error(data.message || 'Failed to retrieve subject');
+            }
         } catch (error) {
             console.error('Error:', error);
-            alert('An error occurred while retrieving the subject.');
+            hideRetrieveModal();
+            alert('Error: ' + error.message);
         }
     });
 

@@ -61,6 +61,43 @@ class CurriculumExportToolController extends Controller
     }
 
     /**
+     * Get curriculum subjects for preview (API endpoint).
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getCurriculumSubjects($id)
+    {
+        try {
+            $curriculum = Curriculum::with([
+                'subjects' => function ($query) {
+                    $query->orderBy('pivot_year', 'asc')->orderBy('pivot_semester', 'asc');
+                }
+            ])->findOrFail($id);
+
+            return response()->json([
+                'id' => $curriculum->id,
+                'curriculum_name' => $curriculum->curriculum,
+                'program_code' => $curriculum->program_code,
+                'year_level' => $curriculum->year_level,
+                'subjects' => $curriculum->subjects->map(function ($subject) {
+                    return [
+                        'id' => $subject->id,
+                        'subject_name' => $subject->subject_name,
+                        'subject_code' => $subject->subject_code,
+                        'subject_type' => $subject->subject_type,
+                        'subject_unit' => $subject->subject_unit,
+                        'year' => $subject->pivot->year ?? 'N/A',
+                        'semester' => $subject->pivot->semester ?? 'N/A'
+                    ];
+                })
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Curriculum not found'], 404);
+        }
+    }
+
+    /**
      * Export the curriculum data as a PDF.
      *
      * @param  int  $id
@@ -79,7 +116,26 @@ class CurriculumExportToolController extends Controller
                 
                 // Apply course type filtering if specified
                 if (!empty($courseTypes)) {
-                    $query->whereIn('subject_type', $courseTypes);
+                    // Handle General Education with flexible matching
+                    if (in_array('General Education', $courseTypes)) {
+                        $geIdentifiers = ['GE', 'General Education', 'Gen Ed', 'General'];
+                        $otherTypes = array_diff($courseTypes, ['General Education']);
+                        
+                        $query->where(function ($subQuery) use ($geIdentifiers, $otherTypes) {
+                            // Match General Education subjects with flexible matching
+                            foreach ($geIdentifiers as $geId) {
+                                $subQuery->orWhere('subject_type', 'LIKE', '%' . $geId . '%');
+                            }
+                            
+                            // Match other types exactly
+                            if (!empty($otherTypes)) {
+                                $subQuery->orWhereIn('subject_type', $otherTypes);
+                            }
+                        });
+                    } else {
+                        // Use exact matching for non-GE subjects
+                        $query->whereIn('subject_type', $courseTypes);
+                    }
                 }
             }, 
             'subjects.prerequisites', 
@@ -101,12 +157,6 @@ class CurriculumExportToolController extends Controller
             'mode' => 'utf-8',
             'format' => 'A4',
             'orientation' => 'P',
-            'margin_left' => 15,
-            'margin_right' => 15,
-            'margin_top' => 16,
-            'margin_bottom' => 16,
-            'margin_header' => 9,
-            'margin_footer' => 9,
         ]);
         
         // Write HTML to PDF

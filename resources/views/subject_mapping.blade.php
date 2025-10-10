@@ -2,7 +2,7 @@
 
 @section('content')
 <style>
-    /* START: REPLACE your old icon styles with these new ones */
+    /* Icon background styles */
     .icon-bg-default { background-color: #F3F4F6; border: 2px solid #E5E7EB; } /* Default Gray */
     .icon-bg-major { background-color: #DBEAFE; border: 2px solid #BFDBFE; }   /* Blue */
     .icon-bg-minor { background-color: #E9D5FF; border: 2px solid #D8B4FE; }   /* Violet */
@@ -13,9 +13,6 @@
     .icon-minor { color: #8B5CF6; }
     .icon-elective { color: #EF4444; }
     .icon-general { color: #F97316; }
-    /* END: REPLACEMENT */
-
-    /* --- Existing styles below --- */
     .assigned-major { background-color: #DBEAFE; border-color: #BFDBFE; }
     .assigned-minor { background-color: #E9D5FF; border-color: #D8B4FE; }
     .assigned-elective { background-color: #FEE2E2; border-color: #FECACA; }
@@ -97,11 +94,9 @@
         </div>
     </div>
     
- {{-- Subject Details Modal (COMPREHENSIVE) --}}
+ {{-- Subject Details Modal --}}
 <div id="subjectDetailsModal" class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-60 transition-opacity duration-300 ease-out hidden">
-    {{-- MODIFIED: Reduced padding to `p-2` to make the modal closer to the screen edges --}}
     <div class="flex items-center justify-center min-h-screen p-2">
-        {{-- MODIFIED: Width and height are now set to 98% of the viewport width (vw) and height (vh) --}}
         <div class="relative bg-white w-[98vw] h-[98vh] rounded-2xl shadow-2xl transform scale-95 opacity-0 transition-all duration-300 ease-out flex flex-col" id="modal-details-panel">
             
             {{-- Modal Header (Sticky) --}}
@@ -455,22 +450,18 @@
         let subjectTagToRemove = null;
         let isEditing = false;
         let subjectToImport = null;
-        let subjectToDelete = null; // New state for deletion
 
         const removeSuccessModal = document.getElementById('removeSuccessModal');
         const closeRemoveSuccessModal = document.getElementById('closeRemoveSuccessModal');
         
-        // --- NEW STATE VARIABLES ---
+        // --- STATE VARIABLES ---
         let isAddingSubjectsMode = false;
         let activeSemesterForAdding = null;
-
-
-        // --- NEW: State variables for reassignment
         let itemToReassign = null;
         let reassignTargetContainer = null;
 
 
-        // --- SUBJECT DETAIL MODAL FUNCTIONS (UPDATED) ---
+        // --- SUBJECT DETAIL MODAL FUNCTIONS ---
 
         const hideDetailsModal = () => {
             subjectDetailsModal.classList.add('opacity-0');
@@ -955,7 +946,7 @@ const updateAllTotals = () => {
 
                 subjectTags.forEach(tag => tag.setAttribute('draggable', 'false'));
                 
-                // NEW: Ensure adding subjects mode is turned off
+                // Ensure adding subjects mode is turned off
                 if (isAddingSubjectsMode) {
                     toggleAddSubjectsMode(null);
                 }
@@ -1153,7 +1144,7 @@ const updateAllTotals = () => {
 
         document.getElementById('cancelRemoveButton').addEventListener('click', hideRemoveConfirmationModal);
         
-        // --- THIS IS THE UPDATED PART ---
+        // --- REMOVE SUBJECT CONFIRMATION ---
         document.getElementById('confirmRemoveButton').addEventListener('click', async () => {
             if (!subjectTagToRemove) return;
 
@@ -1425,7 +1416,7 @@ function renderCurriculumOverview(yearLevel) {
             </div>`;
     }
             curriculumOverview.innerHTML = html;
-             // --- NEW: Add event listeners for the new buttons ---
+             // Add event listeners for add subject buttons
             curriculumOverview.querySelectorAll('.add-subject-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const semesterDropzone = e.target.closest('.semester-dropzone');
@@ -1614,21 +1605,7 @@ function renderCurriculumOverview(yearLevel) {
             document.getElementById('reassignSuccessModal').classList.add('hidden');
         });
 
-        // Delete functionality removed
 
-
-        function fetchAllSubjects() {
-             availableSubjectsContainer.innerHTML = '<p class="text-gray-500 text-center mt-4">Loading subjects...</p>';
-            fetch('/api/subjects')
-                .then(response => response.json())
-                .then(subjects => {
-                    renderAvailableSubjects(subjects);
-                })
-                .catch(error => {
-                    console.error('Error fetching all subjects:', error);
-                    availableSubjectsContainer.innerHTML = '<p class="text-red-500 text-center mt-4">Could not load subjects.</p>';
-                });
-        }
 
         curriculumSelector.addEventListener('change', (e) => {
             const curriculumId = e.target.value;
@@ -1636,14 +1613,13 @@ function renderCurriculumOverview(yearLevel) {
                 fetchCurriculumData(curriculumId);
             } else {
                 curriculumOverview.innerHTML = '<p class="text-gray-500 text-center mt-4">Select a curriculum from the dropdown to start mapping subjects.</p>';
-                fetchAllSubjects(); 
+                availableSubjectsContainer.innerHTML = '<p class="text-gray-500 text-center mt-4">Select a curriculum to view subjects.</p>';
                 updateUnitTotals();
                 document.getElementById('editCurriculumButton').classList.add('hidden');
                 toggleEditMode(false);
             }
         });
         fetchCurriculums();
-        fetchAllSubjects();
     });
 </script>
 @endsection

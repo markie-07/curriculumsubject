@@ -43,7 +43,7 @@
                 </div>
                 <div class="flex-grow">
                     <h1 class="text-2xl sm:text-3xl font-bold text-slate-800">Subject Mapping History</h1>
-                    <p class="text-sm text-slate-500 mt-1">Review previously mapped subjects for any curriculum.</p>
+                    <p class="text-sm text-slate-500 mt-1">Review previously mapped subject for any curriculum.</p>
                 </div>
             </div>
         </div>
@@ -54,7 +54,6 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-10">
                 <div>
                     <h3 class="flex items-center gap-3 text-lg font-semibold text-slate-800 mb-4 pb-2 border-b border-slate-200">
-                        <svg class="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
                         <span>Senior High</span>
                     </h3>
                     <div id="senior-high-curriculums" class="space-y-4 pt-2">
@@ -63,7 +62,6 @@
                 </div>
                 <div>
                     <h3 class="flex items-center gap-3 text-lg font-semibold text-slate-800 mb-4 pb-2 border-b border-slate-200">
-                       <svg class="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z" /><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222 4 2.222V20M1 12v7a2 2 0 002 2h18a2 2 0 002-2v-7" /></svg>
                        <span>College</span>
                     </h3>
                     <div id="college-curriculums" class="space-y-4 pt-2">
@@ -73,7 +71,7 @@
             </div>
         </div>
 
-        {{-- [MODAL 1] Curriculum Overview Modal --}}
+        {{-- Curriculum History Modal --}}
         <div id="subjectsModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 ease-out hidden">
             <div class="flex items-center justify-center min-h-screen p-4">
                 <div class="relative bg-gray-50 border border-gray-200 w-full max-w-7xl rounded-2xl shadow-2xl transform scale-95 opacity-0 transition-all duration-300 ease-out flex flex-col h-[90vh]" id="modal-panel-subjects">
@@ -83,7 +81,7 @@
                             <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
                     </div>
-                    <div id="modal-subjects-content" class="p-6 space-y-6 flex-1 overflow-y-auto"></div>
+                    <div id="modal-subjects-content" class="p-6 space-y-4 flex-1 overflow-y-auto"></div>
                 </div>
             </div>
         </div>
@@ -112,6 +110,54 @@
                                 Export to PDF
                             </button>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- [MODAL 3] Version History Modal --}}
+        <div id="versionHistoryModal" class="fixed inset-0 z-[70] overflow-y-auto bg-black bg-opacity-60 transition-opacity duration-300 ease-out hidden">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="relative bg-white w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl transform scale-95 opacity-0 transition-all duration-300 ease-out flex flex-col" id="modal-panel-versions">
+                    <div class="flex justify-between items-center p-6 border-b border-gray-200 sticky top-0 bg-white z-10 rounded-t-2xl">
+                        <div>
+                            <h2 id="versionHistoryTitle" class="text-2xl font-bold text-gray-800">Version History</h2>
+                            <p id="versionHistorySubtitle" class="text-sm text-gray-500 mt-1"></p>
+                        </div>
+                        <button id="closeVersionHistoryModal" class="text-gray-400 hover:text-gray-600 focus:outline-none transition-colors duration-200" aria-label="Close modal">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                    <div id="version-history-content" class="p-6 flex-1 overflow-y-auto">
+                        <div id="version-loading" class="flex items-center justify-center py-12">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                            <span class="ml-3 text-gray-600">Loading versions...</span>
+                        </div>
+                        <div id="version-list" class="space-y-4 hidden"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- [MODAL 4] Version Details Modal --}}
+        <div id="versionDetailsModal" class="fixed inset-0 z-[80] overflow-y-auto bg-black bg-opacity-60 transition-opacity duration-300 ease-out hidden">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="relative bg-white w-full max-w-6xl max-h-[90vh] rounded-2xl shadow-2xl transform scale-95 opacity-0 transition-all duration-300 ease-out flex flex-col" id="modal-panel-version-details">
+                    <div class="flex justify-between items-center p-6 border-b border-gray-200 sticky top-0 bg-white z-10 rounded-t-2xl">
+                        <div>
+                            <h2 id="versionDetailsTitle" class="text-2xl font-bold text-gray-800">Version Details</h2>
+                            <p id="versionDetailsSubtitle" class="text-sm text-gray-500 mt-1"></p>
+                        </div>
+                        <button id="closeVersionDetailsModal" class="text-gray-400 hover:text-gray-600 focus:outline-none transition-colors duration-200" aria-label="Close modal">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                    <div id="version-details-content" class="p-6 flex-1 overflow-y-auto">
+                        <div id="version-details-loading" class="flex items-center justify-center py-12">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                            <span class="ml-3 text-gray-600">Loading version details...</span>
+                        </div>
+                        <div id="version-details-data" class="hidden"></div>
                     </div>
                 </div>
             </div>
@@ -173,13 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
     closeSubjectDetailsModalBtn.addEventListener('click', hideSubjectDetailsModal);
     subjectDetailsModal.addEventListener('click', (e) => { if (e.target === subjectDetailsModal) hideSubjectDetailsModal(); });
 
-    exportSubjectDetailsButton.addEventListener('click', () => {
-        const subjectDataString = exportSubjectDetailsButton.dataset.subjectData;
-        if (subjectDataString) {
-            const subject = JSON.parse(subjectDataString);
-            window.open(`/subjects/${subject.id}/export-pdf`, '_blank');
-        }
-    });
+    // Export button event listener moved to the second script block where modal functions are defined
 
     // --- Card Creation Functions ---
     const createCurriculumCard = (curriculum) => {
@@ -195,26 +235,50 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="flex-shrink-0 w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300">
                 <svg class="w-6 h-6 text-slate-500 group-hover:text-blue-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
             </div>
-            <div>
+            <div class="flex-1">
                 <h3 class="font-bold text-slate-800 group-hover:text-blue-600">${curriculum.curriculum_name}</h3>
                 <p class="text-sm text-slate-500">${curriculum.program_code} &middot; ${curriculum.academic_year}</p>
-                 <p class="text-xs text-slate-400 mt-1">Created: ${formattedDate}</p>
+                <p class="text-xs text-slate-400 mt-1">Created: ${formattedDate}</p>
+            </div>
+            <div class="flex items-center gap-2 text-slate-400 group-hover:text-blue-500 transition-colors duration-300">
+                <span class="text-xs font-medium">View History</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
             </div>`;
-        card.addEventListener('dblclick', async () => {
-            modalCurriculumTitle.textContent = `${curriculum.curriculum_name} (${curriculum.program_code})`;
-            modalSubjectsContent.innerHTML = '<p class="text-gray-500 text-center">Loading subjects...</p>';
+        // Add version history button
+        const versionButton = document.createElement('button');
+        versionButton.className = 'absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-blue-100 hover:bg-blue-200 text-blue-600 p-2 rounded-lg';
+        versionButton.innerHTML = `
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        `;
+        versionButton.title = 'View Version History';
+        versionButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            // Trigger the same action as the main card click
+            card.click();
+        });
+        card.style.position = 'relative';
+        card.appendChild(versionButton);
+
+        card.addEventListener('click', async () => {
+            modalCurriculumTitle.textContent = `${curriculum.curriculum_name} (${curriculum.program_code})` ;
+            modalSubjectsContent.innerHTML = '<p class="text-gray-500 text-center">Loading history...</p>';
             showSubjectsModal();
             try {
-                const response = await fetch(`/api/curriculums/${curriculum.id}`);
+                const response = await fetch(`/api/curriculum-history/${curriculum.id}/versions`);
                 const data = await response.json();
-                if (data.curriculum && data.curriculum.subjects.length > 0) {
-                     renderModalContent(data.curriculum.subjects, curriculum.year_level);
+                
+                if (data.success && data.versions && data.versions.length > 0) {
+                     renderVersionHistoryInModal(data.versions, curriculum.year_level);
                 } else {
-                    modalSubjectsContent.innerHTML = '<p class="text-gray-500 text-center">No subjects have been mapped to this curriculum yet.</p>';
+                    modalSubjectsContent.innerHTML = '<p class="text-gray-500 text-center">No version history found for this curriculum.</p>';
                 }
             } catch (error) {
-                console.error('Failed to fetch subjects:', error);
-                modalSubjectsContent.innerHTML = '<p class="text-red-500 text-center">Could not load subjects.</p>';
+                console.error('Failed to fetch version history:', error);
+                modalSubjectsContent.innerHTML = '<p class="text-red-500 text-center">Could not load version history.</p>';
             }
         });
         return card;
@@ -232,23 +296,47 @@ document.addEventListener('DOMContentLoaded', () => {
     const createSubjectTagForModal = (subject) => {
         const tag = document.createElement('div');
         const tagClass = getSubjectTagClass(subject.subject_type);
-        tag.className = `subject-tag shadow-sm rounded-lg p-3 flex items-center justify-between w-full border ${tagClass} cursor-pointer`;
+        const isRemoved = subject._isRemoved;
+        
+        // Apply different styling for removed subjects
+        let className = `subject-tag shadow-sm rounded-lg p-3 flex items-center justify-between w-full border ${tagClass}`;
+        if (isRemoved) {
+            className += ' opacity-60 bg-red-50 border-red-200';
+        } else {
+            className += ' cursor-pointer';
+        }
+        
+        tag.className = className;
+        
+        const removedIcon = isRemoved ? `
+            <svg class="h-4 w-4 text-red-500 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+        ` : '';
+        
+        const textStyle = isRemoved ? 'line-through text-red-600' : '';
+        
         tag.innerHTML = `
             <div class="flex items-center gap-3 flex-grow">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
                 <div class="flex-grow">
-                    <p class="text-sm leading-tight text-main">${subject.subject_name}</p>
-                    <p class="text-xs font-mono text-code">${subject.subject_code}</p>
+                    <p class="text-sm leading-tight text-main ${textStyle}">${subject.subject_name}</p>
+                    <p class="text-xs font-mono text-code ${textStyle}">${subject.subject_code}</p>
                 </div>
             </div>
             <div class="flex items-center gap-3 ml-2 flex-shrink-0">
-                <span class="text-xs font-semibold px-2 py-1 rounded-full unit-badge">${subject.subject_unit} units</span>
+                <span class="text-xs font-semibold px-2 py-1 rounded-full unit-badge ${isRemoved ? 'bg-red-100 text-red-700' : ''}">${subject.subject_unit} units</span>
+                ${removedIcon}
+                ${isRemoved ? '<span class="text-xs text-red-600 font-medium ml-2">REMOVED</span>' : ''}
             </div>`;
-        tag.addEventListener('dblclick', () => {
-            showSubjectDetailsModal(subject);
-        });
+            
+        if (!isRemoved) {
+            tag.addEventListener('dblclick', () => {
+                showSubjectDetailsModal(subject);
+            });
+        }
         return tag;
     };
 
@@ -374,43 +462,133 @@ document.addEventListener('DOMContentLoaded', () => {
         exportSubjectDetailsButton.dataset.subjectData = JSON.stringify(subject);
     };
 
-    const renderModalContent = (subjects, yearLevel) => {
-        const maxYear = yearLevel === 'Senior High' ? 2 : 4;
-        const subjectsByYearSem = {};
-        subjects.forEach(subject => {
-            const key = `${subject.pivot.year}-${subject.pivot.semester}`;
-            if (!subjectsByYearSem[key]) {
-                subjectsByYearSem[key] = { units: 0, subjects: [] };
+    const renderVersionHistoryInModal = (versions, yearLevel) => {
+        modalSubjectsContent.innerHTML = '';
+
+        versions.forEach((version, index) => {
+            const historyEntry = document.createElement('div');
+            historyEntry.className = 'border border-gray-200 rounded-lg overflow-hidden';
+
+            // Use the already formatted date from the API, or format the raw date if available
+            const formattedDate = version.created_at || 'Unknown date';
+
+            const isCurrent = index === 0;
+            const statusText = isCurrent ? 'In Use' : 'Previous';
+            const statusBgColor = isCurrent ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
+
+            const button = document.createElement('button');
+            button.className = 'w-full flex justify-between items-center p-4 bg-white hover:bg-gray-50 transition-colors';
+            
+            // Show change description if available
+            const changeDescription = version.change_description || '';
+            const isRemovalVersion = changeDescription.includes('removed from curriculum');
+            const isRetrievalVersion = changeDescription.includes('retrieved from history');
+            const isAdditionVersion = changeDescription.includes('added to curriculum') && !isRetrievalVersion;
+            
+            let changeIcon = '';
+            if (isRemovalVersion) {
+                changeIcon = `
+                    <svg class="w-4 h-4 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                `;
+            } else if (isRetrievalVersion) {
+                changeIcon = `
+                    <svg class="w-4 h-4 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                `;
+            } else if (isAdditionVersion) {
+                changeIcon = `
+                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                `;
             }
-            subjectsByYearSem[key].subjects.push(subject);
-            subjectsByYearSem[key].units += parseInt(subject.subject_unit, 10);
-        });
-        modalSubjectsContent.innerHTML = ''; 
-        for (let i = 1; i <= maxYear; i++) {
-            const yearSuffix = (i === 1) ? 'st' : (i === 2 ? 'nd' : (i === 3 ? 'rd' : 'th'));
-            const yearSection = document.createElement('div');
-            yearSection.innerHTML = `<h3 class="text-lg font-semibold text-gray-700 mb-3">${i}${yearSuffix} Year</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>`;
-            const semesterGrid = yearSection.querySelector('.grid');
-            for (let j = 1; j <= 2; j++) {
-                const semesterBox = document.createElement('div');
-                semesterBox.className = 'bg-white border-2 border-solid border-gray-300 rounded-lg p-4';
-                const key = `${i}-${j}`;
-                const semData = subjectsByYearSem[key];
-                const semesterTitle = j === 1 ? 'First Semester' : 'Second Semester';
-                semesterBox.innerHTML = `<div class="border-b border-gray-200 pb-2 mb-3 flex justify-between items-center"><h4 class="font-semibold text-gray-600">${semesterTitle}</h4><div class="text-sm font-bold text-gray-700">Units: ${semData ? semData.units : 0}</div></div><div class="space-y-2 min-h-[80px]"></div>`;
-                const subjectContainer = semesterBox.querySelector('.space-y-2');
-                if (semData) {
-                    semData.subjects.forEach(subject => {
-                        const subjectTagElement = createSubjectTagForModal(subject);
-                        subjectContainer.appendChild(subjectTagElement);
+
+            button.innerHTML = `
+                <div class="flex flex-col items-start">
+                    <span class="font-semibold text-gray-800">Version from: ${formattedDate}</span>
+                    ${changeDescription ? `<span class="text-xs text-gray-600 mt-1 flex items-center">${changeIcon}${changeDescription}</span>` : ''}
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="text-xs font-bold px-2 py-1 rounded-full ${statusBgColor}">${statusText}</span>
+                    <svg class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+            `;
+
+            const content = document.createElement('div');
+            content.className = 'accordion-content p-4 border-t border-gray-200 bg-white space-y-4';
+            if (!isCurrent) {
+                content.classList.add('hidden');
+            } else {
+                 button.querySelector('svg').classList.add('rotate-180');
+            }
+
+            // Get the snapshot data (already parsed as object)
+            const snapshotData = version.snapshot_data;
+            const subjects = snapshotData.subjects || [];
+            const removedSubject = snapshotData.removed_subject;
+            
+            // If there's a removed subject, add it to the subjects list with a special flag
+            if (removedSubject) {
+                subjects.push({
+                    ...removedSubject,
+                    _isRemoved: true // Special flag to mark as removed
+                });
+            }
+            
+            const maxYear = yearLevel === 'Senior High' ? 2 : 4;
+            for (let i = 1; i <= maxYear; i++) {
+                const yearSuffix = (i === 1) ? 'st' : (i === 2 ? 'nd' : (i === 3 ? 'rd' : 'th'));
+                const yearSection = document.createElement('div');
+                yearSection.innerHTML = `<h4 class="text-md font-semibold text-gray-600 my-2">${i}${yearSuffix} Year</h4><div class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>`;
+                const semesterGrid = yearSection.querySelector('.grid');
+
+                for (let j = 1; j <= 2; j++) {
+                    // Handle both pivot structure and direct year/semester properties
+                    const semesterSubjects = subjects.filter(s => {
+                        const year = s.pivot ? s.pivot.year : s.year;
+                        const semester = s.pivot ? s.pivot.semester : s.semester;
+                        return year == i && semester == j;
                     });
-                } else {
-                    subjectContainer.innerHTML = '<p class="text-xs text-center text-gray-400 pt-8">No subjects mapped.</p>';
+                    const semesterBox = document.createElement('div');
+                    semesterBox.className = 'bg-gray-50 border-2 border-solid border-gray-200 rounded-lg p-4';
+                    const semesterTitle = j === 1 ? 'First Semester' : 'Second Semester';
+                    let totalUnits = 0;
+                    semesterSubjects.forEach(s => {
+                        // Don't count removed subjects in the total units
+                        if (!s._isRemoved) {
+                            totalUnits += parseInt(s.subject_unit || s.units || 0, 10);
+                        }
+                    });
+                    
+                    semesterBox.innerHTML = `<div class="border-b border-gray-300 pb-2 mb-3 flex justify-between items-center"><h5 class="font-semibold text-gray-700">${semesterTitle}</h5><div class="text-sm font-bold text-gray-700">Units: ${totalUnits}</div></div><div class="space-y-2 min-h-[50px]"></div>`;
+
+                    const subjectContainer = semesterBox.querySelector('.space-y-2');
+                    if (semesterSubjects.length > 0) {
+                        semesterSubjects.forEach(subject => {
+                            subjectContainer.appendChild(createSubjectTagForModal(subject));
+                        });
+                    } else {
+                        subjectContainer.innerHTML = '<p class="text-xs text-center text-gray-400 pt-4">No subjects mapped.</p>';
+                    }
+                    semesterGrid.appendChild(semesterBox);
                 }
-                semesterGrid.appendChild(semesterBox);
+                content.appendChild(yearSection);
             }
-            modalSubjectsContent.appendChild(yearSection);
-        }
+
+            button.addEventListener('click', () => {
+                content.classList.toggle('hidden');
+                button.querySelector('svg').classList.toggle('rotate-180');
+            });
+
+            historyEntry.appendChild(button);
+            historyEntry.appendChild(content);
+            modalSubjectsContent.appendChild(historyEntry);
+        });
     };
 
     const fetchAndDisplayCurriculums = async () => {
@@ -445,7 +623,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 {{-- Export Confirmation Modal --}}
-<div id="exportConfirmationModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 ease-out hidden">
+<div id="exportConfirmationModal" class="fixed inset-0 z-[60] overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 ease-out hidden">
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="relative bg-white w-full max-w-lg rounded-2xl shadow-2xl p-6 md:p-8 transform scale-95 opacity-0 transition-all duration-300 ease-out" id="export-modal-panel">
             <button id="closeExportModalButton" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none transition-colors duration-200 rounded-full p-1 hover:bg-slate-100" aria-label="Close modal">
@@ -560,6 +738,18 @@ document.addEventListener('DOMContentLoaded', function () {
             showExportModal(subjectData);
         });
     }
+    
+    // Also handle the export button from the subject details modal
+    const exportSubjectDetailsButton = document.getElementById('exportSubjectDetailsButton');
+    if (exportSubjectDetailsButton) {
+        exportSubjectDetailsButton.addEventListener('click', function() {
+            const subjectDataString = this.dataset.subjectData;
+            if (subjectDataString) {
+                const subject = JSON.parse(subjectDataString);
+                showExportModal(subject);
+            }
+        });
+    }
 
     // Modal close event listeners
     closeExportModalButton.addEventListener('click', hideExportModal);
@@ -569,14 +759,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // Confirm export
     confirmExportButton.addEventListener('click', async function() {
         try {
-            // Here you would typically trigger the PDF export
-            hideExportModal();
-            showSuccessModal('Export Started!', 'Your PDF export is being generated and will download shortly.');
-            
-            // Simulate PDF download
-            setTimeout(() => {
-                console.log('PDF download triggered for:', currentSubjectData);
-            }, 1000);
+            if (currentSubjectData) {
+                // Trigger the actual PDF export
+                window.open(`/subjects/${currentSubjectData.id}/export-pdf`, '_blank');
+                hideExportModal();
+                showSuccessModal('Export Started!', 'Your PDF export is being generated and will download shortly.');
+            }
         } catch (error) {
             console.error('Error:', error);
             alert('An error occurred while exporting the subject.');
@@ -591,6 +779,352 @@ document.addEventListener('DOMContentLoaded', function () {
     successModal.addEventListener('click', function(e) {
         if (e.target === this) hideSuccessModal();
     });
+
+    // --- Version History Modal Functions ---
+    const versionHistoryModal = document.getElementById('versionHistoryModal');
+    const versionHistoryModalPanel = document.getElementById('modal-panel-versions');
+    const closeVersionHistoryModalBtn = document.getElementById('closeVersionHistoryModal');
+    const versionHistoryTitle = document.getElementById('versionHistoryTitle');
+    const versionHistorySubtitle = document.getElementById('versionHistorySubtitle');
+    const versionHistoryContent = document.getElementById('version-history-content');
+    const versionLoading = document.getElementById('version-loading');
+    const versionList = document.getElementById('version-list');
+
+    const versionDetailsModal = document.getElementById('versionDetailsModal');
+    const versionDetailsModalPanel = document.getElementById('modal-panel-version-details');
+    const closeVersionDetailsModalBtn = document.getElementById('closeVersionDetailsModal');
+    const versionDetailsTitle = document.getElementById('versionDetailsTitle');
+    const versionDetailsSubtitle = document.getElementById('versionDetailsSubtitle');
+    const versionDetailsContent = document.getElementById('version-details-content');
+    const versionDetailsLoading = document.getElementById('version-details-loading');
+    const versionDetailsData = document.getElementById('version-details-data');
+
+    const showVersionHistory = async (curriculumId, curriculumName) => {
+        versionHistoryTitle.textContent = 'Version History';
+        versionHistorySubtitle.textContent = curriculumName;
+        versionLoading.classList.remove('hidden');
+        versionList.classList.add('hidden');
+        versionList.innerHTML = '';
+        
+        versionHistoryModal.classList.remove('hidden');
+        setTimeout(() => {
+            versionHistoryModal.classList.remove('opacity-0');
+            versionHistoryModalPanel.classList.remove('opacity-0', 'scale-95');
+        }, 10);
+
+        try {
+            const response = await fetch(`/api/curriculum-history/${curriculumId}/versions`);
+            const data = await response.json();
+            
+            if (data.success && data.versions.length > 0) {
+                renderVersionList(data.versions, curriculumId);
+            } else {
+                versionList.innerHTML = `
+                    <div class="text-center py-12">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">No version history</h3>
+                        <p class="mt-1 text-sm text-gray-500">This curriculum doesn't have any saved versions yet.</p>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('Failed to load version history:', error);
+            versionList.innerHTML = `
+                <div class="text-center py-12">
+                    <div class="text-red-500">
+                        <svg class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                        </svg>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">Error loading versions</h3>
+                        <p class="mt-1 text-sm text-gray-500">Could not load version history. Please try again.</p>
+                    </div>
+                </div>
+            `;
+        } finally {
+            versionLoading.classList.add('hidden');
+            versionList.classList.remove('hidden');
+        }
+    };
+
+    const renderVersionList = (versions, curriculumId) => {
+        versionList.innerHTML = versions.map((version, index) => `
+            <div class="version-item bg-white border border-gray-200 rounded-lg transition-all duration-200 ${version.is_current ? 'ring-2 ring-green-200 bg-green-50' : ''}" 
+                 data-version-id="${version.id}" data-curriculum-id="${curriculumId}">
+                
+                <!-- Version Header -->
+                <div class="p-4 border-b border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <span class="text-sm font-medium text-blue-600">v${version.version_number}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-900">Version from: ${version.created_at}</h3>
+                                <p class="text-xs text-gray-500">${version.change_description}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            ${version.is_current ? '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">In Use</span>' : '<span class="text-xs text-gray-500 cursor-pointer hover:text-blue-600">Previous</span>'}
+                            <button class="text-blue-600 hover:text-blue-800 text-sm" onclick="toggleVersionDetails(${version.id})">
+                                <svg class="w-4 h-4 transform transition-transform version-chevron-${version.id}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Curriculum Layout (Initially Hidden) -->
+                <div id="version-details-${version.id}" class="version-details hidden">
+                    <div class="p-4">
+                        <div class="curriculum-layout space-y-6">
+                            ${renderCurriculumLayout(version.snapshot_data)}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    };
+
+    const renderCurriculumLayout = (snapshotData) => {
+        if (!snapshotData || !snapshotData.subjects) {
+            return '<p class="text-gray-500 text-sm">No subjects data available</p>';
+        }
+
+        const subjects = snapshotData.subjects;
+        const yearGroups = {};
+
+        // Group subjects by year
+        subjects.forEach(subject => {
+            const year = subject.year || 1;
+            if (!yearGroups[year]) {
+                yearGroups[year] = { 1: [], 2: [] };
+            }
+            const semester = subject.semester || 1;
+            yearGroups[year][semester].push(subject);
+        });
+
+        let layoutHTML = '';
+        
+        // Render each year
+        Object.keys(yearGroups).sort().forEach(year => {
+            const yearData = yearGroups[year];
+            const sem1Subjects = yearData[1] || [];
+            const sem2Subjects = yearData[2] || [];
+            const sem1Units = sem1Subjects.reduce((sum, s) => sum + (s.subject_unit || 0), 0);
+            const sem2Units = sem2Subjects.reduce((sum, s) => sum + (s.subject_unit || 0), 0);
+
+            layoutHTML += `
+                <div class="year-section">
+                    <h4 class="text-sm font-semibold text-gray-700 mb-3">${getOrdinal(year)} Year</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- First Semester -->
+                        <div class="semester-section">
+                            <div class="flex justify-between items-center mb-2">
+                                <h5 class="text-xs font-medium text-gray-600">First Semester</h5>
+                                <span class="text-xs text-gray-500">Units: ${sem1Units}</span>
+                            </div>
+                            <div class="semester-subjects space-y-2 min-h-[60px] bg-blue-50 p-3 rounded-lg border border-blue-200">
+                                ${sem1Subjects.map(subject => renderSubjectCard(subject)).join('')}
+                                ${sem1Subjects.length === 0 ? '<p class="text-xs text-gray-400 italic">No subjects</p>' : ''}
+                            </div>
+                        </div>
+                        
+                        <!-- Second Semester -->
+                        <div class="semester-section">
+                            <div class="flex justify-between items-center mb-2">
+                                <h5 class="text-xs font-medium text-gray-600">Second Semester</h5>
+                                <span class="text-xs text-gray-500">Units: ${sem2Units}</span>
+                            </div>
+                            <div class="semester-subjects space-y-2 min-h-[60px] bg-purple-50 p-3 rounded-lg border border-purple-200">
+                                ${sem2Subjects.map(subject => renderSubjectCard(subject)).join('')}
+                                ${sem2Subjects.length === 0 ? '<p class="text-xs text-gray-400 italic">No subjects</p>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        return layoutHTML;
+    };
+
+    const renderSubjectCard = (subject) => {
+        const typeColors = {
+            'Major': 'bg-red-100 text-red-800 border-red-200',
+            'Minor': 'bg-blue-100 text-blue-800 border-blue-200',
+            'Elective': 'bg-green-100 text-green-800 border-green-200',
+            'General Education': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+            'GE': 'bg-yellow-100 text-yellow-800 border-yellow-200'
+        };
+        
+        const colorClass = typeColors[subject.subject_type] || 'bg-gray-100 text-gray-800 border-gray-200';
+        
+        return `
+            <div class="subject-card-mini ${colorClass} p-2 rounded border text-xs">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1 min-w-0">
+                        <p class="font-medium truncate">${subject.subject_code}</p>
+                        <p class="text-xs opacity-75 truncate">${subject.subject_name}</p>
+                    </div>
+                    <span class="ml-2 text-xs font-medium">${subject.subject_unit} units</span>
+                </div>
+            </div>
+        `;
+    };
+
+    const getOrdinal = (num) => {
+        const ordinals = ['', '1st', '2nd', '3rd', '4th', '5th'];
+        return ordinals[num] || `${num}th`;
+    };
+
+    const toggleVersionDetails = (versionId) => {
+        const details = document.getElementById(`version-details-${versionId}`);
+        const chevron = document.querySelector(`.version-chevron-${versionId}`);
+        
+        if (details.classList.contains('hidden')) {
+            details.classList.remove('hidden');
+            chevron.classList.add('rotate-180');
+        } else {
+            details.classList.add('hidden');
+            chevron.classList.remove('rotate-180');
+        }
+    };
+
+    const showVersionDetails = async (curriculumId, versionId) => {
+        versionDetailsLoading.classList.remove('hidden');
+        versionDetailsData.classList.add('hidden');
+        
+        versionDetailsModal.classList.remove('hidden');
+        setTimeout(() => {
+            versionDetailsModal.classList.remove('opacity-0');
+            versionDetailsModalPanel.classList.remove('opacity-0', 'scale-95');
+        }, 10);
+
+        try {
+            const response = await fetch(`/api/curriculum-history/${curriculumId}/versions/${versionId}`);
+            const data = await response.json();
+            
+            if (data.success) {
+                renderVersionDetails(data.version);
+            } else {
+                versionDetailsData.innerHTML = '<div class="text-red-500 text-center py-8">Failed to load version details</div>';
+            }
+        } catch (error) {
+            console.error('Failed to load version details:', error);
+            versionDetailsData.innerHTML = '<div class="text-red-500 text-center py-8">Error loading version details</div>';
+        } finally {
+            versionDetailsLoading.classList.add('hidden');
+            versionDetailsData.classList.remove('hidden');
+        }
+    };
+
+    const renderVersionDetails = (version) => {
+        versionDetailsTitle.textContent = `Version ${version.version_number} Details`;
+        versionDetailsSubtitle.textContent = `${version.created_at} by ${version.changed_by}`;
+
+        let subjectsHtml = '';
+        if (version.subjects && Object.keys(version.subjects).length > 0) {
+            for (const [year, semesters] of Object.entries(version.subjects)) {
+                const yearOrdinal = year == 1 ? '1st' : year == 2 ? '2nd' : year == 3 ? '3rd' : `${year}th`;
+                
+                for (const [semester, subjects] of Object.entries(semesters)) {
+                    const semesterText = semester == 1 ? 'First Semester' : 'Second Semester';
+                    const totalUnits = subjects.reduce((sum, subject) => sum + (parseInt(subject.subject_unit) || 0), 0);
+                    
+                    subjectsHtml += `
+                        <div class="mb-6">
+                            <div class="bg-gray-50 px-4 py-3 rounded-lg mb-4">
+                                <h3 class="text-lg font-semibold text-gray-800">${yearOrdinal} Year - ${semesterText}</h3>
+                                <p class="text-sm text-gray-600">Units: ${totalUnits}</p>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                ${subjects.map(subject => `
+                                    <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex-1">
+                                                <h4 class="font-medium text-gray-900 text-sm">${subject.subject_name}</h4>
+                                                <p class="text-xs text-gray-500 mt-1">${subject.subject_code}</p>
+                                                <div class="flex items-center mt-2 space-x-2">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                        ${subject.subject_unit} units
+                                                    </span>
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getSubjectTypeColor(subject.subject_type)}">
+                                                        ${subject.subject_type}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        } else {
+            subjectsHtml = '<div class="text-center py-8 text-gray-500">No subjects found in this version</div>';
+        }
+
+        versionDetailsData.innerHTML = `
+            <div class="space-y-6">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-blue-800 mb-2">Version Information</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <span class="font-medium text-blue-700">Version:</span>
+                            <span class="ml-2 text-blue-600">${version.version_number}</span>
+                        </div>
+                        <div>
+                            <span class="font-medium text-blue-700">Total Subjects:</span>
+                            <span class="ml-2 text-blue-600">${version.total_subjects}</span>
+                        </div>
+                        <div class="md:col-span-2">
+                            <span class="font-medium text-blue-700">Description:</span>
+                            <span class="ml-2 text-blue-600">${version.change_description}</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Subjects in this Version</h3>
+                    ${subjectsHtml}
+                </div>
+            </div>
+        `;
+    };
+
+    const getSubjectTypeColor = (type) => {
+        switch (type) {
+            case 'Major': return 'bg-blue-100 text-blue-800';
+            case 'Minor': return 'bg-purple-100 text-purple-800';
+            case 'Elective': return 'bg-red-100 text-red-800';
+            default: return 'bg-orange-100 text-orange-800';
+        }
+    };
+
+    const hideVersionHistory = () => {
+        versionHistoryModal.classList.add('opacity-0');
+        versionHistoryModalPanel.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => versionHistoryModal.classList.add('hidden'), 300);
+    };
+
+    const hideVersionDetails = () => {
+        versionDetailsModal.classList.add('opacity-0');
+        versionDetailsModalPanel.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => versionDetailsModal.classList.add('hidden'), 300);
+    };
+
+
+    // Event listeners for version history modals
+    closeVersionHistoryModalBtn.addEventListener('click', hideVersionHistory);
+    versionHistoryModal.addEventListener('click', (e) => { if (e.target === versionHistoryModal) hideVersionHistory(); });
+    
+    closeVersionDetailsModalBtn.addEventListener('click', hideVersionDetails);
+    versionDetailsModal.addEventListener('click', (e) => { if (e.target === versionDetailsModal) hideVersionDetails(); });
 });
 </script>
 

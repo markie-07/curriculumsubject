@@ -4,50 +4,114 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Curriculum Details</title>
     <style>
-        @page { margin: 25px; }
-        body { font-family: Arial, sans-serif; font-size: 9.5px; color: #333; line-height: 1.4; }
+        /* ---------- Base ---------- */
+        body { font-family: Arial, sans-serif; font-size: 9.5px; color: #333; line-height: 1.4; margin: 0; padding: 0; }
+        p { margin: 0 0 6px 0; }
 
-        /* --- HEADER --- */
-        .header { text-align: center; margin-bottom: 25px; }
-        .header img { width: 65px; height: 65px; margin-bottom: 5px; }
-        .header h1 { font-size: 15px; font-weight: bold; margin: 0; color: #2c3e50; }
-        .header p { font-size: 10px; margin: 2px 0; color: #555; }
+        /* --- PDF Page Setup --- */
+        @page {
+            header: header;
+            margin-top: 165px; /* leave space for header */
+            margin-bottom: 20px;
+            margin-left: 25px;
+            margin-right: 25px;
+        }
 
-        /* --- SECTIONS --- */
-        .section-title { font-size: 12px; font-weight: bold; color: #2c3e50; margin-top: 20px; margin-bottom: 10px; background-color: #ecf0f1; padding: 8px 12px; border-left: 4px solid #3498db; }
-        
-        /* --- TABLES --- */
-        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; page-break-inside: avoid; }
+        /* ---------- Header (mPDF-friendly) ---------- */
+        .pdf-header {
+            padding-bottom: 8px;
+            width: 100%;
+        }
+
+        .pdf-header-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .pdf-header-table td {
+            vertical-align: middle;
+            text-align: center;
+            padding: 6px 4px;
+        }
+
+        .pdf-header-table .logo-cell {
+            width: 60px;
+            text-align: left;
+            padding-left: 0;
+        }
+
+        .pdf-header-table img {
+            width: 50px;
+            height: 50px;
+            display: inline-block;
+        }
+
+        .pdf-header-table .text-cell h1 {
+            font-size: 14px;
+            font-weight: bold;
+            color:rgb(255, 255, 255);
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .pdf-header-table .text-cell p {
+            font-size: 10px;
+            margin: 4px 0 0 0;
+            color: #555;
+            line-height: 1.1;
+        }
+
+        /* ---------- Section Titles ---------- */
+        .section-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-top: 18px;
+            margin-bottom: 10px;
+            background-color: #ecf0f1;
+            padding: 8px 12px;
+            border-left: 4px solid #3498db;
+        }
+
+        /* ---------- Generic Table Styles ---------- */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 12px; page-break-inside: avoid; }
         th, td { border: 1px solid #bdc3c7; padding: 7px; text-align: left; vertical-align: top; }
-        th { background-color: #f2f2f2; font-weight: bold; }
-        
-        .field-label { font-weight: bold; color: #000000; }
-        .description { white-space: pre-wrap; }
+        th { background-color: #f2f2f2; font-weight: bold; font-size: 10px; }
+        td { font-size: 9.5px; }
 
-        /* --- SPECIALIZED TABLES --- */
+        /* Info table variations */
         .info-table th { text-align: center; background-color: #dde1e3; }
         .info-table .sub-header { font-weight: bold; margin-bottom: 5px; }
         .core-values-table .values { font-weight: bold; }
-        
-        .weekly-plan-table { margin-bottom: 15px; }
+
+        /* Weekly plan table */
+        .weekly-plan-table { margin-bottom: 12px; }
         .weekly-plan-table .header-row th { background-color: #34495e; color: #FFFFFF; font-size: 11px; text-align: center; }
         .weekly-plan-table .sub-label { font-weight: bold; color: #000000; }
 
-        .legend-box { margin-top: 15px; padding: 10px; border: 1px solid #ecf0f1; background-color: #f9f9f9; font-size: 9px; }
-        .legend-box ul { padding-left: 15px; margin: 0; }
-        
-        .policy-box .policy-title { font-weight: bold; margin-bottom: 3px; }
+        .field-label { font-weight: bold; color: #000000; }
+        .description { white-space: pre-wrap; }
 
-        /* --- APPROVAL SECTION --- */
-        .approval-table { margin-top: 30px; border: none; table-layout: fixed; }
-        .approval-table td { border: none; text-align: center; vertical-align: bottom; height: 100px; width: 33.33%; }
+        /* Legend & Policy */
+        .legend-box { margin-top: 10px; padding: 10px; border: 1px solid #ecf0f1; background-color: #f9f9f9; font-size: 9px; }
+        .legend-box ul { padding-left: 16px; margin: 6px 0 0 0; }
+        .policy-box .policy-title { font-weight: bold; margin-bottom: 3px; display: inline-block; }
+
+        /* Approval */
+        .approval-table { margin-top: 20px; border: none; table-layout: fixed; }
+        .approval-table td { border: none; text-align: center; vertical-align: bottom; height: 90px; width: 33.33%; }
         .approval-table .line { border-top: 1px solid #7f8c8d; width: 90%; margin: 0 auto; }
         .approval-table .label { font-size: 9px; color: #555; }
-        .approval-table .name { font-weight: bold; padding-top: 5px; }
+        .approval-table .name { font-weight: bold; padding-top: 6px; }
         .approval-table .title { font-size: 9px; color: #7f8c8d; }
-        
+
+        /* Helpers */
         .page-break { page-break-before: always; }
         .text-center { text-align: center; }
+        .no-border { border: none !important; }
+        .small { font-size: 9px; }
+        .italic { font-style: italic; }
     </style>
 </head>
 <body>
@@ -55,44 +119,102 @@
         // Fetch all prerequisite relationships for the current curriculum.
         $allPrerequisites = \App\Models\Prerequisite::where('curriculum_id', $curriculum->id)->get();
 
-        // MAP 1: PARENTS (for Credit Prerequisites)
-        // Maps a subject to the prerequisite(s) it immediately requires.
-        // DB: subject_code='qqq', prerequisite_subject_code='111'
-        // Result: 'qqq' => ['111']
+        // MAP 1: PARENTS (for Credit Prerequisites) - What subjects are required before this one
         $subjectToParentsMap = $allPrerequisites->groupBy('subject_code')->map(function ($item) {
             return $item->pluck('prerequisite_subject_code')->all();
         })->all();
 
-        // MAP 2: CHILDREN (for Pre-requisite to)
-        // Maps a subject to the subject(s) that require it.
-        // DB: subject_code='qqq', prerequisite_subject_code='111'
-        // Result: '111' => ['qqq']
+        // MAP 2: CHILDREN (for Pre-requisite to) - What subjects require this one as prerequisite
         $subjectToChildrenMap = $allPrerequisites->groupBy('prerequisite_subject_code')->map(function ($item) {
             return $item->pluck('subject_code')->all();
         })->all();
 
-        // Recursive function to find the entire chain of "Credit Prerequisites" by traversing up the parent chain.
-        $findAllCreditPrerequisites = function($subjectCode, $map) use (&$findAllCreditPrerequisites) {
+        // Function to get immediate prerequisites (direct parents only)
+        $getImmediatePrerequisites = function($subjectCode, $map) {
+            return $map[$subjectCode] ?? [];
+        };
+
+        // Function to get subjects that require this as prerequisite (direct children only)
+        $getPrerequisiteTo = function($subjectCode, $map) {
+            return $map[$subjectCode] ?? [];
+        };
+
+        // Recursive function to find ALL credit prerequisites in the chain
+        $findAllCreditPrerequisites = function($subjectCode, $map, $visited = []) use (&$findAllCreditPrerequisites) {
+            // Prevent infinite loops
+            if (in_array($subjectCode, $visited)) {
+                return [];
+            }
+            
             if (!isset($map[$subjectCode])) {
                 return [];
             }
-            $parents = $map[$subjectCode];
-            foreach ($parents as $parentCode) {
-                $parents = array_merge($parents, $findAllCreditPrerequisites($parentCode, $map));
+            
+            $visited[] = $subjectCode;
+            $allPrereqs = [];
+            $directPrereqs = $map[$subjectCode];
+            
+            foreach ($directPrereqs as $prereqCode) {
+                $allPrereqs[] = $prereqCode;
+                // Recursively get prerequisites of prerequisites
+                $chainedPrereqs = $findAllCreditPrerequisites($prereqCode, $map, $visited);
+                $allPrereqs = array_merge($allPrereqs, $chainedPrereqs);
             }
-            return array_unique($parents);
+            
+            return array_unique($allPrereqs);
         };
+
+        // Debug information (can be commented out in production)
+        // Uncomment the next line to see prerequisite data in PDF
+        // $debugPrerequisites = true;
     @endphp
 
-    {{-- =================================================================== --}}
-    {{-- PART 1: CURRICULUM SUMMARY PAGE --}}
-    {{-- =================================================================== --}}
-    <div class="header">
-        <img src="{{ public_path('/images/bcp logo.png') }}" alt="BCP Logo">
-        <h1>BESTLINK COLLEGE OF THE PHILIPPINES</h1>
-        <p>#1071 Brgy. Kaligayahan, Quirino Hi-way, Novaliches, Quezon City</p>
-    </div>
+    {{-- Debug Section (uncomment to see prerequisite data) --}}
+    @if(isset($debugPrerequisites) && $debugPrerequisites)
+        <div style="background: #f0f0f0; padding: 10px; margin: 10px 0; border: 1px solid #ccc;">
+            <h4>Debug: Prerequisite Data for {{ $curriculum->curriculum }}</h4>
+            <p><strong>Total Prerequisites Found:</strong> {{ $allPrerequisites->count() }}</p>
+            @if($allPrerequisites->count() > 0)
+                <p><strong>Prerequisite Relationships:</strong></p>
+                <ul>
+                @foreach($allPrerequisites as $prereq)
+                    <li>{{ $prereq->subject_code }} requires {{ $prereq->prerequisite_subject_code }}</li>
+                @endforeach
+                </ul>
+            @endif
+        </div>
+    @endif
 
+    {{-- ==================== HEADER (mPDF) ==================== --}}
+    <htmlpageheader name="header">
+        <div class="pdf-header">
+            @php
+                $imagePath = public_path('/images/BCPLOGO.png');
+                if (file_exists($imagePath)) {
+                    $imageData = base64_encode(file_get_contents($imagePath));
+                    $src = 'data:image/png;base64,' . $imageData;
+                } else {
+                    $src = '';
+                }
+            @endphp
+
+            <table class="pdf-header-table">
+                <tr>
+                    <td class="logo-cell">
+                        @if($src)
+                            <img src="{{ $src }}" alt="BCP Logo">
+                        @endif
+                    </td>
+                    <td class="text-cell">
+                        <h1>BESTLINK COLLEGE OF THE PHILIPPINES</h1>
+                        <p>#1071 Brgy. Kaligayahan, Quirino Hi-way, Novaliches, Quezon City</p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </htmlpageheader>
+
+    {{-- ==================== PART 1: CURRICULUM OVERVIEW ==================== --}}
     <div class="section-title">CURRICULUM OVERVIEW</div>
     <table>
         <tr>
@@ -128,6 +250,7 @@
                 default => $year . 'th',
             };
         @endphp
+
         <div class="section-title">{{ $yearOrdinal }} Year - {{ $semesterText }}</div>
         <table>
             <thead>
@@ -149,17 +272,9 @@
         </table>
     @endforeach
 
-    {{-- =================================================================== --}}
-    {{-- PART 2: DETAILED SUBJECT SYLLABUS PAGES --}}
-    {{-- =================================================================== --}}
+    {{-- ==================== PART 2: DETAILED SUBJECT SYLLABUS PAGES ==================== --}}
     @foreach($curriculum->subjects as $subject)
         <div class="page-break"></div>
-
-        <div class="header">
-            <img src="{{ public_path('/images/bcp logo.png') }}" alt="BCP Logo">
-            <h1>BESTLINK COLLEGE OF THE PHILIPPINES</h1>
-            <p>#1071 Brgy. Kaligayahan, Quirino Hi-way, Novaliches, Quezon City</p>
-        </div>
 
         <div class="section-title">COURSE INFORMATION</div>
         <table>
@@ -176,7 +291,8 @@
                 <td><span class="field-label">Pre-requisite to</span></td>
                 <td>
                     @php
-                        $childSubjects = $subjectToChildrenMap[$subject->subject_code] ?? [];
+                        // Get subjects that require this subject as a prerequisite
+                        $childSubjects = $getPrerequisiteTo($subject->subject_code, $subjectToChildrenMap);
                         $prereqToString = !empty($childSubjects) ? implode(', ', $childSubjects) : 'None';
                     @endphp
                     {{ $prereqToString }}
@@ -186,10 +302,14 @@
                 <td><span class="field-label">Credit Prerequisites</span></td>
                 <td colspan="3">
                     @php
-                        $allCreditPrerequisites = $findAllCreditPrerequisites($subject->subject_code, $subjectToParentsMap);
+                        // Get ONLY immediate/direct prerequisites (not the entire chain)
+                        $directPrerequisites = $getImmediatePrerequisites($subject->subject_code, $subjectToParentsMap);
+                        
+                        // Sort prerequisites for consistent display
+                        sort($directPrerequisites);
                     @endphp
-                    @if(!empty($allCreditPrerequisites))
-                        {{ implode(', ', $allCreditPrerequisites) }}
+                    @if(!empty($directPrerequisites))
+                        {{ implode(', ', $directPrerequisites) }}
                     @else
                         None
                     @endif
@@ -209,27 +329,95 @@
                 <td width="50%"><div class="sub-header">DEPARTMENT</div><p>To improve the quality of student's input and by promoting IT enabled, market driven and internationally comparable programs through quality assurance systems, upgrading faculty qualifications and establishing international linkages.</p></td>
             </tr></tbody>
         </table>
+
+        {{-- You had other institutional info placeholders; keep similar formatting if needed --}}
         {{-- ... other institutional info tables ... --}}
 
         <div class="section-title">MAPPING GRIDS</div>
         <h3>PROGRAM MAPPING GRID</h3>
         @if(!empty($subject->program_mapping_grid))
-            <table><thead><tr><th>PILO</th><th class="text-center">CTPSS</th><th class="text-center">ECC</th><th class="text-center">EPP</th><th class="text-center">GLC</th></tr></thead><tbody>@foreach($subject->program_mapping_grid as $row)<tr><td>{{ $row['pilo'] ?? '' }}</td><td class="text-center">{{ $row['ctpss'] ?? '' }}</td><td class="text-center">{{ $row['ecc'] ?? '' }}</td><td class="text-center">{{ $row['epp'] ?? '' }}</td><td class="text-center">{{ $row['glc'] ?? '' }}</td></tr>@endforeach</tbody></table>
-        @else<p>No program mapping data available.</p>@endif
+            <table>
+                <thead>
+                    <tr>
+                        <th>PILO</th>
+                        <th class="text-center">CTPSS</th>
+                        <th class="text-center">ECC</th>
+                        <th class="text-center">EPP</th>
+                        <th class="text-center">GLC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($subject->program_mapping_grid as $row)
+                        <tr>
+                            <td>{{ $row['pilo'] ?? '' }}</td>
+                            <td class="text-center">{{ $row['ctpss'] ?? '' }}</td>
+                            <td class="text-center">{{ $row['ecc'] ?? '' }}</td>
+                            <td class="text-center">{{ $row['epp'] ?? '' }}</td>
+                            <td class="text-center">{{ $row['glc'] ?? '' }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @else
+            <p>No program mapping data available.</p>
+        @endif
+
         <h3>COURSE MAPPING GRID</h3>
         @if(!empty($subject->course_mapping_grid))
-            <table><thead><tr><th>CILO</th><th class="text-center">CTPSS</th><th class="text-center">ECC</th><th class="text-center">EPP</th><th class="text-center">GLC</th></tr></thead><tbody>@foreach($subject->course_mapping_grid as $row)<tr><td>{{ $row['cilo'] ?? '' }}</td><td class="text-center">{{ $row['ctpss'] ?? '' }}</td><td class="text-center">{{ $row['ecc'] ?? '' }}</td><td class="text-center">{{ $row['epp'] ?? '' }}</td><td class="text-center">{{ $row['glc'] ?? '' }}</td></tr>@endforeach</tbody></table>
-        @else<p>No course mapping data available.</p>@endif
-        <div class="legend-box"><span class="field-label">Legend:</span><ul><li><span class="field-label">L</span> – Facilitate Learning of the competencies</li><li><span class="field-label">P</span> – Allow student to practice competencies (No input but competency is evaluated)</li><li><span class="field-label">O</span> – Provide opportunity for development (No input or evaluation, but there is opportunity to practice the competencies)</li><li><span class="field-label">CTPSS</span> - critical thinking and problem-solving skills;</li><li><span class="field-label">ECC</span> - effective communication and collaboration;</li><li><span class="field-label">EPP</span> - ethical and professional practice; and,</li><li><span class="field-label">GLC</span> - global and lifelong learning commitment.</li></ul></div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>CILO</th>
+                        <th class="text-center">CTPSS</th>
+                        <th class="text-center">ECC</th>
+                        <th class="text-center">EPP</th>
+                        <th class="text-center">GLC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($subject->course_mapping_grid as $row)
+                        <tr>
+                            <td>{{ $row['cilo'] ?? '' }}</td>
+                            <td class="text-center">{{ $row['ctpss'] ?? '' }}</td>
+                            <td class="text-center">{{ $row['ecc'] ?? '' }}</td>
+                            <td class="text-center">{{ $row['epp'] ?? '' }}</td>
+                            <td class="text-center">{{ $row['glc'] ?? '' }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @else
+            <p>No course mapping data available.</p>
+        @endif
+
+        <div class="legend-box">
+            <span class="field-label">Legend:</span>
+            <ul>
+                <li><span class="field-label">L</span> – Facilitate Learning of the competencies</li>
+                <li><span class="field-label">P</span> – Allow student to practice competencies (No input but competency is evaluated)</li>
+                <li><span class="field-label">O</span> – Provide opportunity for development (No input or evaluation, but there is opportunity to practice the competencies)</li>
+                <li><span class="field-label">CTPSS</span> - critical thinking and problem-solving skills;</li>
+                <li><span class="field-label">ECC</span> - effective communication and collaboration;</li>
+                <li><span class="field-label">EPP</span> - ethical and professional practice; and,</li>
+                <li><span class="field-label">GLC</span> - global and lifelong learning commitment.</li>
+            </ul>
+        </div>
 
         <div class="section-title">LEARNING OUTCOMES</div>
         <table>
-            <tr><td width="40%"><span class="field-label">PROGRAM INTENDED LEARNING OUTCOMES (PILO):</span></td><td class="description">{{ $subject->pilo_outcomes ?? 'N/A' }}</td></tr>
-            <tr><td><span class="field-label">Course Intended Learning Outcomes (CILO):</span></td><td class="description">{{ $subject->cilo_outcomes ?? 'N/A' }}</td></tr>
-            <tr><td><span class="field-label">Expected BCP Graduate Elements:</span></td>
+            <tr>
+                <td width="40%"><span class="field-label">PROGRAM INTENDED LEARNING OUTCOMES (PILO):</span></td>
+                <td class="description">{{ $subject->pilo_outcomes ?? 'N/A' }}</td>
+            </tr>
+            <tr>
+                <td><span class="field-label">Course Intended Learning Outcomes (CILO):</span></td>
+                <td class="description">{{ $subject->cilo_outcomes ?? 'N/A' }}</td>
+            </tr>
+            <tr>
+                <td><span class="field-label">Expected BCP Graduate Elements:</span></td>
                 <td>
                     The BCP ideal graduate demonstrates/internalizes this attribute:
-                    <ul style="padding-left: 20px; margin-top: 5px;">
+                    <ul style="padding-left: 18px; margin-top: 6px;">
                         <li>critical thinking and problem-solving skills;</li>
                         <li>effective communication and collaboration;</li>
                         <li>ethical and professional practice; and,</li>
@@ -237,15 +425,14 @@
                     </ul>
                 </td>
             </tr>
-            <tr><td><span class="field-label">Learning Outcomes:</span></td><td class="description">{{ $subject->learning_outcomes ?? 'N/A' }}</td></tr>
+            <tr>
+                <td><span class="field-label">Learning Outcomes:</span></td>
+                <td class="description">{{ $subject->learning_outcomes ?? 'N/A' }}</td>
+            </tr>
         </table>
-        
+
         <div class="page-break"></div>
-        <div class="header">
-            <img src="{{ public_path('/images/bcp logo.png') }}" alt="BCP Logo">
-            <h1>BESTLINK COLLEGE OF THE PHILIPPINES</h1>
-            <p>#1071 Brgy. Kaligayahan, Quirino Hi-way, Novaliches, Quezon City</p>
-        </div>
+
         <div class="section-title">WEEKLY PLAN (WEEKS 1-15) for {{ $subject->subject_code }}</div>
         @if(!empty($subject->lessons) && is_array($subject->lessons))
             @foreach(collect($subject->lessons)->sortBy(fn($val, $key) => (int) filter_var($key, FILTER_SANITIZE_NUMBER_INT)) as $week => $details)
@@ -263,28 +450,47 @@
                         }
                     }
                 @endphp
+
                 <table class="weekly-plan-table">
                     <tr class="header-row"><th colspan="2">{{ $week }}</th></tr>
-                    <tr><td width="50%"><span class="sub-label">Content:</span><br>{!! nl2br(e($lessonData['content'] ?: 'N/A')) !!}</td><td width="50%"><span class="sub-label">Student Intended Learning Outcomes:</span><br>{!! nl2br(e($lessonData['silo'] ?: 'N/A')) !!}</td></tr>
+                    <tr>
+                        <td width="50%"><span class="sub-label">Content:</span><br>{!! nl2br(e($lessonData['content'] ?: 'N/A')) !!}</td>
+                        <td width="50%"><span class="sub-label">Student Intended Learning Outcomes:</span><br>{!! nl2br(e($lessonData['silo'] ?: 'N/A')) !!}</td>
+                    </tr>
                     <tr><td colspan="2"><span class="sub-label">Assessment Tasks (ATs):</span></td></tr>
-                    <tr><td width="50%"><span class="sub-label">ONSITE:</span><br>{!! nl2br(e($lessonData['at_onsite'] ?: 'N/A')) !!}</td><td width="50%"><span class="sub-label">OFFSITE:</span><br>{!! nl2br(e($lessonData['at_offsite'] ?: 'N/A')) !!}</td></tr>
+                    <tr>
+                        <td width="50%"><span class="sub-label">ONSITE:</span><br>{!! nl2br(e($lessonData['at_onsite'] ?: 'N/A')) !!}</td>
+                        <td width="50%"><span class="sub-label">OFFSITE:</span><br>{!! nl2br(e($lessonData['at_offsite'] ?: 'N/A')) !!}</td>
+                    </tr>
                     <tr><td colspan="2"><span class="sub-label">Suggested Teaching/Learning Activities (TLAs):</span></td></tr>
-                    <tr><td width="50%"><span class="sub-label">Face to Face (On-Site):</span><br>{!! nl2br(e($lessonData['tla_onsite'] ?: 'N/A')) !!}</td><td width="50%"><span class="sub-label">Online (Off-Site):</span><br>{!! nl2br(e($lessonData['tla_offsite'] ?: 'N/A')) !!}</td></tr>
-                    <tr><td><span class="sub-label">Learning and Teaching Support Materials (LTSM):</span><br>{!! nl2br(e($lessonData['ltsm'] ?: 'N/A')) !!}</td><td><span class="sub-label">Output Materials:</span><br>{!! nl2br(e($lessonData['output'] ?: 'N/A')) !!}</td></tr>
+                    <tr>
+                        <td width="50%"><span class="sub-label">Face to Face (On-Site):</span><br>{!! nl2br(e($lessonData['tla_onsite'] ?: 'N/A')) !!}</td>
+                        <td width="50%"><span class="sub-label">Online (Off-Site):</span><br>{!! nl2br(e($lessonData['tla_offsite'] ?: 'N/A')) !!}</td>
+                    </tr>
+                    <tr>
+                        <td><span class="sub-label">Learning and Teaching Support Materials (LTSM):</span><br>{!! nl2br(e($lessonData['ltsm'] ?: 'N/A')) !!}</td>
+                        <td><span class="sub-label">Output Materials:</span><br>{!! nl2br(e($lessonData['output'] ?: 'N/A')) !!}</td>
+                    </tr>
                 </table>
             @endforeach
-        @else<p>No weekly plan data available.</p>@endif
-        
+        @else
+            <p>No weekly plan data available.</p>
+        @endif
+
         <div class="section-title">COURSE REQUIREMENTS AND POLICIES</div>
         <table>
             <tr><td width="30%"><span class="field-label">Basic Readings / Textbooks:</span></td><td class="description">{{ $subject->basic_readings ?? 'N/A' }}</td></tr>
             <tr><td><span class="field-label">Extended Readings / References:</span></td><td class="description">{{ $subject->extended_readings ?? 'N/A' }}</td></tr>
             <tr><td><span class="field-label">Course Assessment:</span></td><td class="description">{{ $subject->course_assessment ?? 'N/A' }}</td></tr>
-            <tr><td><span class="field-label">Course Policies and Statements:</span></td>
-                <td><div class="policy-box">
-                    <p><span class="policy-title">Learners with Disabilities</span>This course is committed in providing equal access and participation for all students including those with disabilities. If you have a disability that may require accommodations, please contact the OFFICE OF THE STUDENTS’ AFFAIRS and SERVICES to register in the LIST OF LEARNERS with Disabilities. Please be aware that it is your responsibility to communicate your needs and works with the instructor to ensure that appropriate accommodations can be arranged promptly.</p>
-                    <p><span class="policy-title">Syllabus Flexibility</span>The faculty reserves the right to change or amend this syllabus as needed. Any changes to the syllabus will be communicated promptly to the VPAA through the Department Heads / Deans, if any, adjustments will be made to ensure that all students can continue to meet the course objectives. Your feedback and input are valued, and we encourage open communication to facilitate a positive and productive learning experience for all.</p>
-                </div></td></tr>
+            <tr>
+                <td><span class="field-label">Course Policies and Statements:</span></td>
+                <td>
+                    <div class="policy-box">
+                        <p><span class="policy-title">Learners with Disabilities</span>&nbsp;This course is committed in providing equal access and participation for all students including those with disabilities. If you have a disability that may require accommodations, please contact the OFFICE OF THE STUDENTS’ AFFAIRS and SERVICES to register in the LIST OF LEARNERS with Disabilities. Please be aware that it is your responsibility to communicate your needs and works with the instructor to ensure that appropriate accommodations can be arranged promptly.</p>
+                        <p style="margin-top:6px;"><span class="policy-title">Syllabus Flexibility</span>&nbsp;The faculty reserves the right to change or amend this syllabus as needed. Any changes to the syllabus will be communicated promptly to the VPAA through the Department Heads / Deans, if any, adjustments will be made to ensure that all students can continue to meet the course objectives. Your feedback and input are valued, and we encourage open communication to facilitate a positive and productive learning experience for all.</p>
+                    </div>
+                </td>
+            </tr>
             <tr><td><span class="field-label">Committee Members:</span></td><td class="description">{{ $subject->committee_members ?? 'N/A' }}</td></tr>
             <tr><td><span class="field-label">Consultation Schedule:</span></td><td class="description">{{ $subject->consultation_schedule ?? 'N/A' }}</td></tr>
         </table>
@@ -297,7 +503,7 @@
                         @php
                             $gradeData = $subject->grades->first()->components;
                         @endphp
-                        <table style="margin-bottom: 0; border: none;">
+                        <table style="margin-bottom: 0; border: none; width: 100%;">
                             @foreach($gradeData as $period => $details)
                                 @if(isset($details['components']) && count($details['components']) > 0)
                                     <tr>
@@ -308,7 +514,7 @@
                                     @foreach($details['components'] as $component)
                                         <tr>
                                             <td style="width: 70%; padding-left: 20px; border: 1px solid #bdc3c7;">{{ $component['name'] }}</td>
-                                            <td class="text-center" style="border: 1px solid #bdc3c7;">{{ $component['weight'] }}%</td>
+                                            <td class="text-center" style="border: 1px solid #bdc3c7; width: 30%;">{{ $component['weight'] }}%</td>
                                         </tr>
                                         @if(isset($component['sub_components']) && count($component['sub_components']) > 0)
                                             @foreach($component['sub_components'] as $sub)
@@ -328,15 +534,31 @@
                 </td>
             </tr>
         </table>
-        
+
         <div class="section-title">APPROVAL</div>
         <table class="approval-table">
             <tr>
-                <td><p class="label">Prepared:</p><p class="name">{{ $subject->prepared_by ?? '' }}</p><p class="line"></p><p class="title">Cluster Leader</p></td>
-                <td><p class="label">Reviewed:</p><p class="name">{{ $subject->reviewed_by ?? '' }}</p><p class="line"></p><p class="title">General Education Program Head</p></td>
-                <td><p class="label">Approved:</p><p class="name">{{ $subject->approved_by ?? '' }}</p><p class="line"></p><p class="title">Vice President for Academic Affairs</p></td>
+                <td>
+                    <p class="label">Prepared:</p>
+                    <p class="name">{{ $subject->prepared_by ?? '' }}</p>
+                    <p class="line"></p>
+                    <p class="title">Cluster Leader</p>
+                </td>
+                <td>
+                    <p class="label">Reviewed:</p>
+                    <p class="name">{{ $subject->reviewed_by ?? '' }}</p>
+                    <p class="line"></p>
+                    <p class="title">General Education Program Head</p>
+                </td>
+                <td>
+                    <p class="label">Approved:</p>
+                    <p class="name">{{ $subject->approved_by ?? '' }}</p>
+                    <p class="line"></p>
+                    <p class="title">Vice President for Academic Affairs</p>
+                </td>
             </tr>
         </table>
     @endforeach
+
 </body>
 </html>

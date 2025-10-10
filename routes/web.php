@@ -15,6 +15,7 @@ use App\Http\Controllers\CurriculumVersionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\CurriculumHistoryController;
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -81,6 +82,7 @@ Route::middleware('auth')->group(function () {
     // Curriculum Export Tool - Accessible to all authenticated users (employees, admin, super admin)
     Route::get('/curriculum_export_tool', [CurriculumExportToolController::class, 'index'])->name('curriculum_export_tool');
     Route::post('/curriculum_export_tool', [CurriculumExportToolController::class, 'store'])->name('curriculum_export_tool.store');
+    Route::get('/api/curriculum/{id}/subjects', [CurriculumExportToolController::class, 'getCurriculumSubjects'])->name('curriculum.subjects');
     Route::get('/subjects/{subjectId}/export-pdf', [SubjectExportController::class, 'exportPdf'])->name('subjects.export-pdf');
     Route::get('/curriculum/{id}/export-pdf', [CurriculumExportToolController::class, 'exportPdf'])->name('curriculum.export-pdf');
 
@@ -122,6 +124,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/course-builder', function () {
             return view('course_builder');
         })->name('course_builder');
+
+        // Curriculum History API Routes
+        Route::prefix('api/curriculum-history')->group(function () {
+            Route::get('/{curriculumId}/versions', [CurriculumHistoryController::class, 'getVersions']);
+            Route::get('/{curriculumId}/versions/{versionId}', [CurriculumHistoryController::class, 'getVersionDetails']);
+            Route::post('/{curriculumId}/snapshot', [CurriculumHistoryController::class, 'createSnapshot']);
+            Route::get('/{curriculumId}/compare/{version1Id}/{version2Id}', [CurriculumHistoryController::class, 'compareVersions']);
+        });
 
         // Employee Management Routes (Admin and Super Admin only)
         Route::resource('employees', EmployeeController::class)->except(['show']);

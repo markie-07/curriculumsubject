@@ -64,6 +64,38 @@
                 </div>
             </div>
 
+            {{-- Curriculum Preview Section --}}
+            <div id="curriculum-preview" class="mt-8 hidden">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Preview: Export Content</h2>
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                    <div id="preview-loading" class="text-center py-8">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                        <p class="mt-2 text-sm text-gray-500">Loading curriculum data...</p>
+                    </div>
+                    <div id="preview-content" class="hidden">
+                        <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-200">
+                            <div>
+                                <h3 id="preview-curriculum-name" class="text-lg font-semibold text-gray-800"></h3>
+                                <p id="preview-curriculum-code" class="text-sm text-gray-500"></p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm text-gray-500">Total Subjects</p>
+                                <p id="preview-subject-count" class="text-2xl font-bold text-blue-600">0</p>
+                            </div>
+                        </div>
+                        <div id="preview-subjects" class="space-y-3 max-h-64 overflow-y-auto">
+                            <!-- Subjects will be populated here -->
+                        </div>
+                        <div id="preview-empty" class="hidden text-center py-8">
+                            <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <p class="text-gray-500">No subjects match the selected filters</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="mt-10">
                 <button id="export-curriculum-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg flex items-center justify-center gap-2" disabled>
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -110,6 +142,60 @@
     </div>
 </main>
 
+{{-- Export Confirmation Modal --}}
+<div id="exportConfirmationModal" class="fixed inset-0 z-[60] overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 ease-out hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="relative bg-white w-full max-w-lg rounded-2xl shadow-2xl p-6 md:p-8 transform scale-95 opacity-0 transition-all duration-300 ease-out" id="export-confirmation-panel">
+            <button id="closeExportConfirmationButton" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none transition-colors duration-200 rounded-full p-1 hover:bg-slate-100" aria-label="Close modal">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">Export Curriculum to PDF</h2>
+                <p class="text-sm text-slate-500 mt-1">Are you sure you want to export this curriculum?</p>
+            </div>
+
+            <div class="bg-slate-50 rounded-lg p-4 mb-6">
+                <h3 class="font-semibold text-slate-700 mb-2">Export Details:</h3>
+                <div id="export-confirmation-summary" class="text-sm text-slate-600">
+                    <!-- Summary will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="flex gap-4 pt-4">
+                <button type="button" id="cancelExportConfirmationButton" class="flex-1 px-6 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition-all">Cancel</button>
+                <button type="button" id="confirmExportConfirmationButton" class="flex-1 px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    <span>Yes, Export PDF</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Export Success Modal --}}
+<div id="exportSuccessModal" class="fixed inset-0 z-[70] overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 ease-out hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center transform scale-95 opacity-0 transition-all duration-300 ease-out" id="export-success-panel">
+            <div class="w-16 h-16 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-slate-800 mb-2">Export Successful!</h3>
+            <p class="text-sm text-slate-500 mb-6">Your curriculum PDF has been generated and will download shortly.</p>
+            <button id="closeExportSuccessButton" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-all">OK</button>
+        </div>
+    </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const exportButton = document.getElementById('export-curriculum-btn');
@@ -120,6 +206,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     curriculumSelect.addEventListener('change', function() {
         exportButton.disabled = !this.value;
+        
+        if (this.value) {
+            loadCurriculumPreview(this.value);
+        } else {
+            hideCurriculumPreview();
+        }
     });
 
     // Handle filter summary display
@@ -138,19 +230,234 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             filterSummary.classList.add('hidden');
         }
+        
+        // Update preview when filters change
+        if (curriculumSelect.value) {
+            updatePreviewWithFilters();
+        }
     }
 
     filterCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', updateFilterSummary);
     });
 
-    exportButton.addEventListener('click', async function () {
+    // Preview functions
+    let currentCurriculumData = null;
+
+    async function loadCurriculumPreview(curriculumId) {
+        const previewSection = document.getElementById('curriculum-preview');
+        const previewLoading = document.getElementById('preview-loading');
+        const previewContent = document.getElementById('preview-content');
+        
+        // Show preview section and loading state
+        previewSection.classList.remove('hidden');
+        previewLoading.classList.remove('hidden');
+        previewContent.classList.add('hidden');
+        
+        try {
+            // Fetch curriculum data
+            const response = await fetch(`/api/curriculum/${curriculumId}/subjects`);
+            if (!response.ok) throw new Error('Failed to fetch curriculum data');
+            
+            currentCurriculumData = await response.json();
+            displayCurriculumPreview(currentCurriculumData);
+        } catch (error) {
+            console.error('Error loading curriculum preview:', error);
+            previewLoading.innerHTML = `
+                <div class="text-center py-8">
+                    <svg class="w-12 h-12 text-red-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p class="text-red-500">Failed to load curriculum data</p>
+                    <p class="text-sm text-gray-500 mt-1">Please try selecting the curriculum again</p>
+                </div>
+            `;
+        }
+    }
+
+    function displayCurriculumPreview(data) {
+        const previewLoading = document.getElementById('preview-loading');
+        const previewContent = document.getElementById('preview-content');
+        const previewCurriculumName = document.getElementById('preview-curriculum-name');
+        const previewCurriculumCode = document.getElementById('preview-curriculum-code');
+        
+        // Hide loading and show content
+        previewLoading.classList.add('hidden');
+        previewContent.classList.remove('hidden');
+        
+        // Set curriculum info
+        previewCurriculumName.textContent = data.curriculum_name || 'Unknown Curriculum';
+        previewCurriculumCode.textContent = data.program_code || 'No Code';
+        
+        // Update subjects with current filters
+        updatePreviewWithFilters();
+    }
+
+    function updatePreviewWithFilters() {
+        if (!currentCurriculumData) return;
+        
+        const selectedTypes = Array.from(filterCheckboxes)
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => checkbox.value);
+        
+        const previewSubjects = document.getElementById('preview-subjects');
+        const previewSubjectCount = document.getElementById('preview-subject-count');
+        const previewEmpty = document.getElementById('preview-empty');
+        
+        // Filter subjects based on selected types
+        let filteredSubjects = currentCurriculumData.subjects || [];
+        if (selectedTypes.length > 0) {
+            const geIdentifiers = ["GE", "General Education", "Gen Ed", "General"];
+            
+            filteredSubjects = filteredSubjects.filter(subject => {
+                const subjectType = subject.subject_type;
+                
+                return selectedTypes.some(selectedType => {
+                    if (selectedType === 'General Education') {
+                        // Handle General Education with flexible matching
+                        return geIdentifiers.some(id => 
+                            subjectType.toLowerCase().includes(id.toLowerCase())
+                        );
+                    } else {
+                        // Exact match for other types
+                        return subjectType === selectedType;
+                    }
+                });
+            });
+        }
+        
+        // Update subject count
+        previewSubjectCount.textContent = filteredSubjects.length;
+        
+        if (filteredSubjects.length === 0) {
+            previewSubjects.classList.add('hidden');
+            previewEmpty.classList.remove('hidden');
+        } else {
+            previewSubjects.classList.remove('hidden');
+            previewEmpty.classList.add('hidden');
+            
+            // Display subjects
+            previewSubjects.innerHTML = filteredSubjects.map(subject => `
+                <div class="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <div class="w-2 h-2 rounded-full ${getSubjectTypeColor(subject.subject_type)}"></div>
+                        <div>
+                            <h4 class="font-medium text-gray-800">${subject.subject_name}</h4>
+                            <p class="text-sm text-gray-500">${subject.subject_code}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getSubjectTypeBadge(subject.subject_type)}">
+                            ${subject.subject_type}
+                        </span>
+                        <p class="text-sm text-gray-500 mt-1">${subject.subject_unit} units</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    function getSubjectTypeColor(type) {
+        const geIdentifiers = ["GE", "General Education", "Gen Ed", "General"];
+        
+        if (type === 'Major') return 'bg-blue-500';
+        if (type === 'Minor') return 'bg-purple-500';
+        if (type === 'Elective') return 'bg-red-500';
+        if (geIdentifiers.some(id => type.toLowerCase().includes(id.toLowerCase()))) {
+            return 'bg-orange-500';
+        }
+        return 'bg-gray-500';
+    }
+
+    function getSubjectTypeBadge(type) {
+        const geIdentifiers = ["GE", "General Education", "Gen Ed", "General"];
+        
+        if (type === 'Major') return 'bg-blue-100 text-blue-800';
+        if (type === 'Minor') return 'bg-purple-100 text-purple-800';
+        if (type === 'Elective') return 'bg-red-100 text-red-800';
+        if (geIdentifiers.some(id => type.toLowerCase().includes(id.toLowerCase()))) {
+            return 'bg-orange-100 text-orange-800';
+        }
+        return 'bg-gray-100 text-gray-800';
+    }
+
+    function hideCurriculumPreview() {
+        const previewSection = document.getElementById('curriculum-preview');
+        previewSection.classList.add('hidden');
+        currentCurriculumData = null;
+    }
+
+    // Modal elements
+    const exportConfirmationModal = document.getElementById('exportConfirmationModal');
+    const exportConfirmationPanel = document.getElementById('export-confirmation-panel');
+    const exportConfirmationSummary = document.getElementById('export-confirmation-summary');
+    const exportSuccessModal = document.getElementById('exportSuccessModal');
+    const exportSuccessPanel = document.getElementById('export-success-panel');
+
+    // Modal functions
+    const showExportConfirmationModal = () => {
+        const curriculumId = curriculumSelect.value;
+        const curriculumName = curriculumSelect.options[curriculumSelect.selectedIndex].text;
+        const selectedTypes = Array.from(document.querySelectorAll('input[name="course_types"]:checked'))
+                                   .map(checkbox => checkbox.value);
+        
+        // Populate summary
+        const subjectCount = currentCurriculumData ? currentCurriculumData.subjects.length : 'Unknown';
+        const filterText = selectedTypes.length > 0 ? selectedTypes.join(', ') : 'All subject types';
+        
+        exportConfirmationSummary.innerHTML = `
+            <p><strong>Curriculum:</strong> ${curriculumName}</p>
+            <p><strong>Subjects:</strong> ${subjectCount} subjects</p>
+            <p><strong>Filters:</strong> ${filterText}</p>
+            <p><strong>Format:</strong> PDF Document</p>
+        `;
+        
+        exportConfirmationModal.classList.remove('hidden');
+        setTimeout(() => {
+            exportConfirmationModal.classList.remove('opacity-0');
+            exportConfirmationPanel.classList.remove('opacity-0', 'scale-95');
+        }, 10);
+    };
+
+    const hideExportConfirmationModal = () => {
+        exportConfirmationModal.classList.add('opacity-0');
+        exportConfirmationPanel.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => exportConfirmationModal.classList.add('hidden'), 300);
+    };
+
+    const showExportSuccessModal = () => {
+        exportSuccessModal.classList.remove('hidden');
+        setTimeout(() => {
+            exportSuccessModal.classList.remove('opacity-0');
+            exportSuccessPanel.classList.remove('opacity-0', 'scale-95');
+        }, 10);
+    };
+
+    const hideExportSuccessModal = () => {
+        exportSuccessModal.classList.add('opacity-0');
+        exportSuccessPanel.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => exportSuccessModal.classList.add('hidden'), 300);
+    };
+
+    // Export button click - show confirmation modal
+    exportButton.addEventListener('click', function () {
         const curriculumId = curriculumSelect.value;
         if (!curriculumId) {
             alert('Please select a curriculum to export.');
             return;
         }
+        showExportConfirmationModal();
+    });
 
+    // Modal event listeners
+    document.getElementById('closeExportConfirmationButton').addEventListener('click', hideExportConfirmationModal);
+    document.getElementById('cancelExportConfirmationButton').addEventListener('click', hideExportConfirmationModal);
+    document.getElementById('closeExportSuccessButton').addEventListener('click', hideExportSuccessModal);
+
+    // Confirm export button
+    document.getElementById('confirmExportConfirmationButton').addEventListener('click', async function () {
+        const curriculumId = curriculumSelect.value;
+        
         // Get selected course types from checkboxes
         const selectedTypes = Array.from(document.querySelectorAll('input[name="course_types"]:checked'))
                                    .map(checkbox => checkbox.value);
@@ -163,8 +470,14 @@ document.addEventListener('DOMContentLoaded', function () {
             exportUrl += `?${queryParams.toString()}`;
         }
 
+        // Hide confirmation modal
+        hideExportConfirmationModal();
+
         // Open PDF in new tab with filters applied
         window.open(exportUrl, '_blank');
+
+        // Show success modal
+        showExportSuccessModal();
 
         try {
             const curriculumName = curriculumSelect.options[curriculumSelect.selectedIndex].text;
@@ -176,6 +489,15 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error saving export history:', error);
             alert('An error occurred while saving the export history. Please check the console for details.');
         }
+    });
+
+    // Close modals when clicking outside
+    exportConfirmationModal.addEventListener('click', function(e) {
+        if (e.target === this) hideExportConfirmationModal();
+    });
+
+    exportSuccessModal.addEventListener('click', function(e) {
+        if (e.target === this) hideExportSuccessModal();
     });
 
     historySearchInput.addEventListener('input', function() {

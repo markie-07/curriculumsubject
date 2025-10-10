@@ -6,11 +6,19 @@
     <style>
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 9.5px; color: #333; line-height: 1.4; }
 
+        /* --- PDF Page Setup --- */
+        @page {
+            header: header; /* Apply the named header to every page */
+            margin-top: 150px; /* Increased space for the header to prevent content overlap */
+            margin-bottom: 20px;
+        }
+
         /* --- HEADER --- */
-        .header { text-align: center; margin-bottom: 25px; }
-        .header img { width: 65px; height: 65px; margin-bottom: 5px; }
-        .header h1 { font-size: 15px; font-weight: bold; margin: 0; color: #2c3e50; }
-        .header p { font-size: 10px; margin: 2px 0; color: #555; }
+        .pdf-header { padding: 15px 0; position: relative; height: 70px; }
+        .pdf-header img { width: 40px; height: 40px; position: absolute; left: 0; top: 15px; }
+        .pdf-header .text-content { text-align: center; margin-left: 50px; margin-right: 50px; position: absolute; top: 10px; left: 50px; right: 50px; }
+        .pdf-header h1 { font-size: 14px; font-weight: bold; margin: 0; color: #2c3e50; line-height: 1.2; }
+        .pdf-header p { font-size: 10px; margin: 5px 0 0 0; color: #555; line-height: 1.1; }
 
         /* --- SECTIONS --- */
         .section-title { font-size: 12px; font-weight: bold; color: #2c3e50; margin-top: 20px; margin-bottom: 10px; background-color: #ecf0f1; padding: 8px 12px; border-left: 4px solid #3498db; }
@@ -50,11 +58,27 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <img src="{{ public_path('/images/bcp logo.png') }}" alt="BCP Logo">
-        <h1>BESTLINK COLLEGE OF THE PHILIPPINES</h1>
-        <p>#1071 Brgy. Kaligayahan, Quirino Hi-way, Novaliches, Quezon City</p>
-    </div>
+    <htmlpageheader name="header">
+        <div class="pdf-header">
+            @php
+                // Embed the image directly to prevent pathing issues in the PDF.
+                $imagePath = public_path('/images/BCPLOGO.png');
+                if (file_exists($imagePath)) {
+                    $imageData = base64_encode(file_get_contents($imagePath));
+                    $src = 'data:image/png;base64,' . $imageData;
+                } else {
+                    $src = ''; // Fallback if image is not found
+                }
+            @endphp
+            @if($src)
+                <img src="{{ $src }}" alt="BCP Logo">
+            @endif
+            <div class="text-content">
+                <h1>BESTLINK COLLEGE OF THE PHILIPPINES</h1>
+                <p>#1071 Brgy. Kaligayahan, Quirino Hi-way, Novaliches, Quezon City</p>
+            </div>
+        </div>
+    </htmlpageheader>
 
     <div class="section-title">COURSE INFORMATION</div>
     <table>
@@ -68,10 +92,40 @@
         </tr>
         <tr>
             <td><span class="field-label">Course Type</span></td><td>{{ $subject->subject_type }}</td>
-            <td><span class="field-label">Pre-requisite to</span></td><td>{{ $subject->pre_requisite_to ?? 'None' }}</td>
+            <td><span class="field-label">Pre-requisite to</span></td>
+            <td>
+                @if(!empty($prerequisiteData) && isset($prerequisiteData['subjectToChildrenMap']))
+                    @php
+                        // Get subjects that require this subject as a prerequisite
+                        $childSubjects = $prerequisiteData['subjectToChildrenMap'][$subject->subject_code] ?? [];
+                        $prereqToString = !empty($childSubjects) ? implode(', ', $childSubjects) : 'None';
+                    @endphp
+                    {{ $prereqToString }}
+                @else
+                    {{ $subject->pre_requisite_to ?? 'None' }}
+                @endif
+            </td>
         </tr>
          <tr>
-            <td><span class="field-label">Credit Prerequisites</span></td><td colspan="3">{{ $subject->prerequisites ?? 'None' }}</td>
+            <td><span class="field-label">Credit Prerequisites</span></td>
+            <td colspan="3">
+                @if(!empty($prerequisiteData) && isset($prerequisiteData['subjectToParentsMap']))
+                    @php
+                        // Get ONLY immediate/direct prerequisites (not the entire chain)
+                        $directPrerequisites = $prerequisiteData['subjectToParentsMap'][$subject->subject_code] ?? [];
+                        
+                        // Sort prerequisites for consistent display
+                        sort($directPrerequisites);
+                    @endphp
+                    @if(!empty($directPrerequisites))
+                        {{ implode(', ', $directPrerequisites) }}
+                    @else
+                        None
+                    @endif
+                @else
+                    {{ $subject->prerequisites ?? 'None' }}
+                @endif
+            </td>
         </tr>
         <tr>
             <td width="20%"><span class="field-label">Course Description</span></td>
@@ -234,4 +288,3 @@
     </table>
 </body>
 </html>
-

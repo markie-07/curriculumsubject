@@ -9,6 +9,7 @@ use Illuminate\Http\Request; // Import the Request class
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Services\NotificationService;
+use App\Services\CurriculumVersionService;
 
 class SubjectHistoryController extends Controller
 {
@@ -61,6 +62,12 @@ class SubjectHistoryController extends Controller
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
+
+                // Create version snapshot for subject retrieval
+                CurriculumVersionService::createSnapshotOnSubjectRetrieve(
+                    $historyRecord->curriculum_id,
+                    $historyRecord->subject_name
+                );
 
                 // Create notification for subject retrieval
                 NotificationService::subjectRetrieved(
