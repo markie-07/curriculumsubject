@@ -20,16 +20,22 @@ class CurriculumController extends Controller
      */
     public function index()
     {
-        $curriculums = Curriculum::orderBy('year_level')->orderBy('curriculum')->get()->map(function ($curriculum) {
-            return [
-                'id' => $curriculum->id,
-                'curriculum_name' => $curriculum->curriculum,
-                'program_code' => $curriculum->program_code,
-                'academic_year' => $curriculum->academic_year,
-                'year_level' => $curriculum->year_level,
-                'created_at' => $curriculum->created_at
-            ];
-        });
+        $curriculums = Curriculum::withCount('subjects')
+            ->orderBy('year_level')
+            ->orderBy('curriculum')
+            ->get()
+            ->map(function ($curriculum) {
+                return [
+                    'id' => $curriculum->id,
+                    'curriculum_name' => $curriculum->curriculum,
+                    'program_code' => $curriculum->program_code,
+                    'academic_year' => $curriculum->academic_year,
+                    'year_level' => $curriculum->year_level,
+                    'created_at' => $curriculum->created_at,
+                    'subjects_count' => $curriculum->subjects_count,
+                    'status' => $curriculum->subjects_count > 0 ? 'active' : 'inactive'
+                ];
+            });
         return response()->json($curriculums);
     }
 

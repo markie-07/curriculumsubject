@@ -262,6 +262,21 @@
                 const formattedDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 const formattedTime = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 
+                // Determine status badge
+                const statusBadge = curriculum.status === 'active' 
+                    ? `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        Active
+                    </span>`
+                    : `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                        </svg>
+                        Inactive
+                    </span>`;
+
                 card.innerHTML = `
                     <div class="flex-shrink-0 w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300">
                         <svg class="w-6 h-6 text-slate-500 group-hover:text-blue-600 transition-colors duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -269,9 +284,15 @@
                         </svg>
                     </div>
                     <div class="flex-grow cursor-pointer" onclick="window.location.href='/subject_mapping?curriculumId=${curriculum.id}'">
-                        <h3 class="font-bold text-slate-800 group-hover:text-blue-600 transition-colors duration-300">${curriculum.curriculum_name}</h3>
+                        <div class="flex items-center justify-between mb-1">
+                            <h3 class="font-bold text-slate-800 group-hover:text-blue-600 transition-colors duration-300">${curriculum.curriculum_name}</h3>
+                            ${statusBadge}
+                        </div>
                         <p class="text-sm text-slate-500">${curriculum.program_code} &middot; ${curriculum.academic_year}</p>
-                        <p class="text-xs text-slate-400 mt-1">Created: ${formattedDate} at ${formattedTime}</p>
+                        <p class="text-xs text-slate-400 mt-1">
+                            Created: ${formattedDate} at ${formattedTime} &middot; 
+                            <span class="font-medium">${curriculum.subjects_count} subject${curriculum.subjects_count !== 1 ? 's' : ''}</span>
+                        </p>
                     </div>
                     <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <button class="edit-btn p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-100 rounded-md transition-colors" data-id="${curriculum.id}">
