@@ -11,10 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->enum('status', ['active', 'inactive'])->default('active')->after('role');
-            $table->timestamp('last_activity')->nullable()->after('status');
-        });
+        if (Schema::hasTable('users')) {
+            Schema::table('users', function (Blueprint $table) {
+                if (!Schema::hasColumn('users', 'status')) {
+                    $table->enum('status', ['active', 'inactive'])->default('active')->after('role');
+                }
+                if (!Schema::hasColumn('users', 'last_activity')) {
+                    $table->timestamp('last_activity')->nullable()->after('status');
+                }
+            });
+        }
     }
 
     /**
@@ -22,8 +28,15 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['status', 'last_activity']);
-        });
+        if (Schema::hasTable('users')) {
+            Schema::table('users', function (Blueprint $table) {
+                if (Schema::hasColumn('users', 'status')) {
+                    $table->dropColumn('status');
+                }
+                if (Schema::hasColumn('users', 'last_activity')) {
+                    $table->dropColumn('last_activity');
+                }
+            });
+        }
     }
 };

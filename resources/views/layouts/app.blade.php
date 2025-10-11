@@ -449,7 +449,7 @@
             border: 1px solid #f1f5f9;
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-            z-index: 50;
+            z-index: 9999;
             min-width: 180px;
             padding: 8px;
             opacity: 0;
@@ -651,24 +651,31 @@
             
             settingsButton.addEventListener('click', (e) => {
                 e.stopPropagation();
+                console.log('Settings button clicked');
                 if (dropdownMenu.style.display === 'block') {
+                    console.log('Closing dropdown');
                     closeDropdown();
                 } else {
+                    console.log('Opening dropdown');
                     openDropdown();
                 }
             });
             
             function openDropdown() {
+                console.log('Opening dropdown');
                 dropdownMenu.style.display = 'block';
                 // Force reflow for animation
                 dropdownMenu.offsetHeight;
                 dropdownMenu.classList.add('show');
+                console.log('Dropdown opened, display:', dropdownMenu.style.display, 'classes:', dropdownMenu.className);
             }
             
             function closeDropdown() {
+                console.log('Closing dropdown');
                 dropdownMenu.classList.remove('show');
                 setTimeout(() => {
                     dropdownMenu.style.display = 'none';
+                    console.log('Dropdown closed');
                 }, 200); // Match transition duration
             }
             
@@ -711,11 +718,26 @@
 
             // Load notifications
             function loadNotifications() {
-                fetch('/notifications')
-                    .then(response => response.json())
+                fetch('/notifications', {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+                    },
+                    credentials: 'same-origin'
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
-                        displayNotifications(data.notifications);
-                        updateNotificationBadge(data.unread_count);
+                        if (data && data.notifications && typeof data.unread_count !== 'undefined') {
+                            displayNotifications(data.notifications);
+                            updateNotificationBadge(data.unread_count);
+                        }
                     })
                     .catch(error => {
                         console.error('Error loading notifications:', error);
@@ -814,22 +836,61 @@
             });
 
             // Load notification count on page load
-            fetch('/notifications/unread-count')
-                .then(response => response.json())
-                .then(data => {
-                    updateNotificationBadge(data.count);
+            fetch('/notifications/unread-count', {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+                },
+                credentials: 'same-origin'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
                 })
-                .catch(error => console.error('Error loading notification count:', error));
-
-            // Poll for new notifications every 30 seconds
-            setInterval(() => {
-                fetch('/notifications/unread-count')
-                    .then(response => response.json())
-                    .then(data => {
+                .then(data => {
+                    if (data && typeof data.count !== 'undefined') {
                         updateNotificationBadge(data.count);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading notification count:', error);
+                    // Silently fail - don't show error to user
+                });
+
+            // Poll for new notifications every 30 seconds - TEMPORARILY DISABLED
+            // Uncomment the following code once the JSON display issue is resolved
+            /*
+            setInterval(() => {
+                fetch('/notifications/unread-count', {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+                    },
+                    credentials: 'same-origin'
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
                     })
-                    .catch(error => console.error('Error polling notifications:', error));
+                    .then(data => {
+                        if (data && typeof data.count !== 'undefined') {
+                            updateNotificationBadge(data.count);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error polling notifications:', error);
+                        // Silently fail - don't show error to user
+                    });
             }, 30000);
+            */
         });
 
         // Prevent back navigation for authenticated pages
@@ -897,40 +958,30 @@
         // Initialize back navigation prevention
         document.addEventListener('DOMContentLoaded', preventBackAfterLogout);
 
-        // Handle logout form submission with CSRF token refresh
+        // Handle logout form submission - simplified approach
         document.addEventListener('DOMContentLoaded', function() {
             const logoutForm = document.getElementById('logout-form');
+            const logoutButton = document.getElementById('logout-button');
+            
             if (logoutForm) {
-                logoutForm.addEventListener('submit', async function(e) {
-                    e.preventDefault();
-                    
-                    try {
-                        // Refresh CSRF token before logout
-                        const response = await fetch('/csrf-token', {
-                            method: 'GET',
-                            credentials: 'same-origin'
-                        });
-                        
-                        if (response.ok) {
-                            const data = await response.json();
-                            // Update CSRF token in form
-                            const csrfInput = logoutForm.querySelector('input[name="_token"]');
-                            if (csrfInput && data.csrf_token) {
-                                csrfInput.value = data.csrf_token;
-                            }
-                            // Update meta tag
-                            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
-                            if (csrfMeta && data.csrf_token) {
-                                csrfMeta.setAttribute('content', data.csrf_token);
-                            }
-                        }
-                    } catch (error) {
-                        console.log('CSRF token refresh failed, proceeding with logout');
-                    }
-                    
-                    // Submit the form
-                    logoutForm.submit();
+                console.log('Logout form found and event listener attached');
+                logoutForm.addEventListener('submit', function(e) {
+                    // Allow normal form submission without interference
+                    // The AuthController logout method handles CSRF token issues gracefully
+                    console.log('Logout form submitted');
                 });
+            } else {
+                console.log('Logout form not found');
+            }
+            
+            if (logoutButton) {
+                console.log('Logout button found');
+                logoutButton.addEventListener('click', function(e) {
+                    console.log('Logout button clicked via event listener');
+                    // Let the form submit naturally
+                });
+            } else {
+                console.log('Logout button not found');
             }
         });
     </script>

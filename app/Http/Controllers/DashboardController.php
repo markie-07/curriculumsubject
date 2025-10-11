@@ -10,6 +10,7 @@ use App\Models\Subject;
 use App\Models\ExportHistory;
 use App\Models\EmployeeActivityLog;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class DashboardController extends Controller
 {
@@ -20,16 +21,6 @@ class DashboardController extends Controller
     {
         try {
             $user = Auth::user();
-            
-            // Debug logging
-            \Log::info('Dashboard accessed', [
-                'user_id' => $user->id,
-                'user_role' => $user->role,
-                'user_email' => $user->email,
-                'timestamp' => now(),
-                'request_url' => request()->url(),
-                'request_method' => request()->method()
-            ]);
             
             // Redirect employees directly to curriculum export tool
             if ($user->role === 'employee') {
@@ -76,58 +67,115 @@ class DashboardController extends Controller
     }
 
     /**
-     * Get comprehensive system statistics
+     * Get comprehensive system statistics with caching and optimized queries
      */
     private function getSystemStats()
     {
-        // Log that we're fetching stats
-        \Log::info('Fetching dashboard statistics');
-        
-        $stats = [
-            // Curriculum Statistics - Based on year_level column
-            'curriculum_senior_high' => $this->getCurriculumCount('Senior High'),
-            'curriculum_college' => $this->getCurriculumCount('College'),
-            'total_curriculums' => Curriculum::count(),
-            
-            // Subject Statistics  
-            'total_subjects' => Subject::count(),
-            'active_subjects' => Subject::count(), // All subjects are considered active if no status column
-            
-            // Pre-requisite Statistics
-            'total_prerequisites' => $this->getPrerequisiteCount(),
-            
-            // Mapping History Statistics (Curriculum-Subject relationships)
-            'total_mapping_history' => $this->getMappingHistoryCount(),
-            
-            // Subject Offering History (Removed Subjects)
-            'removed_subjects' => $this->getRemovedSubjectsCount(),
-            
-            // Subject Equivalency Statistics
-            'total_equivalencies' => $this->getEquivalencyCount(),
-            
-            // Export Statistics - Based on actual activity logs
-            'curriculum_exports' => EmployeeActivityLog::where('activity_type', 'export')->count(),
-            'exports_this_month' => EmployeeActivityLog::where('activity_type', 'export')
-                                                      ->whereMonth('created_at', now()->month)
-                                                      ->count(),
-            'total_exports' => EmployeeActivityLog::where('activity_type', 'export')->count(),
-            
-            // Employee Statistics - Based on actual user roles and status
-            'employees_active' => $this->getActiveEmployeesCount(),
-            'employees_inactive' => $this->getInactiveEmployeesCount(),
-            'total_employees' => User::where('role', 'employee')->count(),
-            
-            // System Statistics
-            'total_users' => User::count(),
-            'total_admins' => User::where('role', 'admin')->count(),
-            'activities_today' => EmployeeActivityLog::whereDate('created_at', today())->count(),
-            'activities_this_week' => EmployeeActivityLog::where('created_at', '>=', now()->subWeek())->count(),
+        // Cache dashboard stats for 5 minutes to reduce database load
+        return Cache::remember('dashboard_stats', 300, function() {
+            try {
+                // Optimized curriculum statistics with single query
+                $curriculumStats = DB::table('curriculums')
+                    ->selectRaw('
+                        COUNT(*) as total_curriculums,
+                        SUM(CASE WHEN year_level = "Senior High" THEN 1 ELSE 0 END) as curriculum_senior_high,
+                        SUM(CASE WHEN year_level = "College" THEN 1 ELSE 0 END) as curriculum_college
+                    ')
+                    ->first();
+
+                // Optimized user statistics with single query
+                $userStats = DB::table('users')
+                    ->selectRaw('
+                        COUNT(*) as total_users,
+                        SUM(CASE WHEN role = "admin" THEN 1 ELSE 0 END) as total_admins,
+                        SUM(CASE WHEN role = "employee" AND status = "active" THEN 1 ELSE 0 END) as employees_active,
+                        SUM(CASE WHEN role = "employee" AND status = "inactive" THEN 1 ELSE 0 END) as employees_inactive,
+                        SUM(CASE WHEN role = "employee" THEN 1 ELSE 0 END) as total_employees
+                    ')
+                    ->first();
+
+                // Optimized activity statistics with single query
+                $activityStats = DB::table('employee_activity_logs')
+                    ->selectRaw('
+                        SUM(CASE WHEN activity_type = "export" THEN 1 ELSE 0 END) as curriculum_exports,
+                        SUM(CASE WHEN activity_type = "export" AND MONTH(created_at) = ? THEN 1 ELSE 0 END) as exports_this_month,
+                        SUM(CASE WHEN DATE(created_at) = CURDATE() THEN 1 ELSE 0 END) as activities_today,
+                        SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as activities_this_week
+                    ', [now()->month, now()->subWeek()])
+                    ->first();
+
+                // Get other statistics efficiently
+                $subjectCount = Subject::count();
+                
+                $stats = [
+                    // Curriculum Statistics
+                    'curriculum_senior_high' => $curriculumStats->curriculum_senior_high ?? 0,
+                    'curriculum_college' => $curriculumStats->curriculum_college ?? 0,
+                    'total_curriculums' => $curriculumStats->total_curriculums ?? 0,
+                    
+                    // Subject Statistics  
+                    'total_subjects' => $subjectCount,
+                    'active_subjects' => $subjectCount,
+                    
+                    // Other Statistics (cached separately if needed)
+                    'total_prerequisites' => $this->getPrerequisiteCount(),
+                    'total_mapping_history' => $this->getMappingHistoryCount(),
+                    'removed_subjects' => $this->getRemovedSubjectsCount(),
+                    'total_equivalencies' => $this->getEquivalencyCount(),
+                    
+                    // Export Statistics
+                    'curriculum_exports' => $activityStats->curriculum_exports ?? 0,
+                    'exports_this_month' => $activityStats->exports_this_month ?? 0,
+                    'total_exports' => $activityStats->curriculum_exports ?? 0,
+                    
+                    // Employee Statistics
+                    'employees_active' => $userStats->employees_active ?? 0,
+                    'employees_inactive' => $userStats->employees_inactive ?? 0,
+                    'total_employees' => $userStats->total_employees ?? 0,
+                    
+                    // System Statistics
+                    'total_users' => $userStats->total_users ?? 0,
+                    'total_admins' => $userStats->total_admins ?? 0,
+                    'activities_today' => $activityStats->activities_today ?? 0,
+                    'activities_this_week' => $activityStats->activities_this_week ?? 0,
+                ];
+                
+                return $stats;
+                
+            } catch (\Exception $e) {
+                // Log error but don't break the dashboard
+                \Log::error('Dashboard stats error: ' . $e->getMessage());
+                return $this->getDefaultStats();
+            }
+        });
+    }
+
+    /**
+     * Get default stats in case of database errors
+     */
+    private function getDefaultStats()
+    {
+        return [
+            'curriculum_senior_high' => 0,
+            'curriculum_college' => 0,
+            'total_curriculums' => 0,
+            'total_subjects' => 0,
+            'active_subjects' => 0,
+            'total_prerequisites' => 0,
+            'total_mapping_history' => 0,
+            'removed_subjects' => 0,
+            'total_equivalencies' => 0,
+            'curriculum_exports' => 0,
+            'exports_this_month' => 0,
+            'total_exports' => 0,
+            'employees_active' => 0,
+            'employees_inactive' => 0,
+            'total_employees' => 0,
+            'total_users' => 0,
+            'total_admins' => 0,
+            'activities_today' => 0,
+            'activities_this_week' => 0,
         ];
-        
-        // Log the final stats for debugging
-        \Log::info('Dashboard statistics:', $stats);
-        
-        return $stats;
     }
 
     /**
@@ -214,21 +262,25 @@ class DashboardController extends Controller
     }
 
     /**
-     * Get recent activities for dashboard
+     * Get recent activities for dashboard with caching
      */
     private function getRecentActivities()
     {
-        try {
-            return EmployeeActivityLog::with('user')
-                                     ->whereHas('user', function($query) {
-                                         $query->where('role', 'employee');
-                                     })
-                                     ->orderBy('created_at', 'desc')
-                                     ->limit(5)
-                                     ->get();
-        } catch (\Exception $e) {
-            return collect([]);
-        }
+        return Cache::remember('dashboard_recent_activities', 120, function() {
+            try {
+                return EmployeeActivityLog::with(['user:id,name,email,role'])
+                                         ->whereHas('user', function($query) {
+                                             $query->where('role', 'employee');
+                                         })
+                                         ->select(['id', 'user_id', 'activity_type', 'description', 'created_at'])
+                                         ->orderBy('created_at', 'desc')
+                                         ->limit(5)
+                                         ->get();
+            } catch (\Exception $e) {
+                \Log::error('Error fetching recent activities: ' . $e->getMessage());
+                return collect([]);
+            }
+        });
     }
 
     /**

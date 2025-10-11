@@ -301,9 +301,14 @@ public function saveSubjects(Request $request)
         ]);
 
         try {
-            DB::transaction(function () use ($validated) {
+            $subjectName = null; // Initialize variable to store subject name
+            
+            DB::transaction(function () use ($validated, &$subjectName) {
                 $curriculum = Curriculum::findOrFail($validated['curriculumId']);
                 $subject = Subject::findOrFail($validated['subjectId']);
+                
+                // Store subject name for use outside transaction
+                $subjectName = $subject->subject_name;
 
                 // Detach the subject from the pivot table.
                 $detached = $curriculum->subjects()
@@ -327,7 +332,6 @@ public function saveSubjects(Request $request)
                     'action'        => 'removed',
                 ]);
 
-
                 // Create version snapshot after removing subject
                 CurriculumVersionService::createSnapshotOnSubjectRemove(
                     $validated['curriculumId'], 
@@ -335,7 +339,7 @@ public function saveSubjects(Request $request)
                 );
             });
 
-            session()->flash('success', 'Subject "' . $subject->subject_name . '" has been removed from curriculum successfully!');
+            session()->flash('success', 'Subject "' . $subjectName . '" has been removed from curriculum successfully!');
             
             // Also trigger notification for AJAX requests
             if (request()->wantsJson()) {
@@ -344,7 +348,7 @@ public function saveSubjects(Request $request)
                     'notification' => [
                         'type' => 'success',
                         'title' => 'Subject Removed!',
-                        'message' => 'Subject "' . $subject->subject_name . '" has been removed from curriculum successfully!'
+                        'message' => 'Subject "' . $subjectName . '" has been removed from curriculum successfully!'
                     ]
                 ]);
             }

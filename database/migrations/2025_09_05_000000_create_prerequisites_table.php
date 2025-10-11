@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('prerequisites', function (Blueprint $table) {
+        if (!Schema::hasTable('prerequisites')) {
+            Schema::create('prerequisites', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('curriculum_id');
             $table->string('subject_code');
@@ -21,7 +22,8 @@ return new class extends Migration
             $table->foreign('curriculum_id')->references('id')->on('curriculums')->onDelete('cascade');
             $table->foreign('subject_code')->references('subject_code')->on('subjects')->onDelete('cascade');
             $table->foreign('prerequisite_subject_code')->references('subject_code')->on('subjects')->onDelete('cascade');
-        });
+            });
+        }
     }
 
     /**

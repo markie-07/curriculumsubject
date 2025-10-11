@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
     /* Add styles for the subject cards inside the modal, similar to subject_mapping.blade.php */
     .subject-tag {
@@ -1125,6 +1127,64 @@ document.addEventListener('DOMContentLoaded', function () {
     
     closeVersionDetailsModalBtn.addEventListener('click', hideVersionDetails);
     versionDetailsModal.addEventListener('click', (e) => { if (e.target === versionDetailsModal) hideVersionDetails(); });
+
+    // SweetAlert for success messages
+    const urlParams = new URLSearchParams(window.location.search);
+    const successParam = urlParams.get('success');
+    const messageParam = urlParams.get('message');
+    
+    // Check for success parameter in URL
+    if (successParam === 'added' || successParam === 'true') {
+        let message = 'Subject has been successfully added to the curriculum!';
+        if (messageParam) {
+            message = decodeURIComponent(messageParam);
+        }
+        
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: message,
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#10b981',
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: true,
+            allowOutsideClick: true
+        });
+        
+        // Clean up URL parameters
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+    }
+    
+    // Check for session flash messages
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: '{{ session('success') }}',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#10b981',
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: true,
+            allowOutsideClick: true
+        });
+    @endif
+    
+    @if(session('subject_added'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Subject Added Successfully!',
+            text: '{{ session('subject_added') }}',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#10b981',
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: true,
+            allowOutsideClick: true
+        });
+    @endif
 });
 </script>
 

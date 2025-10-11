@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('curriculum_subject', function (Blueprint $table) {
+        if (!Schema::hasTable('curriculum_subject')) {
+            Schema::create('curriculum_subject', function (Blueprint $table) {
             $table->id();
             // We are being more explicit with the column types.
             $table->unsignedBigInteger('curriculum_id');
@@ -23,7 +24,8 @@ return new class extends Migration
             // Explicitly define the foreign key constraints.
             $table->foreign('curriculum_id')->references('id')->on('curriculums')->onDelete('cascade');
             $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade');
-        });
+            });
+        }
     }
 
     /**

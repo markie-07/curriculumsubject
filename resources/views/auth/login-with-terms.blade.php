@@ -442,8 +442,5 @@
             }
         }
     </script>
-    
-    <!-- Include Notifications -->
-    @include('partials.notifications')
 </body>
 </html>

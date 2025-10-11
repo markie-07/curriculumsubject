@@ -11,7 +11,8 @@ return new class extends Migration
      */
    public function up(): void
 {
-    Schema::create('export_histories', function (Blueprint $table) {
+    if (!Schema::hasTable('export_histories')) {
+        Schema::create('export_histories', function (Blueprint $table) {
         $table->id();
         // We are making the foreign key definition more explicit here
         $table->unsignedBigInteger('curriculum_id');
@@ -24,7 +25,8 @@ return new class extends Migration
               ->references('id')
               ->on('curriculums')
               ->onDelete('cascade');
-    });
+        });
+    }
 }
 
     /**

@@ -633,11 +633,23 @@
                     window.location.href = `/course-builder?subject_id=${subjectData.id}`;
                 } catch (e) {
                     console.error('Failed to parse subject data for editing:', e);
-                    alert('Could not open subject for editing due to a data error.');
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Could not open subject for editing due to a data error.',
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#EF4444'
+                    });
                 }
             } else {
                 console.error('No subject data found on the edit button.');
-                alert('An error occurred. Subject data is missing.');
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'An error occurred. Subject data is missing.',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#EF4444'
+                });
             }
         });
 
@@ -1026,13 +1038,52 @@ const updateAllTotals = () => {
                     statusBadge.textContent = 'Assigned';
                     statusBadge.className = 'status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-200 text-gray-700';
                 }
-                 updateUnitTotals();
+                updateUnitTotals();
+                
+                // Show SweetAlert for successful subject mapping
+                const year = dropzone.dataset.year;
+                const semester = dropzone.dataset.semester;
+                Swal.fire({
+                    title: 'Subject Added Successfully!',
+                    text: `"${droppedSubjectData.subject_name}" (${droppedSubjectData.subject_code}) has been added to Year ${year}, Semester ${semester}.`,
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#10B981',
+                    timer: 3000,
+                    timerProgressBar: true,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInRight'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutRight'
+                    }
+                });
             } else if (draggedItem.classList.contains('subject-tag')) {
                 itemToReassign = draggedItem;
                 reassignTargetContainer = targetContainer; 
                 
                 document.getElementById('reassignConfirmationModal').classList.remove('hidden');
             }
+        } else {
+            // Show SweetAlert for duplicate subject
+            const year = dropzone.dataset.year;
+            const semester = dropzone.dataset.semester;
+            Swal.fire({
+                title: 'Duplicate Subject!',
+                text: `"${droppedSubjectData.subject_name}" (${droppedSubjectData.subject_code}) is already assigned to Year ${year}, Semester ${semester}.`,
+                icon: 'warning',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#F59E0B',
+                showClass: {
+                    popup: 'animate__animated animate__headShake'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                }
+            });
         }
     };
         
@@ -1200,19 +1251,35 @@ const updateAllTotals = () => {
                 
                 // Use SweetAlert for success
                 Swal.fire({
-                    title: 'Success!',
-                    text: 'Subject has been successfully removed from the curriculum.',
+                    title: 'Subject Removed Successfully!',
+                    text: `"${subjectData.subject_name}" (${subjectData.subject_code}) has been removed from Year ${year}, Semester ${semester} and added to Subject History.`,
                     icon: 'success',
-                    confirmButtonText: 'OK'
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#10B981',
+                    timer: 5000,
+                    timerProgressBar: true,
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
                 });
 
             } catch (error) {
                 console.error('Error removing subject:', error);
                 Swal.fire({
-                    title: 'Error!',
-                    text: 'Failed to remove subject: ' + error.message,
+                    title: 'Failed to Remove Subject!',
+                    text: 'An error occurred while trying to remove the subject: ' + error.message,
                     icon: 'error',
-                    confirmButtonText: 'OK'
+                    confirmButtonText: 'Try Again',
+                    confirmButtonColor: '#EF4444',
+                    showClass: {
+                        popup: 'animate__animated animate__shakeX'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
                 });
             } finally {
                 hideRemoveConfirmationModal();
@@ -1256,7 +1323,13 @@ const updateAllTotals = () => {
 
         document.getElementById('saveCurriculumButton').addEventListener('click', () => {
             if (!curriculumSelector.value) {
-                alert('Please select a curriculum to save.');
+                Swal.fire({
+                    title: 'No Curriculum Selected!',
+                    text: 'Please select a curriculum from the dropdown before saving.',
+                    icon: 'warning',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#F59E0B'
+                });
                 return;
             }
             document.getElementById('saveMappingModal').classList.remove('hidden');
@@ -1269,7 +1342,13 @@ const updateAllTotals = () => {
         const saveCurriculumData = async () => {
             const curriculumId = curriculumSelector.value;
             if (!curriculumId) {
-                alert('Please select a curriculum first.');
+                Swal.fire({
+                    title: 'No Curriculum Selected!',
+                    text: 'Please select a curriculum from the dropdown first.',
+                    icon: 'warning',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#F59E0B'
+                });
                 return null; 
             }
 
@@ -1307,10 +1386,17 @@ const updateAllTotals = () => {
             } catch (error) {
                 console.error('Error during save:', error);
                 Swal.fire({
-                    title: 'Error!',
-                    text: 'An error occurred while saving: ' + error.message,
+                    title: 'Save Failed!',
+                    text: 'An error occurred while saving the curriculum mapping: ' + error.message,
                     icon: 'error',
-                    confirmButtonText: 'OK'
+                    confirmButtonText: 'Try Again',
+                    confirmButtonColor: '#EF4444',
+                    showClass: {
+                        popup: 'animate__animated animate__shakeX'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
                 });
                 return null;
             }
@@ -1326,11 +1412,22 @@ const updateAllTotals = () => {
                 
                 // Use SweetAlert for success
                 Swal.fire({
-                    title: 'Success!',
-                    text: 'Curriculum mapping has been saved successfully!',
+                    title: 'Curriculum Saved Successfully!',
+                    text: 'All subject mappings have been saved to the database. You can now proceed to set up prerequisites.',
                     icon: 'success',
-                    confirmButtonText: 'OK'
+                    confirmButtonText: 'Continue',
+                    confirmButtonColor: '#10B981',
+                    timer: 6000,
+                    timerProgressBar: true,
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
                 }).then(() => {
+                    // Exit edit mode after successful save
+                    toggleEditMode(false);
                     document.getElementById('proceedToPrerequisitesModal').classList.remove('hidden');
                 });
             } else {
@@ -1579,10 +1676,17 @@ function renderCurriculumOverview(yearLevel) {
                 .catch(error => {
                     console.error('Error fetching curriculum data:', error);
                     Swal.fire({
-                        title: 'Loading Error!',
-                        text: 'Could not load curriculum data. Please try again.',
+                        title: 'Failed to Load Curriculum!',
+                        text: 'Could not load curriculum data from the server. Please check your connection and try again.',
                         icon: 'error',
-                        confirmButtonText: 'OK'
+                        confirmButtonText: 'Retry',
+                        confirmButtonColor: '#EF4444',
+                        showClass: {
+                            popup: 'animate__animated animate__shakeX'
+                        },
+                        hideClass: {
+                            popup: 'animate__animated animate__fadeOutUp'
+                        }
                     });
                     availableSubjectsContainer.innerHTML = '<p class="text-red-500 text-center mt-4">Could not load subjects.</p>';
                 });
@@ -1620,7 +1724,23 @@ function renderCurriculumOverview(yearLevel) {
             updateUnitTotals();
             
             reassignModal.classList.add('hidden');
-            document.getElementById('reassignSuccessModal').classList.remove('hidden');
+            
+            // Use SweetAlert for reassign success
+            Swal.fire({
+                title: 'Subject Reassigned Successfully!',
+                text: `"${droppedSubjectData.subject_name}" (${droppedSubjectData.subject_code}) has been successfully moved to the new semester.`,
+                icon: 'success',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#10B981',
+                timer: 4000,
+                timerProgressBar: true,
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                }
+            });
 
             itemToReassign = null;
             reassignTargetContainer = null;

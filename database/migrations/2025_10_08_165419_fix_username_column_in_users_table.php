@@ -12,7 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            // Add username column if it doesn't exist, or modify it if it does
+            if (!Schema::hasColumn('users', 'username')) {
+                $table->string('username')->unique()->nullable()->after('email');
+            } else {
+                // If username column exists but needs to be fixed (make it unique and nullable)
+                $table->string('username')->unique()->nullable()->change();
+            }
         });
     }
 
@@ -22,7 +28,11 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            // Drop the username column if it was added by this migration
+            if (Schema::hasColumn('users', 'username')) {
+                $table->dropUnique(['username']);
+                $table->dropColumn('username');
+            }
         });
     }
 };

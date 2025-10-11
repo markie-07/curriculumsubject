@@ -11,18 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('curriculum_histories', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('curriculum_id')->constrained('curriculums')->onDelete('cascade');
-            $table->integer('version_number');
-            $table->json('snapshot_data'); // Store the complete curriculum state
-            $table->string('change_description')->nullable();
-            $table->foreignId('changed_by')->nullable()->constrained('users')->onDelete('set null');
-            $table->timestamps();
-            
-            $table->index(['curriculum_id', 'version_number']);
-            $table->index('created_at');
-        });
+        if (!Schema::hasTable('curriculum_histories')) {
+            Schema::create('curriculum_histories', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('curriculum_id')->constrained('curriculums')->onDelete('cascade');
+                $table->integer('version_number');
+                $table->json('snapshot_data'); // Store the complete curriculum state
+                $table->string('change_description')->nullable();
+                $table->foreignId('changed_by')->nullable()->constrained('users')->onDelete('set null');
+                $table->timestamps();
+                
+                $table->index(['curriculum_id', 'version_number']);
+                $table->index('created_at');
+            });
+        }
     }
 
     /**

@@ -8,7 +8,8 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('subject_histories', function (Blueprint $table) {
+        if (!Schema::hasTable('subject_histories')) {
+            Schema::create('subject_histories', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('curriculum_id');
             $table->unsignedBigInteger('subject_id');
@@ -22,7 +23,8 @@ return new class extends Migration
 
             $table->foreign('curriculum_id')->references('id')->on('curriculums')->onDelete('cascade');
             $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade');
-        });
+            });
+        }
     }
 
     public function down(): void

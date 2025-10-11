@@ -11,9 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('subjects', function (Blueprint $table) {
-            $table->json('pdfs')->nullable()->after('lessons');
-        });
+        if (Schema::hasTable('subjects')) {
+            Schema::table('subjects', function (Blueprint $table) {
+                if (!Schema::hasColumn('subjects', 'pdfs')) {
+                    $table->json('pdfs')->nullable()->after('lessons');
+                }
+            });
+        }
     }
 
     /**
@@ -21,8 +25,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('subjects', function (Blueprint $table) {
-            $table->dropColumn('pdfs');
-        });
+        if (Schema::hasTable('subjects') && Schema::hasColumn('subjects', 'pdfs')) {
+            Schema::table('subjects', function (Blueprint $table) {
+                $table->dropColumn('pdfs');
+            });
+        }
     }
 };

@@ -101,6 +101,27 @@ Route::middleware(['auth', 'prevent.back'])->group(function () {
     Route::get('/test-notifications', function () {
         return view('test_notifications');
     })->name('test.notifications');
+    
+    // Debug notifications route
+    Route::get('/debug-notifications', function () {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['error' => 'Not authenticated']);
+        }
+        
+        $notifications = $user->notifications()->orderBy('created_at', 'desc')->limit(10)->get();
+        $unreadCount = $user->notifications()->unread()->count();
+        
+        return response()->json([
+            'user_id' => $user->id,
+            'user_email' => $user->email,
+            'user_role' => $user->role,
+            'notifications_count' => $user->notifications()->count(),
+            'unread_count' => $unreadCount,
+            'notifications' => $notifications,
+            'all_notifications_count' => \App\Models\Notification::count()
+        ]);
+    })->name('debug.notifications');
 
     // Curriculum Export Tool - Accessible to all authenticated users (employees, admin, super admin)
     Route::get('/curriculum_export_tool', [CurriculumExportToolController::class, 'index'])->name('curriculum_export_tool');

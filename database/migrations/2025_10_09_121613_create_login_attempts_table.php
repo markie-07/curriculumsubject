@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('login_attempts', function (Blueprint $table) {
+        if (!Schema::hasTable('login_attempts')) {
+            Schema::create('login_attempts', function (Blueprint $table) {
             $table->id();
             $table->string('email')->index();
             $table->string('ip_address')->index();
@@ -24,7 +25,8 @@ return new class extends Migration
             
             // Composite index for efficient lookups
             $table->index(['email', 'ip_address']);
-        });
+            });
+        }
     }
 
     /**

@@ -55,6 +55,17 @@ class SubjectHistoryController extends Controller
                     throw new \Exception("Original Curriculum or Subject no longer exists.");
                 }
 
+                // Check if subject is already attached to prevent duplicates
+                $exists = $curriculum->subjects()
+                    ->wherePivot('year', $historyRecord->year)
+                    ->wherePivot('semester', $historyRecord->semester)
+                    ->where('subjects.id', $subject->id)
+                    ->exists();
+
+                if ($exists) {
+                    throw new \Exception('Subject is already attached to this curriculum in the specified year and semester.');
+                }
+
                 // Re-attach the subject to the curriculum_subject pivot table
                 $curriculum->subjects()->attach($subject->id, [
                     'year'       => $historyRecord->year,

@@ -116,10 +116,17 @@ class NotificationManager {
         // Initialize CSRF token for AJAX requests
         this.csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
         
-        // Auto-check for notifications if user is authenticated
-        if (this.csrfToken) {
+        // Only auto-check for notifications if user is fully authenticated (not in OTP verification)
+        if (this.csrfToken && !this.isInOtpVerification()) {
             this.startPolling();
         }
+    }
+    
+    // Check if user is in OTP verification state
+    isInOtpVerification() {
+        // Check if we're on OTP verification page or if user has pending authentication
+        return window.location.pathname.includes('otp-verify') || 
+               document.querySelector('meta[name="pending-auth"]') !== null;
     }
     
     show(type, title, message, duration = null) {
@@ -217,7 +224,7 @@ class NotificationManager {
     
     // Check for new notifications from server
     checkNotifications() {
-        if (!this.csrfToken) return;
+        if (!this.csrfToken || this.isInOtpVerification()) return;
         
         fetch('/notifications/recent', {
             method: 'GET',
@@ -249,11 +256,11 @@ class NotificationManager {
         });
     }
     
-    // Start polling for notifications every 30 seconds
+    // Start polling for notifications every 60 seconds (reduced from 30s for better performance)
     startPolling() {
         setInterval(() => {
             this.checkNotifications();
-        }, 30000);
+        }, 60000);
     }
     
     // Show session flash messages as notifications

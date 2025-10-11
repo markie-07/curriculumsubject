@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('curriculums', function (Blueprint $table) {
-            $table->id();
-            $table->string('curriculum');
-            $table->string('program_code')->unique();
-            $table->string('academic_year');
-            $table->string('year_level'); // Can be 'Senior High' or 'College'
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('curriculums')) {
+            Schema::create('curriculums', function (Blueprint $table) {
+                $table->id();
+                $table->string('curriculum');
+                $table->string('program_code')->unique();
+                $table->string('academic_year');
+                $table->string('year_level'); // Can be 'Senior High' or 'College'
+                $table->timestamps();
+            });
+        }
     }
 
     /**

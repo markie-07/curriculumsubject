@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('grades', function (Blueprint $table) {
+        if (!Schema::hasTable('grades')) {
+            Schema::create('grades', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('subject_id')->unique();
 
@@ -23,7 +24,8 @@ return new class extends Migration
 
             // Defines the relationship between the 'grades' and 'subjects' tables
             $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade');
-        });
+            });
+        }
     }
 
     /**

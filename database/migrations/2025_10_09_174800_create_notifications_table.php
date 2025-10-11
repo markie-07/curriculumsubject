@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('notifications', function (Blueprint $table) {
+        if (!Schema::hasTable('notifications')) {
+            Schema::create('notifications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('type'); // info, success, warning, error
@@ -23,7 +24,8 @@ return new class extends Migration
             
             $table->index(['user_id', 'read_at']);
             $table->index('created_at');
-        });
+            });
+        }
     }
 
     /**
