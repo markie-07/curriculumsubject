@@ -45,7 +45,10 @@
                             <div class="w-10 h-10 flex-shrink-0 bg-teal-100 text-teal-600 rounded-lg flex items-center justify-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M12 21a9 9 0 110-18 9 9 0 010 18z" /></svg>
                             </div>
-                            <h2 class="text-xl font-semibold text-gray-700">Semestral Grade Components</h2>
+                            <div>
+                                <h2 class="text-xl font-semibold text-gray-700">Semestral Grade Components</h2>
+                                <p class="text-sm text-amber-600 font-medium mt-1 subject-reminder-text">⚠️ Please select a subject first before adding grade components</p>
+                            </div>
                         </div>
                         <button id="add-grade-component-btn" type="button" class="flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-800 transition-colors py-2 px-3 rounded-lg hover:bg-indigo-50">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -221,6 +224,18 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     addGradeComponentBtn.addEventListener('click', () => {
+        // Check if a subject is selected first
+        if (!subjectSelect.value) {
+            Swal.fire({
+                title: 'Select a Subject First',
+                text: 'Please select a subject before adding grade components.',
+                icon: 'warning',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#4f46e5'
+            });
+            return;
+        }
+        
         accordionContainer.appendChild(createGradeComponent());
         calculateAndUpdateTotals();
     });
@@ -579,7 +594,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     accordionContainer.addEventListener('input', calculateAndUpdateTotals);
-    subjectSelect.addEventListener('change', (e) => fetchGradeSetupForSubject(e.target.value));
+    subjectSelect.addEventListener('change', (e) => {
+        fetchGradeSetupForSubject(e.target.value);
+        updateSubjectSelectionUI(e.target.value);
+    });
+    
+    const updateSubjectSelectionUI = (subjectId) => {
+        const reminderText = document.querySelector('.subject-reminder-text');
+        const addButton = document.getElementById('add-grade-component-btn');
+        
+        if (subjectId) {
+            // Subject is selected
+            if (reminderText) {
+                reminderText.textContent = '✓ Subject selected. You can now add grade components.';
+                reminderText.className = 'text-sm text-green-600 font-medium mt-1 subject-reminder-text';
+            }
+            addButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            addButton.classList.add('hover:bg-indigo-50');
+        } else {
+            // No subject selected
+            if (reminderText) {
+                reminderText.textContent = '⚠️ Please select a subject first before adding grade components';
+                reminderText.className = 'text-sm text-amber-600 font-medium mt-1 subject-reminder-text';
+            }
+            addButton.classList.add('opacity-50', 'cursor-not-allowed');
+            addButton.classList.remove('hover:bg-indigo-50');
+        }
+    };
     
     addGradeBtn.addEventListener('click', () => {
         Swal.fire({
@@ -704,6 +745,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchAndPopulateSubjects();
     loadGradeDataToDOM(defaultStructure);
     toggleGradeComponents(true);
+    updateSubjectSelectionUI(null); // Initialize UI state
 });
 </script>
 

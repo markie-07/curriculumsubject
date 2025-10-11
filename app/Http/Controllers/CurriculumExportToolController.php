@@ -16,7 +16,7 @@ class CurriculumExportToolController extends Controller
     public function index()
     {
         $curriculums = Curriculum::orderBy('curriculum')->get();
-        $exportHistories = ExportHistory::with('curriculum')->latest()->get();
+        $exportHistories = ExportHistory::with(['curriculum', 'user'])->latest()->get();
 
         // Log page view activity for employees only
         if (auth()->user() && auth()->user()->isEmployee()) {
@@ -37,6 +37,14 @@ class CurriculumExportToolController extends Controller
             'file_name' => 'required|string|max:255',
             'format' => 'required|string|max:255',
         ]);
+
+        // Add user information to the export history
+        $user = auth()->user();
+        if ($user) {
+            $validated['user_id'] = $user->id;
+            $validated['exported_by_name'] = $user->name ?? $user->username;
+            $validated['exported_by_email'] = $user->email;
+        }
 
         $exportHistory = ExportHistory::create($validated);
 
@@ -62,7 +70,7 @@ class CurriculumExportToolController extends Controller
         // Return the new history item with its related curriculum info
         if (request()->wantsJson()) {
             return response()->json([
-                'data' => $exportHistory->load('curriculum'),
+                'data' => $exportHistory->load(['curriculum', 'user']),
                 'notification' => [
                     'type' => 'success',
                     'title' => 'Export Successful!',
@@ -71,7 +79,7 @@ class CurriculumExportToolController extends Controller
             ]);
         }
         
-        return response()->json($exportHistory->load('curriculum'));
+        return response()->json($exportHistory->load(['curriculum', 'user']));
     }
 
     /**

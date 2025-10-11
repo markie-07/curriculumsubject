@@ -131,6 +131,14 @@
                             <div>
                                 <h3 class="font-semibold text-gray-800">{{ $history->curriculum->curriculum ?? 'Unknown' }}</h3>
                                 <p class="text-sm text-gray-500">{{ $history->format }} • {{ $history->created_at->format('M d, Y, g:i A') }}</p>
+                                @if($history->exported_by_name || $history->exported_by_email)
+                                    <p class="text-xs text-gray-400 mt-1">
+                                        Exported by: {{ $history->exported_by_name ?? $history->exported_by_email }}
+                                        @if($history->exported_by_name && $history->exported_by_email)
+                                            ({{ $history->exported_by_email }})
+                                        @endif
+                                    </p>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -545,6 +553,15 @@ document.addEventListener('DOMContentLoaded', function () {
         const item = document.createElement('div');
         item.className = 'history-item flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-lg hover:shadow-md transition-shadow';
         const formattedDate = new Date(historyItem.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit'});
+        
+        // Build exported by text
+        let exportedByText = '';
+        if (historyItem.exported_by_name || historyItem.exported_by_email) {
+            const name = historyItem.exported_by_name || historyItem.exported_by_email;
+            const email = historyItem.exported_by_name && historyItem.exported_by_email ? ` (${historyItem.exported_by_email})` : '';
+            exportedByText = `<p class="text-xs text-gray-400 mt-1">Exported by: ${name}${email}</p>`;
+        }
+        
         item.innerHTML = `
             <div class="flex items-center gap-4">
                 <div class="bg-gray-200 p-2 rounded-full">
@@ -555,6 +572,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div>
                     <h3 class="font-semibold text-gray-800">${historyItem.curriculum.curriculum}</h3>
                     <p class="text-sm text-gray-500">${historyItem.format} • ${formattedDate}</p>
+                    ${exportedByText}
                 </div>
             </div>
         `;

@@ -16,6 +16,9 @@ class ExportHistory extends Model
      */
     protected $fillable = [
         'curriculum_id',
+        'user_id',
+        'exported_by_name',
+        'exported_by_email',
         'file_name',
         'format',
     ];
@@ -26,5 +29,13 @@ class ExportHistory extends Model
     public function curriculum()
     {
         return $this->belongsTo(Curriculum::class);
+    }
+
+    /**
+     * Get the user who exported the curriculum.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
