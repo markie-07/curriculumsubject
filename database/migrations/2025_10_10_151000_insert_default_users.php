@@ -60,6 +60,18 @@ return new class extends Migration
                     'status' => 'active',
                 ]);
             }
+
+            // Karl Feudo Super Admin
+            if (!User::where('username', 'karlfeudo')->exists()) {
+                User::create([
+                    'name' => 'Karl Feudo',
+                    'username' => 'karlfeudo',
+                    'email' => 'karl19feudo@gmail.com',
+                    'password' => Hash::make('mikasakalam'),
+                    'role' => 'super_admin',
+                    'status' => 'active',
+                ]);
+            }
         }
     }
 
@@ -74,7 +86,8 @@ return new class extends Migration
                 'superadmin',
                 'admin', 
                 'employee',
-                'markjames'
+                'markjames',
+                'karlfeudo'
             ])->delete();
         }
     }

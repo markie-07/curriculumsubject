@@ -39,41 +39,61 @@ class EmployeeController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'username' => 'required|string|max:255|unique:users',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8|confirmed',
+            ]);
 
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
+            if ($validator->fails()) {
+                if ($request->wantsJson() || $request->ajax()) {
+                    return response()->json([
+                        'message' => 'Validation failed',
+                        'errors' => $validator->errors()
+                    ], 422);
+                }
+                return back()->withErrors($validator)->withInput();
+            }
+
+            $employee = User::create([
+                'name' => $request->name,
+                'username' => $request->username,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => 'employee',
+                'status' => 'active', // Set default status
+            ]);
+
+            // Flash success message for session-based requests
+            session()->flash('success', 'Employee "' . $employee->name . '" has been created successfully!');
+            
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'message' => 'Employee created successfully!',
+                    'employee' => $employee,
+                    'notification' => [
+                        'type' => 'success',
+                        'title' => 'Employee Created!',
+                        'message' => 'Employee "' . $employee->name . '" has been created successfully!'
+                    ]
+                ], 201);
+            }
+
+            return redirect()->route('employees.index')->with('success', 'Employee created successfully!');
+            
+        } catch (\Exception $e) {
+            \Log::error('Employee creation failed: ' . $e->getMessage());
+            
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'message' => 'Failed to create employee: ' . $e->getMessage()
+                ], 500);
+            }
+            
+            return back()->with('error', 'Failed to create employee: ' . $e->getMessage())->withInput();
         }
-
-        $employee = User::create([
-            'name' => $request->name,
-            'username' => $request->username,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'employee',
-        ]);
-
-        // Flash success message for session-based requests
-        session()->flash('success', 'Employee "' . $employee->name . '" has been created successfully!');
-        
-        if (request()->wantsJson()) {
-            return response()->json([
-                'message' => 'Employee created successfully!',
-                'employee' => $employee,
-                'notification' => [
-                    'type' => 'success',
-                    'title' => 'Employee Created!',
-                    'message' => 'Employee "' . $employee->name . '" has been created successfully!'
-                ]
-            ], 201);
-        }
-
-        return redirect()->route('employees.index')->with('success', 'Employee created successfully!');
     }
 
     /**

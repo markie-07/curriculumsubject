@@ -376,6 +376,56 @@
     </div>
 </div>
 
+{{-- Save Course Confirmation Modal --}}
+<div id="saveCourseConfirmModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
+            <div class="w-12 h-12 rounded-full bg-blue-100 p-2 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800">Save Course?</h3>
+            <p class="text-sm text-gray-500 mt-2">Do you want to save this course?</p>
+            <div class="mt-6 flex justify-center gap-4">
+                <button id="cancelSaveCourse" class="w-full px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">No</button>
+                <button id="confirmSaveCourse" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Course Success Modal --}}
+<div id="courseSuccessModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
+            <div class="w-12 h-12 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <h3 id="courseSuccessTitle" class="text-lg font-semibold text-gray-800">Course Created Successfully!</h3>
+            <p id="courseSuccessMessage" class="text-sm text-gray-500 mt-2">Your new subject has been created successfully!</p>
+            <div class="mt-6 flex justify-center gap-4">
+                <button id="skipGradeSetup" class="w-full px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Skip</button>
+                <button id="proceedToGradeSetup" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">Set Up Grades</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Course Update Success Modal --}}
+<div id="courseUpdateSuccessModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
+            <div class="w-12 h-12 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800">Course Updated Successfully!</h3>
+            <p class="text-sm text-gray-500 mt-2">Your subject has been updated successfully!</p>
+            <div class="mt-6">
+                <button id="closeCourseUpdateModal" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 function toggleAccordion(button) {
     const content = button.nextElementSibling;
@@ -537,6 +587,13 @@ document.addEventListener('DOMContentLoaded', function () {
             courseForm.reportValidity();
             return;
         }
+        
+        // Show confirmation modal first
+        document.getElementById('saveCourseConfirmModal').classList.remove('hidden');
+    });
+
+    // Handle the actual save logic when user confirms
+    const handleCourseSave = async () => {
 
         const payload = {
             course_title: document.getElementById('course_title').value,
@@ -583,22 +640,53 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const action = subjectId ? 'updated' : 'created';
             if (action === 'updated') {
-                showSuccess('Subject Updated', 'Subject updated successfully!');
-                setTimeout(() => {
-                    window.location.href = `/subject_mapping`;
-                }, 1500);
+                // Show update success modal
+                document.getElementById('courseUpdateSuccessModal').classList.remove('hidden');
             } else {
-                showSuccess('Subject Created', 'Subject created successfully!');
-                if (confirm("Do you want to set up the grade components now?")) {
-                    const newSubjectName = encodeURIComponent(`${result.subject.subject_name} (${result.subject.subject_code})`);
-                    window.location.href = `/grade-setup?new_subject_id=${result.subject.id}&new_subject_name=${newSubjectName}`;
-                } else {
-                    window.location.href = `/subject_mapping`;
-                }
+                // Show create success modal with grade setup option
+                document.getElementById('courseSuccessModal').classList.remove('hidden');
+                
+                // Store subject data for grade setup
+                window.newSubjectData = {
+                    id: result.subject.id,
+                    name: result.subject.subject_name,
+                    code: result.subject.subject_code
+                };
             }
         } catch (error) {
             showError('Save Error', `Error saving course: ${error.message}`);
         }
+    };
+
+    // --- MODAL EVENT HANDLERS ---
+    // Save Course Confirmation Modal
+    document.getElementById('cancelSaveCourse').addEventListener('click', () => {
+        document.getElementById('saveCourseConfirmModal').classList.add('hidden');
+    });
+    
+    document.getElementById('confirmSaveCourse').addEventListener('click', () => {
+        document.getElementById('saveCourseConfirmModal').classList.add('hidden');
+        handleCourseSave();
+    });
+    
+    // Course Success Modal (Create)
+    document.getElementById('skipGradeSetup').addEventListener('click', () => {
+        document.getElementById('courseSuccessModal').classList.add('hidden');
+        window.location.href = `/subject_mapping`;
+    });
+    
+    document.getElementById('proceedToGradeSetup').addEventListener('click', () => {
+        document.getElementById('courseSuccessModal').classList.add('hidden');
+        if (window.newSubjectData) {
+            const newSubjectName = encodeURIComponent(`${window.newSubjectData.name} (${window.newSubjectData.code})`);
+            window.location.href = `/grade-setup?new_subject_id=${window.newSubjectData.id}&new_subject_name=${newSubjectName}`;
+        }
+    });
+    
+    // Course Update Success Modal
+    document.getElementById('closeCourseUpdateModal').addEventListener('click', () => {
+        document.getElementById('courseUpdateSuccessModal').classList.add('hidden');
+        window.location.href = `/subject_mapping`;
     });
 
     // --- MAPPING GRID ROW LOGIC ---

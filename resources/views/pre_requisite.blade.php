@@ -156,6 +156,39 @@
     </div>
 </div>
 
+{{-- Compliance Validator Modal --}}
+<div id="complianceValidatorModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
+            <div class="w-12 h-12 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800">Proceed to Compliance Validator?</h3>
+            <p class="text-sm text-gray-500 mt-2">Prerequisites saved successfully! Do you want to go to the compliance validator to check if your curriculum meets the compliance requirements?</p>
+            <div class="mt-6 flex justify-center gap-4">
+                <button id="cancelComplianceValidator" class="w-full px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">No</button>
+                <button id="confirmComplianceValidator" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Prerequisites Success Modal --}}
+<div id="prerequisitesSuccessModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
+            <div class="w-12 h-12 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800">Added Successfully!</h3>
+            <p class="text-sm text-gray-500 mt-2">Your prerequisites have been saved successfully!</p>
+            <div class="mt-6">
+                <button id="closePrerequisitesSuccessModal" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     // --- State Management ---
@@ -229,6 +262,21 @@ document.addEventListener('DOMContentLoaded', () => {
         hideConfirmationModal();
     });
     closeSuccessModalButton.addEventListener('click', hideSuccessModal);
+    
+    // Compliance Validator Modal Event Listeners
+    document.getElementById('cancelComplianceValidator').addEventListener('click', () => {
+        document.getElementById('complianceValidatorModal').classList.add('hidden');
+        document.getElementById('prerequisitesSuccessModal').classList.remove('hidden');
+    });
+    
+    document.getElementById('confirmComplianceValidator').addEventListener('click', () => {
+        window.location.href = '{{ route('compliance.validator') }}';
+    });
+    
+    // Prerequisites Success Modal Event Listener
+    document.getElementById('closePrerequisitesSuccessModal').addEventListener('click', () => {
+        document.getElementById('prerequisitesSuccessModal').classList.add('hidden');
+    });
     
     // --- Main Curriculum Searchable Dropdown Elements ---
     const mainCustomSelector = document.getElementById('custom-curriculum-selector');
@@ -601,15 +649,8 @@ document.addEventListener('DOMContentLoaded', () => {
             icon: `<svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
             confirmButtonClass: 'bg-blue-600 hover:bg-blue-700',
             onConfirm: () => {
-                showConfirmationModal({
-                    title: 'Proceed to Compliance Validator?',
-                    message: 'Prerequisites saved successfully! Do you want to go to the compliance validator to check if your curriculum meets the compliance requirements?',
-                    icon: `<svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>`,
-                    confirmButtonClass: 'bg-green-600 hover:bg-green-700',
-                    onConfirm: () => {
-                        window.location.href = '{{ route('compliance.validator') }}';
-                    }
-                });
+                // Show traditional compliance validator modal
+                document.getElementById('complianceValidatorModal').classList.remove('hidden');
             }
         });
     });

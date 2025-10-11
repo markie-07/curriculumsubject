@@ -320,6 +320,22 @@
         </div>
     </div>
 
+    {{-- Save Success Modal --}}
+    <div id="saveSuccessModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
+                <div class="w-12 h-12 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800">Successfully Added!</h3>
+                <p class="text-sm text-gray-500 mt-2">Your curriculum mapping has been saved successfully!</p>
+                <div class="mt-6">
+                    <button id="closeSaveSuccessModal" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- Mapping Success Modal --}}
     <div id="mappingSuccessModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
         <div class="flex items-center justify-center min-h-screen p-4">
@@ -1332,11 +1348,32 @@ const updateAllTotals = () => {
                 });
                 return;
             }
+            
+            // Show traditional modal for save confirmation
             document.getElementById('saveMappingModal').classList.remove('hidden');
         });
 
+        // Add back modal event handlers
         document.getElementById('cancelSaveMapping').addEventListener('click', () => {
             document.getElementById('saveMappingModal').classList.add('hidden');
+        });
+
+        document.getElementById('confirmSaveMapping').addEventListener('click', async () => {
+            document.getElementById('saveMappingModal').classList.add('hidden');
+            
+            const saveResult = await saveCurriculumData();
+            
+            if (saveResult) {
+                console.log('Save successful:', saveResult.message);
+                
+                // Exit edit mode after successful save
+                toggleEditMode(false);
+                
+                // Show traditional modal for prerequisites setup
+                document.getElementById('proceedToPrerequisitesModal').classList.remove('hidden');
+            } else {
+                console.log('Save failed.');
+            }
         });
 
         const saveCurriculumData = async () => {
@@ -1402,47 +1439,19 @@ const updateAllTotals = () => {
             }
         };
 
-        document.getElementById('confirmSaveMapping').addEventListener('click', async () => {
-            document.getElementById('saveMappingModal').classList.add('hidden');
-            
-            const saveResult = await saveCurriculumData(); 
-
-            if (saveResult) { 
-                console.log('Save successful:', saveResult.message);
-                
-                // Use SweetAlert for success
-                Swal.fire({
-                    title: 'Curriculum Saved Successfully!',
-                    text: 'All subject mappings have been saved to the database. You can now proceed to set up prerequisites.',
-                    icon: 'success',
-                    confirmButtonText: 'Continue',
-                    confirmButtonColor: '#10B981',
-                    timer: 6000,
-                    timerProgressBar: true,
-                    showClass: {
-                        popup: 'animate__animated animate__fadeInDown'
-                    },
-                    hideClass: {
-                        popup: 'animate__animated animate__fadeOutUp'
-                    }
-                }).then(() => {
-                    // Exit edit mode after successful save
-                    toggleEditMode(false);
-                    document.getElementById('proceedToPrerequisitesModal').classList.remove('hidden');
-                });
-            } else {
-                console.log('Save failed. The prerequisites modal will not be shown.');
-            }
-        });
 
         document.getElementById('declineProceedToPrerequisites').addEventListener('click', () => {
             document.getElementById('proceedToPrerequisitesModal').classList.add('hidden');
-            document.getElementById('mappingSuccessModal').classList.remove('hidden');
+            document.getElementById('saveSuccessModal').classList.remove('hidden');
         });
 
         document.getElementById('confirmProceedToPrerequisites').addEventListener('click', () => {
             const curriculumId = curriculumSelector.value;
             window.location.href = `/pre_requisite?curriculumId=${curriculumId}`;
+        });
+
+        document.getElementById('closeSaveSuccessModal').addEventListener('click', () => {
+            document.getElementById('saveSuccessModal').classList.add('hidden');
         });
 
         document.getElementById('closeMappingSuccessModal').addEventListener('click', () => {
@@ -1640,6 +1649,25 @@ function renderCurriculumOverview(yearLevel) {
                 });
         }
 
+        // Load all subjects initially
+        function loadAllSubjects() {
+            fetch('/api/subjects')
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    if (!data || !Array.isArray(data)) throw new Error('Invalid subjects data from server.');
+                    
+                    // Show all subjects as available (none are mapped yet)
+                    renderAvailableSubjects(data, [], []);
+                })
+                .catch(error => {
+                    console.error('Error loading subjects:', error);
+                    availableSubjectsContainer.innerHTML = '<p class="text-red-500 text-center mt-4">Error loading subjects. Please refresh the page.</p>';
+                });
+        }
+
         function fetchCurriculumData(id) {
             const selectedOption = curriculumSelector.querySelector(`option[value="${id}"]`);
             if (!selectedOption || !selectedOption.dataset.yearLevel) {
@@ -1765,12 +1793,16 @@ function renderCurriculumOverview(yearLevel) {
                 fetchCurriculumData(curriculumId);
             } else {
                 curriculumOverview.innerHTML = '<p class="text-gray-500 text-center mt-4">Select a curriculum from the dropdown to start mapping subjects.</p>';
-                availableSubjectsContainer.innerHTML = '<p class="text-gray-500 text-center mt-4">Select a curriculum to view subjects.</p>';
+                // Keep showing all subjects even when no curriculum is selected
+                loadAllSubjects();
                 updateUnitTotals();
                 document.getElementById('editCurriculumButton').classList.add('hidden');
                 toggleEditMode(false);
             }
         });
+        
+        // Load all subjects initially when page loads
+        loadAllSubjects();
         fetchCurriculums();
     });
 </script>

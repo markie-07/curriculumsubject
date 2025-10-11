@@ -108,9 +108,93 @@
     </div>
 </main>
 
+{{-- Save Grade Scheme Confirmation Modal --}}
+<div id="saveGradeSchemeModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
+            <div class="w-12 h-12 rounded-full bg-blue-100 p-2 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800">Confirm Grade Scheme</h3>
+            <p class="text-sm text-gray-500 mt-2">Are you sure you want to save this grade scheme for the selected subject?</p>
+            <div class="mt-6 flex justify-center gap-4">
+                <button id="cancelSaveGradeScheme" class="w-full px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">No</button>
+                <button id="confirmSaveGradeScheme" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Grade Scheme Success Modal --}}
+<div id="gradeSchemeSuccessModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
+            <div class="w-12 h-12 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800">Successfully Added!</h3>
+            <p class="text-sm text-gray-500 mt-2">Your grade scheme has been saved successfully!</p>
+            <div class="mt-6">
+                <button id="closeGradeSchemeSuccess" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Update Grade Scheme Confirmation Modal --}}
+<div id="updateGradeSchemeModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
+            <div class="w-12 h-12 rounded-full bg-orange-100 p-2 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800">Confirm Grade Scheme Update</h3>
+            <p class="text-sm text-gray-500 mt-2">Are you sure you want to update this grade scheme for the selected subject?</p>
+            <div class="mt-6 flex justify-center gap-4">
+                <button id="cancelUpdateGradeScheme" class="w-full px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">No</button>
+                <button id="confirmUpdateGradeScheme" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-orange-600 rounded-lg hover:bg-orange-700">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Grade Scheme Update Success Modal --}}
+<div id="gradeSchemeUpdateSuccessModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
+            <div class="w-12 h-12 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800">Successfully Updated!</h3>
+            <p class="text-sm text-gray-500 mt-2">Your grade scheme has been updated successfully!</p>
+            <div class="mt-6">
+                <button id="closeGradeSchemeUpdateSuccess" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Edit Grade Scheme Confirmation Modal --}}
+<div id="editGradeSchemeModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
+            <div class="w-12 h-12 rounded-full bg-yellow-100 p-2 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800">Edit Grade Scheme</h3>
+            <p class="text-sm text-gray-500 mt-2">Are you sure you want to edit this grade scheme?</p>
+            <div class="mt-6 flex justify-center gap-4">
+                <button id="cancelEditGradeScheme" class="w-full px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">No</button>
+                <button id="confirmEditGradeScheme" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Grade Details Modal --}}
-<div id="grade-modal" class="fixed inset-0 bg-gray-900 bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden transition-opacity duration-300 opacity-0">
-    <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl transform transition-all duration-300 scale-95 opacity-0" id="grade-modal-panel">
+<div id="grade-modal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl" id="grade-modal-panel">
         {{-- Modal Header --}}
         <div class="flex justify-between items-center p-5 border-b border-gray-200">
             <div class="flex items-center gap-3">
@@ -136,6 +220,7 @@
             <button id="edit-grade-setup-btn" class="text-white bg-blue-600 hover:bg-blue-700 font-semibold py-2 px-5 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                 Edit
             </button>
+        </div>
         </div>
     </div>
 </div>
@@ -398,20 +483,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const showModal = (modalId) => {
         const modal = document.getElementById(modalId);
-        const panel = document.getElementById(`${modalId}-panel`);
         modal.classList.remove('hidden');
-        setTimeout(() => {
-            modal.classList.remove('opacity-0');
-            panel.classList.remove('opacity-0', 'scale-95');
-        }, 10);
     };
 
     const hideModal = (modalId) => {
         const modal = document.getElementById(modalId);
-        const panel = document.getElementById(`${modalId}-panel`);
-        modal.classList.add('opacity-0');
-        panel.classList.add('opacity-0', 'scale-95');
-        setTimeout(() => modal.classList.add('hidden'), 300);
+        modal.classList.add('hidden');
     };
 
     const fetchAPI = async (url, options = {}) => {
@@ -623,67 +700,110 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     addGradeBtn.addEventListener('click', () => {
-        Swal.fire({
-            title: 'Confirm Grade Scheme', text: 'Are you sure you want to save this for the selected subject?', icon: 'question', showCancelButton: true,
-            confirmButtonText: 'Yes, save it!', confirmButtonColor: '#4f46e5', cancelButtonColor: '#d33',
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                const payload = { subject_id: subjectSelect.value, components: getGradeDataFromDOM() };
-                try {
-                    console.log('Saving grade scheme with payload:', payload);
-                    const data = await fetchAPI('grades', { method: 'POST', body: JSON.stringify(payload) });
-                    console.log('Grade scheme saved successfully:', data);
-                    Swal.fire('Saved!', data.message, 'success');
-                    addSubjectToHistory(data.subject);
-                    subjectSelect.value = '';
-                    loadGradeDataToDOM(defaultStructure);
-                    toggleGradeComponents(true);
-                    addGradeBtn.disabled = true;
-                } catch(e) { 
-                    console.error('Failed to save grade scheme:', e);
-                    Swal.fire('Error!', 'Failed to save grade scheme: ' + e.message, 'error');
-                }
-            }
-        });
+        // Show confirmation modal
+        document.getElementById('saveGradeSchemeModal').classList.remove('hidden');
+    });
+
+    // Handle the actual save logic when user confirms
+    const handleGradeSchemeSave = async () => {
+        const payload = { subject_id: subjectSelect.value, components: getGradeDataFromDOM() };
+        try {
+            console.log('Saving grade scheme with payload:', payload);
+            const data = await fetchAPI('grades', { method: 'POST', body: JSON.stringify(payload) });
+            console.log('Grade scheme saved successfully:', data);
+            
+            // Show success modal instead of SweetAlert
+            document.getElementById('gradeSchemeSuccessModal').classList.remove('hidden');
+            
+            addSubjectToHistory(data.subject);
+            subjectSelect.value = '';
+            loadGradeDataToDOM(defaultStructure);
+            toggleGradeComponents(true);
+            addGradeBtn.disabled = true;
+        } catch(e) { 
+            console.error('Failed to save grade scheme:', e);
+            Swal.fire('Error!', 'Failed to save grade scheme: ' + e.message, 'error');
+        }
+    };
+
+    // Modal event handlers
+    document.getElementById('cancelSaveGradeScheme').addEventListener('click', () => {
+        document.getElementById('saveGradeSchemeModal').classList.add('hidden');
+    });
+    
+    document.getElementById('confirmSaveGradeScheme').addEventListener('click', () => {
+        document.getElementById('saveGradeSchemeModal').classList.add('hidden');
+        handleGradeSchemeSave();
+    });
+    
+    document.getElementById('closeGradeSchemeSuccess').addEventListener('click', () => {
+        document.getElementById('gradeSchemeSuccessModal').classList.add('hidden');
+    });
+    
+    // Update modal event handlers
+    document.getElementById('cancelUpdateGradeScheme').addEventListener('click', () => {
+        document.getElementById('updateGradeSchemeModal').classList.add('hidden');
+    });
+    
+    document.getElementById('confirmUpdateGradeScheme').addEventListener('click', () => {
+        document.getElementById('updateGradeSchemeModal').classList.add('hidden');
+        handleGradeSchemeUpdate();
+    });
+    
+    document.getElementById('closeGradeSchemeUpdateSuccess').addEventListener('click', () => {
+        document.getElementById('gradeSchemeUpdateSuccessModal').classList.add('hidden');
+    });
+    
+    // Edit modal event handlers
+    document.getElementById('cancelEditGradeScheme').addEventListener('click', () => {
+        document.getElementById('editGradeSchemeModal').classList.add('hidden');
+    });
+    
+    document.getElementById('confirmEditGradeScheme').addEventListener('click', () => {
+        document.getElementById('editGradeSchemeModal').classList.add('hidden');
+        handleGradeSchemeEdit();
     });
 
     editGradeSetupBtn.addEventListener('click', () => {
-        Swal.fire({
-            title: 'Are you sure?', text: "You are about to update the grade setup.", icon: 'warning', showCancelButton: true,
-            confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes, update it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                isEditMode = true;
-                toggleGradeComponents(false);
-                hideModal('grade-modal');
-                addGradeBtn.classList.add('hidden');
-                updateGradeSetupBtn.classList.remove('hidden');
-                calculateAndUpdateTotals();
-            }
-        });
+        // Close the grade details modal immediately
+        hideModal('grade-modal');
+        
+        // Then show edit confirmation modal
+        document.getElementById('editGradeSchemeModal').classList.remove('hidden');
     });
 
+    // Handle the actual edit logic when user confirms
+    const handleGradeSchemeEdit = () => {
+        isEditMode = true;
+        toggleGradeComponents(false);
+        addGradeBtn.classList.add('hidden');
+        updateGradeSetupBtn.classList.remove('hidden');
+        calculateAndUpdateTotals();
+    };
+
     updateGradeSetupBtn.addEventListener('click', () => {
-        Swal.fire({
-            title: 'Confirm Grade Scheme Update', text: 'Are you sure you want to update this for the selected subject?', icon: 'question',
-            showCancelButton: true, confirmButtonText: 'Yes, update it!', confirmButtonColor: '#4f46e5', cancelButtonColor: '#d33',
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                const payload = { subject_id: currentSubjectId, components: getGradeDataFromDOM() };
-                try {
-                    const data = await fetchAPI('grades', { method: 'POST', body: JSON.stringify(payload) });
-                    Swal.fire('Updated!', data.message, 'success');
-                    isEditMode = false;
-                    toggleGradeComponents(true);
-                    addGradeBtn.classList.remove('hidden');
-                    updateGradeSetupBtn.classList.add('hidden');
-                    addGradeBtn.disabled = true;
-                } catch (e) { 
-                    Swal.fire('Error!', 'Failed to update grade scheme: ' + e.message, 'error');
-                }
-            }
-        });
+        // Show update confirmation modal
+        document.getElementById('updateGradeSchemeModal').classList.remove('hidden');
     });
+
+    // Handle the actual update logic when user confirms
+    const handleGradeSchemeUpdate = async () => {
+        const payload = { subject_id: currentSubjectId, components: getGradeDataFromDOM() };
+        try {
+            const data = await fetchAPI('grades', { method: 'POST', body: JSON.stringify(payload) });
+            
+            // Show update success modal instead of SweetAlert
+            document.getElementById('gradeSchemeUpdateSuccessModal').classList.remove('hidden');
+            
+            isEditMode = false;
+            toggleGradeComponents(true);
+            addGradeBtn.classList.remove('hidden');
+            updateGradeSetupBtn.classList.add('hidden');
+            addGradeBtn.disabled = true;
+        } catch (e) { 
+            Swal.fire('Error!', 'Failed to update grade scheme: ' + e.message, 'error');
+        }
+    };
 
     gradeHistoryContainer.addEventListener('click', async (e) => {
         const card = e.target.closest('.grade-history-card');

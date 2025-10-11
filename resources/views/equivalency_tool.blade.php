@@ -105,9 +105,6 @@
                                 <button class="edit-equivalency-btn text-gray-400 hover:text-blue-600 p-1 rounded-full transition-colors transform hover:scale-110">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
                                 </button>
-                                <button class="delete-equivalency-btn text-gray-400 hover:text-red-600 p-1 rounded-full transition-colors transform hover:scale-110">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                </button>
                             </div>
                         </div>
                     @empty
@@ -232,7 +229,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const editSourceSubjectInput = document.getElementById('edit-source-subject');
     const editEquivalentSubjectSelect = document.getElementById('edit-equivalent-subject');
 
-    let itemToDelete = null;
     let itemToEdit = null;
     let currentAction = null;
 
@@ -331,9 +327,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 <button class="edit-equivalency-btn text-gray-400 hover:text-blue-600 p-1 rounded-full transition-colors transform hover:scale-110">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
                 </button>
-                <button class="delete-equivalency-btn text-gray-400 hover:text-red-600 p-1 rounded-full transition-colors transform hover:scale-110">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                </button>
             </div>
         `;
         return card;
@@ -406,72 +399,15 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Event Delegation for EDIT and DELETE
+    // Event Delegation for EDIT
     equivalencyList.addEventListener('click', function (e) {
         const editButton = e.target.closest('.edit-equivalency-btn');
-        const deleteButton = e.target.closest('.delete-equivalency-btn');
 
         if (editButton) {
             itemToEdit = editButton.closest('.equivalency-item');
             editSourceSubjectInput.value = itemToEdit.dataset.sourceName;
             editEquivalentSubjectSelect.value = itemToEdit.dataset.equivalentId;
             showEditModal();
-        }
-
-        if (deleteButton) {
-            itemToDelete = deleteButton.closest('.equivalency-item');
-            showConfirmationModal({
-                title: 'Delete Equivalency?',
-                message: 'Are you sure you want to delete this equivalency? This action cannot be undone.',
-                icon: `<svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"></path></svg>`,
-                confirmButtonClass: 'bg-red-600 hover:bg-red-700',
-                onConfirm: async () => {
-                    const equivalencyId = itemToDelete.dataset.id;
-                    try {
-                        const response = await fetch(`/api/equivalencies/${equivalencyId}`, {
-                            method: 'DELETE',
-                            headers: {'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json'}
-                        });
-
-                        if (!response.ok) throw new Error((await response.json()).message || 'Failed to delete.');
-                        
-                        const result = await response.json();
-                        
-                        // Animate out
-                        itemToDelete.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-                        itemToDelete.style.transform = 'translateX(100%)';
-                        itemToDelete.style.opacity = '0';
-                        
-                        setTimeout(() => {
-                            itemToDelete.remove();
-                            if (equivalencyList.children.length === 0) {
-                                 equivalencyList.innerHTML = `
-                                    <div id="no-equivalencies-message" class="text-center text-gray-500 py-10 border-2 border-dashed rounded-lg">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
-                                        <h3 class="mt-2 text-sm font-medium text-gray-900">No equivalencies created yet.</h3>
-                                        <p class="mt-1 text-sm text-gray-500">Get started by creating a new equivalency.</p>
-                                    </div>`;
-                            }
-                        }, 300);
-                        
-                        // Use SweetAlert for success
-                        Swal.fire({
-                            title: 'Success!',
-                            text: 'Equivalency has been deleted successfully!',
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        });
-                    } catch (error) {
-                        console.error('Error:', error);
-                        Swal.fire({
-                            title: 'Error!',
-                            text: 'Failed to delete equivalency: ' + error.message,
-                            icon: 'error',
-                            confirmButtonText: 'OK'
-                        });
-                    }
-                }
-            });
         }
     });
 
