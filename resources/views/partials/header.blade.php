@@ -66,7 +66,7 @@
                 </div>
                 <div class="dropdown-divider"></div>
                 <div class="dropdown-item">
-                    <form method="POST" action="{{ route('logout') }}" class="w-full">
+                    <form id="logout-form" method="POST" action="{{ route('logout') }}" class="w-full">
                         @csrf
                         <button type="submit" class="dropdown-link logout-btn">
                             <div class="dropdown-icon">

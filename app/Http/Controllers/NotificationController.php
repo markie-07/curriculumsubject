@@ -85,10 +85,10 @@ class NotificationController extends Controller
     {
         $user = Auth::user();
         
-        // Get notifications created in the last 5 minutes that are unread
+        // Get notifications created in the last 24 hours that are unread (extended for testing)
         $recentNotifications = $user->notifications()
             ->unread()
-            ->where('created_at', '>=', now()->subMinutes(5))
+            ->where('created_at', '>=', now()->subHours(24))
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();

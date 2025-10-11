@@ -25,7 +25,10 @@ class DashboardController extends Controller
             \Log::info('Dashboard accessed', [
                 'user_id' => $user->id,
                 'user_role' => $user->role,
-                'timestamp' => now()
+                'user_email' => $user->email,
+                'timestamp' => now(),
+                'request_url' => request()->url(),
+                'request_method' => request()->method()
             ]);
             
             // Redirect employees directly to curriculum export tool

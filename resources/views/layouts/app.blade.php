@@ -896,6 +896,43 @@
 
         // Initialize back navigation prevention
         document.addEventListener('DOMContentLoaded', preventBackAfterLogout);
+
+        // Handle logout form submission with CSRF token refresh
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoutForm = document.getElementById('logout-form');
+            if (logoutForm) {
+                logoutForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    try {
+                        // Refresh CSRF token before logout
+                        const response = await fetch('/csrf-token', {
+                            method: 'GET',
+                            credentials: 'same-origin'
+                        });
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            // Update CSRF token in form
+                            const csrfInput = logoutForm.querySelector('input[name="_token"]');
+                            if (csrfInput && data.csrf_token) {
+                                csrfInput.value = data.csrf_token;
+                            }
+                            // Update meta tag
+                            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+                            if (csrfMeta && data.csrf_token) {
+                                csrfMeta.setAttribute('content', data.csrf_token);
+                            }
+                        }
+                    } catch (error) {
+                        console.log('CSRF token refresh failed, proceeding with logout');
+                    }
+                    
+                    // Submit the form
+                    logoutForm.submit();
+                });
+            }
+        });
     </script>
 
     {{-- Include Notifications Component --}}

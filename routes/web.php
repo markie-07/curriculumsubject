@@ -38,6 +38,22 @@ Route::get('/debug', function () {
     ]);
 });
 
+Route::get('/debug-redirect', function () {
+    if (auth()->check()) {
+        $user = auth()->user();
+        return response()->json([
+            'authenticated' => true,
+            'user_role' => $user->role,
+            'user_email' => $user->email,
+            'is_employee' => $user->isEmployee(),
+            'dashboard_route' => route('dashboard'),
+            'curriculum_export_route' => route('curriculum_export_tool'),
+            'intended_url' => session()->get('url.intended', 'none')
+        ]);
+    }
+    return response()->json(['authenticated' => false]);
+})->middleware('auth');
+
 Route::get('/test-view', function () {
     return view('dashboard', [
         'user' => (object)['name' => 'Test User', 'role' => 'admin'],

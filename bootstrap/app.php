@@ -17,6 +17,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'prevent.back' => \App\Http\Middleware\PreventBackHistory::class,
         ]);
+        
+        // Use custom CSRF middleware to exclude logout route
+        $middleware->validateCsrfTokens(except: [
+            'logout'
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

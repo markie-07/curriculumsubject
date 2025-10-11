@@ -165,7 +165,9 @@ class AuthController extends Controller
             \Log::info('User logged in successfully with OTP', [
                 'email' => $user->email,
                 'role' => $user->role,
-                'ip' => $request->ip()
+                'ip' => $request->ip(),
+                'redirect_intended' => session()->get('url.intended', 'none'),
+                'is_employee' => $user->isEmployee()
             ]);
             
             // Log activity for employees
@@ -176,6 +178,7 @@ class AuthController extends Controller
                 return redirect()->route('curriculum_export_tool');
             }
             
+            // For admin and super_admin users, redirect to dashboard
             return redirect()->intended(route('dashboard'));
         }
 
@@ -211,24 +214,38 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        $user = Auth::user();
-        
-        // Log activity for employees before logout
-        if ($user && $user->isEmployee()) {
-            ActivityLogService::logLogout($user);
+        try {
+            $user = Auth::user();
+            
+            // Log activity for employees before logout
+            if ($user && $user->isEmployee()) {
+                ActivityLogService::logLogout($user);
+            }
+            
+            Auth::logout();
+            
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            
+            // Add cache control headers to prevent back button access
+            $response = redirect()->route('login')->with('logout_success', 'You have been successfully logged out.');
+            $response->headers->set('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
+            $response->headers->set('Pragma', 'no-cache');
+            $response->headers->set('Expires', 'Fri, 01 Jan 1990 00:00:00 GMT');
+            
+            return $response;
+        } catch (\Exception $e) {
+            // If there's any error (including CSRF token issues), force logout anyway
+            \Log::warning('Logout error occurred: ' . $e->getMessage());
+            
+            // Force logout without session validation
+            Auth::logout();
+            
+            // Clear all session data
+            $request->session()->flush();
+            $request->session()->regenerate();
+            
+            return redirect()->route('login')->with('logout_success', 'You have been successfully logged out.');
         }
-        
-        Auth::logout();
-        
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        
-        // Add cache control headers to prevent back button access
-        $response = redirect()->route('login')->with('logout_success', 'You have been successfully logged out.');
-        $response->headers->set('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
-        $response->headers->set('Pragma', 'no-cache');
-        $response->headers->set('Expires', 'Fri, 01 Jan 1990 00:00:00 GMT');
-        
-        return $response;
     }
 }
