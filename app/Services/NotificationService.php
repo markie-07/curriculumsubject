@@ -101,11 +101,43 @@ class NotificationService
                 : "There was a failed login attempt on your account.";
             
             self::notify($user->id, $type, $title, $message, ['type' => 'login_attempt', 'success' => $success]);
+            
+            // Notify admins about failed login attempts for security monitoring
+            if (!$success) {
+                self::notifyAdminsAboutFailedLogin($user);
+            }
+        }
+    }
+    
+    /**
+     * Notify admins about failed login attempts
+     */
+    public static function notifyAdminsAboutFailedLogin($user)
+    {
+        $adminUsers = User::whereIn('role', ['admin', 'super_admin'])->get();
+        
+        foreach ($adminUsers as $admin) {
+            self::notify(
+                $admin->id,
+                'warning',
+                'Failed Login Attempt Detected',
+                "Failed login attempt detected for user '{$user->name}' ({$user->username}).",
+                [
+                    'type' => 'security_alert',
+                    'alert_type' => 'failed_login',
+                    'target_user_id' => $user->id,
+                    'target_user_name' => $user->name,
+                    'target_username' => $user->username
+                ]
+            );
         }
     }
 
     public static function passwordChanged($userId)
     {
+        $user = User::find($userId);
+        
+        // Notify the user who changed their password
         self::notify(
             $userId,
             'success',
@@ -113,10 +145,41 @@ class NotificationService
             'Your password has been successfully updated.',
             ['type' => 'password_changed']
         );
+        
+        // Notify super admins and admins about the password change
+        self::notifyAdminsAboutPasswordChange($user);
+    }
+    
+    /**
+     * Notify admins and super admins about password changes
+     */
+    public static function notifyAdminsAboutPasswordChange($user)
+    {
+        $adminUsers = User::whereIn('role', ['admin', 'super_admin'])
+                         ->where('id', '!=', $user->id) // Don't notify the user who made the change
+                         ->get();
+        
+        foreach ($adminUsers as $admin) {
+            self::notify(
+                $admin->id,
+                'warning',
+                'User Password Changed',
+                "User '{$user->name}' ({$user->username}) has changed their password.",
+                [
+                    'type' => 'user_password_changed',
+                    'changed_user_id' => $user->id,
+                    'changed_user_name' => $user->name,
+                    'changed_user_role' => $user->role
+                ]
+            );
+        }
     }
 
     public static function profileUpdated($userId)
     {
+        $user = User::find($userId);
+        
+        // Notify the user who updated their profile
         self::notify(
             $userId,
             'info',
@@ -124,8 +187,90 @@ class NotificationService
             'Your profile information has been successfully updated.',
             ['type' => 'profile_updated']
         );
+        
+        // Notify super admins and admins about the profile change
     }
-
+    
+    /**
+     * Notify admins and super admins about profile changes
+     */
+    public static function notifyAdminsAboutProfileChange($user)
+    {
+        $adminUsers = User::whereIn('role', ['admin', 'super_admin'])
+                         ->where('id', '!=', $user->id) // Don't notify the user who made the change
+                         ->get();
+        
+        foreach ($adminUsers as $admin) {
+            self::notify(
+                $admin->id,
+                'info',
+                'User Profile Updated',
+                "User '{$user->name}' ({$user->username}) has updated their profile information.",
+                [
+                    'type' => 'user_profile_updated',
+                    'updated_user_id' => $user->id,
+                    'updated_user_name' => $user->name,
+                    'updated_user_email' => $user->email,
+                    'updated_user_role' => $user->role
+                ]
+            );
+        }
+    }
+    
+    /**
+     * Enhanced profile update notification with change details
+     */
+    public static function profileUpdatedWithDetails($userId, $oldName, $oldEmail, $newName, $newEmail)
+    {
+        $user = User::find($userId);
+        
+        // Notify the user who updated their profile
+        self::notify(
+            $userId,
+            'info',
+            'Profile Updated',
+            'Your profile information has been successfully updated.',
+            ['type' => 'profile_updated']
+        );
+        
+        // Notify super admins and admins about the profile change with details
+        $adminUsers = User::whereIn('role', ['admin', 'super_admin'])
+                         ->where('id', '!=', $user->id)
+                         ->get();
+        
+        $changes = [];
+        if ($oldName !== $newName) {
+            $changes[] = "Name: '{$oldName}' → '{$newName}'";
+        }
+        if ($oldEmail !== $newEmail) {
+            $changes[] = "Email: '{$oldEmail}' → '{$newEmail}'";
+        }
+        
+        $changeDetails = implode(', ', $changes);
+        
+        foreach ($adminUsers as $admin) {
+            self::notify(
+                $admin->id,
+                'info',
+                'User Profile Updated',
+                "User '{$user->name}' ({$user->username}) has updated their profile. Changes: {$changeDetails}",
+                [
+                    'type' => 'user_profile_updated_detailed',
+                    'updated_user_id' => $user->id,
+                    'updated_user_name' => $user->name,
+                    'updated_user_role' => $user->role,
+                    'changes' => [
+                        'old_name' => $oldName,
+                        'new_name' => $newName,
+                        'old_email' => $oldEmail,
+                        'new_email' => $newEmail
+                    ],
+                    'change_summary' => $changeDetails
+                ]
+            );
+        }
+    }
+    
     /**
      * Export-related notifications
      */
@@ -167,5 +312,73 @@ class NotificationService
             'status' => $status,
             'issues' => $issues
         ]);
+
+    }
+
+    /**
+     * User management notifications
+     */
+    public static function userCreated($newUser, $createdBy)
+    {
+        $adminUsers = User::whereIn('role', ['admin', 'super_admin'])->get();
+
+        foreach ($adminUsers as $admin) {
+            self::notify(
+                $admin->id,
+                'success',
+                'New User Created',
+                "A new user '{$newUser->name}' ({$newUser->username}) with role '{$newUser->role}' has been created by {$createdBy}.",
+                [
+                    'type' => 'user_created',
+                    'new_user_id' => $newUser->id,
+                    'new_user_name' => $newUser->name,
+                    'new_user_role' => $newUser->role,
+                    'created_by' => $createdBy
+                ]
+            );
+        }
+    }
+
+    public static function userDeleted($deletedUser, $deletedBy)
+    {
+        $adminUsers = User::whereIn('role', ['admin', 'super_admin'])->get();
+
+        foreach ($adminUsers as $admin) {
+            self::notify(
+                $admin->id,
+                'warning',
+                'User Account Deleted',
+                "User account '{$deletedUser->name}' ({$deletedUser->username}) has been deleted by {$deletedBy}.",
+                [
+                    'type' => 'user_deleted',
+                    'deleted_user_name' => $deletedUser->name,
+                    'deleted_user_role' => $deletedUser->role,
+                    'deleted_by' => $deletedBy
+                ]
+            );
+        }
+    }
+
+
+    /**
+     * System activity notifications
+     */
+    public static function systemActivity($activityType, $description, $performedBy, $data = [])
+    {
+        $adminUsers = User::whereIn('role', ['admin', 'super_admin'])->get();
+
+        foreach ($adminUsers as $admin) {
+            self::notify(
+                $admin->id,
+                'info',
+                'System Activity',
+                "{$description} by {$performedBy}",
+                array_merge([
+                    'type' => 'system_activity',
+                    'activity_type' => $activityType,
+                    'performed_by' => $performedBy
+                ], $data)
+            );
+        }
     }
 }

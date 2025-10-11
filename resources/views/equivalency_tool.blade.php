@@ -379,19 +379,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     if (!response.ok) throw new Error((await response.json()).message || 'Failed to create.');
 
-                    const newEquivalency = await response.json();
+                    const result = await response.json();
+                    const newEquivalency = result.equivalency || result;
                     addEquivalencyToDOM(newEquivalency);
-                    showSuccessModal('Equivalency Created!', 'The subject equivalency has been successfully created.');
+                    
+                    // Use SweetAlert for success
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Equivalency has been created successfully!',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                    
                     sourceSubjectInput.value = '';
                     equivalentSubjectSelect.value = '';
                 } catch (error) {
                     console.error('Error:', error);
-                    showConfirmationModal({
-                        title: 'Error',
-                        message: `An error occurred: ${error.message}`,
-                        icon: `<svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"></path></svg>`,
-                        confirmButtonClass: 'bg-red-600 hover:bg-red-700',
-                        onConfirm: () => {}
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Failed to create equivalency: ' + error.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
                     });
                 }
             }
@@ -427,6 +435,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         if (!response.ok) throw new Error((await response.json()).message || 'Failed to delete.');
                         
+                        const result = await response.json();
+                        
                         // Animate out
                         itemToDelete.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
                         itemToDelete.style.transform = 'translateX(100%)';
@@ -444,15 +454,20 @@ document.addEventListener('DOMContentLoaded', function () {
                             }
                         }, 300);
                         
-                        showSuccessModal('Equivalency Deleted!', 'The equivalency has been successfully deleted.');
+                        // Use SweetAlert for success
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Equivalency has been deleted successfully!',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
                     } catch (error) {
                         console.error('Error:', error);
-                        showConfirmationModal({
-                            title: 'Error',
-                            message: `An error occurred: ${error.message}`,
-                            icon: `<svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"></path></svg>`,
-                            confirmButtonClass: 'bg-red-600 hover:bg-red-700',
-                            onConfirm: () => {}
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Failed to delete equivalency: ' + error.message,
+                            icon: 'error',
+                            confirmButtonText: 'OK'
                         });
                     }
                 }
@@ -479,20 +494,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (!response.ok) throw new Error((await response.json()).message || 'Failed to update.');
             
-            const updatedEquivalency = await response.json();
+            const result = await response.json();
+            const updatedEquivalency = result.equivalency || result;
             const updatedCard = createEquivalencyCard(updatedEquivalency);
             itemToEdit.replaceWith(updatedCard);
             
             hideEditModal();
-            showSuccessModal('Equivalency Updated!', 'The equivalency has been successfully updated.');
+            
+            // Use SweetAlert for success
+            Swal.fire({
+                title: 'Success!',
+                text: 'Equivalency has been updated successfully!',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
         } catch (error) {
             console.error('Error:', error);
-            showConfirmationModal({
-                title: 'Error',
-                message: `An error occurred: ${error.message}`,
-                icon: `<svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"></path></svg>`,
-                confirmButtonClass: 'bg-red-600 hover:bg-red-700',
-                onConfirm: () => {}
+            Swal.fire({
+                title: 'Error!',
+                text: 'Failed to update equivalency: ' + error.message,
+                icon: 'error',
+                confirmButtonText: 'OK'
             });
         }
     });

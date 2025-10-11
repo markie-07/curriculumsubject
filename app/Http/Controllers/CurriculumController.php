@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Curriculum;
 use App\Models\Subject;
 use App\Models\SubjectHistory;
+use App\Models\Notification;
 use App\Services\CurriculumVersionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class CurriculumController extends Controller
@@ -50,6 +52,31 @@ class CurriculumController extends Controller
             'year_level' => $validated['yearLevel'],
         ]);
 
+        // Create database notification for admins
+        if (Auth::check()) {
+            Notification::createForAdmins(
+                'success',
+                'New Curriculum Created',
+                'Curriculum "' . $curriculum->curriculum . '" has been created by ' . Auth::user()->name,
+                ['curriculum_id' => $curriculum->id, 'action' => 'created']
+            );
+        }
+
+        session()->flash('success', 'Curriculum "' . $curriculum->curriculum . '" has been created successfully!');
+        
+        // Also trigger notification for AJAX requests
+        if (request()->wantsJson()) {
+            return response()->json([
+                'message' => 'Curriculum created successfully!', 
+                'curriculum' => $curriculum,
+                'notification' => [
+                    'type' => 'success',
+                    'title' => 'Curriculum Added!',
+                    'message' => 'Curriculum "' . $curriculum->curriculum . '" has been created successfully!'
+                ]
+            ], 201);
+        }
+        
         return response()->json(['message' => 'Curriculum created successfully!', 'curriculum' => $curriculum], 201);
     }
 
@@ -73,6 +100,31 @@ class CurriculumController extends Controller
             'year_level' => $validated['yearLevel'],
         ]);
 
+        // Create database notification for admins
+        if (Auth::check()) {
+            Notification::createForAdmins(
+                'info',
+                'Curriculum Updated',
+                'Curriculum "' . $curriculum->curriculum . '" has been updated by ' . Auth::user()->name,
+                ['curriculum_id' => $curriculum->id, 'action' => 'updated']
+            );
+        }
+
+        session()->flash('success', 'Curriculum "' . $curriculum->curriculum . '" has been updated successfully!');
+        
+        // Also trigger notification for AJAX requests
+        if (request()->wantsJson()) {
+            return response()->json([
+                'message' => 'Curriculum updated successfully!', 
+                'curriculum' => $curriculum,
+                'notification' => [
+                    'type' => 'success',
+                    'title' => 'Curriculum Updated!',
+                    'message' => 'Curriculum "' . $curriculum->curriculum . '" has been updated successfully!'
+                ]
+            ]);
+        }
+        
         return response()->json(['message' => 'Curriculum updated successfully!', 'curriculum' => $curriculum]);
     }
 
@@ -82,7 +134,22 @@ class CurriculumController extends Controller
     public function destroy($id)
     {
         $curriculum = Curriculum::findOrFail($id);
+        $curriculumName = $curriculum->curriculum;
         $curriculum->delete();
+        session()->flash('success', 'Curriculum "' . $curriculumName . '" has been deleted successfully!');
+        
+        // Also trigger notification for AJAX requests
+        if (request()->wantsJson()) {
+            return response()->json([
+                'message' => 'Curriculum deleted successfully!',
+                'notification' => [
+                    'type' => 'success',
+                    'title' => 'Curriculum Deleted!',
+                    'message' => 'Curriculum "' . $curriculumName . '" has been deleted successfully!'
+                ]
+            ]);
+        }
+        
         return response()->json(['message' => 'Curriculum deleted successfully!']);
     }
 
@@ -203,6 +270,21 @@ public function saveSubjects(Request $request)
         }
     });
 
+    session()->flash('success', 'Curriculum subjects have been saved successfully!');
+    
+    // Also trigger notification for AJAX requests
+    if (request()->wantsJson()) {
+        return response()->json([
+            'message' => 'Curriculum saved successfully!', 
+            'curriculumId' => $curriculum->id,
+            'notification' => [
+                'type' => 'success',
+                'title' => 'Subjects Saved!',
+                'message' => 'Curriculum subjects have been saved successfully!'
+            ]
+        ]);
+    }
+    
     return response()->json(['message' => 'Curriculum saved successfully!', 'curriculumId' => $curriculum->id]);
 }
 
@@ -253,6 +335,20 @@ public function saveSubjects(Request $request)
                 );
             });
 
+            session()->flash('success', 'Subject "' . $subject->subject_name . '" has been removed from curriculum successfully!');
+            
+            // Also trigger notification for AJAX requests
+            if (request()->wantsJson()) {
+                return response()->json([
+                    'message' => 'Subject removed and recorded in history.',
+                    'notification' => [
+                        'type' => 'success',
+                        'title' => 'Subject Removed!',
+                        'message' => 'Subject "' . $subject->subject_name . '" has been removed from curriculum successfully!'
+                    ]
+                ]);
+            }
+            
             return response()->json(['message' => 'Subject removed and recorded in history.']);
 
         } catch (\Exception $e) {

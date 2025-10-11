@@ -375,22 +375,22 @@
                             throw errorData;
                         }
                         
+                        const result = await response.json();
                         hideAddEditModal();
                         fetchCurriculums();
-                        showSuccessModal(
-                            `Curriculum ${id ? 'Updated' : 'Created'}!`,
-                            `The curriculum has been successfully ${id ? 'updated' : 'created'}.`
-                        );
-                    } catch (error) {
-                        console.error('Error submitting form:', error);
-                        let errorMessage = 'An error occurred. Please try again.';
-                         if (error.message) {
-                            errorMessage = error.message;
-                            if(error.error) {
-                                errorMessage += ` (Details: ${error.error})`;
+                        
+                        // Use helper function to handle response
+                        handleAjaxResponse(result, () => {
+                            // Fallback notification if none provided by server
+                            if (!result.notification) {
+                                notificationManager.success(
+                                    `Curriculum ${id ? 'Updated' : 'Created'}!`,
+                                    `The curriculum has been successfully ${id ? 'updated' : 'created'}.`
+                                );
                             }
-                        }
-                        alert('Error: ' + errorMessage);
+                        });
+                    } catch (error) {
+                        handleAjaxError(error);
                     }
                 };
 
@@ -426,8 +426,7 @@
                                         throw new Error('Invalid data format received.');
                                     }
                                 } catch (error) {
-                                   console.error('Error fetching curriculum data:', error);
-                                   alert('Error: ' + (error.message || 'Failed to load curriculum data.'));
+                                   handleAjaxError(error, 'Failed to load curriculum data.');
                                 }
                             }
                         });

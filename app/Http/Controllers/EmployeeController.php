@@ -50,13 +50,28 @@ class EmployeeController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        User::create([
+        $employee = User::create([
             'name' => $request->name,
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'employee',
         ]);
+
+        // Flash success message for session-based requests
+        session()->flash('success', 'Employee "' . $employee->name . '" has been created successfully!');
+        
+        if (request()->wantsJson()) {
+            return response()->json([
+                'message' => 'Employee created successfully!',
+                'employee' => $employee,
+                'notification' => [
+                    'type' => 'success',
+                    'title' => 'Employee Created!',
+                    'message' => 'Employee "' . $employee->name . '" has been created successfully!'
+                ]
+            ], 201);
+        }
 
         return redirect()->route('employees.index')->with('success', 'Employee created successfully!');
     }
@@ -100,6 +115,21 @@ class EmployeeController extends Controller
 
         $employee->update($updateData);
 
+        // Flash success message for session-based requests
+        session()->flash('success', 'Employee "' . $employee->name . '" has been updated successfully!');
+        
+        if (request()->wantsJson()) {
+            return response()->json([
+                'message' => 'Employee updated successfully!',
+                'employee' => $employee,
+                'notification' => [
+                    'type' => 'success',
+                    'title' => 'Employee Updated!',
+                    'message' => 'Employee "' . $employee->name . '" has been updated successfully!'
+                ]
+            ]);
+        }
+
         return redirect()->route('employees.index')->with('success', 'Employee updated successfully!');
     }
 
@@ -109,7 +139,22 @@ class EmployeeController extends Controller
     public function destroy($id)
     {
         $employee = User::where('role', 'employee')->findOrFail($id);
+        $employeeName = $employee->name;
         $employee->delete();
+
+        // Flash success message for session-based requests
+        session()->flash('success', 'Employee "' . $employeeName . '" has been deleted successfully!');
+        
+        if (request()->wantsJson()) {
+            return response()->json([
+                'message' => 'Employee deleted successfully!',
+                'notification' => [
+                    'type' => 'success',
+                    'title' => 'Employee Deleted!',
+                    'message' => 'Employee "' . $employeeName . '" has been deleted successfully!'
+                ]
+            ]);
+        }
 
         return redirect()->route('employees.index')->with('success', 'Employee deleted successfully!');
     }
@@ -153,8 +198,23 @@ class EmployeeController extends Controller
         );
         
         $message = $newStatus === 'active' 
-            ? 'Employee activated successfully!' 
-            : 'Employee deactivated successfully!';
+            ? 'Employee "' . $employee->name . '" activated successfully!' 
+            : 'Employee "' . $employee->name . '" deactivated successfully!';
+        
+        // Flash success message for session-based requests
+        session()->flash('success', $message);
+        
+        if (request()->wantsJson()) {
+            return response()->json([
+                'message' => $message,
+                'employee' => $employee,
+                'notification' => [
+                    'type' => 'success',
+                    'title' => $newStatus === 'active' ? 'Employee Activated!' : 'Employee Deactivated!',
+                    'message' => $message
+                ]
+            ]);
+        }
             
         return redirect()->route('employees.index')->with('success', $message);
     }

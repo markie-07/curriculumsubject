@@ -525,7 +525,7 @@ document.addEventListener('DOMContentLoaded', function () {
             populateForm(subject);
         } catch (error) {
             console.error('Error fetching subject data:', error);
-            alert('Failed to load subject data. You can create a new subject instead.');
+            showError('Loading Error', 'Failed to load subject data. You can create a new subject instead.');
             window.history.replaceState({}, document.title, window.location.pathname);
         }
     };
@@ -583,10 +583,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const action = subjectId ? 'updated' : 'created';
             if (action === 'updated') {
-                alert(`Subject updated successfully!`);
-                window.location.href = `/subject_mapping`;
+                showSuccess('Subject Updated', 'Subject updated successfully!');
+                setTimeout(() => {
+                    window.location.href = `/subject_mapping`;
+                }, 1500);
             } else {
-                if (confirm("Subject created successfully! Do you want to set up the grade components now?")) {
+                showSuccess('Subject Created', 'Subject created successfully!');
+                if (confirm("Do you want to set up the grade components now?")) {
                     const newSubjectName = encodeURIComponent(`${result.subject.subject_name} (${result.subject.subject_code})`);
                     window.location.href = `/grade-setup?new_subject_id=${result.subject.id}&new_subject_name=${newSubjectName}`;
                 } else {
@@ -594,7 +597,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         } catch (error) {
-            alert(`Error saving course: ${error.message}`);
+            showError('Save Error', `Error saving course: ${error.message}`);
         }
     });
 

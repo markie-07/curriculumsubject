@@ -484,10 +484,24 @@ document.addEventListener('DOMContentLoaded', function () {
             const filterText = selectedTypes.length > 0 ? ` (${selectedTypes.join(', ')})` : '';
             const fileName = `${curriculumName}${filterText}.pdf`;
             const newHistory = await saveExportHistory(curriculumId, fileName, 'PDF');
-            addHistoryItemToDOM(newHistory);
+            
+            // Use SweetAlert for success
+            Swal.fire({
+                title: 'Export Successful!',
+                text: 'Curriculum has been exported successfully!',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+            
+            addHistoryItemToDOM(newHistory.data || newHistory);
         } catch (error) {
             console.error('Error saving export history:', error);
-            alert('An error occurred while saving the export history. Please check the console for details.');
+            Swal.fire({
+                title: 'Error!',
+                text: 'An error occurred while saving the export history: ' + error.message,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
         }
     });
 

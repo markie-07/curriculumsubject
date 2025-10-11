@@ -49,9 +49,24 @@ class EquivalencyToolController extends Controller
         ]);
 
         $equivalency = Equivalency::create($validated);
+        $equivalency->load('equivalentSubject');
+
+        // Flash success message for session-based requests
+        session()->flash('success', 'Equivalency for "' . $validated['source_subject_name'] . '" has been created successfully!');
+        
+        if (request()->wantsJson()) {
+            return response()->json([
+                'equivalency' => $equivalency,
+                'notification' => [
+                    'type' => 'success',
+                    'title' => 'Equivalency Created!',
+                    'message' => 'Equivalency for "' . $validated['source_subject_name'] . '" has been created successfully!'
+                ]
+            ], 201);
+        }
 
         // Return the new record with its relationship loaded so the frontend can display it
-        return response()->json($equivalency->load('equivalentSubject'));
+        return response()->json($equivalency);
     }
 
     /**
@@ -65,9 +80,24 @@ class EquivalencyToolController extends Controller
         ]);
 
         $equivalency->update($validated);
+        $equivalency->load('equivalentSubject');
+
+        // Flash success message for session-based requests
+        session()->flash('success', 'Equivalency for "' . $validated['source_subject_name'] . '" has been updated successfully!');
+        
+        if (request()->wantsJson()) {
+            return response()->json([
+                'equivalency' => $equivalency,
+                'notification' => [
+                    'type' => 'success',
+                    'title' => 'Equivalency Updated!',
+                    'message' => 'Equivalency for "' . $validated['source_subject_name'] . '" has been updated successfully!'
+                ]
+            ]);
+        }
 
         // Return the updated record with its relationship loaded
-        return response()->json($equivalency->load('equivalentSubject'));
+        return response()->json($equivalency);
     }
 
     /**
@@ -75,7 +105,22 @@ class EquivalencyToolController extends Controller
      */
     public function destroy(Equivalency $equivalency): JsonResponse
     {
+        $sourceName = $equivalency->source_subject_name;
         $equivalency->delete();
+        
+        // Flash success message for session-based requests
+        session()->flash('success', 'Equivalency for "' . $sourceName . '" has been deleted successfully!');
+        
+        if (request()->wantsJson()) {
+            return response()->json([
+                'message' => 'Equivalency deleted successfully.',
+                'notification' => [
+                    'type' => 'success',
+                    'title' => 'Equivalency Deleted!',
+                    'message' => 'Equivalency for "' . $sourceName . '" has been deleted successfully!'
+                ]
+            ]);
+        }
         
         // Return a success message
         return response()->json(['message' => 'Equivalency deleted successfully.']);

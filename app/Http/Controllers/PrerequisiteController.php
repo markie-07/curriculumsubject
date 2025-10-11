@@ -70,6 +70,20 @@ class PrerequisiteController extends Controller
             }
         }
 
+        // Flash success message for session-based requests
+        session()->flash('success', 'Prerequisites for "' . $validated['subject_code'] . '" have been saved successfully!');
+        
+        if (request()->wantsJson()) {
+            return response()->json([
+                'message' => 'Prerequisites saved successfully!',
+                'notification' => [
+                    'type' => 'success',
+                    'title' => 'Prerequisites Saved!',
+                    'message' => 'Prerequisites for "' . $validated['subject_code'] . '" have been saved successfully!'
+                ]
+            ]);
+        }
+        
         return response()->json(['message' => 'Prerequisites saved successfully!']);
     }
 }

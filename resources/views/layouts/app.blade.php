@@ -12,6 +12,21 @@
     <!-- Line Awesome Icons -->
     <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    
+    {{-- Flash Messages Meta Tags for Notifications --}}
+    @if(session('success'))
+        <meta name="flash-success" content="{{ session('success') }}">
+    @endif
+    @if(session('error'))
+        <meta name="flash-error" content="{{ session('error') }}">
+    @endif
+    @if(session('warning'))
+        <meta name="flash-warning" content="{{ session('warning') }}">
+    @endif
+    @if(session('info'))
+        <meta name="flash-info" content="{{ session('info') }}">
+    @endif
+    
      {{-- ADD THESE TWO SCRIPT TAGS FOR PDF EXPORT --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
@@ -882,5 +897,8 @@
         // Initialize back navigation prevention
         document.addEventListener('DOMContentLoaded', preventBackAfterLogout);
     </script>
+
+    {{-- Include Notifications Component --}}
+    @include('partials.notifications')
 </body>
 </html>

@@ -56,7 +56,21 @@ class CurriculumExportToolController extends Controller
             auth()->user()->updateLastActivity();
         }
 
+        // Flash success message for session-based requests
+        session()->flash('success', 'Curriculum exported successfully!');
+        
         // Return the new history item with its related curriculum info
+        if (request()->wantsJson()) {
+            return response()->json([
+                'data' => $exportHistory->load('curriculum'),
+                'notification' => [
+                    'type' => 'success',
+                    'title' => 'Export Successful!',
+                    'message' => 'Curriculum has been exported successfully!'
+                ]
+            ]);
+        }
+        
         return response()->json($exportHistory->load('curriculum'));
     }
 

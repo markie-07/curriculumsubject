@@ -89,11 +89,11 @@ class Notification extends Model
     }
 
     /**
-     * Create notifications for all admin users.
+     * Create notifications for all admin and super admin users.
      */
     public static function createForAdmins($type, $title, $message, $data = null)
     {
-        $adminUsers = User::where('role', 'admin')->get();
+        $adminUsers = User::whereIn('role', ['admin', 'super_admin'])->get();
         
         foreach ($adminUsers as $admin) {
             self::createForUser($admin->id, $type, $title, $message, $data);

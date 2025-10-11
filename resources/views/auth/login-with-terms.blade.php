@@ -3,8 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Student Management System - Terms Required</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Flash Messages Meta Tags -->
+    @if(session('success'))
+        <meta name="flash-success" content="{{ session('success') }}">
+    @endif
+    @if(session('error'))
+        <meta name="flash-error" content="{{ session('error') }}">
+    @endif
+    @if(session('warning'))
+        <meta name="flash-warning" content="{{ session('warning') }}">
+    @endif
+    @if(session('info'))
+        <meta name="flash-info" content="{{ session('info') }}">
+    @endif
     <style>
                 body {
             font-family: 'Inter', sans-serif;
@@ -427,5 +442,8 @@
             }
         }
     </script>
+    
+    <!-- Include Notifications -->
+    @include('partials.notifications')
 </body>
 </html>

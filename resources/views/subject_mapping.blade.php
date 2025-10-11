@@ -1197,11 +1197,23 @@ const updateAllTotals = () => {
                 }
 
                 updateUnitTotals();
-                removeSuccessModal.classList.remove('hidden');
+                
+                // Use SweetAlert for success
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Subject has been successfully removed from the curriculum.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
 
             } catch (error) {
                 console.error('Error removing subject:', error);
-                alert('Error: ' + error.message);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to remove subject: ' + error.message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
             } finally {
                 hideRemoveConfirmationModal();
             }
@@ -1294,7 +1306,12 @@ const updateAllTotals = () => {
 
             } catch (error) {
                 console.error('Error during save:', error);
-                alert('An error occurred while saving: ' + error.message);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'An error occurred while saving: ' + error.message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
                 return null;
             }
         };
@@ -1306,7 +1323,16 @@ const updateAllTotals = () => {
 
             if (saveResult) { 
                 console.log('Save successful:', saveResult.message);
-                document.getElementById('proceedToPrerequisitesModal').classList.remove('hidden');
+                
+                // Use SweetAlert for success
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Curriculum mapping has been saved successfully!',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    document.getElementById('proceedToPrerequisitesModal').classList.remove('hidden');
+                });
             } else {
                 console.log('Save failed. The prerequisites modal will not be shown.');
             }
@@ -1552,6 +1578,12 @@ function renderCurriculumOverview(yearLevel) {
                 })
                 .catch(error => {
                     console.error('Error fetching curriculum data:', error);
+                    Swal.fire({
+                        title: 'Loading Error!',
+                        text: 'Could not load curriculum data. Please try again.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
                     availableSubjectsContainer.innerHTML = '<p class="text-red-500 text-center mt-4">Could not load subjects.</p>';
                 });
         }

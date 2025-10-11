@@ -631,7 +631,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     addGradeBtn.classList.remove('hidden');
                     updateGradeSetupBtn.classList.add('hidden');
                     addGradeBtn.disabled = true;
-                } catch (e) { /* Error is handled in fetchAPI */ }
+                } catch (e) { 
+                    Swal.fire('Error!', 'Failed to update grade scheme: ' + e.message, 'error');
+                }
             }
         });
     });

@@ -77,4 +77,25 @@ class NotificationController extends Controller
 
         return response()->json(['count' => $count]);
     }
+
+    /**
+     * Get recent unread notifications for toast display.
+     */
+    public function getRecent()
+    {
+        $user = Auth::user();
+        
+        // Get notifications created in the last 5 minutes that are unread
+        $recentNotifications = $user->notifications()
+            ->unread()
+            ->where('created_at', '>=', now()->subMinutes(5))
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        return response()->json([
+            'notifications' => $recentNotifications,
+            'count' => $recentNotifications->count()
+        ]);
+    }
 }

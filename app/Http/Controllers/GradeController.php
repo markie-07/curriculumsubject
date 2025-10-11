@@ -55,6 +55,22 @@ class GradeController extends Controller
         // Return the subject details so the JavaScript can add it to the "Grade History" list.
         $subject = Subject::find($validated['subject_id']);
 
+        // Flash success message for session-based requests
+        session()->flash('success', 'Grade scheme for "' . $subject->subject_name . '" has been saved successfully!');
+        
+        if (request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Grade scheme saved successfully!',
+                'subject' => $subject,
+                'notification' => [
+                    'type' => 'success',
+                    'title' => 'Grade Scheme Saved!',
+                    'message' => 'Grade scheme for "' . $subject->subject_name . '" has been saved successfully!'
+                ]
+            ], 201);
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Grade scheme saved successfully!',

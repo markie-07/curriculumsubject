@@ -65,6 +65,21 @@ class SubjectController extends Controller
             'approved_by' => $validated['approved_by'] ?? null,
         ]);
 
+        // Flash success message for session-based requests
+        session()->flash('success', 'Subject "' . $subject->subject_name . '" has been created successfully!');
+        
+        if (request()->wantsJson()) {
+            return response()->json([
+                'message' => 'Subject created successfully! Ready for mapping.',
+                'subject' => $subject,
+                'notification' => [
+                    'type' => 'success',
+                    'title' => 'Subject Created!',
+                    'message' => 'Subject "' . $subject->subject_name . '" has been created successfully!'
+                ]
+            ], 201);
+        }
+        
         return response()->json([
             'message' => 'Subject created successfully! Ready for mapping.',
             'subject' => $subject,
@@ -132,6 +147,21 @@ class SubjectController extends Controller
 
         $subject->update($updateData);
 
+        // Flash success message for session-based requests
+        session()->flash('success', 'Subject "' . $subject->subject_name . '" has been updated successfully!');
+        
+        if (request()->wantsJson()) {
+            return response()->json([
+                'message' => 'Subject updated successfully!',
+                'subject' => $subject,
+                'notification' => [
+                    'type' => 'success',
+                    'title' => 'Subject Updated!',
+                    'message' => 'Subject "' . $subject->subject_name . '" has been updated successfully!'
+                ]
+            ], 200);
+        }
+        
         return response()->json([
             'message' => 'Subject updated successfully!',
             'subject' => $subject,
@@ -147,8 +177,25 @@ class SubjectController extends Controller
     public function destroy(Subject $subject)
     {
         try {
+            // Store subject name before deletion
+            $subjectName = $subject->subject_name;
+            
             // The subject is already loaded thanks to route model binding.
             $subject->delete();
+            
+            // Flash success message for session-based requests
+            session()->flash('success', 'Subject "' . $subjectName . '" has been deleted successfully!');
+            
+            if (request()->wantsJson()) {
+                return response()->json([
+                    'message' => 'Subject deleted successfully.',
+                    'notification' => [
+                        'type' => 'success',
+                        'title' => 'Subject Deleted!',
+                        'message' => 'Subject "' . $subjectName . '" has been deleted successfully!'
+                    ]
+                ], 200);
+            }
             
             return response()->json(['message' => 'Subject deleted successfully.'], 200);
 

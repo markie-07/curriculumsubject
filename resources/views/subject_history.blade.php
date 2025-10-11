@@ -670,19 +670,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (response.ok) {
                 hideRetrieveModal();
-                showSuccessModal('Subject Retrieved!', data.message + ' You can now view it in the Subject Mapping page.');
                 
-                // Redirect to subject mapping page after success
-                setTimeout(() => {
-                    window.location.href = '{{ route("subject_mapping") }}';
-                }, 2500);
+                // Use SweetAlert for success
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Subject has been retrieved successfully! You can now view it in the Subject Mapping page.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    // Redirect to subject mapping page after success
+                    setTimeout(() => {
+                        window.location.href = '{{ route("subject_mapping") }}';
+                    }, 2500);
+                });
             } else {
                 throw new Error(data.message || 'Failed to retrieve subject');
             }
         } catch (error) {
             console.error('Error:', error);
             hideRetrieveModal();
-            alert('Error: ' + error.message);
+            Swal.fire({
+                title: 'Error!',
+                text: 'Failed to retrieve subject: ' + error.message,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
         }
     });
 
