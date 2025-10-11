@@ -471,8 +471,8 @@
             
             // Disable F5 refresh and other shortcuts that might bypass security
             document.addEventListener('keydown', function(e) {
-                // Disable F5, Ctrl+R, Ctrl+F5
-                if (e.key === 'F5' || (e.ctrlKey && e.key === 'r') || (e.ctrlKey && e.key === 'F5')) {
+                // Disable F5, Ctrl+F5 (but allow Ctrl+R for user convenience)
+                if (e.key === 'F5' || (e.ctrlKey && e.key === 'F5')) {
                     e.preventDefault();
                 }
                 
