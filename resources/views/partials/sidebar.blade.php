@@ -39,7 +39,7 @@
             <div class="w-8 h-8 bg-blue-800/30 rounded-lg flex items-center justify-center mr-3 group-hover:bg-blue-600/40 transition-all duration-300 group-hover:scale-110">
                 <svg class="w-4 h-4 text-blue-300 group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path></svg>
             </div>
-            <span class="nav-text group-hover:text-white transition-colors duration-300">Dashboar</span>
+            <span class="nav-text group-hover:text-white transition-colors duration-300">Dashboard</span>
         </a>
         @endif
 
