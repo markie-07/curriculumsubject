@@ -545,6 +545,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     accordionContainer.addEventListener('click', (e) => {
+        // Check for remove button first to prevent accordion toggle
+        if (e.target.closest('.remove-component-btn')) {
+            handleDynamicEvents(e);
+            return;
+        }
+        
         const toggleButton = e.target.closest('.accordion-toggle');
         if (toggleButton) {
             const content = toggleButton.nextElementSibling;
@@ -701,8 +707,5 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-{{-- Removed duplicate confirmation and success modals - using SweetAlert instead --}}
-
-{{-- Removed duplicate JavaScript - the main script above handles all grade scheme functionality properly --}}
 
 @endsection
