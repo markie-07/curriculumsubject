@@ -648,7 +648,6 @@
     <!-- Two Column Layout for Activities and Quick Actions -->
     <div class="grid grid-cols-1 lg:grid-cols-2 activities-section flex-1">
         <!-- Recent Activities -->
-        @if(isset($dashboardData['recent_activities']) && $dashboardData['recent_activities']->count() > 0)
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 activity-card overflow-hidden">
             <h3 class="activity-title font-semibold text-gray-800 flex items-center">
                 <div class="w-6 h-6 bg-violet-100 rounded-lg flex items-center justify-center mr-3">
@@ -657,26 +656,35 @@
                 Recent Activities
             </h3>
             <div class="space-y-3 overflow-y-auto activities-scroll-hidden" style="max-height: 400px;">
-                @foreach($dashboardData['recent_activities'] as $activity)
-                <div class="flex items-center space-x-4 p-4 border border-gray-100 activity-item">
-                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span class="text-white font-semibold text-sm">{{ strtoupper(substr($activity->user->name, 0, 1)) }}</span>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-gray-900 truncate">{{ $activity->user->name }}</p>
-                        <p class="text-sm text-gray-600 truncate">{{ $activity->formatted_description }}</p>
-                        <div class="flex items-center justify-between mt-2">
-                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 {{ $activity->activity_color }}">
-                                {{ $activity->activity_icon }} {{ ucfirst($activity->activity_type) }}
-                            </span>
-                            <span class="text-sm text-gray-500">{{ $activity->created_at->diffForHumans() }}</span>
+                @if(isset($dashboardData['recent_activities']) && $dashboardData['recent_activities']->count() > 0)
+                    @foreach($dashboardData['recent_activities'] as $activity)
+                    <div class="flex items-center space-x-4 p-4 border border-gray-100 activity-item">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span class="text-white font-semibold text-sm">{{ strtoupper(substr($activity->user->name, 0, 1)) }}</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 truncate">{{ $activity->user->name }}</p>
+                            <p class="text-sm text-gray-600 truncate">{{ $activity->formatted_description }}</p>
+                            <div class="flex items-center justify-between mt-2">
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 {{ $activity->activity_color }}">
+                                    {{ $activity->activity_icon }} {{ ucfirst($activity->activity_type) }}
+                                </span>
+                                <span class="text-sm text-gray-500">{{ $activity->created_at->diffForHumans() }}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                @endforeach
+                    @endforeach
+                @else
+                    <div class="flex items-center justify-center p-8 text-gray-500">
+                        <div class="text-center">
+                            <i class="las la-clock text-4xl text-gray-300 mb-3"></i>
+                            <p class="text-sm font-medium">No recent activities</p>
+                            <p class="text-xs text-gray-400 mt-1">Employee activities will appear here</p>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
-        @endif
 
         <!-- Quick Actions -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 quick-action-card">
