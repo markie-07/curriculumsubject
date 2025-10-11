@@ -50,6 +50,7 @@ class DynamicMailService
         $config = self::$emailConfigs[$email];
 
         // Set the mail configuration dynamically
+        Config::set('mail.default', 'smtp');
         Config::set('mail.mailers.smtp.host', $config['host']);
         Config::set('mail.mailers.smtp.port', $config['port']);
         Config::set('mail.mailers.smtp.username', $config['username']);
@@ -79,6 +80,8 @@ class DynamicMailService
         }
 
         try {
+            \Log::info("Attempting to send OTP to {$userEmail} using sender {$senderEmail}");
+            
             Mail::raw("Your OTP code is: {$otpCode}\n\nThis code will expire in 10 minutes.\n\nIf you didn't request this code, please ignore this email.\n\n---\nStudent Management System", function ($message) use ($userEmail) {
                 $message->to($userEmail)
                         ->subject('Your OTP Code - Student Management System');
@@ -88,6 +91,7 @@ class DynamicMailService
             return true;
         } catch (\Exception $e) {
             \Log::error("Failed to send OTP email to {$userEmail}: " . $e->getMessage());
+            \Log::error("Stack trace: " . $e->getTraceAsString());
             return false;
         }
     }
