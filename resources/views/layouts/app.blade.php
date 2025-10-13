@@ -2160,6 +2160,35 @@
                 max-width: 100% !important;
                 overflow-x: hidden !important;
             }
+            
+            /* Ensure main layout is visible on mobile */
+            .flex.h-screen {
+                min-height: 100vh;
+                height: auto;
+            }
+            
+            /* Make sure content is visible */
+            .flex-1.flex.flex-col {
+                width: 100%;
+                min-height: 100vh;
+            }
+            
+            /* Force sidebar to be hidden on mobile by default */
+            #sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            /* Show sidebar when toggled */
+            #sidebar.show {
+                transform: translateX(0);
+            }
+            
+            /* Ensure main content takes full width on mobile */
+            .flex-1 {
+                width: 100% !important;
+                margin-left: 0 !important;
+            }
         }
         
         /* Responsive text sizing */
