@@ -872,10 +872,6 @@
                         <i class="las la-chart-bar mr-1"></i>
                         <span class="text-xs">Bar</span>
                     </button>
-                    <button onclick="switchChart('curriculum', 'doughnut')" class="chart-switch-btn" data-chart="curriculum" data-type="doughnut" title="Doughnut Chart View">
-                        <i class="las la-chart-pie mr-1"></i>
-                        <span class="text-xs">Pie</span>
-                    </button>
                 </div>
             </div>
             <div class="chart-container" style="position: relative; height: 300px;">
@@ -1317,40 +1313,6 @@ const chartConfigs = {
                     x: {
                         grid: {
                             display: false
-                        }
-                    }
-                }
-            }
-        },
-        doughnut: {
-            type: 'doughnut',
-            data: {
-                labels: ['Senior High', 'College'],
-                datasets: [{
-                    data: [
-                        dashboardStats.curriculum_senior_high || 0,
-                        dashboardStats.curriculum_college || 0
-                    ],
-                    backgroundColor: [
-                        'rgba(59, 130, 246, 0.8)',
-                        'rgba(16, 185, 129, 0.8)'
-                    ],
-                    borderColor: [
-                        'rgb(59, 130, 246)',
-                        'rgb(16, 185, 129)'
-                    ],
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            padding: 20,
-                            usePointStyle: true
                         }
                     }
                 }
