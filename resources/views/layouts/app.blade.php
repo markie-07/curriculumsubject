@@ -2036,6 +2036,92 @@
             font-size: 16px; /* Base font size */
         }
         
+        /* Mobile-first responsive design */
+        @media (max-width: 640px) {
+            .container {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+            
+            /* Force single column layout on mobile */
+            .grid {
+                grid-template-columns: 1fr !important;
+                gap: 0.75rem !important;
+            }
+            
+            .lg\:grid-cols-2,
+            .lg\:grid-cols-3,
+            .md\:grid-cols-2,
+            .md\:grid-cols-3,
+            .grid-cols-2,
+            .grid-cols-3,
+            .grid-cols-4 {
+                grid-template-columns: 1fr !important;
+            }
+            
+            /* Stack flex items vertically on mobile */
+            .flex {
+                flex-direction: column !important;
+            }
+            
+            .flex-row {
+                flex-direction: column !important;
+            }
+            
+            /* Override space-x with space-y on mobile */
+            .space-x-2 > * + *,
+            .space-x-3 > * + *,
+            .space-x-4 > * + *,
+            .space-x-6 > * + * {
+                margin-left: 0 !important;
+                margin-top: 0.5rem !important;
+            }
+            
+            /* Ensure full width on mobile */
+            .w-1\/2,
+            .w-1\/3,
+            .w-2\/3,
+            .w-1\/4,
+            .w-3\/4 {
+                width: 100% !important;
+            }
+            
+            /* Mobile text sizing */
+            h1 { font-size: 1.5rem !important; }
+            h2 { font-size: 1.25rem !important; }
+            h3 { font-size: 1.125rem !important; }
+            
+            /* Mobile padding adjustments */
+            .p-6 { padding: 1rem !important; }
+            .p-8 { padding: 1.5rem !important; }
+            .px-6 { padding-left: 1rem !important; padding-right: 1rem !important; }
+            .py-6 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+            
+            /* Mobile margin adjustments */
+            .m-6 { margin: 1rem !important; }
+            .mb-6 { margin-bottom: 1rem !important; }
+            .mt-6 { margin-top: 1rem !important; }
+        }
+        
+        @media (max-width: 480px) {
+            /* Extra small mobile devices */
+            .container {
+                padding-left: 0.25rem;
+                padding-right: 0.25rem;
+            }
+            
+            /* Even smaller text on very small screens */
+            h1 { font-size: 1.25rem !important; }
+            h2 { font-size: 1.125rem !important; }
+            h3 { font-size: 1rem !important; }
+            
+            /* Tighter spacing */
+            .p-4 { padding: 0.75rem !important; }
+            .p-6 { padding: 0.75rem !important; }
+            .gap-4 { gap: 0.5rem !important; }
+            .gap-6 { gap: 0.75rem !important; }
+        }
+        
         /* Responsive form elements */
         input, select, textarea, button {
             font-size: clamp(0.875rem, 1.5vw, 1rem);
@@ -2048,6 +2134,32 @@
             max-width: 100%;
             padding-left: clamp(0.5rem, 2vw, 1rem);
             padding-right: clamp(0.5rem, 2vw, 1rem);
+        }
+        
+        /* Mobile-specific container adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+            
+            /* Ensure no horizontal overflow */
+            body {
+                overflow-x: hidden;
+            }
+            
+            main {
+                overflow-x: hidden;
+            }
+            
+            /* Force responsive behavior for common layout patterns */
+            .dashboard-content,
+            .stats-grid,
+            .activities-section {
+                width: 100% !important;
+                max-width: 100% !important;
+                overflow-x: hidden !important;
+            }
         }
         
         /* Responsive text sizing */
@@ -2086,6 +2198,26 @@
             border-radius: clamp(0.25rem, 0.5vw, 0.5rem);
         }
         
+        /* Mobile button improvements */
+        @media (max-width: 640px) {
+            .btn,
+            button {
+                width: 100%;
+                margin-bottom: 0.5rem;
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+            }
+            
+            /* Button groups on mobile */
+            .flex.space-x-2 button,
+            .flex.space-x-3 button,
+            .flex.space-x-4 button {
+                width: 100%;
+                margin-left: 0 !important;
+                margin-bottom: 0.5rem;
+            }
+        }
+        
         /* Table responsive */
         .table-responsive {
             overflow-x: auto;
@@ -2097,11 +2229,44 @@
             font-size: clamp(0.75rem, 1.3vw, 0.875rem);
         }
         
+        /* Mobile table improvements */
+        @media (max-width: 640px) {
+            .table-responsive {
+                margin: 0 -0.5rem;
+                border-radius: 0;
+            }
+            
+            .table-responsive table {
+                min-width: 500px;
+                font-size: 0.75rem;
+            }
+            
+            .table-responsive th,
+            .table-responsive td {
+                padding: 0.5rem 0.25rem;
+                white-space: nowrap;
+            }
+        }
+        
         /* Modal responsive */
         .modal-content {
             max-width: min(90vw, 600px);
             max-height: 90vh;
             overflow-y: auto;
+        }
+        
+        /* Mobile modal improvements */
+        @media (max-width: 640px) {
+            .modal-content {
+                max-width: 95vw;
+                max-height: 95vh;
+                margin: 1rem;
+                border-radius: 0.5rem;
+            }
+            
+            .modal-content .p-6 {
+                padding: 1rem;
+            }
         }
         
         /* Method 2: Pure CSS Container Queries Zoom Synchronization */
@@ -2603,8 +2768,10 @@
         @include('partials.sidebar')
         <div class="flex-1 flex flex-col overflow-hidden">
             @include('partials.header')
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
-                @yield('content')
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 px-2 sm:px-4 md:px-6">
+                <div class="container mx-auto max-w-full">
+                    @yield('content')
+                </div>
             </main>
         </div>
     </div>
