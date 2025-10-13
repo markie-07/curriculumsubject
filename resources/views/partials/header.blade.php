@@ -1,11 +1,11 @@
-<header class="flex justify-between items-center p-4 bg-white text-gray-800 shadow-md border-b-2 border-gray-200">
+<header class="flex justify-between items-center p-2 sm:p-4 bg-white text-gray-800 shadow-md border-b-2 border-gray-200">
     <div class="flex items-center">
-        <button id="sidebar-toggle" class="text-gray-600 hover:text-gray-800 focus:outline-none">
+        <button id="sidebar-toggle" class="text-gray-600 hover:text-gray-800 focus:outline-none p-2 rounded-lg hover:bg-gray-100 transition-colors">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
         </button>
     </div>
-    <div class="flex items-center space-x-6">
-        <span id="datetime-span" class="text-sm"></span>
+    <div class="flex items-center space-x-2 sm:space-x-4 lg:space-x-6">
+        <span id="datetime-span" class="text-xs sm:text-sm hidden sm:block"></span>
         
         <!-- Notifications -->
         <div class="relative">
@@ -34,13 +34,13 @@
         </div>
         
         <!-- User Info -->
-        <div class="flex items-center space-x-3">
-            <div class="text-right">
+        <div class="flex items-center space-x-2 sm:space-x-3">
+            <div class="text-right hidden md:block">
                 <p class="text-sm font-medium text-gray-800">{{ Auth::user()->name }}</p>
                 <p class="text-xs text-gray-500">{{ Auth::user()->username }}</p>
             </div>
             <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                <span class="text-sm font-semibold">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                <span class="text-sm font-semibold text-white">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
             </div>
         </div>
 

@@ -103,8 +103,7 @@
     }
     
     .dashboard-content {
-        padding-top: 10px;
-        padding-bottom: 20px;
+        padding: 0.5rem;
         position: relative;
         z-index: 10;
         min-height: calc(100vh - 40px);
@@ -114,34 +113,49 @@
         container-type: inline-size;
     }
     
-    /* Base grid layout - single row layout with minimal gaps */
+    @media (min-width: 640px) {
+        .dashboard-content {
+            padding: 1rem;
+        }
+    }
+    
+    @media (min-width: 1024px) {
+        .dashboard-content {
+            padding: 1.5rem;
+        }
+    }
+    
+    /* Mobile-First Stats Grid */
     .stats-grid {
         display: grid;
         width: 100%;
-        /* Single row with 8 equal columns */
-        grid-template-columns: repeat(8, 1fr);
-        gap: clamp(0.25rem, 0.5vw, 0.5rem);
-        padding: clamp(0.125rem, 0.5vw, 0.5rem);
-        /* Enable container queries for enhanced responsiveness */
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+        padding: 0.5rem;
         container-type: inline-size;
-        /* Responsive margin like other components */
-        margin-bottom: clamp(0.5rem, 1.5vw, 1rem);
-        /* Ensure no wrapping */
-        overflow-x: auto;
+        margin-bottom: 1rem;
     }
 
-    /* Mobile responsiveness - stack on very small screens */
-    @media (max-width: 768px) {
+    @media (min-width: 480px) {
         .stats-grid {
-            grid-template-columns: repeat(4, 1fr);
-            gap: clamp(0.125rem, 0.5vw, 0.375rem);
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
         }
     }
 
-    @media (max-width: 480px) {
+    @media (min-width: 640px) {
         .stats-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: clamp(0.125rem, 0.5vw, 0.375rem);
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            padding: 0.75rem;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .stats-grid {
+            grid-template-columns: repeat(8, 1fr);
+            gap: 1.25rem;
+            padding: 1rem;
         }
     }
     
@@ -291,14 +305,28 @@
     
     /* Dashboard header zoom synchronization with starry background */
     .dashboard-header {
-        padding: clamp(0.75rem, 2vw, 1.25rem);
-        border-radius: clamp(0.5rem, 1vw, 0.75rem);
-        margin-bottom: clamp(0.5rem, 1.5vw, 1rem);
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
         position: relative;
         overflow: hidden;
         background: white;
-        color: #1f2937; /* Dark text for white background */
-        border: 1px solid #e5e7eb; /* Light border for definition */
+        color: #1f2937;
+        border: 1px solid #e5e7eb;
+    }
+    
+    @media (min-width: 640px) {
+        .dashboard-header {
+            padding: 1rem;
+            border-radius: 0.75rem;
+        }
+    }
+    
+    @media (min-width: 1024px) {
+        .dashboard-header {
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
     }
     
     /* Animated stars in dashboard header */
@@ -374,7 +402,7 @@
     }
     
     .dashboard-title {
-        font-size: clamp(1.75rem, 5vw, 2.75rem);
+        font-size: 1.5rem;
         line-height: 1.2;
         font-weight: 800;
         color: #111827 !important;
@@ -382,13 +410,38 @@
         letter-spacing: -0.025em;
     }
     
+    @media (min-width: 640px) {
+        .dashboard-title {
+            font-size: 2rem;
+        }
+    }
+    
+    @media (min-width: 1024px) {
+        .dashboard-title {
+            font-size: 2.5rem;
+        }
+    }
+    
     .dashboard-subtitle {
-        font-size: clamp(1rem, 2.8vw, 1.375rem);
+        font-size: 0.875rem;
         line-height: 1.4;
         font-weight: 600;
         color: #374151 !important;
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        margin-top: clamp(0.25rem, 0.5vw, 0.5rem);
+        margin-top: 0.25rem;
+    }
+    
+    @media (min-width: 640px) {
+        .dashboard-subtitle {
+            font-size: 1rem;
+        }
+    }
+    
+    @media (min-width: 1024px) {
+        .dashboard-subtitle {
+            font-size: 1.25rem;
+            margin-top: 0.5rem;
+        }
     }
     
     /* Enhanced date/time visibility */
@@ -857,7 +910,7 @@
     </div>
 
     <!-- Charts Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 dashboard-section" id="charts-section">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8 dashboard-section" id="charts-section">
         <!-- Curriculum Overview Chart -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div class="flex items-center justify-between mb-6">
@@ -1095,7 +1148,7 @@
     </div>
 
     <!-- Two Column Layout for Activities and Quick Actions -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 activities-section flex-1 dashboard-section" id="activities-section">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 activities-section flex-1 dashboard-section" id="activities-section">
         <!-- Recent Activities -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 activity-card overflow-hidden">
             <h3 class="activity-title font-semibold text-gray-800 flex items-center">
@@ -1104,7 +1157,13 @@
                 </div>
                 Recent Activities
             </h3>
-            <div class="space-y-3 overflow-y-auto activities-scroll-hidden" style="max-height: 400px;">
+            <div class="space-y-3 overflow-y-auto activities-scroll-hidden" style="max-height: 300px;">
+            
+            @media (min-width: 640px) {
+                .activities-scroll-hidden {
+                    max-height: 400px !important;
+                }
+            }
                 @if(isset($dashboardData['recent_activities']) && $dashboardData['recent_activities']->count() > 0)
                     @foreach($dashboardData['recent_activities'] as $activity)
                     <div class="flex items-center space-x-4 p-4 border border-gray-100 activity-item">
@@ -1144,7 +1203,7 @@
                 Quick Actions
             </h3>
             <div class="space-y-4">
-                <a href="{{ route('employees.index') }}" class="flex items-center p-5 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200/50 quick-action-btn">
+                <a href="{{ route('employees.index') }}" class="flex items-center p-3 sm:p-4 lg:p-5 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200/50 quick-action-btn">
                     <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mr-4 quick-action-icon">
                         <i class="las la-user-cog text-white" style="font-size: 1.5rem;"></i>
                     </div>
@@ -1154,7 +1213,7 @@
                     </div>
                 </a>
 
-                <a href="{{ route('curriculum_export_tool') }}" class="flex items-center p-5 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl border border-emerald-200/50 quick-action-btn">
+                <a href="{{ route('curriculum_export_tool') }}" class="flex items-center p-3 sm:p-4 lg:p-5 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl border border-emerald-200/50 quick-action-btn">
                     <div class="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center mr-4 quick-action-icon">
                         <i class="las la-file-export text-white" style="font-size: 1.5rem;"></i>
                     </div>
@@ -1164,7 +1223,7 @@
                     </div>
                 </a>
 
-                <a href="{{ route('employees.all-activities') }}" class="flex items-center p-5 bg-gradient-to-br from-violet-50 to-violet-100 rounded-xl border border-violet-200/50 quick-action-btn">
+                <a href="{{ route('employees.all-activities') }}" class="flex items-center p-3 sm:p-4 lg:p-5 bg-gradient-to-br from-violet-50 to-violet-100 rounded-xl border border-violet-200/50 quick-action-btn">
                     <div class="w-12 h-12 bg-violet-600 rounded-xl flex items-center justify-center mr-4 quick-action-icon">
                         <i class="las la-chart-bar text-white" style="font-size: 1.5rem;"></i>
                     </div>
