@@ -405,23 +405,24 @@
                                         <span>Edit</span>
                                     </a>
                                     
-                                    <form method="POST" action="{{ route('employees.toggle-status', $employee->id) }}" class="inline-block">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" class="{{ $employee->status === 'active' ? 'text-orange-600 hover:text-orange-900' : 'text-green-600 hover:text-green-900' }} inline-flex items-center space-x-1">
-                                            @if($employee->status === 'active')
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
-                                                </svg>
-                                                <span>Deactivate</span>
-                                            @else
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                                </svg>
-                                                <span>Activate</span>
-                                            @endif
-                                        </button>
-                                    </form>
+                                    <button type="button" 
+                                            class="{{ $employee->status === 'active' ? 'text-orange-600 hover:text-orange-900' : 'text-green-600 hover:text-green-900' }} inline-flex items-center space-x-1 toggle-status-btn"
+                                            data-employee-id="{{ $employee->id }}"
+                                            data-employee-name="{{ $employee->name }}"
+                                            data-current-status="{{ $employee->status }}"
+                                            data-action="{{ $employee->status === 'active' ? 'deactivate' : 'activate' }}">
+                                        @if($employee->status === 'active')
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
+                                            </svg>
+                                            <span>Deactivate</span>
+                                        @else
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            <span>Activate</span>
+                                        @endif
+                                    </button>
                                     
                                     <form method="POST" action="{{ route('employees.destroy', $employee->id) }}" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this employee?')">
                                         @csrf
@@ -546,6 +547,30 @@
             </div>
         </div>
 
+        {{-- Status Toggle Confirmation Modal --}}
+        <div id="statusConfirmModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 ease-out hidden">
+            <div class="relative bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 transform scale-95 opacity-0 transition-all duration-300 ease-out" id="status-confirm-modal-panel">
+                <div class="text-center mb-6">
+                    <div id="status-icon-container" class="w-16 h-16 rounded-full p-3 flex items-center justify-center mx-auto mb-4">
+                        <svg id="status-icon" class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                    </div>
+                    <h3 id="status-confirm-title" class="text-xl font-bold text-slate-800 mb-2"></h3>
+                    <p id="status-confirm-message" class="text-sm text-slate-600"></p>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button id="cancelStatusChange" class="flex-1 px-4 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition-all">
+                        Cancel
+                    </button>
+                    <button id="confirmStatusChange" class="flex-1 px-4 py-2.5 text-sm font-medium text-white rounded-lg transition-all">
+                        <span id="confirm-button-text">Confirm</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Modal elements
@@ -562,6 +587,20 @@
             const successModalTitle = document.getElementById('success-modal-title');
             const successModalMessage = document.getElementById('success-modal-message');
             const closeSuccessModalButton = document.getElementById('closeSuccessModalButton');
+
+            // Status confirmation modal elements
+            const statusConfirmModal = document.getElementById('statusConfirmModal');
+            const statusConfirmModalPanel = document.getElementById('status-confirm-modal-panel');
+            const statusIconContainer = document.getElementById('status-icon-container');
+            const statusIcon = document.getElementById('status-icon');
+            const statusConfirmTitle = document.getElementById('status-confirm-title');
+            const statusConfirmMessage = document.getElementById('status-confirm-message');
+            const cancelStatusChange = document.getElementById('cancelStatusChange');
+            const confirmStatusChange = document.getElementById('confirmStatusChange');
+            const confirmButtonText = document.getElementById('confirm-button-text');
+
+            // Store current action data
+            let currentStatusAction = null;
 
             // Modal helper functions
             const showAddEmployeeModal = () => {
@@ -594,11 +633,104 @@
                 setTimeout(() => successModal.classList.add('hidden'), 300);
             };
 
+            const showStatusConfirmModal = (employeeData) => {
+                const action = employeeData.action;
+                const employeeName = employeeData.name;
+                
+                // Set modal content based on action
+                if (action === 'deactivate') {
+                    statusIconContainer.className = 'w-16 h-16 rounded-full bg-orange-100 p-3 flex items-center justify-center mx-auto mb-4';
+                    statusIcon.className = 'w-10 h-10 text-orange-600';
+                    statusIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>';
+                    statusConfirmTitle.textContent = 'Deactivate Employee';
+                    statusConfirmMessage.textContent = `Are you sure you want to deactivate ${employeeName}? They will lose access to the system.`;
+                    confirmStatusChange.className = 'flex-1 px-4 py-2.5 text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 rounded-lg transition-all';
+                    confirmButtonText.textContent = 'Deactivate';
+                } else {
+                    statusIconContainer.className = 'w-16 h-16 rounded-full bg-green-100 p-3 flex items-center justify-center mx-auto mb-4';
+                    statusIcon.className = 'w-10 h-10 text-green-600';
+                    statusIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+                    statusConfirmTitle.textContent = 'Activate Employee';
+                    statusConfirmMessage.textContent = `Are you sure you want to activate ${employeeName}? They will regain access to the system.`;
+                    confirmStatusChange.className = 'flex-1 px-4 py-2.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-all';
+                    confirmButtonText.textContent = 'Activate';
+                }
+                
+                currentStatusAction = employeeData;
+                statusConfirmModal.classList.remove('hidden');
+                setTimeout(() => {
+                    statusConfirmModal.classList.remove('opacity-0');
+                    statusConfirmModalPanel.classList.remove('opacity-0', 'scale-95');
+                }, 10);
+            };
+
+            const hideStatusConfirmModal = () => {
+                statusConfirmModal.classList.add('opacity-0');
+                statusConfirmModalPanel.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => {
+                    statusConfirmModal.classList.add('hidden');
+                    currentStatusAction = null;
+                }, 300);
+            };
+
             // Event listeners
             addEmployeeButton.addEventListener('click', showAddEmployeeModal);
             closeEmployeeModalButton.addEventListener('click', hideAddEmployeeModal);
             cancelEmployeeModalButton.addEventListener('click', hideAddEmployeeModal);
             closeSuccessModalButton.addEventListener('click', hideSuccessModal);
+
+            // Status confirmation modal event listeners
+            cancelStatusChange.addEventListener('click', hideStatusConfirmModal);
+            
+            // Status toggle buttons
+            document.querySelectorAll('.toggle-status-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const employeeData = {
+                        id: this.dataset.employeeId,
+                        name: this.dataset.employeeName,
+                        currentStatus: this.dataset.currentStatus,
+                        action: this.dataset.action
+                    };
+                    showStatusConfirmModal(employeeData);
+                });
+            });
+
+            // Confirm status change
+            confirmStatusChange.addEventListener('click', async function() {
+                if (!currentStatusAction) return;
+                
+                try {
+                    const response = await fetch(`/employees/${currentStatusAction.id}/toggle-status`, {
+                        method: 'PATCH',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    if (response.ok) {
+                        hideStatusConfirmModal();
+                        
+                        const actionText = currentStatusAction.action === 'activate' ? 'activated' : 'deactivated';
+                        showSuccessModal(
+                            'Status Updated!', 
+                            `${currentStatusAction.name} has been successfully ${actionText}.`
+                        );
+                        
+                        // Reload page after success modal
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    } else {
+                        const errorData = await response.json();
+                        alert('Error: ' + (errorData.message || 'Failed to update employee status'));
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while updating the employee status.');
+                }
+            });
 
             // Employee form submission
             employeeForm.addEventListener('submit', async function(e) {

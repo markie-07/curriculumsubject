@@ -36,6 +36,1996 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+
+        /* Dark Mode CSS Variables */
+        :root {
+            /* Light mode colors */
+            --bg-primary: #f3f4f6;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f9fafb;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+            --border-primary: #e5e7eb;
+            --border-secondary: #d1d5db;
+            --sidebar-bg: #1e3a8a;
+            --sidebar-text: #e5e7eb;
+            --sidebar-hover: rgba(59, 130, 246, 0.1);
+            --card-bg: #ffffff;
+            --card-shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            /* Dark mode colors */
+            --bg-primary: #111827;
+            --bg-secondary: #1f2937;
+            --bg-tertiary: #374151;
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --text-tertiary: #9ca3af;
+            --border-primary: #374151;
+            --border-secondary: #4b5563;
+            --sidebar-bg: #0f172a;
+            --sidebar-text: #e2e8f0;
+            --sidebar-hover: rgba(59, 130, 246, 0.2);
+            --card-bg: #1f2937;
+            --card-shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        /* Apply CSS variables to elements */
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Dark mode sidebar styles */
+        [data-theme="dark"] #sidebar {
+            background-color: var(--sidebar-bg);
+            border-color: #1e293b;
+        }
+
+        [data-theme="dark"] #sidebar .border-blue-800 {
+            border-color: #1e293b !important;
+        }
+
+        [data-theme="dark"] #sidebar .border-blue-600\/30 {
+            border-color: rgba(59, 130, 246, 0.3) !important;
+        }
+
+        [data-theme="dark"] #sidebar .text-gray-200 {
+            color: var(--sidebar-text) !important;
+        }
+
+        [data-theme="dark"] #sidebar .text-gray-400 {
+            color: #94a3b8 !important;
+        }
+
+        [data-theme="dark"] #sidebar .text-blue-200 {
+            color: #cbd5e1 !important;
+        }
+
+        [data-theme="dark"] #sidebar .bg-blue-800\/20 {
+            background-color: transparent !important;
+        }
+
+        [data-theme="dark"] #sidebar .hover\:bg-blue-800\/30:hover {
+            background-color: rgba(59, 130, 246, 0.1) !important;
+        }
+
+        /* Remove black backgrounds from sidebar icon containers */
+        [data-theme="dark"] #sidebar .bg-blue-800\/30 {
+            background-color: transparent !important;
+        }
+
+        [data-theme="dark"] #sidebar .group-hover\:bg-blue-600\/40:hover {
+            background-color: rgba(59, 130, 246, 0.2) !important;
+        }
+
+        /* Fix profile section background */
+        [data-theme="dark"] #sidebar .bg-blue-800\/20 {
+            background-color: transparent !important;
+        }
+
+        /* Ensure nav link icon backgrounds are transparent */
+        [data-theme="dark"] #sidebar .nav-link .w-8 {
+            background-color: transparent !important;
+        }
+
+        /* Force all sidebar backgrounds to be transparent */
+        [data-theme="dark"] #sidebar .w-8.h-8 {
+            background-color: transparent !important;
+        }
+
+        [data-theme="dark"] #sidebar .rounded-lg {
+            background-color: transparent !important;
+        }
+
+        [data-theme="dark"] #sidebar div[class*="bg-blue"] {
+            background-color: transparent !important;
+        }
+
+        [data-theme="dark"] #sidebar div[class*="bg-gray"] {
+            background-color: transparent !important;
+        }
+
+        /* Specifically target all possible background variants */
+        [data-theme="dark"] #sidebar .bg-blue-600\/30,
+        [data-theme="dark"] #sidebar .bg-blue-700\/30,
+        [data-theme="dark"] #sidebar .bg-blue-500\/30,
+        [data-theme="dark"] #sidebar .bg-gray-600\/30,
+        [data-theme="dark"] #sidebar .bg-gray-700\/30 {
+            background-color: transparent !important;
+        }
+
+        /* Remove any remaining dark backgrounds */
+        [data-theme="dark"] #sidebar * {
+            background-color: inherit !important;
+        }
+
+        /* Override for the main sidebar background */
+        [data-theme="dark"] #sidebar {
+            background-color: var(--sidebar-bg) !important;
+        }
+
+        /* Force transparent backgrounds on all icon containers and nav elements */
+        [data-theme="dark"] #sidebar .nav-link div,
+        [data-theme="dark"] #sidebar .group div,
+        [data-theme="dark"] #sidebar a div,
+        [data-theme="dark"] #sidebar .flex div {
+            background-color: transparent !important;
+        }
+
+        /* Specifically target the profile section */
+        [data-theme="dark"] #sidebar .profile-section div {
+            background-color: transparent !important;
+        }
+
+        /* Remove backgrounds from all child elements except the main sidebar */
+        [data-theme="dark"] #sidebar > * * {
+            background-color: transparent !important;
+        }
+
+        /* Keep only the main sidebar background */
+        [data-theme="dark"] #sidebar > div,
+        [data-theme="dark"] #sidebar > nav,
+        [data-theme="dark"] #sidebar > aside {
+            background-color: transparent !important;
+        }
+
+        /* Dark mode main content area */
+        [data-theme="dark"] main {
+            background-color: var(--bg-primary);
+        }
+
+        [data-theme="dark"] .bg-gray-100 {
+            background-color: var(--bg-primary) !important;
+        }
+
+        [data-theme="dark"] .bg-gray-200 {
+            background-color: var(--bg-secondary) !important;
+        }
+
+        [data-theme="dark"] .bg-white {
+            background-color: var(--card-bg) !important;
+        }
+
+        [data-theme="dark"] .text-gray-900 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .text-gray-700 {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] .text-gray-600 {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] .text-gray-500 {
+            color: var(--text-tertiary) !important;
+        }
+
+        [data-theme="dark"] .border-gray-200 {
+            border-color: var(--border-primary) !important;
+        }
+
+        [data-theme="dark"] .border-gray-300 {
+            border-color: var(--border-secondary) !important;
+        }
+
+        /* Dark mode cards and components */
+        [data-theme="dark"] .shadow-lg {
+            box-shadow: 0 10px 15px -3px var(--card-shadow), 0 4px 6px -2px var(--card-shadow) !important;
+        }
+
+        [data-theme="dark"] .shadow-md {
+            box-shadow: 0 4px 6px -1px var(--card-shadow), 0 2px 4px -1px var(--card-shadow) !important;
+        }
+
+        [data-theme="dark"] .shadow {
+            box-shadow: 0 1px 3px 0 var(--card-shadow), 0 1px 2px 0 var(--card-shadow) !important;
+        }
+
+        /* Dark mode forms */
+        [data-theme="dark"] input,
+        [data-theme="dark"] select,
+        [data-theme="dark"] textarea {
+            background-color: var(--bg-tertiary);
+            border-color: var(--border-primary);
+            color: var(--text-primary);
+        }
+
+        [data-theme="dark"] input:focus,
+        [data-theme="dark"] select:focus,
+        [data-theme="dark"] textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Dark mode buttons */
+        [data-theme="dark"] .bg-blue-600 {
+            background-color: #2563eb !important;
+        }
+
+        [data-theme="dark"] .hover\:bg-blue-700:hover {
+            background-color: #1d4ed8 !important;
+        }
+
+        [data-theme="dark"] .bg-red-600 {
+            background-color: #dc2626 !important;
+        }
+
+        [data-theme="dark"] .hover\:bg-red-700:hover {
+            background-color: #b91c1c !important;
+        }
+
+        [data-theme="dark"] .bg-green-600 {
+            background-color: #16a34a !important;
+        }
+
+        [data-theme="dark"] .hover\:bg-green-700:hover {
+            background-color: #15803d !important;
+        }
+
+        /* Dark mode tables */
+        [data-theme="dark"] table {
+            background-color: var(--card-bg);
+        }
+
+        [data-theme="dark"] th {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        [data-theme="dark"] td {
+            border-color: var(--border-primary);
+        }
+
+        [data-theme="dark"] tr:nth-child(even) {
+            background-color: var(--bg-tertiary);
+        }
+
+        /* Dark mode modals */
+        [data-theme="dark"] .modal-content {
+            background-color: var(--card-bg);
+            border-color: var(--border-primary);
+        }
+
+        /* Enhanced modal styling for dark mode */
+        [data-theme="dark"] .fixed.inset-0 {
+            background-color: rgba(0, 0, 0, 0.7) !important;
+        }
+
+        [data-theme="dark"] .bg-gray-50 {
+            background-color: var(--bg-secondary) !important;
+        }
+
+        [data-theme="dark"] .bg-gray-100 {
+            background-color: var(--bg-tertiary) !important;
+        }
+
+        [data-theme="dark"] .border-gray-200 {
+            border-color: var(--border-primary) !important;
+        }
+
+        [data-theme="dark"] .border-gray-300 {
+            border-color: var(--border-secondary) !important;
+        }
+
+        /* Dark mode dropdown menus */
+        [data-theme="dark"] .dropdown-menu-minimal {
+            background-color: var(--card-bg);
+            border-color: var(--border-primary);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        [data-theme="dark"] .dropdown-link {
+            color: var(--text-secondary);
+        }
+
+        [data-theme="dark"] .dropdown-link:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        [data-theme="dark"] .dropdown-icon {
+            background-color: var(--bg-tertiary);
+        }
+
+        [data-theme="dark"] .dropdown-link:hover .dropdown-icon {
+            background-color: var(--border-secondary);
+        }
+
+        /* Dark mode notifications */
+        [data-theme="dark"] .notifications-dropdown-minimal {
+            background-color: var(--card-bg);
+            border-color: var(--border-primary);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        [data-theme="dark"] .notification-item {
+            border-color: var(--border-primary);
+        }
+
+        [data-theme="dark"] .notification-item:hover {
+            background-color: var(--bg-tertiary);
+        }
+
+        [data-theme="dark"] .notification-title {
+            color: var(--text-primary);
+        }
+
+        [data-theme="dark"] .notification-message {
+            color: var(--text-secondary);
+        }
+
+        [data-theme="dark"] .notification-time {
+            color: var(--text-tertiary);
+        }
+
+        /* Dark mode toggle animation */
+        .dark-mode-transition {
+            transition: all 0.3s ease;
+        }
+
+        /* Enhanced Dark Mode Hover Effects */
+        
+        /* Enhanced button hover effects in dark mode */
+        [data-theme="dark"] .bg-blue-600:hover {
+            background-color: #1d4ed8 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4) !important;
+        }
+
+        [data-theme="dark"] .bg-red-600:hover {
+            background-color: #b91c1c !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4) !important;
+        }
+
+        [data-theme="dark"] .bg-green-600:hover {
+            background-color: #15803d !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.4) !important;
+        }
+
+        [data-theme="dark"] .bg-yellow-600:hover {
+            background-color: #ca8a04 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(234, 179, 8, 0.4) !important;
+        }
+
+        [data-theme="dark"] .bg-purple-600:hover {
+            background-color: #7c3aed !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(147, 51, 234, 0.4) !important;
+        }
+
+        [data-theme="dark"] .bg-indigo-600:hover {
+            background-color: #4338ca !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4) !important;
+        }
+
+        /* Enhanced navigation hover effects */
+        [data-theme="dark"] .nav-link:hover {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(99, 102, 241, 0.25)) !important;
+            transform: translateX(4px);
+            border-left: 3px solid #60a5fa;
+        }
+
+        [data-theme="dark"] .nav-link:hover .w-8 {
+            background: rgba(59, 130, 246, 0.3) !important;
+            transform: scale(1.1);
+        }
+
+        [data-theme="dark"] .nav-link:hover svg {
+            color: #93c5fd !important;
+            transform: scale(1.1);
+        }
+
+        [data-theme="dark"] .nav-link:hover span {
+            color: #f1f5f9 !important;
+            font-weight: 600;
+        }
+
+        /* Enhanced card hover effects */
+        [data-theme="dark"] .bg-white:hover,
+        [data-theme="dark"] .stat-card:hover {
+            background-color: #374151 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4) !important;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        /* Enhanced table row hover effects */
+        [data-theme="dark"] tr:hover {
+            background-color: rgba(59, 130, 246, 0.1) !important;
+            transform: scale(1.01);
+            transition: all 0.2s ease;
+        }
+
+        [data-theme="dark"] tr:hover td {
+            color: var(--text-primary) !important;
+            border-color: rgba(59, 130, 246, 0.3) !important;
+        }
+
+        /* Enhanced form element hover effects */
+        [data-theme="dark"] input:hover,
+        [data-theme="dark"] select:hover,
+        [data-theme="dark"] textarea:hover {
+            background-color: #4b5563 !important;
+            border-color: #60a5fa !important;
+            transform: scale(1.02);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+        }
+
+        /* Enhanced link hover effects */
+        [data-theme="dark"] a:hover {
+            color: #93c5fd !important;
+            text-shadow: 0 0 8px rgba(147, 197, 253, 0.5);
+            transition: all 0.2s ease;
+        }
+
+        /* Enhanced dropdown hover effects */
+        [data-theme="dark"] .dropdown-link:hover {
+            background-color: rgba(59, 130, 246, 0.15) !important;
+            color: var(--text-primary) !important;
+            transform: translateX(4px);
+            border-left: 3px solid #60a5fa;
+        }
+
+        [data-theme="dark"] .dropdown-link:hover .dropdown-icon {
+            background-color: rgba(59, 130, 246, 0.2) !important;
+            transform: scale(1.1);
+        }
+
+        /* Enhanced notification hover effects */
+        [data-theme="dark"] .notification-item:hover {
+            background-color: rgba(59, 130, 246, 0.1) !important;
+            transform: translateX(4px);
+            border-left: 4px solid #60a5fa !important;
+        }
+
+        /* Enhanced sidebar footer hover effects */
+        [data-theme="dark"] .sidebar-footer:hover {
+            background-color: rgba(59, 130, 246, 0.1) !important;
+        }
+
+        /* Enhanced toggle switch hover effects */
+        [data-theme="dark"] input[type="checkbox"]:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Enhanced icon hover effects */
+        [data-theme="dark"] .las:hover,
+        [data-theme="dark"] svg:hover {
+            color: #93c5fd !important;
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 8px rgba(147, 197, 253, 0.5));
+            transition: all 0.2s ease;
+        }
+
+        /* Enhanced badge hover effects */
+        [data-theme="dark"] .badge:hover,
+        [data-theme="dark"] .bg-blue-100:hover {
+            background-color: rgba(59, 130, 246, 0.2) !important;
+            color: #93c5fd !important;
+            transform: scale(1.05);
+        }
+
+        /* Enhanced modal hover effects */
+        [data-theme="dark"] .modal-content:hover {
+            border-color: rgba(59, 130, 246, 0.4) !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        /* Enhanced search input hover effects */
+        [data-theme="dark"] input[type="search"]:hover,
+        [data-theme="dark"] input[type="text"]:hover {
+            background-color: #4b5563 !important;
+            border-color: #60a5fa !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2), 0 0 15px rgba(59, 130, 246, 0.1) !important;
+        }
+
+        /* Enhanced pagination hover effects */
+        [data-theme="dark"] .pagination a:hover {
+            background-color: rgba(59, 130, 246, 0.2) !important;
+            color: #93c5fd !important;
+            transform: scale(1.1);
+            border-color: #60a5fa !important;
+        }
+
+        /* Enhanced tab hover effects */
+        [data-theme="dark"] .tab:hover {
+            background-color: rgba(59, 130, 246, 0.15) !important;
+            color: #93c5fd !important;
+            border-bottom: 2px solid #60a5fa !important;
+            transform: translateY(-2px);
+        }
+
+        /* Enhanced accordion hover effects */
+        [data-theme="dark"] .accordion-header:hover {
+            background-color: rgba(59, 130, 246, 0.1) !important;
+            color: #93c5fd !important;
+            transform: translateX(4px);
+        }
+
+        /* Global hover transition for all interactive elements */
+        [data-theme="dark"] button,
+        [data-theme="dark"] a,
+        [data-theme="dark"] input,
+        [data-theme="dark"] select,
+        [data-theme="dark"] textarea,
+        [data-theme="dark"] .nav-link,
+        [data-theme="dark"] .dropdown-link,
+        [data-theme="dark"] .notification-item,
+        [data-theme="dark"] tr,
+        [data-theme="dark"] .stat-card {
+            transition: all 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease !important;
+        }
+
+        /* Enhanced focus effects for accessibility */
+        [data-theme="dark"] *:focus {
+            outline: 2px solid #60a5fa !important;
+            outline-offset: 2px !important;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3) !important;
+        }
+
+        /* Comprehensive Dark Mode Text Visibility Fixes */
+        
+        /* All heading elements */
+        [data-theme="dark"] h1,
+        [data-theme="dark"] h2,
+        [data-theme="dark"] h3,
+        [data-theme="dark"] h4,
+        [data-theme="dark"] h5,
+        [data-theme="dark"] h6 {
+            color: var(--text-primary) !important;
+        }
+
+        /* All paragraph and text elements */
+        [data-theme="dark"] p,
+        [data-theme="dark"] span,
+        [data-theme="dark"] div,
+        [data-theme="dark"] label,
+        [data-theme="dark"] strong,
+        [data-theme="dark"] em,
+        [data-theme="dark"] small {
+            color: var(--text-primary) !important;
+        }
+
+        /* Specific text color classes */
+        [data-theme="dark"] .text-slate-800,
+        [data-theme="dark"] .text-slate-700,
+        [data-theme="dark"] .text-gray-800,
+        [data-theme="dark"] .text-gray-700 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .text-slate-600,
+        [data-theme="dark"] .text-slate-500,
+        [data-theme="dark"] .text-gray-600,
+        [data-theme="dark"] .text-gray-500 {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] .text-slate-400,
+        [data-theme="dark"] .text-gray-400 {
+            color: var(--text-tertiary) !important;
+        }
+
+        /* Form labels and input text */
+        [data-theme="dark"] label,
+        [data-theme="dark"] .form-label {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] input::placeholder,
+        [data-theme="dark"] textarea::placeholder,
+        [data-theme="dark"] select option {
+            color: var(--text-tertiary) !important;
+        }
+
+        /* Modal text elements */
+        [data-theme="dark"] .modal-content h1,
+        [data-theme="dark"] .modal-content h2,
+        [data-theme="dark"] .modal-content h3,
+        [data-theme="dark"] .modal-content h4,
+        [data-theme="dark"] .modal-content h5,
+        [data-theme="dark"] .modal-content h6,
+        [data-theme="dark"] .modal-content p,
+        [data-theme="dark"] .modal-content span,
+        [data-theme="dark"] .modal-content div,
+        [data-theme="dark"] .modal-content label {
+            color: var(--text-primary) !important;
+        }
+
+        /* Card text elements */
+        [data-theme="dark"] .bg-white h1,
+        [data-theme="dark"] .bg-white h2,
+        [data-theme="dark"] .bg-white h3,
+        [data-theme="dark"] .bg-white h4,
+        [data-theme="dark"] .bg-white h5,
+        [data-theme="dark"] .bg-white h6,
+        [data-theme="dark"] .bg-white p,
+        [data-theme="dark"] .bg-white span,
+        [data-theme="dark"] .bg-white div,
+        [data-theme="dark"] .bg-white label {
+            color: var(--text-primary) !important;
+        }
+
+        /* Subject card specific text */
+        [data-theme="dark"] .subject-tag .text-main,
+        [data-theme="dark"] .subject-tag .text-code {
+            color: var(--text-primary) !important;
+        }
+
+        /* Table text elements */
+        [data-theme="dark"] table th,
+        [data-theme="dark"] table td,
+        [data-theme="dark"] thead th,
+        [data-theme="dark"] tbody td {
+            color: var(--text-primary) !important;
+        }
+
+        /* List text elements */
+        [data-theme="dark"] ul li,
+        [data-theme="dark"] ol li {
+            color: var(--text-primary) !important;
+        }
+
+        /* Link text visibility */
+        [data-theme="dark"] a {
+            color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] a:visited {
+            color: #a78bfa !important;
+        }
+
+        /* Button text */
+        [data-theme="dark"] button {
+            color: inherit !important;
+        }
+
+        /* Specific component text fixes */
+        [data-theme="dark"] .curriculum-history-card h3,
+        [data-theme="dark"] .curriculum-history-card p {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .curriculum-history-card .text-slate-500 {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] .curriculum-history-card .text-slate-400 {
+            color: var(--text-tertiary) !important;
+        }
+
+        /* Badge and tag text */
+        [data-theme="dark"] .badge,
+        [data-theme="dark"] .unit-badge {
+            color: inherit !important;
+        }
+
+        /* Loading and error text */
+        [data-theme="dark"] .text-red-500,
+        [data-theme="dark"] .text-red-600 {
+            color: #f87171 !important;
+        }
+
+        [data-theme="dark"] .text-green-500,
+        [data-theme="dark"] .text-green-600 {
+            color: #4ade80 !important;
+        }
+
+        [data-theme="dark"] .text-blue-500,
+        [data-theme="dark"] .text-blue-600 {
+            color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] .text-yellow-500,
+        [data-theme="dark"] .text-yellow-600 {
+            color: #fbbf24 !important;
+        }
+
+        /* Ensure all text in dark backgrounds is visible */
+        [data-theme="dark"] .bg-gray-50,
+        [data-theme="dark"] .bg-slate-50 {
+            background-color: var(--bg-tertiary) !important;
+        }
+
+        [data-theme="dark"] .bg-gray-50 *,
+        [data-theme="dark"] .bg-slate-50 * {
+            color: var(--text-primary) !important;
+        }
+
+        /* Override any remaining invisible text */
+        [data-theme="dark"] * {
+            color: inherit;
+        }
+
+        [data-theme="dark"] body *:not(svg):not(path):not(circle):not(rect):not(line):not(polyline):not(polygon) {
+            color: var(--text-primary);
+        }
+
+        /* Specific overrides for elements that should maintain their color */
+        [data-theme="dark"] .text-white {
+            color: #ffffff !important;
+        }
+
+        [data-theme="dark"] .text-black {
+            color: var(--text-primary) !important;
+        }
+
+        /* Subject mapping history specific fixes */
+        [data-theme="dark"] .subject-tag-major .text-main,
+        [data-theme="dark"] .subject-tag-major .text-code {
+            color: #1E40AF !important;
+        }
+
+        [data-theme="dark"] .subject-tag-minor .text-main,
+        [data-theme="dark"] .subject-tag-minor .text-code {
+            color: #5B21B6 !important;
+        }
+
+        [data-theme="dark"] .subject-tag-elective .text-main,
+        [data-theme="dark"] .subject-tag-elective .text-code {
+            color: #991B1B !important;
+        }
+
+        [data-theme="dark"] .subject-tag-general .text-main,
+        [data-theme="dark"] .subject-tag-general .text-code {
+            color: #9A3412 !important;
+        }
+
+        /* Subject mapping page specific dark mode fixes */
+        
+        /* Major subjects (blue theme) */
+        [data-theme="dark"] .bg-blue-100 {
+            background-color: rgba(59, 130, 246, 0.2) !important;
+        }
+        
+        [data-theme="dark"] .border-blue-200 {
+            border-color: rgba(59, 130, 246, 0.4) !important;
+        }
+        
+        [data-theme="dark"] .text-blue-800 {
+            color: #93c5fd !important;
+        }
+        
+        [data-theme="dark"] .text-blue-700 {
+            color: #bfdbfe !important;
+        }
+        
+        [data-theme="dark"] .text-blue-500 {
+            color: #60a5fa !important;
+        }
+        
+        [data-theme="dark"] .bg-blue-200 {
+            background-color: rgba(59, 130, 246, 0.3) !important;
+        }
+
+        /* Minor subjects (purple theme) */
+        [data-theme="dark"] .bg-purple-100 {
+            background-color: rgba(147, 51, 234, 0.2) !important;
+        }
+        
+        [data-theme="dark"] .border-purple-200 {
+            border-color: rgba(147, 51, 234, 0.4) !important;
+        }
+        
+        [data-theme="dark"] .text-purple-800 {
+            color: #c4b5fd !important;
+        }
+        
+        [data-theme="dark"] .text-purple-700 {
+            color: #ddd6fe !important;
+        }
+        
+        [data-theme="dark"] .text-purple-500 {
+            color: #a78bfa !important;
+        }
+        
+        [data-theme="dark"] .bg-purple-200 {
+            background-color: rgba(147, 51, 234, 0.3) !important;
+        }
+
+        /* Elective subjects (red theme) */
+        [data-theme="dark"] .bg-red-100 {
+            background-color: rgba(239, 68, 68, 0.2) !important;
+        }
+        
+        [data-theme="dark"] .border-red-200 {
+            border-color: rgba(239, 68, 68, 0.4) !important;
+        }
+        
+        [data-theme="dark"] .text-red-800 {
+            color: #fca5a5 !important;
+        }
+        
+        [data-theme="dark"] .text-red-700 {
+            color: #fecaca !important;
+        }
+        
+        [data-theme="dark"] .text-red-500 {
+            color: #f87171 !important;
+        }
+        
+        [data-theme="dark"] .bg-red-200 {
+            background-color: rgba(239, 68, 68, 0.3) !important;
+        }
+
+        /* General Education subjects (orange theme) */
+        [data-theme="dark"] .bg-orange-50 {
+            background-color: rgba(249, 115, 22, 0.15) !important;
+        }
+        
+        [data-theme="dark"] .border-orange-200 {
+            border-color: rgba(249, 115, 22, 0.4) !important;
+        }
+        
+        [data-theme="dark"] .text-orange-700 {
+            color: #fed7aa !important;
+        }
+        
+        [data-theme="dark"] .text-orange-500 {
+            color: #fb923c !important;
+        }
+        
+        [data-theme="dark"] .bg-orange-200 {
+            background-color: rgba(249, 115, 22, 0.3) !important;
+        }
+
+        /* Subject card backgrounds in dark mode */
+        [data-theme="dark"] .subject-card {
+            background-color: var(--card-bg) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        /* Assigned card styling */
+        [data-theme="dark"] .assigned-card {
+            background-color: rgba(59, 130, 246, 0.2) !important;
+            border-color: rgba(59, 130, 246, 0.4) !important;
+        }
+
+        [data-theme="dark"] .assigned-card .subject-name {
+            color: #93c5fd !important;
+        }
+
+        /* Icon backgrounds for dark mode */
+        [data-theme="dark"] .icon-bg-major {
+            background-color: rgba(59, 130, 246, 0.2) !important;
+            border-color: rgba(59, 130, 246, 0.4) !important;
+        }
+
+        [data-theme="dark"] .icon-bg-minor {
+            background-color: rgba(147, 51, 234, 0.2) !important;
+            border-color: rgba(147, 51, 234, 0.4) !important;
+        }
+
+        [data-theme="dark"] .icon-bg-elective {
+            background-color: rgba(239, 68, 68, 0.2) !important;
+            border-color: rgba(239, 68, 68, 0.4) !important;
+        }
+
+        [data-theme="dark"] .icon-bg-general {
+            background-color: rgba(249, 115, 22, 0.2) !important;
+            border-color: rgba(249, 115, 22, 0.4) !important;
+        }
+
+        [data-theme="dark"] .icon-bg-default {
+            background-color: var(--bg-tertiary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        /* Ensure subject tag text is always visible */
+        [data-theme="dark"] .subject-tag p,
+        [data-theme="dark"] .subject-tag span {
+            color: inherit !important;
+        }
+
+        /* Delete button visibility */
+        [data-theme="dark"] .delete-subject-tag {
+            color: #f87171 !important;
+        }
+
+        [data-theme="dark"] .delete-subject-tag:hover {
+            color: #fca5a5 !important;
+        }
+
+        /* Status badge dark mode fixes */
+        [data-theme="dark"] .status-badge.text-green-700 {
+            color: #22c55e !important;
+        }
+
+        [data-theme="dark"] .bg-green-100 {
+            background-color: rgba(34, 197, 94, 0.2) !important;
+        }
+
+        /* Additional status badge colors for consistency */
+        [data-theme="dark"] .text-green-700 {
+            color: #4ade80 !important;
+        }
+
+        [data-theme="dark"] .text-green-600 {
+            color: #22c55e !important;
+        }
+
+        [data-theme="dark"] .text-green-800 {
+            color: #86efac !important;
+        }
+
+        /* Prerequisite page subject tag dark mode fixes */
+        [data-theme="dark"] .subject-tag-major {
+            background-color: rgba(59, 130, 246, 0.2) !important;
+            color: #93c5fd !important;
+            border-color: rgba(59, 130, 246, 0.4) !important;
+        }
+
+        [data-theme="dark"] .subject-tag-minor {
+            background-color: rgba(147, 51, 234, 0.2) !important;
+            color: #c4b5fd !important;
+            border-color: rgba(147, 51, 234, 0.4) !important;
+        }
+
+        [data-theme="dark"] .subject-tag-elective {
+            background-color: rgba(239, 68, 68, 0.2) !important;
+            color: #fca5a5 !important;
+            border-color: rgba(239, 68, 68, 0.4) !important;
+        }
+
+        [data-theme="dark"] .subject-tag-general {
+            background-color: rgba(249, 115, 22, 0.2) !important;
+            color: #fed7aa !important;
+            border-color: rgba(249, 115, 22, 0.4) !important;
+        }
+
+        [data-theme="dark"] .subject-tag-default {
+            background-color: var(--bg-tertiary) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        /* Expand bottom area height */
+        main.flex-1.overflow-x-hidden.overflow-y-auto.bg-gray-100.p-8 {
+            min-height: calc(100vh - 80px) !important;
+            height: auto !important;
+            flex-grow: 1 !important;
+        }
+
+        /* Dark mode version */
+        [data-theme="dark"] main.flex-1.overflow-x-hidden.overflow-y-auto.bg-gray-100.p-8 {
+            background-color: var(--bg-primary) !important;
+            min-height: calc(100vh - 80px) !important;
+            height: auto !important;
+            flex-grow: 1 !important;
+        }
+
+        /* Alternative selector for more specific targeting */
+        .flex-1.overflow-x-hidden.overflow-y-auto.bg-gray-100 {
+            min-height: calc(100vh - 100px) !important;
+            flex-grow: 2 !important;
+        }
+
+        [data-theme="dark"] .flex-1.overflow-x-hidden.overflow-y-auto.bg-gray-100 {
+            background-color: var(--bg-primary) !important;
+        }
+
+        /* Grade Setup page dark mode fixes */
+        [data-theme="dark"] .bg-white\/70 {
+            background-color: rgba(31, 41, 55, 0.9) !important;
+        }
+
+        [data-theme="dark"] .bg-gray-50\/50 {
+            background-color: rgba(55, 65, 81, 0.5) !important;
+        }
+
+        [data-theme="dark"] .bg-gray-100 {
+            background-color: var(--bg-tertiary) !important;
+        }
+
+        [data-theme="dark"] .text-gray-800 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .text-gray-700 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .text-gray-600 {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] .text-amber-600 {
+            color: #fbbf24 !important;
+        }
+
+        [data-theme="dark"] .bg-indigo-100 {
+            background-color: rgba(99, 102, 241, 0.2) !important;
+        }
+
+        [data-theme="dark"] .text-indigo-600 {
+            color: #a5b4fc !important;
+        }
+
+        [data-theme="dark"] .bg-teal-100 {
+            background-color: rgba(20, 184, 166, 0.2) !important;
+        }
+
+        [data-theme="dark"] .text-teal-600 {
+            color: #5eead4 !important;
+        }
+
+        [data-theme="dark"] .hover\:bg-indigo-50:hover {
+            background-color: rgba(99, 102, 241, 0.1) !important;
+        }
+
+        [data-theme="dark"] .hover\:text-indigo-800:hover {
+            color: #c7d2fe !important;
+        }
+
+        /* Progress circle and total weight text */
+        [data-theme="dark"] #total-weight {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .text-gray-200 {
+            color: var(--text-tertiary) !important;
+        }
+
+        /* Select dropdown styling */
+        [data-theme="dark"] select {
+            background-color: var(--bg-tertiary) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        [data-theme="dark"] select option {
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-primary) !important;
+        }
+
+        /* Curriculum Export Tool select dropdown - same as prerequisite */
+        [data-theme="dark"] #curriculum-select {
+            background-color: var(--bg-tertiary) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        [data-theme="dark"] #curriculum-select option {
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-primary) !important;
+        }
+
+        /* General curriculum export tool select styling */
+        [data-theme="dark"] .curriculum_export_tool select {
+            background-color: var(--bg-tertiary) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        [data-theme="dark"] .curriculum_export_tool select option {
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-primary) !important;
+        }
+
+        /* Focus states for export tool select */
+        [data-theme="dark"] #curriculum-select:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+        }
+
+        /* Grade history cards */
+        [data-theme="dark"] .grade-history-card {
+            background-color: var(--bg-tertiary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        [data-theme="dark"] .grade-history-card:hover {
+            background-color: var(--bg-secondary) !important;
+        }
+
+        [data-theme="dark"] .grade-history-card p {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .grade-history-card .text-gray-500 {
+            color: var(--text-secondary) !important;
+        }
+
+        /* Border styling */
+        [data-theme="dark"] .border-gray-200 {
+            border-color: var(--border-primary) !important;
+        }
+
+        [data-theme="dark"] .border-gray-200\/80 {
+            border-color: rgba(75, 85, 99, 0.8) !important;
+        }
+
+        /* Component row inputs */
+        [data-theme="dark"] .component-row input {
+            background-color: var(--bg-tertiary) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        /* Accordion content */
+        [data-theme="dark"] .accordion-content {
+            background-color: var(--bg-secondary) !important;
+        }
+
+        /* Labels and form text */
+        [data-theme="dark"] label {
+            color: var(--text-primary) !important;
+        }
+
+        /* SVG icons inherit color properly */
+        [data-theme="dark"] svg {
+            color: inherit !important;
+        }
+
+        /* Curriculum Export Tool page dark mode fixes */
+        [data-theme="dark"] .text-gray-900 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .text-gray-800 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .text-gray-700 {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] .text-gray-500 {
+            color: var(--text-tertiary) !important;
+        }
+
+        /* Checkbox labels and hover states */
+        [data-theme="dark"] label.hover\:bg-gray-50:hover {
+            background-color: #1f2937 !important;
+            border-color: var(--border-secondary) !important;
+        }
+
+        [data-theme="dark"] label.cursor-pointer {
+            background-color: #1f2937 !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        /* Make checkbox labels darker by default in export tool */
+        [data-theme="dark"] .flex.items-center.p-3.border {
+            background-color: #1f2937 !important;
+        }
+
+        [data-theme="dark"] .transition-colors {
+            background-color: #1f2937 !important;
+        }
+
+        [data-theme="dark"] label.cursor-pointer:hover {
+            background-color: #111827 !important;
+            border-color: var(--border-secondary) !important;
+        }
+
+        /* Darker hover effect for export tool form elements */
+        [data-theme="dark"] .hover\:bg-gray-50:hover {
+            background-color: #111827 !important;
+            border-bottom-color: transparent !important;
+            box-shadow: none !important;
+        }
+
+        /* Remove blue bottom effects in employee management */
+        [data-theme="dark"] .hover\:bg-gray-50:hover {
+            border-bottom: none !important;
+            border-color: var(--border-secondary) !important;
+        }
+
+        /* Ensure no blue highlights or shadows on hover */
+        [data-theme="dark"] .hover\:bg-gray-50:hover * {
+            border-bottom-color: transparent !important;
+            box-shadow: none !important;
+        }
+
+        /* Specific darker hover for curriculum export tool checkboxes */
+        [data-theme="dark"] .transition-colors:hover {
+            background-color: #111827 !important;
+            border-color: #6b7280 !important;
+        }
+
+        /* Ensure borders remain visible on hover for all interactive elements */
+        [data-theme="dark"] .border:hover {
+            border-color: var(--border-secondary) !important;
+        }
+
+        [data-theme="dark"] .border-gray-300:hover {
+            border-color: var(--border-secondary) !important;
+        }
+
+        [data-theme="dark"] .rounded-lg:hover {
+            border-color: var(--border-secondary) !important;
+        }
+
+        /* Specific fixes for export tool hover borders */
+        [data-theme="dark"] .transition-colors:hover {
+            border-color: var(--border-secondary) !important;
+        }
+
+        [data-theme="dark"] label span {
+            color: var(--text-primary) !important;
+        }
+
+        /* Checkboxes */
+        [data-theme="dark"] input[type="checkbox"] {
+            background-color: var(--bg-secondary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        [data-theme="dark"] input[type="checkbox"]:checked {
+            background-color: #3b82f6 !important;
+            border-color: #3b82f6 !important;
+        }
+
+        /* Filter summary */
+        [data-theme="dark"] .bg-blue-50 {
+            background-color: rgba(59, 130, 246, 0.1) !important;
+        }
+
+        [data-theme="dark"] .border-blue-200 {
+            border-color: rgba(59, 130, 246, 0.3) !important;
+        }
+
+        [data-theme="dark"] .text-blue-800 {
+            color: #93c5fd !important;
+        }
+
+        [data-theme="dark"] .text-blue-600 {
+            color: #60a5fa !important;
+        }
+
+        /* Preview section */
+        [data-theme="dark"] .bg-gray-50 {
+            background-color: var(--bg-secondary) !important;
+        }
+
+        [data-theme="dark"] #preview-curriculum-name {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] #preview-curriculum-code {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] #preview-subject-count {
+            color: #60a5fa !important;
+        }
+
+        /* Loading spinner */
+        [data-theme="dark"] .border-blue-600 {
+            border-color: #60a5fa !important;
+        }
+
+        /* Export history cards */
+        [data-theme="dark"] .export-history-card {
+            background-color: var(--bg-secondary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        [data-theme="dark"] .export-history-card:hover {
+            background-color: var(--bg-tertiary) !important;
+        }
+
+        /* Search input */
+        [data-theme="dark"] input[type="search"] {
+            background-color: var(--bg-tertiary) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        [data-theme="dark"] input[type="search"]::placeholder {
+            color: var(--text-tertiary) !important;
+        }
+
+        /* Export button hover effects */
+        [data-theme="dark"] .bg-blue-600:hover {
+            background-color: #1d4ed8 !important;
+        }
+
+        /* Gray text variations */
+        [data-theme="dark"] .text-gray-400 {
+            color: var(--text-tertiary) !important;
+        }
+
+        /* Subject preview items */
+        [data-theme="dark"] .subject-preview-item {
+            background-color: var(--bg-tertiary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        [data-theme="dark"] .subject-preview-item:hover {
+            background-color: var(--bg-secondary) !important;
+        }
+
+        /* Ensure all text in export tool is visible */
+        [data-theme="dark"] #curriculum-preview h2,
+        [data-theme="dark"] #curriculum-preview h3,
+        [data-theme="dark"] #curriculum-preview p,
+        [data-theme="dark"] #curriculum-preview span {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] #curriculum-preview .text-gray-500 {
+            color: var(--text-secondary) !important;
+        }
+
+        /* Employee Management hover fixes - remove blue bottom effects */
+        [data-theme="dark"] .hover\:bg-gray-50 {
+            transition: background-color 0.2s ease !important;
+        }
+
+        [data-theme="dark"] .hover\:bg-gray-50:hover {
+            background-color: var(--bg-tertiary) !important;
+            border-bottom-color: transparent !important;
+            border-bottom: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }
+
+        /* Remove any focus or active state blue effects */
+        [data-theme="dark"] .hover\:bg-gray-50:focus,
+        [data-theme="dark"] .hover\:bg-gray-50:active {
+            border-bottom-color: transparent !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }
+
+        /* Ensure table rows and list items don't show blue effects */
+        [data-theme="dark"] tr.hover\:bg-gray-50:hover,
+        [data-theme="dark"] li.hover\:bg-gray-50:hover,
+        [data-theme="dark"] div.hover\:bg-gray-50:hover {
+            border-bottom: none !important;
+            border-color: var(--border-primary) !important;
+            box-shadow: none !important;
+        }
+
+        /* Custom Status Confirmation Modal Dark Mode Styling */
+        [data-theme="dark"] #statusConfirmModal .bg-white {
+            background-color: var(--bg-secondary) !important;
+        }
+
+        [data-theme="dark"] #statusConfirmModal .text-slate-800 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] #statusConfirmModal .text-slate-600 {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] #statusConfirmModal .text-slate-700 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] #statusConfirmModal .bg-slate-100 {
+            background-color: var(--bg-tertiary) !important;
+        }
+
+        [data-theme="dark"] #statusConfirmModal .hover\:bg-slate-200:hover {
+            background-color: var(--bg-primary) !important;
+        }
+
+        /* Success Modal Dark Mode Styling */
+        [data-theme="dark"] #successModal .bg-white {
+            background-color: var(--bg-secondary) !important;
+        }
+
+        [data-theme="dark"] #successModal .text-slate-800 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] #successModal .text-slate-500 {
+            color: var(--text-secondary) !important;
+        }
+
+        /* Add Employee Modal Dark Mode Styling */
+        [data-theme="dark"] #addEmployeeModal .bg-white {
+            background-color: var(--bg-secondary) !important;
+        }
+
+        [data-theme="dark"] #addEmployeeModal .text-slate-800 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] #addEmployeeModal .text-slate-500 {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] #addEmployeeModal .text-slate-700 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] #addEmployeeModal .bg-slate-100 {
+            background-color: var(--bg-tertiary) !important;
+        }
+
+        [data-theme="dark"] #addEmployeeModal .hover\:bg-slate-200:hover {
+            background-color: var(--bg-primary) !important;
+        }
+
+        [data-theme="dark"] #addEmployeeModal input {
+            background-color: var(--bg-tertiary) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        /* Notification System Dark Mode Styling */
+        [data-theme="dark"] .notification-toast {
+            background-color: var(--bg-secondary) !important;
+            border-color: var(--border-primary) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        [data-theme="dark"] .notification-title {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .notification-message {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] .notification-close {
+            color: var(--text-tertiary) !important;
+            background-color: transparent !important;
+        }
+
+        [data-theme="dark"] .notification-close:hover {
+            color: var(--text-secondary) !important;
+            background-color: var(--bg-tertiary) !important;
+        }
+
+        /* Remove black backgrounds from notification icons */
+        [data-theme="dark"] .notification-icon {
+            background-color: transparent !important;
+        }
+
+        [data-theme="dark"] .notification-icon.success {
+            background-color: #10b981 !important;
+        }
+
+        [data-theme="dark"] .notification-icon.warning {
+            background-color: #f59e0b !important;
+        }
+
+        [data-theme="dark"] .notification-icon.error {
+            background-color: #ef4444 !important;
+        }
+
+        [data-theme="dark"] .notification-icon.info {
+            background-color: #3b82f6 !important;
+        }
+
+        /* Header Notification Dropdown Dark Mode */
+        [data-theme="dark"] .notifications-dropdown-minimal {
+            background-color: var(--bg-secondary) !important;
+            border-color: var(--border-primary) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        [data-theme="dark"] #notifications-dropdown {
+            background-color: var(--bg-secondary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        [data-theme="dark"] #notifications-dropdown .border-gray-200 {
+            border-color: var(--border-primary) !important;
+        }
+
+        [data-theme="dark"] #notifications-dropdown .text-gray-900 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] #notifications-dropdown .text-gray-500 {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] #notifications-dropdown .text-blue-600 {
+            color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] #notifications-dropdown .hover\:text-blue-800:hover {
+            color: #93c5fd !important;
+        }
+
+        /* Fix notification list area specifically */
+        [data-theme="dark"] #notifications-list {
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] #notifications-list .text-center {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] #notifications-list .text-gray-500 {
+            color: var(--text-secondary) !important;
+        }
+
+        /* Notification items in dropdown */
+        [data-theme="dark"] .notification-item {
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        [data-theme="dark"] .notification-item:hover {
+            background-color: var(--bg-tertiary) !important;
+        }
+
+        /* Ensure all notification dropdown content is visible */
+        [data-theme="dark"] #notifications-dropdown * {
+            color: inherit !important;
+        }
+
+        [data-theme="dark"] #notifications-dropdown h3 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] #notifications-dropdown p {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] #notifications-dropdown a {
+            color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] #notifications-dropdown a:hover {
+            color: #93c5fd !important;
+        }
+
+        /* Header notification button dark mode */
+        [data-theme="dark"] #notifications-button {
+            background-color: transparent !important;
+        }
+
+        [data-theme="dark"] #notifications-button:hover {
+            background-color: var(--bg-tertiary) !important;
+        }
+
+        [data-theme="dark"] #notifications-button svg {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] #notifications-button:hover svg {
+            color: var(--text-primary) !important;
+        }
+
+        /* Settings button dark mode */
+        [data-theme="dark"] #settings-button {
+            background-color: transparent !important;
+        }
+
+        [data-theme="dark"] #settings-button:hover {
+            background-color: var(--bg-tertiary) !important;
+        }
+
+        [data-theme="dark"] #settings-button svg {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] #settings-button:hover svg {
+            color: var(--text-primary) !important;
+        }
+
+        /* Dropdown menu dark mode */
+        [data-theme="dark"] .dropdown-menu-minimal {
+            background-color: var(--bg-secondary) !important;
+            border-color: var(--border-primary) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        [data-theme="dark"] .dropdown-link {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .dropdown-link:hover {
+            background-color: var(--bg-tertiary) !important;
+        }
+
+        [data-theme="dark"] .dropdown-icon {
+            background-color: transparent !important;
+        }
+
+        [data-theme="dark"] .dropdown-divider {
+            border-color: var(--border-primary) !important;
+        }
+
+        /* Remove any remaining black backgrounds from header elements */
+        [data-theme="dark"] header .bg-gray-100 {
+            background-color: var(--bg-tertiary) !important;
+        }
+
+        [data-theme="dark"] header .hover\:bg-gray-100:hover {
+            background-color: var(--bg-tertiary) !important;
+        }
+
+        /* Dashboard Dark Mode Styling */
+        [data-theme="dark"] .stat-card {
+            background-color: var(--bg-secondary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        [data-theme="dark"] .stat-card:hover {
+            background-color: var(--bg-tertiary) !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        [data-theme="dark"] .stat-number {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .stat-label {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] .stat-icon-container {
+            background-color: transparent !important;
+        }
+
+        /* Quick Actions Dark Mode */
+        [data-theme="dark"] .quick-action-card {
+            background-color: var(--bg-secondary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        [data-theme="dark"] .quick-action-title {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .quick-action-btn {
+            background: var(--bg-tertiary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        [data-theme="dark"] .quick-action-btn:hover {
+            background: var(--bg-secondary) !important;
+        }
+
+        [data-theme="dark"] .quick-action-btn h4 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .quick-action-btn p {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] .quick-action-icon {
+            background-color: transparent !important;
+        }
+
+        /* Dashboard Header Dark Mode */
+        [data-theme="dark"] .dashboard-title {
+            color: var(--text-primary) !important;
+            font-weight: 700 !important;
+        }
+
+        [data-theme="dark"] .dashboard-subtitle {
+            color: var(--text-primary) !important;
+            font-weight: 500 !important;
+        }
+
+        [data-theme="dark"] .dashboard-date-time {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .dashboard-time {
+            color: var(--text-secondary) !important;
+        }
+
+        /* Ensure dashboard header text is always visible */
+        [data-theme="dark"] .dashboard-header h1 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .dashboard-header p {
+            color: var(--text-primary) !important;
+        }
+
+        /* Remove background effects and sync dashboard header with theme */
+        [data-theme="dark"] .dashboard-header {
+            background: var(--bg-secondary) !important;
+            border-color: var(--border-primary) !important;
+            color: var(--text-primary) !important;
+        }
+
+        /* Remove animated star effects in dark mode */
+        [data-theme="dark"] .dashboard-header::before,
+        [data-theme="dark"] .dashboard-header::after {
+            display: none !important;
+        }
+
+        /* Light mode dashboard header - clean background */
+        [data-theme="light"] .dashboard-header,
+        .dashboard-header {
+            background: var(--bg-primary, white) !important;
+            border-color: var(--border-primary, #e5e7eb) !important;
+            color: var(--text-primary, #1f2937) !important;
+        }
+
+        /* Remove animated star effects in light mode too */
+        [data-theme="light"] .dashboard-header::before,
+        [data-theme="light"] .dashboard-header::after,
+        .dashboard-header::before,
+        .dashboard-header::after {
+            display: none !important;
+        }
+
+        /* Chart containers dark mode */
+        [data-theme="dark"] .bg-white.rounded-xl {
+            background-color: var(--bg-secondary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        [data-theme="dark"] .text-gray-800 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .text-gray-900 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .text-gray-500 {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] .text-gray-600 {
+            color: var(--text-secondary) !important;
+        }
+
+        /* Activity card dark mode */
+        [data-theme="dark"] .activity-card {
+            background-color: var(--bg-secondary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        /* Dashboard sidebar dark mode */
+        [data-theme="dark"] .dashboard-sidebar {
+            background-color: var(--bg-secondary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        [data-theme="dark"] .sidebar-header {
+            background-color: var(--bg-tertiary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        [data-theme="dark"] .sidebar-section {
+            background-color: var(--bg-tertiary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        [data-theme="dark"] .sidebar-section h4 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .sidebar-toggle-item label {
+            color: var(--text-secondary) !important;
+        }
+
+        /* Remove black backgrounds from dashboard icons */
+        [data-theme="dark"] .bg-blue-100,
+        [data-theme="dark"] .bg-emerald-100,
+        [data-theme="dark"] .bg-purple-100,
+        [data-theme="dark"] .bg-indigo-100,
+        [data-theme="dark"] .bg-amber-100,
+        [data-theme="dark"] .bg-teal-100,
+        [data-theme="dark"] .bg-cyan-100,
+        [data-theme="dark"] .bg-green-100,
+        [data-theme="dark"] .bg-orange-100 {
+            background-color: transparent !important;
+        }
+
+        /* Gradient backgrounds for quick actions in dark mode */
+        [data-theme="dark"] .bg-gradient-to-br {
+            background: var(--bg-tertiary) !important;
+        }
+
+        /* Fix white buttons text visibility in dark mode */
+        [data-theme="dark"] button {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .chart-switch-btn {
+            background-color: var(--bg-tertiary) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        [data-theme="dark"] .chart-switch-btn.active {
+            background-color: #3b82f6 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .chart-switch-btn:hover {
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-primary) !important;
+        }
+
+        /* Dashboard buttons general styling */
+        [data-theme="dark"] .bg-white {
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .text-white {
+            color: var(--text-primary) !important;
+        }
+
+        /* Specific button text fixes */
+        [data-theme="dark"] button span {
+            color: inherit !important;
+        }
+
+        [data-theme="dark"] button .text-xs {
+            color: inherit !important;
+        }
+
+        /* Toggle buttons and controls */
+        [data-theme="dark"] .toggle-switch {
+            background-color: var(--bg-tertiary) !important;
+        }
+
+        [data-theme="dark"] .toggle-switch.active {
+            background-color: #3b82f6 !important;
+        }
+
+        /* Sidebar toggle button arrow animation */
+        .sidebar-toggle {
+            transition: all 0.3s ease !important;
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .sidebar-toggle i {
+            transition: transform 0.3s ease !important;
+        }
+
+        /* When sidebar is open, rotate arrow to point left (close direction) */
+        .sidebar-toggle.sidebar-open i {
+            transform: rotate(180deg) !important;
+        }
+
+        /* Remove background box completely */
+        .sidebar-toggle:hover {
+            background-color: transparent !important;
+            box-shadow: none !important;
+        }
+
+        /* Dark mode sidebar toggle button */
+        [data-theme="dark"] .sidebar-toggle {
+            color: var(--text-secondary) !important;
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        [data-theme="dark"] .sidebar-toggle:hover {
+            color: var(--text-primary) !important;
+            background-color: transparent !important;
+            box-shadow: none !important;
+        }
+
+        /* Light mode sidebar toggle button */
+        [data-theme="light"] .sidebar-toggle,
+        .sidebar-toggle {
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        [data-theme="light"] .sidebar-toggle:hover,
+        .sidebar-toggle:hover {
+            background-color: transparent !important;
+            box-shadow: none !important;
+        }
+
+        /* Enhanced border visibility for export tool */
+        [data-theme="dark"] .grid .border:hover,
+        [data-theme="dark"] .grid label:hover {
+            border-color: rgba(75, 85, 99, 0.8) !important;
+            border-width: 1px !important;
+        }
+
+        /* Ensure all form elements maintain visible borders */
+        [data-theme="dark"] .border-gray-200:hover,
+        [data-theme="dark"] .border-gray-300:hover {
+            border-color: var(--border-secondary) !important;
+            border-style: solid !important;
+        }
+
+        /* Preview section borders */
+        [data-theme="dark"] #curriculum-preview .border:hover,
+        [data-theme="dark"] #curriculum-preview .border-gray-200:hover {
+            border-color: var(--border-secondary) !important;
+        }
+
+        /* Card and container borders on hover */
+        [data-theme="dark"] .bg-white:hover {
+            border-color: var(--border-secondary) !important;
+        }
+
+        /* Specific export tool checkbox container borders */
+        [data-theme="dark"] .grid-cols-2 label:hover {
+            border: 1px solid var(--border-secondary) !important;
+        }
+
+        /* Loading spinner text */
+        [data-theme="dark"] .animate-spin + span {
+            color: var(--text-secondary) !important;
+        }
+
+        /* Version history and modal specific text */
+        [data-theme="dark"] .version-item,
+        [data-theme="dark"] .notification-item {
+            color: var(--text-primary) !important;
+        }
+
+        /* Ensure all SVG icons maintain proper color inheritance */
+        [data-theme="dark"] svg {
+            color: inherit;
+        }
+
+        /* Fix for any remaining background/text contrast issues */
+        [data-theme="dark"] .bg-slate-50,
+        [data-theme="dark"] .bg-slate-100,
+        [data-theme="dark"] .bg-gray-50,
+        [data-theme="dark"] .bg-gray-100 {
+            background-color: var(--bg-secondary) !important;
+        }
+
+        [data-theme="dark"] .bg-slate-200,
+        [data-theme="dark"] .bg-gray-200 {
+            background-color: var(--bg-tertiary) !important;
+        }
+
+        /* Ensure proper contrast for all text elements */
+        [data-theme="dark"] .text-xs,
+        [data-theme="dark"] .text-sm,
+        [data-theme="dark"] .text-base,
+        [data-theme="dark"] .text-lg,
+        [data-theme="dark"] .text-xl,
+        [data-theme="dark"] .text-2xl,
+        [data-theme="dark"] .text-3xl {
+            color: var(--text-primary) !important;
+        }
+
+        /* Override for specific utility classes that might be invisible */
+        [data-theme="dark"] .font-bold,
+        [data-theme="dark"] .font-semibold,
+        [data-theme="dark"] .font-medium {
+            color: var(--text-primary) !important;
+        }
         
         /* Global zoom-friendly responsive styles */
         * {
@@ -608,7 +2598,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 dark-mode-transition">
     <div class="flex h-screen bg-gray-200">
         @include('partials.sidebar')
         <div class="flex-1 flex flex-col overflow-hidden">
@@ -891,6 +2881,46 @@
                     });
             }, 30000);
             */
+
+            // Dark Mode Functionality
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const htmlElement = document.documentElement;
+
+            // Check for saved dark mode preference or default to light mode
+            const savedTheme = localStorage.getItem('theme');
+            
+            // Set initial theme - always default to light mode unless manually set
+            if (savedTheme) {
+                htmlElement.setAttribute('data-theme', savedTheme);
+                darkModeToggle.checked = savedTheme === 'dark';
+            } else {
+                // Always default to light mode, ignore system preference
+                htmlElement.setAttribute('data-theme', 'light');
+                darkModeToggle.checked = false;
+                localStorage.setItem('theme', 'light');
+            }
+
+            // Toggle dark mode
+            darkModeToggle.addEventListener('change', function() {
+                const currentTheme = htmlElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                // Add transition class for smooth animation
+                document.body.classList.add('dark-mode-transition');
+                
+                // Set new theme
+                htmlElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                
+                // Remove transition class after animation completes
+                setTimeout(() => {
+                    document.body.classList.remove('dark-mode-transition');
+                }, 300);
+                
+                console.log(`Theme switched to: ${newTheme}`);
+            });
+
+            // System theme change listener removed - manual control only
         });
 
         // Prevent back navigation for authenticated pages
