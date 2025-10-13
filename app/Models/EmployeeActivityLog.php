@@ -85,20 +85,14 @@ class EmployeeActivityLog extends Model
      */
     public function getActivityIconAttribute()
     {
-        switch($this->activity_type) {
-            case 'export':
-                return '📄';
-            case 'login':
-                return '🔑';
-            case 'logout':
-                return '🚪';
-            case 'view':
-                return '👁️';
-            case 'download':
-                return '⬇️';
-            default:
-                return '📝';
-        }
+        return match($this->activity_type) {
+            'export' => '📄',
+            'login' => '🔑',
+            'logout' => '🚪',
+            'view' => '👁️',
+            'download' => '⬇️',
+            default => '📝'
+        };
     }
 
     /**
@@ -106,19 +100,13 @@ class EmployeeActivityLog extends Model
      */
     public function getActivityColorAttribute()
     {
-        switch($this->activity_type) {
-            case 'export':
-                return 'text-blue-600';
-            case 'login':
-                return 'text-green-600';
-            case 'logout':
-                return 'text-gray-600';
-            case 'view':
-                return 'text-purple-600';
-            case 'download':
-                return 'text-indigo-600';
-            default:
-                return 'text-gray-600';
-        }
+        return match($this->activity_type) {
+            'export' => 'text-blue-600',
+            'login' => 'text-green-600',
+            'logout' => 'text-gray-600',
+            'view' => 'text-purple-600',
+            'download' => 'text-indigo-600',
+            default => 'text-gray-600'
+        };
     }
 }

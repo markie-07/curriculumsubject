@@ -1011,42 +1011,18 @@
         }
 
         /* Expand bottom area height */
-        main.flex-1.overflow-x-hidden.overflow-y-auto.bg-gray-100 {
-            min-height: calc(100vh - 60px) !important;
+        main.flex-1.overflow-x-hidden.overflow-y-auto.bg-gray-100.p-8 {
+            min-height: calc(100vh - 80px) !important;
             height: auto !important;
             flex-grow: 1 !important;
-        }
-        
-        @media (min-width: 640px) {
-            main.flex-1.overflow-x-hidden.overflow-y-auto.bg-gray-100 {
-                min-height: calc(100vh - 70px) !important;
-            }
-        }
-        
-        @media (min-width: 1024px) {
-            main.flex-1.overflow-x-hidden.overflow-y-auto.bg-gray-100 {
-                min-height: calc(100vh - 80px) !important;
-            }
         }
 
         /* Dark mode version */
-        [data-theme="dark"] main.flex-1.overflow-x-hidden.overflow-y-auto.bg-gray-100 {
+        [data-theme="dark"] main.flex-1.overflow-x-hidden.overflow-y-auto.bg-gray-100.p-8 {
             background-color: var(--bg-primary) !important;
-            min-height: calc(100vh - 60px) !important;
+            min-height: calc(100vh - 80px) !important;
             height: auto !important;
             flex-grow: 1 !important;
-        }
-        
-        @media (min-width: 640px) {
-            [data-theme="dark"] main.flex-1.overflow-x-hidden.overflow-y-auto.bg-gray-100 {
-                min-height: calc(100vh - 70px) !important;
-            }
-        }
-        
-        @media (min-width: 1024px) {
-            [data-theme="dark"] main.flex-1.overflow-x-hidden.overflow-y-auto.bg-gray-100 {
-                min-height: calc(100vh - 80px) !important;
-            }
         }
 
         /* Alternative selector for more specific targeting */
@@ -2051,409 +2027,81 @@
             color: var(--text-primary) !important;
         }
         
-        /* Mobile-First Responsive Design */
+        /* Global zoom-friendly responsive styles */
         * {
             box-sizing: border-box;
         }
         
         html {
-            font-size: 14px; /* Smaller base for mobile */
+            font-size: 16px; /* Base font size */
         }
         
-        @media (min-width: 640px) {
-            html {
-                font-size: 15px;
-            }
-        }
-        
-        @media (min-width: 768px) {
-            html {
-                font-size: 16px;
-            }
-        }
-        
-        /* Mobile-First Form Elements */
-        input, select, textarea {
-            font-size: 1rem;
+        /* Responsive form elements */
+        input, select, textarea, button {
+            font-size: clamp(0.875rem, 1.5vw, 1rem);
             line-height: 1.5;
-            min-height: 48px; /* Touch-friendly minimum */
-            padding: 0.875rem 1rem;
-            border-radius: 0.5rem;
-            border: 2px solid #e5e7eb;
-            transition: all 0.2s ease;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
         }
         
-        /* Focus states for better accessibility */
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        /* Responsive containers */
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding-left: clamp(0.5rem, 2vw, 1rem);
+            padding-right: clamp(0.5rem, 2vw, 1rem);
         }
         
-        /* Select dropdown styling */
-        select {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 0.75rem center;
-            background-repeat: no-repeat;
-            background-size: 1.5em 1.5em;
-            padding-right: 3rem;
+        /* Responsive text sizing */
+        h1 { font-size: clamp(1.5rem, 3vw, 2rem); }
+        h2 { font-size: clamp(1.25rem, 2.5vw, 1.75rem); }
+        h3 { font-size: clamp(1.125rem, 2vw, 1.5rem); }
+        h4 { font-size: clamp(1rem, 1.8vw, 1.25rem); }
+        h5 { font-size: clamp(0.875rem, 1.6vw, 1.125rem); }
+        h6 { font-size: clamp(0.75rem, 1.4vw, 1rem); }
+        
+        /* Responsive spacing */
+        .responsive-padding {
+            padding: clamp(0.5rem, 2vw, 1rem);
         }
         
-        /* Textarea specific */
-        textarea {
-            min-height: 120px;
-            resize: vertical;
+        .responsive-margin {
+            margin: clamp(0.5rem, 2vw, 1rem);
         }
         
-        @media (min-width: 640px) {
-            input, select, textarea {
-                font-size: 0.875rem;
-                min-height: 44px;
-                padding: 0.75rem 1rem;
-            }
-            
-            textarea {
-                min-height: 100px;
-            }
-        }
-        
-        /* Touch-friendly buttons */
-        button, .btn, a.btn {
-            min-height: 48px;
-            padding: 0.875rem 1.5rem;
-            font-size: 1rem;
-            border-radius: 0.5rem;
-            touch-action: manipulation;
-            font-weight: 500;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-        }
-        
-        /* Button variants */
-        .btn-primary {
-            background-color: #3b82f6;
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background-color: #2563eb;
-        }
-        
-        .btn-secondary {
-            background-color: #6b7280;
-            color: white;
-        }
-        
-        .btn-secondary:hover {
-            background-color: #4b5563;
-        }
-        
-        .btn-success {
-            background-color: #10b981;
-            color: white;
-        }
-        
-        .btn-success:hover {
-            background-color: #059669;
-        }
-        
-        .btn-danger {
-            background-color: #ef4444;
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background-color: #dc2626;
-        }
-        
-        @media (min-width: 640px) {
-            button, .btn, a.btn {
-                min-height: 44px;
-                padding: 0.75rem 1.25rem;
-                font-size: 0.875rem;
-            }
-        }
-        
-        /* Mobile-First Spacing System */
-        .p-responsive { 
-            padding: 0.75rem;
-        }
-        .m-responsive { 
-            margin: 0.75rem;
-        }
-        .gap-responsive { 
-            gap: 0.75rem;
-        }
-        
-        @media (min-width: 640px) {
-            .p-responsive { padding: 1rem; }
-            .m-responsive { margin: 1rem; }
-            .gap-responsive { gap: 1rem; }
-        }
-        
-        @media (min-width: 1024px) {
-            .p-responsive { padding: 1.5rem; }
-            .m-responsive { margin: 1.5rem; }
-            .gap-responsive { gap: 1.5rem; }
-        }
-        
-        /* Mobile-First Card System */
-        .card {
-            background: white;
-            border-radius: 0.75rem;
-            padding: 1rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e5e7eb;
-            line-height: 1.2;
-            margin-bottom: 1rem;
-        }
-        h2 { 
-            font-size: 1.5rem;
-            line-height: 1.3;
-            margin-bottom: 0.875rem;
-        }
-        h3 { 
-            font-size: 1.25rem;
-            line-height: 1.4;
-            margin-bottom: 0.75rem;
-        }
-        h4 { 
-            font-size: 1.125rem;
-            line-height: 1.4;
-            margin-bottom: 0.625rem;
-        }
-        h5 { 
-            font-size: 1rem;
-            line-height: 1.5;
-            margin-bottom: 0.5rem;
-        }
-        h6 { 
-            font-size: 0.875rem;
-            line-height: 1.5;
-            margin-bottom: 0.5rem;
-        }
-        
-        @media (min-width: 640px) {
-            h1 { font-size: 2rem; }
-            h2 { font-size: 1.75rem; }
-            h3 { font-size: 1.5rem; }
-            h4 { font-size: 1.25rem; }
-            h5 { font-size: 1.125rem; }
-            h6 { font-size: 1rem; }
-        }
-        
-        @media (min-width: 1024px) {
-            h1 { font-size: 2.25rem; }
-            h2 { font-size: 1.875rem; }
-            h3 { font-size: 1.625rem; }
+        /* Form synchronization styles */
         .form-container {
             max-width: 100%;
             overflow-x: hidden;
-            padding: 1rem;
         }
         
         .form-grid {
             display: grid;
-            gap: 1rem;
-            grid-template-columns: 1fr;
+            gap: clamp(0.75rem, 2vw, 1.5rem);
+            grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
         }
         
-        @media (min-width: 640px) {
-            .form-grid {
-                gap: 1.25rem;
-                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            }
-        }
-        
-        @media (min-width: 1024px) {
-            .form-grid {
-                gap: 1.5rem;
-                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            }
-        }
-        
-        /* Mobile-First Button System */
+        /* Button responsive sizing */
         .btn {
-            padding: 0.875rem 1.5rem;
-{{ ... }}
-            font-size: 1rem;
-            border-radius: 0.5rem;
-            min-height: 48px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            touch-action: manipulation;
+            padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(1rem, 3vw, 1.5rem);
+            font-size: clamp(0.875rem, 1.5vw, 1rem);
+            border-radius: clamp(0.25rem, 0.5vw, 0.5rem);
         }
         
-        .btn-sm {
-            padding: 0.625rem 1rem;
-            font-size: 0.875rem;
-            min-height: 40px;
-        }
-        
-        .btn-lg {
-            padding: 1rem 2rem;
-            font-size: 1.125rem;
-            min-height: 52px;
-        }
-        
-        @media (min-width: 768px) {
-            .btn {
-                padding: 0.75rem 1.25rem;
-                min-height: 44px;
-            }
-            
-            .btn-sm {
-                padding: 0.5rem 0.875rem;
-                min-height: 36px;
-            }
-            
-            .btn-lg {
-                padding: 0.875rem 1.75rem;
-                min-height: 48px;
-            }
-        }
-        
-        /* Mobile-First Table System */
+        /* Table responsive */
         .table-responsive {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         
         .table-responsive table {
-            min-width: 100%;
-            font-size: 0.875rem;
+            min-width: 600px;
+            font-size: clamp(0.75rem, 1.3vw, 0.875rem);
         }
         
-        @media (max-width: 640px) {
-            .table-responsive table {
-                min-width: 600px;
-                font-size: 0.75rem;
-            }
-            
-            .table-responsive th,
-            .table-responsive td {
-                padding: 0.5rem 0.25rem;
-                white-space: nowrap;
-            }
-        }
-        
-        @media (min-width: 768px) {
-            .table-responsive table {
-                font-size: 0.875rem;
-            }
-            
-            .table-responsive th,
-            .table-responsive td {
-                padding: 0.75rem 1rem;
-            }
-        }
-        
-        /* Mobile-First Modal System */
-        .modal {
-            position: fixed;
-            inset: 0;
-            z-index: 50;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-            background: rgba(0, 0, 0, 0.5);
-        }
-        
+        /* Modal responsive */
         .modal-content {
-            width: 100%;
-            max-width: 400px;
-            max-height: 85vh;
+            max-width: min(90vw, 600px);
+            max-height: 90vh;
             overflow-y: auto;
-            background: white;
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-        
-        @media (min-width: 640px) {
-            .modal-content {
-                max-width: 500px;
-                max-height: 90vh;
-                padding: 2rem;
-            }
-        }
-        
-        @media (min-width: 768px) {
-            .modal-content {
-                max-width: 600px;
-            }
-        }
-        
-        @media (min-width: 1024px) {
-            .modal-content {
-                max-width: 700px;
-            }
-        }
-        
-        /* Modal header */
-        .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        
-        .modal-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #111827;
-        }
-        
-        .modal-close {
-            padding: 0.5rem;
-            border-radius: 0.375rem;
-            background: transparent;
-            border: none;
-            color: #6b7280;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .modal-close:hover {
-            background: #f3f4f6;
-            color: #374151;
-        }
-        
-        /* Modal body */
-        .modal-body {
-            margin-bottom: 1.5rem;
-        }
-        
-        /* Modal footer */
-        .modal-footer {
-            display: flex;
-            gap: 0.75rem;
-            justify-content: flex-end;
-            padding-top: 1rem;
-            border-top: 1px solid #e5e7eb;
-        }
-        
-        @media (max-width: 640px) {
-            .modal-footer {
-                flex-direction: column;
-            }
-            
-            .modal-footer button {
-                width: 100%;
-            }
         }
         
         /* Method 2: Pure CSS Container Queries Zoom Synchronization */
@@ -2665,416 +2313,6 @@
         /* Smooth transitions for all container query changes */
         * {
             transition: font-size 0.2s ease, padding 0.2s ease, gap 0.2s ease;
-        }
-        
-        /* Mobile-Specific Optimizations */
-        @media (max-width: 1023px) {
-            /* Ensure sidebar is properly positioned on mobile */
-            #sidebar {
-                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-            }
-            
-            /* Improve touch targets */
-            button, .btn, a.btn, input[type="submit"] {
-                min-height: 48px;
-                min-width: 48px;
-            }
-            
-            /* Better spacing for mobile */
-            .space-x-6 > * + * {
-                margin-left: 0.5rem !important;
-            }
-            
-            .space-x-4 > * + * {
-                margin-left: 0.375rem !important;
-            }
-            
-            /* Mobile-friendly dropdowns */
-            .dropdown-menu-minimal,
-            .notifications-dropdown-minimal {
-                position: fixed;
-                top: auto;
-                bottom: 1rem;
-                right: 1rem;
-                left: 1rem;
-                width: auto;
-                max-width: none;
-                border-radius: 0.75rem;
-                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            }
-            
-            @media (min-width: 640px) {
-                .dropdown-menu-minimal,
-                .notifications-dropdown-minimal {
-                    position: absolute;
-                    top: calc(100% + 0.5rem);
-                    bottom: auto;
-                    right: 0;
-                    left: auto;
-                    width: 320px;
-                    max-width: calc(100vw - 2rem);
-                }
-            }
-            
-            /* Prevent horizontal scroll */
-            body {
-                overflow-x: hidden;
-            }
-            
-            /* Mobile table improvements */
-            .table-responsive {
-                font-size: 0.75rem;
-                border-radius: 0.5rem;
-                overflow: hidden;
-            }
-            
-            .table-responsive table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-            
-            .table-responsive th,
-            .table-responsive td {
-                padding: 0.5rem 0.375rem;
-                min-width: 100px;
-                text-align: left;
-                border-bottom: 1px solid #e5e7eb;
-            }
-            
-            .table-responsive th {
-                background: #f9fafb;
-                font-weight: 600;
-                color: #374151;
-                font-size: 0.75rem;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-            }
-            
-            .table-responsive tbody tr:hover {
-                background: #f9fafb;
-            }
-            
-            /* Mobile table actions */
-            .table-actions {
-                display: flex;
-                gap: 0.25rem;
-                flex-wrap: wrap;
-            }
-            
-            .table-actions .btn {
-                padding: 0.375rem 0.75rem;
-                font-size: 0.75rem;
-                min-height: 32px;
-            }
-        }
-        
-        /* Tablet-specific adjustments */
-        @media (min-width: 768px) and (max-width: 1023px) {
-            .stats-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            
-            .dashboard-title {
-                font-size: 2.25rem;
-            }
-            
-            .dashboard-subtitle {
-                font-size: 1.125rem;
-            }
-        }
-        
-        /* Touch device optimizations */
-        @media (hover: none) and (pointer: coarse) {
-            /* Remove hover effects on touch devices */
-            .stat-card:hover,
-            .activity-card:hover,
-            .quick-action-card:hover {
-                transform: none;
-                box-shadow: inherit;
-            }
-            
-            /* Larger touch targets */
-            button, .btn, a.btn {
-                min-height: 52px;
-                padding: 1rem 1.5rem;
-            }
-            
-            /* Better spacing for touch */
-            .space-x-2 > * + * {
-                margin-left: 0.75rem !important;
-            }
-        }
-        
-        /* Mobile-First Navigation Improvements */
-        @media (max-width: 1023px) {
-            /* Sidebar improvements */
-            #sidebar {
-                width: 280px;
-            }
-            
-            #sidebar .sidebar-title {
-                font-size: 0.75rem;
-                line-height: 1.2;
-            }
-            
-            #sidebar .nav-link {
-                padding: 0.75rem 1rem;
-                margin-bottom: 0.25rem;
-            }
-            
-            #sidebar .nav-text {
-                font-size: 0.875rem;
-            }
-            
-            /* Profile section adjustments */
-            #sidebar .profile-section {
-                padding: 1rem;
-            }
-            
-            #sidebar .profile-avatar {
-                width: 4rem;
-                height: 4rem;
-            }
-            
-            /* Header improvements */
-            header {
-                height: 60px;
-                min-height: 60px;
-            }
-            
-            /* Main content adjustments */
-            main {
-                padding-top: 0.5rem;
-            }
-        }
-        
-        /* Landscape mobile optimizations */
-        @media (max-width: 1023px) and (orientation: landscape) {
-            #sidebar {
-                width: 240px;
-            }
-            
-            #sidebar .profile-section {
-                padding: 0.75rem;
-            }
-            
-            #sidebar .profile-avatar {
-                width: 3rem;
-                height: 3rem;
-            }
-            
-            header {
-                height: 50px;
-                min-height: 50px;
-                padding: 0.25rem 1rem;
-            }
-        }
-        
-        /* Mobile-First Utility Classes */
-        .mobile-hidden {
-            display: none;
-        }
-        
-        @media (min-width: 640px) {
-            .mobile-hidden {
-                display: block;
-            }
-        }
-        
-        .desktop-hidden {
-            display: block;
-        }
-        
-        @media (min-width: 1024px) {
-            .desktop-hidden {
-                display: none;
-            }
-        }
-        
-        /* Mobile-First Text Utilities */
-        .text-mobile-sm {
-            font-size: 0.75rem;
-        }
-        
-        .text-mobile-base {
-            font-size: 0.875rem;
-        }
-        
-        .text-mobile-lg {
-            font-size: 1rem;
-        }
-        
-        @media (min-width: 640px) {
-            .text-mobile-sm {
-                font-size: 0.875rem;
-            }
-            
-            .text-mobile-base {
-                font-size: 1rem;
-            }
-            
-            .text-mobile-lg {
-                font-size: 1.125rem;
-            }
-        }
-        
-        /* Mobile-First Spacing Utilities */
-        .p-mobile {
-            padding: 0.75rem;
-        }
-        
-        .px-mobile {
-            padding-left: 0.75rem;
-            padding-right: 0.75rem;
-        }
-        
-        .py-mobile {
-            padding-top: 0.75rem;
-            padding-bottom: 0.75rem;
-        }
-        
-        .m-mobile {
-            margin: 0.75rem;
-        }
-        
-        .mx-mobile {
-            margin-left: 0.75rem;
-            margin-right: 0.75rem;
-        }
-        
-        .my-mobile {
-            margin-top: 0.75rem;
-            margin-bottom: 0.75rem;
-        }
-        
-        @media (min-width: 640px) {
-            .p-mobile {
-                padding: 1rem;
-            }
-            
-            .px-mobile {
-                padding-left: 1rem;
-                padding-right: 1rem;
-            }
-            
-            .py-mobile {
-                padding-top: 1rem;
-                padding-bottom: 1rem;
-            }
-            
-            .m-mobile {
-                margin: 1rem;
-            }
-            
-            .mx-mobile {
-                margin-left: 1rem;
-                margin-right: 1rem;
-            }
-            
-            .my-mobile {
-                margin-top: 1rem;
-                margin-bottom: 1rem;
-            }
-        }
-        
-        @media (min-width: 1024px) {
-            .p-mobile {
-                padding: 1.5rem;
-            }
-            
-            .px-mobile {
-                padding-left: 1.5rem;
-                padding-right: 1.5rem;
-            }
-            
-            .py-mobile {
-                padding-top: 1.5rem;
-                padding-bottom: 1.5rem;
-            }
-            
-            .m-mobile {
-                margin: 1.5rem;
-            }
-            
-            .mx-mobile {
-                margin-left: 1.5rem;
-                margin-right: 1.5rem;
-            }
-            
-            .my-mobile {
-                margin-top: 1.5rem;
-                margin-bottom: 1.5rem;
-            }
-        }
-        
-        /* Mobile-First Flexbox Utilities */
-        .flex-mobile-col {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        @media (min-width: 640px) {
-            .flex-mobile-col {
-                flex-direction: row;
-            }
-        }
-        
-        .flex-mobile-wrap {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-        }
-        
-        @media (min-width: 640px) {
-            .flex-mobile-wrap {
-                gap: 1rem;
-            }
-        }
-        
-        @media (min-width: 1024px) {
-            .flex-mobile-wrap {
-                gap: 1.5rem;
-            }
-        }
-        
-        /* Mobile-First Grid Utilities */
-        .grid-mobile-1 {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 0.75rem;
-        }
-        
-        @media (min-width: 640px) {
-            .grid-mobile-1 {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1rem;
-            }
-        }
-        
-        @media (min-width: 1024px) {
-            .grid-mobile-1 {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 1.5rem;
-            }
-        }
-        
-        /* Safe Area Insets for Mobile Devices */
-        @supports (padding: max(0px)) {
-            .safe-area-inset-top {
-                padding-top: max(1rem, env(safe-area-inset-top));
-            }
-            
-            .safe-area-inset-bottom {
-                padding-bottom: max(1rem, env(safe-area-inset-bottom));
-            }
-            
-            .safe-area-inset-left {
-                padding-left: max(1rem, env(safe-area-inset-left));
-            }
-            
-            .safe-area-inset-right {
-                padding-right: max(1rem, env(safe-area-inset-right));
-            }
         }
         /* Custom scrollbar for a better look */
         ::-webkit-scrollbar {
@@ -3361,14 +2599,11 @@
     </style>
 </head>
 <body class="bg-gray-100 dark-mode-transition">
-    <!-- Mobile Overlay -->
-    <div id="mobile-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden hidden transition-opacity duration-300"></div>
-    
-    <div class="flex h-screen bg-gray-200 relative">
+    <div class="flex h-screen bg-gray-200">
         @include('partials.sidebar')
-        <div class="flex-1 flex flex-col overflow-hidden min-w-0">
+        <div class="flex-1 flex flex-col overflow-hidden">
             @include('partials.header')
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-2 sm:p-4 lg:p-8">
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
                 @yield('content')
             </main>
         </div>
@@ -3377,35 +2612,11 @@
         document.addEventListener('DOMContentLoaded', () => {
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebar-toggle');
-            const mobileOverlay = document.getElementById('mobile-overlay');
-            
-            function toggleSidebar() {
-                if (window.innerWidth < 1024) {
-                    // Mobile behavior
+            sidebarToggle.addEventListener('click', () => {
+                if (window.innerWidth < 640) {
                     sidebar.classList.toggle('-translate-x-full');
-                    mobileOverlay.classList.toggle('hidden');
-                    document.body.classList.toggle('overflow-hidden');
                 } else {
-                    // Desktop behavior
                     sidebar.classList.toggle('collapsed');
-                }
-            }
-            
-            sidebarToggle.addEventListener('click', toggleSidebar);
-            
-            // Close sidebar when clicking overlay
-            mobileOverlay.addEventListener('click', () => {
-                sidebar.classList.add('-translate-x-full');
-                mobileOverlay.classList.add('hidden');
-                document.body.classList.remove('overflow-hidden');
-            });
-            
-            // Handle window resize
-            window.addEventListener('resize', () => {
-                if (window.innerWidth >= 1024) {
-                    sidebar.classList.remove('-translate-x-full');
-                    mobileOverlay.classList.add('hidden');
-                    document.body.classList.remove('overflow-hidden');
                 }
             });
             const dateTimeSpan = document.getElementById('datetime-span');
