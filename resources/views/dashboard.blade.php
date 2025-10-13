@@ -103,7 +103,8 @@
     }
     
     .dashboard-content {
-        padding: clamp(0.5rem, 2vw, 1rem);
+        padding-top: 10px;
+        padding-bottom: 20px;
         position: relative;
         z-index: 10;
         min-height: calc(100vh - 40px);
@@ -111,12 +112,6 @@
         overflow-x: hidden;
         /* Enable container queries */
         container-type: inline-size;
-    }
-    
-    @media (max-width: 768px) {
-        .dashboard-content {
-            padding: clamp(0.25rem, 1vw, 0.5rem);
-        }
     }
     
     /* Base grid layout - single row layout with minimal gaps */
@@ -862,88 +857,88 @@
     </div>
 
     <!-- Charts Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-8 dashboard-section" id="charts-section">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 dashboard-section" id="charts-section">
         <!-- Curriculum Overview Chart -->
-        <div class="responsive-card">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
-                <h3 class="responsive-text-lg font-semibold text-gray-800 flex items-center mb-2 sm:mb-0">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-gray-800 flex items-center">
                     <div class="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
                         <i class="las la-chart-bar text-blue-600" style="font-size: 1rem;"></i>
                     </div>
                     Curriculum Overview
                 </h3>
                 <div class="flex space-x-2">
-                    <button onclick="switchChart('curriculum', 'bar')" class="chart-switch-btn active responsive-btn-sm" data-chart="curriculum" data-type="bar" title="Bar Chart View">
+                    <button onclick="switchChart('curriculum', 'bar')" class="chart-switch-btn active" data-chart="curriculum" data-type="bar" title="Bar Chart View">
                         <i class="las la-chart-bar mr-1"></i>
-                        <span class="responsive-text-xs">Bar</span>
+                        <span class="text-xs">Bar</span>
                     </button>
                 </div>
             </div>
-            <div class="chart-container" style="position: relative; height: clamp(200px, 40vw, 300px);">
+            <div class="chart-container" style="position: relative; height: 300px;">
                 <canvas id="curriculumChart"></canvas>
             </div>
         </div>
 
         <!-- System Statistics Chart -->
-        <div class="responsive-card">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
-                <h3 class="responsive-text-lg font-semibold text-gray-800 flex items-center mb-2 sm:mb-0">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-gray-800 flex items-center">
                     <div class="w-6 h-6 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
                         <i class="las la-chart-line text-emerald-600" style="font-size: 1rem;"></i>
                     </div>
                     System Statistics
                 </h3>
                 <div class="flex space-x-2">
-                    <button onclick="switchChart('system', 'bar')" class="chart-switch-btn active responsive-btn-sm" data-chart="system" data-type="bar" title="Bar Chart View">
+                    <button onclick="switchChart('system', 'bar')" class="chart-switch-btn active" data-chart="system" data-type="bar" title="Bar Chart View">
                         <i class="las la-chart-bar mr-1"></i>
-                        <span class="responsive-text-xs">Bar</span>
+                        <span class="text-xs">Bar</span>
                     </button>
-                    <button onclick="switchChart('system', 'radar')" class="chart-switch-btn responsive-btn-sm" data-chart="system" data-type="radar" title="Radar Chart View">
+                    <button onclick="switchChart('system', 'radar')" class="chart-switch-btn" data-chart="system" data-type="radar" title="Radar Chart View">
                         <i class="las la-crosshairs mr-1"></i>
-                        <span class="responsive-text-xs">Radar</span>
+                        <span class="text-xs">Radar</span>
                     </button>
                 </div>
             </div>
-            <div class="chart-container" style="position: relative; height: clamp(200px, 40vw, 300px);">
+            <div class="chart-container" style="position: relative; height: 300px;">
                 <canvas id="systemChart"></canvas>
             </div>
         </div>
     </div>
 
     <!-- Activity Trends Chart -->
-    <div class="responsive-card mb-4 sm:mb-8 dashboard-section" id="activity-chart-section">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
-            <h3 class="responsive-text-lg font-semibold text-gray-800 flex items-center mb-2 sm:mb-0">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8 dashboard-section" id="activity-chart-section">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-lg font-semibold text-gray-800 flex items-center">
                 <div class="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
                     <i class="las la-chart-area text-purple-600" style="font-size: 1rem;"></i>
                 </div>
                 Activity Trends
             </h3>
-            <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+            <div class="flex items-center space-x-4">
                 <div class="flex space-x-2">
-                    <button onclick="switchChart('activity', 'line')" class="chart-switch-btn active responsive-btn-sm" data-chart="activity" data-type="line" title="Line Chart View">
+                    <button onclick="switchChart('activity', 'line')" class="chart-switch-btn active" data-chart="activity" data-type="line" title="Line Chart View">
                         <i class="las la-chart-line mr-1"></i>
-                        <span class="responsive-text-xs">Line</span>
+                        <span class="text-xs">Line</span>
                     </button>
-                    <button onclick="switchChart('activity', 'area')" class="chart-switch-btn responsive-btn-sm" data-chart="activity" data-type="area" title="Area Chart View">
+                    <button onclick="switchChart('activity', 'area')" class="chart-switch-btn" data-chart="activity" data-type="area" title="Area Chart View">
                         <i class="las la-chart-area mr-1"></i>
-                        <span class="responsive-text-xs">Area</span>
+                        <span class="text-xs">Area</span>
                     </button>
                 </div>
-                <div class="responsive-text-sm text-gray-500">
+                <div class="text-sm text-gray-500">
                     <span class="font-medium">{{ $dashboardData['stats']['activities_today'] ?? 0 }}</span> activities today
                 </div>
             </div>
         </div>
-        <div class="chart-container" style="position: relative; height: clamp(180px, 35vw, 250px);">
+        <div class="chart-container" style="position: relative; height: 250px;">
             <canvas id="activityChart"></canvas>
         </div>
     </div>
 
     <!-- New Widgets Section -->
-    <div class="responsive-grid-1 mb-4 sm:mb-8 dashboard-section" id="widgets-section">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 dashboard-section" id="widgets-section">
         <!-- System Health Monitor -->
-        <div class="responsive-card">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-gray-800 flex items-center">
                     <div class="w-6 h-6 bg-green-100 rounded-lg flex items-center justify-center mr-3">
@@ -1100,16 +1095,16 @@
     </div>
 
     <!-- Two Column Layout for Activities and Quick Actions -->
-    <div class="responsive-flex-col activities-section flex-1 dashboard-section" id="activities-section">
+    <div class="grid grid-cols-1 lg:grid-cols-2 activities-section flex-1 dashboard-section" id="activities-section">
         <!-- Recent Activities -->
-        <div class="responsive-card activity-card overflow-hidden">
-            <h3 class="activity-title responsive-text-lg font-semibold text-gray-800 flex items-center">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 activity-card overflow-hidden">
+            <h3 class="activity-title font-semibold text-gray-800 flex items-center">
                 <div class="w-6 h-6 bg-violet-100 rounded-lg flex items-center justify-center mr-3">
                     <i class="las la-clock text-violet-600" style="font-size: 1rem;"></i>
                 </div>
                 Recent Activities
             </h3>
-            <div class="space-y-3 overflow-y-auto activities-scroll-hidden" style="max-height: clamp(300px, 50vh, 400px);">
+            <div class="space-y-3 overflow-y-auto activities-scroll-hidden" style="max-height: 400px;">
                 @if(isset($dashboardData['recent_activities']) && $dashboardData['recent_activities']->count() > 0)
                     @foreach($dashboardData['recent_activities'] as $activity)
                     <div class="flex items-center space-x-4 p-4 border border-gray-100 activity-item">
@@ -1141,41 +1136,41 @@
         </div>
 
         <!-- Quick Actions -->
-        <div class="responsive-card quick-action-card">
-            <h3 class="quick-action-title responsive-text-lg font-semibold text-gray-800 flex items-center">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 quick-action-card">
+            <h3 class="quick-action-title font-semibold text-gray-800 flex items-center">
                 <div class="w-6 h-6 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
                     <i class="las la-bolt text-orange-600" style="font-size: 1rem;"></i>
                 </div>
                 Quick Actions
             </h3>
             <div class="space-y-4">
-                <a href="{{ route('employees.index') }}" class="flex items-center responsive-p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200/50 quick-action-btn touch-friendly">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-600 rounded-xl flex items-center justify-center mr-3 sm:mr-4 quick-action-icon">
-                        <i class="las la-user-cog text-white" style="font-size: clamp(1.25rem, 3vw, 1.5rem);"></i>
+                <a href="{{ route('employees.index') }}" class="flex items-center p-5 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200/50 quick-action-btn">
+                    <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mr-4 quick-action-icon">
+                        <i class="las la-user-cog text-white" style="font-size: 1.5rem;"></i>
                     </div>
                     <div>
-                        <h4 class="responsive-text-lg font-semibold text-gray-900">Manage Staff</h4>
-                        <p class="responsive-text-base text-gray-600">Employee accounts & status</p>
+                        <h4 class="text-lg font-semibold text-gray-900">Manage Staff</h4>
+                        <p class="text-base text-gray-600">Employee accounts & status</p>
                     </div>
                 </a>
 
-                <a href="{{ route('curriculum_export_tool') }}" class="flex items-center responsive-p-4 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl border border-emerald-200/50 quick-action-btn touch-friendly">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-600 rounded-xl flex items-center justify-center mr-3 sm:mr-4 quick-action-icon">
-                        <i class="las la-file-export text-white" style="font-size: clamp(1.25rem, 3vw, 1.5rem);"></i>
+                <a href="{{ route('curriculum_export_tool') }}" class="flex items-center p-5 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl border border-emerald-200/50 quick-action-btn">
+                    <div class="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center mr-4 quick-action-icon">
+                        <i class="las la-file-export text-white" style="font-size: 1.5rem;"></i>
                     </div>
                     <div>
-                        <h4 class="responsive-text-lg font-semibold text-gray-900">Export Tool</h4>
-                        <p class="responsive-text-base text-gray-600">Curriculum downloads</p>
+                        <h4 class="text-lg font-semibold text-gray-900">Export Tool</h4>
+                        <p class="text-base text-gray-600">Curriculum downloads</p>
                     </div>
                 </a>
 
-                <a href="{{ route('employees.all-activities') }}" class="flex items-center responsive-p-4 bg-gradient-to-br from-violet-50 to-violet-100 rounded-xl border border-violet-200/50 quick-action-btn touch-friendly">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-violet-600 rounded-xl flex items-center justify-center mr-3 sm:mr-4 quick-action-icon">
-                        <i class="las la-chart-bar text-white" style="font-size: clamp(1.25rem, 3vw, 1.5rem);"></i>
+                <a href="{{ route('employees.all-activities') }}" class="flex items-center p-5 bg-gradient-to-br from-violet-50 to-violet-100 rounded-xl border border-violet-200/50 quick-action-btn">
+                    <div class="w-12 h-12 bg-violet-600 rounded-xl flex items-center justify-center mr-4 quick-action-icon">
+                        <i class="las la-chart-bar text-white" style="font-size: 1.5rem;"></i>
                     </div>
                     <div>
-                        <h4 class="responsive-text-lg font-semibold text-gray-900">Activity Reports</h4>
-                        <p class="responsive-text-base text-gray-600">Detailed activity logs</p>
+                        <h4 class="text-lg font-semibold text-gray-900">Activity Reports</h4>
+                        <p class="text-base text-gray-600">Detailed activity logs</p>
                     </div>
                 </a>
             </div>

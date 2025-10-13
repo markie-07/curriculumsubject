@@ -1,4 +1,4 @@
-<aside id="sidebar" class="w-72 lg:w-72 md:w-64 sm:w-60 bg-[#1e3a8a] text-gray-200 flex flex-col transition-all duration-300 ease-in-out lg:translate-x-0 -translate-x-full fixed lg:relative h-full z-50">
+<aside id="sidebar" class="w-72 bg-[#1e3a8a] text-gray-200 flex flex-col transition-all duration-300 ease-in-out sm:translate-x-0 -translate-x-full">
     <!-- Header Section -->
     <div class="flex items-center justify-between p-4 border-b border-blue-800">
         <div class="flex items-center space-x-3">
@@ -10,19 +10,19 @@
     </div>
     
     <!-- User Profile Section -->
-    <div class="flex flex-col items-center p-3 sm:p-5 my-2 sm:my-4 profile-section">
+    <div class="flex flex-col items-center p-5 my-4 profile-section">
         <div class="relative group">
-            <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full mb-2 sm:mb-3 profile-avatar transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 border-2 border-blue-400/30 hover:border-blue-300/50">
-                <span class="text-white font-bold text-sm sm:text-base lg:text-lg">{{ strtoupper(substr(Auth::user()->name, 0, 2)) }}</span>
+            <div class="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full mb-3 profile-avatar transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 border-2 border-blue-400/30 hover:border-blue-300/50">
+                <span class="text-white font-bold text-lg">{{ strtoupper(substr(Auth::user()->name, 0, 2)) }}</span>
             </div>
             <div class="absolute -inset-1 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-sm"></div>
         </div>
-        <div class="text-center bg-blue-800/20 rounded-lg px-3 py-1.5 sm:px-4 sm:py-2 hover:bg-blue-800/30 transition-all duration-200 w-full">
-            <p class="font-semibold profile-text text-white text-sm sm:text-base truncate">{{ Auth::user()->name }}</p>
-            <p class="text-xs sm:text-sm text-blue-200 profile-text truncate">{{ '@' . Auth::user()->username }}</p>
+        <div class="text-center bg-blue-800/20 rounded-lg px-4 py-2 hover:bg-blue-800/30 transition-all duration-200">
+            <p class="font-semibold profile-text text-white">{{ Auth::user()->name }}</p>
+            <p class="text-sm text-blue-200 profile-text">{{ '@' . Auth::user()->username }}</p>
         </div>
     </div>
-    <nav class="flex-1 px-2 sm:px-4 pb-4 space-y-1 overflow-y-auto">
+    <nav class="flex-1 px-4 pb-4 space-y-1 overflow-y-auto">
         @php $isEmployee = Auth::user()->role === 'employee'; @endphp
         
         <!-- Dashboard -->
