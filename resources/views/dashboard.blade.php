@@ -121,7 +121,7 @@
         /* Single row with 8 equal columns */
         grid-template-columns: repeat(8, 1fr);
         gap: clamp(0.25rem, 0.5vw, 0.5rem);
-        padding: clamp(0.125rem, 0.5vw, 0.5rem);
+        padding: 10px clamp(0.125rem, 0.5vw, 0.5rem) clamp(0.125rem, 0.5vw, 0.5rem) clamp(0.125rem, 0.5vw, 0.5rem);
         /* Enable container queries for enhanced responsiveness */
         container-type: inline-size;
         /* Responsive margin like other components */
