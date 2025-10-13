@@ -133,34 +133,15 @@
     /* Mobile responsiveness - stack on very small screens */
     @media (max-width: 768px) {
         .stats-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: clamp(0.25rem, 1vw, 0.5rem);
-            padding: clamp(0.25rem, 1vw, 0.75rem);
-        }
-        
-        .dashboard-content {
-            padding: 0.5rem;
-        }
-        
-        .dashboard-header {
-            padding: clamp(0.5rem, 2vw, 1rem);
-            margin-bottom: clamp(0.5rem, 1vw, 0.75rem);
+            grid-template-columns: repeat(4, 1fr);
+            gap: clamp(0.125rem, 0.5vw, 0.375rem);
         }
     }
 
     @media (max-width: 480px) {
         .stats-grid {
-            grid-template-columns: 1fr;
-            gap: clamp(0.5rem, 2vw, 0.75rem);
-            padding: clamp(0.5rem, 2vw, 1rem);
-        }
-        
-        .dashboard-content {
-            padding: 0.25rem;
-        }
-        
-        .stat-card {
-            min-height: clamp(100px, 20vw, 160px);
+            grid-template-columns: repeat(2, 1fr);
+            gap: clamp(0.125rem, 0.5vw, 0.375rem);
         }
     }
     
@@ -876,9 +857,9 @@
     </div>
 
     <!-- Charts Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-6 lg:mb-8 dashboard-section" id="charts-section">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 dashboard-section" id="charts-section">
         <!-- Curriculum Overview Chart -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:p-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-lg font-semibold text-gray-800 flex items-center">
                     <div class="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
@@ -899,7 +880,7 @@
         </div>
 
         <!-- System Statistics Chart -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:p-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-lg font-semibold text-gray-800 flex items-center">
                     <div class="w-6 h-6 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
@@ -925,7 +906,7 @@
     </div>
 
     <!-- Activity Trends Chart -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:p-6 mb-6 lg:mb-8 dashboard-section" id="activity-chart-section">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8 dashboard-section" id="activity-chart-section">
         <div class="flex items-center justify-between mb-6">
             <h3 class="text-lg font-semibold text-gray-800 flex items-center">
                 <div class="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
@@ -1114,19 +1095,19 @@
     </div>
 
     <!-- Two Column Layout for Activities and Quick Actions -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 activities-section flex-1 dashboard-section gap-4 lg:gap-6" id="activities-section">
+    <div class="grid grid-cols-1 lg:grid-cols-2 activities-section flex-1 dashboard-section" id="activities-section">
         <!-- Recent Activities -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 activity-card overflow-hidden p-4 lg:p-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 activity-card overflow-hidden">
             <h3 class="activity-title font-semibold text-gray-800 flex items-center">
                 <div class="w-6 h-6 bg-violet-100 rounded-lg flex items-center justify-center mr-3">
                     <i class="las la-clock text-violet-600" style="font-size: 1rem;"></i>
                 </div>
                 Recent Activities
             </h3>
-            <div class="space-y-3 overflow-y-auto activities-scroll-hidden" style="max-height: 300px; max-height: min(400px, 50vh);">
+            <div class="space-y-3 overflow-y-auto activities-scroll-hidden" style="max-height: 400px;">
                 @if(isset($dashboardData['recent_activities']) && $dashboardData['recent_activities']->count() > 0)
                     @foreach($dashboardData['recent_activities'] as $activity)
-                    <div class="flex items-center space-x-3 lg:space-x-4 p-3 lg:p-4 border border-gray-100 activity-item rounded-lg">
+                    <div class="flex items-center space-x-4 p-4 border border-gray-100 activity-item">
                         <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
                             <span class="text-white font-semibold text-sm">{{ strtoupper(substr($activity->user->name, 0, 1)) }}</span>
                         </div>
@@ -1155,7 +1136,7 @@
         </div>
 
         <!-- Quick Actions -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 quick-action-card p-4 lg:p-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 quick-action-card">
             <h3 class="quick-action-title font-semibold text-gray-800 flex items-center">
                 <div class="w-6 h-6 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
                     <i class="las la-bolt text-orange-600" style="font-size: 1rem;"></i>
