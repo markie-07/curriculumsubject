@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Curriculum & Subject Management System</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -35,6 +35,25 @@
         /* Use the Inter font family */
         body {
             font-family: 'Inter', sans-serif;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        
+        /* Mobile-first responsive design */
+        * {
+            box-sizing: border-box;
+        }
+        
+        /* Touch-friendly tap targets */
+        button, a, input, select, textarea {
+            min-height: 44px;
+            min-width: 44px;
+        }
+        
+        /* Prevent horizontal scrolling */
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
         }
 
         /* Dark Mode CSS Variables */
@@ -1880,6 +1899,284 @@
         [data-theme="dark"] .text-white {
             color: var(--text-primary) !important;
         }
+        
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            /* Mobile sidebar adjustments */
+            #sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 9999;
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                width: 280px;
+            }
+            
+            #sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            
+            /* Mobile overlay */
+            .mobile-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 9998;
+            }
+            
+            .mobile-overlay.active {
+                display: block;
+            }
+            
+            /* Main content adjustments for mobile */
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 1rem;
+            }
+            
+            /* Mobile navigation */
+            .mobile-nav {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 1rem;
+                background: var(--bg-secondary);
+                border-bottom: 1px solid var(--border-primary);
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 44px;
+                height: 44px;
+                background: var(--bg-tertiary);
+                border: 1px solid var(--border-primary);
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+            
+            .mobile-menu-btn:hover {
+                background: var(--bg-primary);
+            }
+            
+            /* Hide desktop elements on mobile */
+            .desktop-only {
+                display: none !important;
+            }
+            
+            /* Mobile-friendly forms */
+            input, select, textarea {
+                font-size: 16px !important; /* Prevents zoom on iOS */
+                padding: 12px !important;
+            }
+            
+            /* Mobile-friendly tables */
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            table {
+                min-width: 600px;
+            }
+            
+            /* Mobile-friendly cards */
+            .card {
+                margin-bottom: 1rem;
+                border-radius: 12px;
+            }
+            
+            /* Mobile-friendly buttons */
+            .btn {
+                padding: 12px 16px;
+                font-size: 14px;
+                border-radius: 8px;
+                min-height: 44px;
+            }
+            
+            /* Mobile grid adjustments */
+            .grid {
+                grid-template-columns: 1fr !important;
+                gap: 1rem;
+            }
+            
+            .lg\:grid-cols-2,
+            .lg\:grid-cols-3,
+            .lg\:grid-cols-4,
+            .md\:grid-cols-2,
+            .md\:grid-cols-3 {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            /* Extra small mobile adjustments */
+            .main-content {
+                padding: 0.5rem;
+            }
+            
+            .mobile-nav {
+                padding: 0.75rem;
+            }
+            
+            /* Smaller text on very small screens */
+            h1 { font-size: 1.5rem !important; }
+            h2 { font-size: 1.25rem !important; }
+            h3 { font-size: 1.125rem !important; }
+            
+            /* Compact spacing */
+            .space-y-4 > * + * {
+                margin-top: 0.75rem !important;
+            }
+            
+            .space-y-6 > * + * {
+                margin-top: 1rem !important;
+            }
+        }
+        
+        /* Tablet adjustments */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            #sidebar {
+                width: 240px;
+            }
+            
+            .main-content {
+                margin-left: 240px;
+            }
+        }
+        
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            /* Remove hover effects on touch devices */
+            .hover\:bg-blue-50:hover {
+                background-color: inherit;
+            }
+            
+            .hover\:text-blue-600:hover {
+                color: inherit;
+            }
+            
+            /* Larger touch targets */
+            button, a[role="button"], input[type="submit"] {
+                min-height: 48px;
+                padding: 12px 16px;
+            }
+        }
+        
+        /* Universal Mobile Styles for All Pages */
+        @media (max-width: 768px) {
+            /* Form optimizations */
+            .form-container, .container {
+                padding: 0.75rem !important;
+                margin: 0 !important;
+                max-width: 100% !important;
+            }
+            
+            /* Input field optimizations */
+            input[type="text"],
+            input[type="email"],
+            input[type="password"],
+            input[type="number"],
+            input[type="search"],
+            select,
+            textarea {
+                width: 100% !important;
+                font-size: 16px !important;
+                padding: 12px 16px !important;
+                border-radius: 8px !important;
+                border: 1px solid #d1d5db !important;
+                min-height: 44px !important;
+            }
+            
+            /* Button optimizations */
+            .btn, button:not(.mobile-menu-btn):not(.chart-switch-btn), [type="submit"], [type="button"] {
+                width: 100% !important;
+                min-height: 48px !important;
+                padding: 12px 16px !important;
+                font-size: 16px !important;
+                border-radius: 8px !important;
+                margin-bottom: 8px !important;
+            }
+            
+            /* Table responsiveness */
+            .table-container, .overflow-x-auto {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+                border-radius: 8px !important;
+                margin-bottom: 1rem !important;
+            }
+            
+            table {
+                min-width: 600px !important;
+                font-size: 14px !important;
+            }
+            
+            th, td {
+                padding: 8px 12px !important;
+                white-space: nowrap !important;
+            }
+            
+            /* Card and modal optimizations */
+            .modal, .card {
+                margin: 0.5rem !important;
+                border-radius: 12px !important;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+            }
+            
+            /* Grid system mobile fixes */
+            .grid-cols-2,
+            .grid-cols-3,
+            .grid-cols-4,
+            .md\\:grid-cols-2,
+            .md\\:grid-cols-3,
+            .lg\\:grid-cols-2,
+            .lg\\:grid-cols-3,
+            .lg\\:grid-cols-4 {
+                grid-template-columns: 1fr !important;
+            }
+            
+            /* Text size adjustments */
+            .text-3xl { font-size: 1.5rem !important; }
+            .text-2xl { font-size: 1.25rem !important; }
+            .text-xl { font-size: 1.125rem !important; }
+            
+            /* Chart container mobile fixes */
+            .chart-container {
+                height: 250px !important;
+                margin-bottom: 1rem !important;
+            }
+        }
+        
+        /* Extra small mobile devices */
+        @media (max-width: 480px) {
+            .container, .form-container {
+                padding: 0.5rem !important;
+            }
+            
+            table {
+                font-size: 12px !important;
+            }
+            
+            th, td {
+                padding: 6px 8px !important;
+            }
+            
+            .chart-container {
+                height: 200px !important;
+            }
+        }
 
         /* Specific button text fixes */
         [data-theme="dark"] button span {
@@ -2599,6 +2896,20 @@
     </style>
 </head>
 <body class="bg-gray-100 dark-mode-transition">
+    <!-- Mobile Navigation Bar -->
+    <div class="mobile-nav md:hidden">
+        <button class="mobile-menu-btn" onclick="toggleMobileSidebar()">
+            <i class="las la-bars text-xl"></i>
+        </button>
+        <div class="flex items-center">
+            <h1 class="text-lg font-semibold">CSM System</h1>
+        </div>
+        <div class="w-11"></div> <!-- Spacer for centering -->
+    </div>
+    
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" onclick="closeMobileSidebar()"></div>
+    
     <div class="flex h-screen bg-gray-200">
         @include('partials.sidebar')
         <div class="flex-1 flex flex-col overflow-hidden">
@@ -3012,6 +3323,50 @@
                 });
             } else {
                 console.log('Logout button not found');
+            }
+        });
+        
+        // Mobile sidebar functionality
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.mobile-overlay');
+            
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('active');
+                
+                // Prevent body scroll when sidebar is open
+                if (sidebar.classList.contains('mobile-open')) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = '';
+                }
+            }
+        }
+        
+        function closeMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.mobile-overlay');
+            
+            if (sidebar && overlay) {
+                sidebar.classList.remove('mobile-open');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+        
+        // Close mobile sidebar when window is resized to desktop
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 768) {
+                closeMobileSidebar();
+            }
+        });
+        
+        // Add main-content class to main element for mobile responsiveness
+        document.addEventListener('DOMContentLoaded', function() {
+            const mainElement = document.querySelector('main');
+            if (mainElement) {
+                mainElement.classList.add('main-content');
             }
         });
     </script>

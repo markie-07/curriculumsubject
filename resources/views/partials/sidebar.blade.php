@@ -1,4 +1,4 @@
-<aside id="sidebar" class="w-72 bg-[#1e3a8a] text-gray-200 flex flex-col transition-all duration-300 ease-in-out sm:translate-x-0 -translate-x-full">
+<aside id="sidebar" class="w-72 bg-[#1e3a8a] text-gray-200 flex flex-col transition-all duration-300 ease-in-out fixed md:relative h-full z-50 md:translate-x-0 -translate-x-full">
     <!-- Header Section -->
     <div class="flex items-center justify-between p-4 border-b border-blue-800">
         <div class="flex items-center space-x-3">
