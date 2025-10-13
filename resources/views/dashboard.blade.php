@@ -596,13 +596,17 @@
         background: white;
         border-left: 1px solid #e5e7eb;
         box-shadow: -4px 0 6px -1px rgba(0, 0, 0, 0.1);
-        transition: right 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         z-index: 1000;
         overflow-y: auto;
+        opacity: 0;
+        visibility: hidden;
     }
 
     .dashboard-sidebar.open {
         right: 0;
+        opacity: 1;
+        visibility: visible;
     }
 
     .sidebar-toggle {
@@ -616,7 +620,7 @@
         color: #374151;
         cursor: pointer;
         box-shadow: none;
-        transition: all 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         z-index: 1001;
         display: flex;
         align-items: center;
