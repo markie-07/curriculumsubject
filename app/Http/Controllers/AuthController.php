@@ -65,6 +65,14 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
             
+            // Check if user account is active
+            if ($user->status === 'inactive') {
+                Auth::logout(); // Logout immediately
+                return back()->withErrors([
+                    'email' => 'Your account has been deactivated. Please contact an administrator for assistance.',
+                ])->onlyInput('email');
+            }
+            
             // Reset login attempts on successful login
             $loginAttempt->resetAttempts();
             
@@ -153,8 +161,18 @@ class AuthController extends Controller
 
         // Verify OTP
         if (Otp::verifyOtp($userEmail, $request->otp_code)) {
-            // OTP is valid, log in the user
+            // OTP is valid, check user status before logging in
             $user = User::find($userId);
+            
+            // Check if user account is still active
+            if ($user->status === 'inactive') {
+                // Clear session
+                $request->session()->forget(['pending_user_id', 'pending_user_email']);
+                return redirect()->route('login')->withErrors([
+                    'error' => 'Your account has been deactivated. Please contact an administrator for assistance.',
+                ]);
+            }
+            
             Auth::login($user);
             
             // Clear session
