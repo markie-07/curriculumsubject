@@ -21,15 +21,15 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         <div>
                             <label for="course_title" class="block text-sm font-medium text-gray-700">Course Title</label>
-                            <input type="text" name="course_title" id="course_title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                            <input type="text" name="course_title" id="course_title" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
                         </div>
                         <div>
                             <label for="course_code" class="block text-sm font-medium text-gray-700">Course Code</label>
-                            <input type="text" name="course_code" id="course_code" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                            <input type="text" name="course_code" id="course_code" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
                         </div>
                         <div>
                             <label for="subject_type" class="block text-sm font-medium text-gray-700">Course Type</label>
-                            <select name="subject_type" id="subject_type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                            <select name="subject_type" id="subject_type" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
                                 <option value="" disabled selected>Select a Type</option>
                                 <option value="Major">Major</option>
                                 <option value="Minor">Minor</option>
@@ -39,19 +39,19 @@
                         </div>
                         <div>
                             <label for="credit_units" class="block text-sm font-medium text-gray-700">Credit Units</label>
-                            <input type="number" name="credit_units" id="credit_units" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                            <input type="number" name="credit_units" id="credit_units" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
                         </div>
                         <div>
                             <label for="contact_hours" class="block text-sm font-medium text-gray-700">Contact Hours</label>
-                            <input type="number" name="contact_hours" id="contact_hours" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <input type="number" name="contact_hours" id="contact_hours" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
                         <div>
                             <label for="prerequisites" class="block text-sm font-medium text-gray-700">Credit Prerequisites</label>
-                            <input type="text" name="prerequisites" id="prerequisites" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <input type="text" name="prerequisites" id="prerequisites" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
                         <div class="lg:col-span-3">
                             <label for="pre_requisite_to" class="block text-sm font-medium text-gray-700">Pre-requisite to</label>
-                            <input type="text" name="pre_requisite_to" id="pre_requisite_to" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <input type="text" name="pre_requisite_to" id="pre_requisite_to" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
                         <div class="lg:col-span-3">
                             <label for="course_description" class="block text-sm font-medium text-gray-700">Course Description</label>
@@ -125,7 +125,7 @@
                     Mapping Grids
                 </h2>
                 <div class="space-y-8">
-                    <div class="p-8 border rounded-2xl shadow-md">
+                    <div class="p-8 border rounded-2xl shadow-md mapping-grid-container">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-xl font-semibold text-gray-700">PROGRAM MAPPING GRID</h3>
                             <button id="add-program-mapping-row" type="button" class="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors">Add Row</button>
@@ -146,7 +146,7 @@
                             </table>
                         </div>
                     </div>
-                    <div class="p-8 border rounded-2xl shadow-md">
+                    <div class="p-8 border rounded-2xl shadow-md mapping-grid-container">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-xl font-semibold text-gray-700">COURSE MAPPING GRID</h3>
                             <button id="add-course-mapping-row" type="button" class="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors">Add Row</button>
@@ -348,17 +348,17 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div>
                             <label for="prepared_by" class="block text-sm font-medium text-gray-700">Prepared:</label>
-                            <input type="text" id="prepared_by" name="prepared_by" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            <input type="text" id="prepared_by" name="prepared_by" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm">
                             <p class="text-xs text-gray-500 mt-1">Cluster Leader</p>
                         </div>
                         <div>
                             <label for="reviewed_by" class="block text-sm font-medium text-gray-700">Reviewed:</label>
-                            <input type="text" id="reviewed_by" name="reviewed_by" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            <input type="text" id="reviewed_by" name="reviewed_by" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm">
                             <p class="text-xs text-gray-500 mt-1">General Education Program Head</p>
                         </div>
                         <div>
                             <label for="approved_by" class="block text-sm font-medium text-gray-700">Approved:</label>
-                            <input type="text" id="approved_by" name="approved_by" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            <input type="text" id="approved_by" name="approved_by" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm">
                             <p class="text-xs text-gray-500 mt-1">Vice President for Academic Affairs</p>
                         </div>
                     </div>
@@ -367,7 +367,7 @@
 
             {{-- Save/Update Button --}}
             <div class="mt-10 pt-6 border-t border-gray-200">
-                <button id="saveCourseButton" type="submit" class="w-full flex items-center justify-center space-x-2 px-6 py-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <button id="saveCourseButton" type="submit" class="w-full flex items-center justify-center space-x-2 px-6 py-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-100 transition-colors shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 border border-gray-300">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                     <span>Save Course</span>
                 </button>
@@ -692,14 +692,18 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- MAPPING GRID ROW LOGIC ---
     const createMappingTableRow = (isPilo = true) => {
         const row = document.createElement('tr');
-        row.className = 'hover:bg-gray-50';
-        row.innerHTML = `<td class="py-2 px-4 border-b"><input type="text" placeholder="${isPilo ? 'PILO...' : 'CILO...'}" class="w-full p-1 border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"></td><td class="py-2 px-4 border-b"><input type="text" class="w-full p-1 text-center border-gray-300 rounded"></td><td class="py-2 px-4 border-b"><input type="text" class="w-full p-1 text-center border-gray-300 rounded"></td><td class="py-2 px-4 border-b"><input type="text" class="w-full p-1 text-center border-gray-300 rounded"></td><td class="py-2 px-4 border-b"><input type="text" class="w-full p-1 text-center border-gray-300 rounded"></td><td class="py-2 px-4 border-b text-center"><button type="button" class="delete-row-btn text-red-500 hover:text-red-700 font-semibold">Delete</button></td>`;
+        row.className = '';
+        row.innerHTML = `<td class="py-2 px-4 border-b"><input type="text" placeholder="${isPilo ? 'PILO...' : 'CILO...'}" class="w-full p-1 border-gray-300 rounded"></td><td class="py-2 px-4 border-b"><input type="text" class="w-full p-1 text-center border-gray-300 rounded"></td><td class="py-2 px-4 border-b"><input type="text" class="w-full p-1 text-center border-gray-300 rounded"></td><td class="py-2 px-4 border-b"><input type="text" class="w-full p-1 text-center border-gray-300 rounded"></td><td class="py-2 px-4 border-b"><input type="text" class="w-full p-1 text-center border-gray-300 rounded"></td><td class="py-2 px-4 border-b text-center"><button type="button" class="delete-row-btn text-red-500 hover:text-red-700 font-semibold">Delete</button></td>`;
         return row;
     };
     document.getElementById('add-program-mapping-row').addEventListener('click', () => document.getElementById('program-mapping-table-body').appendChild(createMappingTableRow(true)));
     document.getElementById('add-course-mapping-row').addEventListener('click', () => document.getElementById('course-mapping-table-body').appendChild(createMappingTableRow(false)));
-    document.querySelector('.bg-white').addEventListener('click', (e) => {
-        if (e.target.classList.contains('delete-row-btn')) e.target.closest('tr').remove();
+    
+    // Event delegation for delete buttons in both tables
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('delete-row-btn')) {
+            e.target.closest('tr').remove();
+        }
     });
 
     // --- INITIALIZATION ---

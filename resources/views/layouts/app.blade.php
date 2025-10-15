@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Curriculum & Subject Management System</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/sms.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('images/SMSIII TAB LOGO.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/sms.png') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -288,6 +292,35 @@
             background-color: #15803d !important;
         }
 
+        /* Dark mode status badges - more specific selectors */
+        [data-theme="dark"] span.bg-green-100.text-green-800 {
+            background-color:rgba(0, 252, 21, 0.49) !important;
+            color:rgb(255, 255, 255) !important;
+        }
+
+        /* Make SVG icons in active status badge black */
+        [data-theme="dark"] span.bg-green-100.text-green-800 svg {
+            color: #000000 !important;
+        }
+
+        /* Alternative selectors for broader coverage */
+        [data-theme="dark"] .bg-green-100.text-green-800 {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+        }
+
+        [data-theme="dark"] .bg-green-100.text-green-800 svg {
+            color: #000000 !important;
+        }
+
+        [data-theme="dark"] span.bg-gray-100 {
+            background-color: rgba(156, 163, 175, 0.2) !important;
+        }
+
+        [data-theme="dark"] span.text-gray-800 {
+            color: #d1d5db !important;
+        }
+
         /* Dark mode tables */
         [data-theme="dark"] table {
             background-color: var(--card-bg);
@@ -450,8 +483,7 @@
             font-weight: 600;
         }
 
-        /* Enhanced card hover effects */
-        [data-theme="dark"] .bg-white:hover,
+        /* Enhanced card hover effects - disabled for course builder cards */
         [data-theme="dark"] .stat-card:hover {
             background-color: #374151 !important;
             transform: translateY(-2px);
@@ -459,16 +491,70 @@
             border: 1px solid rgba(59, 130, 246, 0.3);
         }
 
-        /* Enhanced table row hover effects */
-        [data-theme="dark"] tr:hover {
+        /* Disable hover effects and shadows for mapping grid containers */
+        .mapping-grid-container,
+        .mapping-grid-container:hover {
+            transform: none !important;
+            box-shadow: none !important;
+            border-color: inherit !important;
+            background-color: inherit !important;
+        }
+
+        [data-theme="dark"] .mapping-grid-container,
+        [data-theme="dark"] .mapping-grid-container:hover {
+            transform: none !important;
+            box-shadow: none !important;
+            border-color: var(--border-primary) !important;
+            background-color: var(--card-bg) !important;
+        }
+
+        /* Disable hover effects for all elements inside mapping grid containers */
+        .mapping-grid-container:hover *,
+        .mapping-grid-container *:hover {
+            transform: none !important;
+            box-shadow: inherit !important;
+            border-color: inherit !important;
+            background-color: inherit !important;
+        }
+
+        [data-theme="dark"] .mapping-grid-container:hover *,
+        [data-theme="dark"] .mapping-grid-container *:hover {
+            transform: none !important;
+            box-shadow: inherit !important;
+            border-color: inherit !important;
+            background-color: inherit !important;
+        }
+
+        /* Enhanced table row hover effects - disabled for mapping grids and employees table */
+        [data-theme="dark"] tr:hover:not(.mapping-grid tr:hover):not(.employees-table tr:hover) {
             background-color: rgba(59, 130, 246, 0.1) !important;
             transform: scale(1.01);
             transition: all 0.2s ease;
         }
 
-        [data-theme="dark"] tr:hover td {
+        [data-theme="dark"] tr:hover:not(.mapping-grid tr:hover):not(.employees-table tr:hover) td {
             color: var(--text-primary) !important;
             border-color: rgba(59, 130, 246, 0.3) !important;
+        }
+
+        /* Disable hover effects for employees table */
+        .employees-table tr:hover {
+            transform: none !important;
+            background-color: inherit !important;
+        }
+
+        [data-theme="dark"] .employees-table tr:hover {
+            transform: none !important;
+            background-color: inherit !important;
+        }
+
+        /* Employee header gradient - sync with dark mode */
+        .employee-header-gradient {
+            background: linear-gradient(to right, #2563eb, #9333ea);
+        }
+
+        [data-theme="dark"] .employee-header-gradient {
+            background: linear-gradient(to right, #1e293b, #374151);
         }
 
         /* Enhanced form element hover effects */
@@ -1970,10 +2056,10 @@
             border-color: var(--border-secondary) !important;
         }
 
-        /* Card and container borders on hover */
-        [data-theme="dark"] .bg-white:hover {
+        /* Card and container borders on hover - disabled for course builder cards */
+        /* [data-theme="dark"] .bg-white:hover {
             border-color: var(--border-secondary) !important;
-        }
+        } */
 
         /* Specific export tool checkbox container borders */
         [data-theme="dark"] .grid-cols-2 label:hover {

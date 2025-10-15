@@ -4,7 +4,7 @@
 <div class="container mx-auto px-6 py-8">
     @if(request()->routeIs('employees.create') || request()->routeIs('employees.edit'))
         <!-- ADD/EDIT EMPLOYEE FORM -->
-        <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-lg p-6 text-white mb-8">
+        <div class="employee-header-gradient rounded-lg shadow-lg p-6 text-white mb-8">
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl font-bold">
@@ -121,12 +121,22 @@
                             New Password <span class="text-gray-500">(Leave blank to keep current password)</span>
                         @endif
                     </label>
-                    <input type="password" 
-                           id="password" 
-                           name="password"
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 @error('password') border-red-500 @enderror"
-                           placeholder="{{ request()->routeIs('employees.create') ? 'Enter secure password' : 'Enter new password (optional)' }}"
-                           {{ request()->routeIs('employees.create') ? 'required' : '' }}>
+                    <div class="relative">
+                        <input type="password" 
+                               id="password" 
+                               name="password"
+                               class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 @error('password') border-red-500 @enderror"
+                               placeholder="{{ request()->routeIs('employees.create') ? '••••••••' : '•••••••• (optional)' }}"
+                               {{ request()->routeIs('employees.create') ? 'required' : '' }}>
+                        <button type="button" 
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+                                onclick="togglePasswordVisibility('password', this)">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </button>
+                    </div>
                     @error('password')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -143,18 +153,28 @@
                             <span class="text-red-500">*</span>
                         @endif
                     </label>
-                    <input type="password" 
-                           id="password_confirmation" 
-                           name="password_confirmation"
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                           placeholder="{{ request()->routeIs('employees.create') ? 'Confirm password' : 'Confirm new password' }}"
-                           {{ request()->routeIs('employees.create') ? 'required' : '' }}>
+                    <div class="relative">
+                        <input type="password" 
+                               id="password_confirmation" 
+                               name="password_confirmation"
+                               class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                               placeholder="{{ request()->routeIs('employees.create') ? '••••••••' : '•••••••• (optional)' }}"
+                               {{ request()->routeIs('employees.create') ? 'required' : '' }}>
+                        <button type="button" 
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+                                onclick="togglePasswordVisibility('password_confirmation', this)">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Submit Buttons -->
                 <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
                     <a href="{{ route('employees.index') }}" 
-                       class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-semibold transition-colors duration-200">
+                       class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold transition-colors duration-200">
                         Cancel
                     </a>
                     <button type="submit" 
@@ -217,7 +237,7 @@
 
     @else
         <!-- EMPLOYEE LIST VIEW -->
-        <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-lg p-6 text-white mb-8">
+        <div class="employee-header-gradient rounded-lg shadow-lg p-6 text-white mb-8">
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl font-bold">Employee Management</h1>
@@ -334,7 +354,7 @@
 
             @if($employees->count() > 0)
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200 employees-table">
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee</th>
@@ -348,7 +368,7 @@
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach($employees as $employee)
-                            <tr class="hover:bg-gray-50">
+                            <tr>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
@@ -511,12 +531,32 @@
 
                         <div>
                             <label for="modal-password" class="block text-sm font-medium text-slate-700 mb-2">Password</label>
-                            <input type="password" id="modal-password" name="password" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                            <div class="relative">
+                                <input type="password" id="modal-password" name="password" class="w-full px-3 py-2 pr-10 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="••••••••" required>
+                                <button type="button" 
+                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+                                        onclick="togglePasswordVisibility('modal-password', this)">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
 
                         <div>
                             <label for="modal-password-confirmation" class="block text-sm font-medium text-slate-700 mb-2">Confirm Password</label>
-                            <input type="password" id="modal-password-confirmation" name="password_confirmation" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                            <div class="relative">
+                                <input type="password" id="modal-password-confirmation" name="password_confirmation" class="w-full px-3 py-2 pr-10 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="••••••••" required>
+                                <button type="button" 
+                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+                                        onclick="togglePasswordVisibility('modal-password-confirmation', this)">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
 
                         <div class="flex gap-4 pt-4">
@@ -572,6 +612,27 @@
         </div>
 
         <script>
+        // Password visibility toggle function
+        function togglePasswordVisibility(inputId, button) {
+            const input = document.getElementById(inputId);
+            const svg = button.querySelector('svg');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                // Change to "eye-slash" icon (hidden)
+                svg.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+                `;
+            } else {
+                input.type = 'password';
+                // Change back to "eye" icon (visible)
+                svg.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                `;
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             // Modal elements
             const addEmployeeButton = document.getElementById('addEmployeeButton');

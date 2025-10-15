@@ -58,7 +58,7 @@
                     </select>
                 </div>
 
-                <div id="availableSubjects" class="flex-1 overflow-y-auto pr-2 -mr-2 space-y-3">
+                <div id="availableSubjects" class="flex-1 overflow-y-auto pr-2 -mr-2 space-y-3 pt-2.5">
                     <p class="text-gray-500 text-center mt-4">Select a curriculum to view subjects.</p>
                 </div>
             </div>

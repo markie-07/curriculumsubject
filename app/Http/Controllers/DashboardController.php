@@ -104,6 +104,9 @@ class DashboardController extends Controller
                     ', [now()->month, now()->subWeek()])
                     ->first();
 
+                // Get weekly activity data for the chart (last 7 days)
+                $weeklyActivities = $this->getWeeklyActivityData();
+
                 // Get other statistics efficiently
                 $subjectCount = Subject::count();
                 
@@ -138,6 +141,9 @@ class DashboardController extends Controller
                     'total_admins' => $userStats->total_admins ?? 0,
                     'activities_today' => $activityStats->activities_today ?? 0,
                     'activities_this_week' => $activityStats->activities_this_week ?? 0,
+                    
+                    // Weekly activity data for chart
+                    'weekly_activities' => $weeklyActivities,
                 ];
                 
                 return $stats;
@@ -148,6 +154,38 @@ class DashboardController extends Controller
                 return $this->getDefaultStats();
             }
         });
+    }
+
+    /**
+     * Get weekly activity data for the last 7 days
+     */
+    private function getWeeklyActivityData()
+    {
+        try {
+            $weeklyData = [];
+            
+            // Get data for the last 7 days (Monday to Sunday)
+            for ($i = 6; $i >= 0; $i--) {
+                $date = now()->subDays($i);
+                $dayName = $date->format('D'); // Mon, Tue, Wed, etc.
+                
+                $count = DB::table('employee_activity_logs')
+                    ->whereDate('created_at', $date->format('Y-m-d'))
+                    ->count();
+                
+                $weeklyData[$dayName] = $count;
+            }
+            
+            return $weeklyData;
+            
+        } catch (\Exception $e) {
+            \Log::error('Error fetching weekly activity data: ' . $e->getMessage());
+            // Return default data if there's an error
+            return [
+                'Mon' => 0, 'Tue' => 0, 'Wed' => 0, 'Thu' => 0, 
+                'Fri' => 0, 'Sat' => 0, 'Sun' => 0
+            ];
+        }
     }
 
     /**
@@ -175,6 +213,10 @@ class DashboardController extends Controller
             'total_admins' => 0,
             'activities_today' => 0,
             'activities_this_week' => 0,
+            'weekly_activities' => [
+                'Mon' => 0, 'Tue' => 0, 'Wed' => 0, 'Thu' => 0, 
+                'Fri' => 0, 'Sat' => 0, 'Sun' => 0
+            ],
         ];
     }
 

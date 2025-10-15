@@ -1446,13 +1446,13 @@ const chartConfigs = {
                 datasets: [{
                     label: 'Activities',
                     data: [
-                        Math.floor(Math.random() * 20) + 5,
-                        Math.floor(Math.random() * 20) + 5,
-                        Math.floor(Math.random() * 20) + 5,
-                        Math.floor(Math.random() * 20) + 5,
-                        Math.floor(Math.random() * 20) + 5,
-                        Math.floor(Math.random() * 20) + 5,
-                        dashboardStats.activities_today || 0
+                        dashboardStats.weekly_activities?.Mon || 0,
+                        dashboardStats.weekly_activities?.Tue || 0,
+                        dashboardStats.weekly_activities?.Wed || 0,
+                        dashboardStats.weekly_activities?.Thu || 0,
+                        dashboardStats.weekly_activities?.Fri || 0,
+                        dashboardStats.weekly_activities?.Sat || 0,
+                        dashboardStats.weekly_activities?.Sun || 0
                     ],
                     borderColor: 'rgb(139, 92, 246)',
                     backgroundColor: 'rgba(139, 92, 246, 0.1)',
@@ -1496,13 +1496,13 @@ const chartConfigs = {
                 datasets: [{
                     label: 'Activities',
                     data: [
-                        Math.floor(Math.random() * 20) + 5,
-                        Math.floor(Math.random() * 20) + 5,
-                        Math.floor(Math.random() * 20) + 5,
-                        Math.floor(Math.random() * 20) + 5,
-                        Math.floor(Math.random() * 20) + 5,
-                        Math.floor(Math.random() * 20) + 5,
-                        dashboardStats.activities_today || 0
+                        dashboardStats.weekly_activities?.Mon || 0,
+                        dashboardStats.weekly_activities?.Tue || 0,
+                        dashboardStats.weekly_activities?.Wed || 0,
+                        dashboardStats.weekly_activities?.Thu || 0,
+                        dashboardStats.weekly_activities?.Fri || 0,
+                        dashboardStats.weekly_activities?.Sat || 0,
+                        dashboardStats.weekly_activities?.Sun || 0
                     ],
                     borderColor: 'rgb(139, 92, 246)',
                     backgroundColor: 'rgba(139, 92, 246, 0.3)',
