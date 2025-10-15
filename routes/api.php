@@ -6,7 +6,8 @@ use App\Http\Controllers\CurriculumController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\PrerequisiteController;
 use App\Http\Controllers\GradeController;
-use App\Http\Controllers\EquivalencyToolController; 
+use App\Http\Controllers\EquivalencyToolController;
+use App\Http\Controllers\Api\GlobalSearchController; 
 
 // --- Curriculum Routes ---
 Route::get('/curriculums', [CurriculumController::class, 'index']);
@@ -42,6 +43,9 @@ Route::post('/equivalencies', [EquivalencyToolController::class, 'store']);
 Route::patch('/equivalencies/{equivalency}', [EquivalencyToolController::class, 'update']);
 Route::delete('/equivalencies/{equivalency}', [EquivalencyToolController::class, 'destroy']);
 
+// --- Global Search Routes ---
+Route::post('/global-search', [GlobalSearchController::class, 'search']);
+Route::get('/quick-search/{type}', [GlobalSearchController::class, 'quickSearch']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

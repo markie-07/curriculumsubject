@@ -413,7 +413,7 @@
         margin-bottom: clamp(0.5rem, 1vw, 1rem);
     }
     
-    .activity-card, .quick-action-card {
+    .activity-card, .quick-action-card, .chart-card, .widget-card {
         padding: clamp(1rem, 2.5vw, 1.5rem);
         border-radius: clamp(0.75rem, 1.2vw, 1rem);
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -421,14 +421,14 @@
         overflow: hidden;
     }
     
-    /* Cool hover effects for activity and quick action cards */
-    .activity-card:hover, .quick-action-card:hover {
+    /* Cool hover effects for activity, quick action, chart, and widget cards */
+    .activity-card:hover, .quick-action-card:hover, .chart-card:hover, .widget-card:hover {
         transform: translateY(-4px);
         box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
     }
     
     /* Subtle background animation */
-    .activity-card::before, .quick-action-card::before {
+    .activity-card::before, .quick-action-card::before, .chart-card::before, .widget-card::before {
         content: '';
         position: absolute;
         top: 0;
@@ -441,17 +441,17 @@
         z-index: 1;
     }
     
-    .activity-card:hover::before, .quick-action-card:hover::before {
+    .activity-card:hover::before, .quick-action-card:hover::before, .chart-card:hover::before, .widget-card:hover::before {
         transform: translateX(100%);
     }
     
     /* Ensure content stays above background effect */
-    .activity-card > *, .quick-action-card > * {
+    .activity-card > *, .quick-action-card > *, .chart-card > *, .widget-card > * {
         position: relative;
         z-index: 2;
     }
     
-    .activity-title, .quick-action-title {
+    .activity-title, .quick-action-title, .chart-title, .widget-title {
         font-size: clamp(1.125rem, 2.8vw, 1.5rem);
         margin-bottom: clamp(0.5rem, 1.2vw, 0.75rem);
         transition: all 0.3s ease;
@@ -459,7 +459,9 @@
     
     /* Title hover effects */
     .activity-card:hover .activity-title, 
-    .quick-action-card:hover .quick-action-title {
+    .quick-action-card:hover .quick-action-title,
+    .chart-card:hover .chart-title,
+    .widget-card:hover .widget-title {
         transform: translateX(4px);
         color: #4f46e5;
     }
@@ -863,9 +865,9 @@
     <!-- Charts Section -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 dashboard-section" id="charts-section">
         <!-- Curriculum Overview Chart -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 chart-card overflow-hidden">
             <div class="flex items-center justify-between mb-6">
-                <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                <h3 class="text-lg font-semibold text-gray-800 flex items-center chart-title">
                     <div class="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
                         <i class="las la-chart-bar text-blue-600" style="font-size: 1rem;"></i>
                     </div>
@@ -884,9 +886,9 @@
         </div>
 
         <!-- System Statistics Chart -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 chart-card overflow-hidden">
             <div class="flex items-center justify-between mb-6">
-                <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                <h3 class="text-lg font-semibold text-gray-800 flex items-center chart-title">
                     <div class="w-6 h-6 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
                         <i class="las la-chart-line text-emerald-600" style="font-size: 1rem;"></i>
                     </div>
@@ -910,9 +912,9 @@
     </div>
 
     <!-- Activity Trends Chart -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8 dashboard-section" id="activity-chart-section">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 chart-card overflow-hidden mb-8 dashboard-section" id="activity-chart-section">
         <div class="flex items-center justify-between mb-6">
-            <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+            <h3 class="text-lg font-semibold text-gray-800 flex items-center chart-title">
                 <div class="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
                     <i class="las la-chart-area text-purple-600" style="font-size: 1rem;"></i>
                 </div>
@@ -942,9 +944,9 @@
     <!-- New Widgets Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 dashboard-section" id="widgets-section">
         <!-- System Health Monitor -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 widget-card overflow-hidden">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                <h3 class="text-lg font-semibold text-gray-800 flex items-center widget-title">
                     <div class="w-6 h-6 bg-green-100 rounded-lg flex items-center justify-center mr-3">
                         <i class="las la-heartbeat text-green-600" style="font-size: 1rem;"></i>
                     </div>
@@ -999,12 +1001,12 @@
         </div>
 
         <!-- Quick Search Widget -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 widget-card overflow-hidden">
             <div class="flex items-center mb-4">
                 <div class="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
                     <i class="las la-search text-blue-600" style="font-size: 1rem;"></i>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-800">Quick Search</h3>
+                <h3 class="text-lg font-semibold text-gray-800 widget-title">Quick Search</h3>
             </div>
             <div class="space-y-4">
                 <div class="relative">
@@ -1014,7 +1016,7 @@
                 </div>
                 <div class="flex flex-wrap gap-2">
                     <button onclick="quickSearch('curriculum')" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition-colors">
-                        <i class="las la-graduation-cap mr-1"></i>Curricula
+                        <i class="las la-graduation-cap mr-1"></i>Curriculum
                     </button>
                     <button onclick="quickSearch('subject')" class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium hover:bg-purple-200 transition-colors">
                         <i class="las la-book mr-1"></i>Subjects
@@ -1035,9 +1037,9 @@
         </div>
 
         <!-- Recent Downloads Tracker -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 widget-card overflow-hidden">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                <h3 class="text-lg font-semibold text-gray-800 flex items-center widget-title">
                     <div class="w-6 h-6 bg-cyan-100 rounded-lg flex items-center justify-center mr-3">
                         <i class="las la-download text-cyan-600" style="font-size: 1rem;"></i>
                     </div>
@@ -1572,7 +1574,7 @@ function quickSearch(type) {
     
     // Set placeholder based on type
     const placeholders = {
-        'curriculum': 'Search curricula by name or code...',
+        'curriculum': 'Search curriculum by name or code...',
         'subject': 'Search subjects by name or code...',
         'employee': 'Search staff by name or email...'
     };
@@ -1580,9 +1582,40 @@ function quickSearch(type) {
     searchInput.placeholder = placeholders[type] || 'Search...';
     searchInput.focus();
     
-    // Clear previous results
-    resultsList.innerHTML = '';
-    resultsDiv.classList.add('hidden');
+    // Clear previous results and show loading
+    resultsList.innerHTML = '<div class="text-sm text-gray-500 p-2 flex items-center"><i class="las la-spinner animate-spin mr-2"></i>Loading ' + type + 's...</div>';
+    resultsDiv.classList.remove('hidden');
+    
+    // Fetch data based on type
+    fetch(`/api/quick-search/${type}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.results && data.results.length > 0) {
+            resultsList.innerHTML = data.results.map(result => `
+                <a href="${result.url}" class="flex items-center p-2 hover:bg-gray-50 rounded-lg transition-colors">
+                    <div class="w-6 h-6 bg-${getTypeColor(result.type)}-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="las ${getTypeIcon(result.type)} text-${getTypeColor(result.type)}-600 text-sm"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-gray-900">${result.name}</div>
+                        <div class="text-xs text-gray-500 capitalize">${result.type}</div>
+                    </div>
+                </a>
+            `).join('');
+        } else {
+            resultsList.innerHTML = `<div class="text-sm text-gray-500 p-2">No ${type}s found</div>`;
+        }
+    })
+    .catch(error => {
+        console.error('Quick search error:', error);
+        resultsList.innerHTML = '<div class="text-sm text-red-500 p-2">Error loading data. Please try again.</div>';
+    });
 }
 
 // Global search functionality
@@ -1595,38 +1628,46 @@ function performGlobalSearch(query) {
         return;
     }
     
-    // Simulate search results (in a real app, this would be an AJAX call)
-    const mockResults = [
-        { type: 'curriculum', name: 'Computer Science 2024', url: '{{ route("curriculum_builder") }}' },
-        { type: 'curriculum', name: 'Information Technology 2023', url: '{{ route("curriculum_builder") }}' },
-        { type: 'subject', name: 'Data Structures and Algorithms', url: '{{ route("subject_mapping") }}' },
-        { type: 'subject', name: 'Database Management Systems', url: '{{ route("subject_mapping") }}' },
-        { type: 'employee', name: 'John Doe', url: '{{ route("employees.index") }}' },
-        { type: 'employee', name: 'Jane Smith', url: '{{ route("employees.index") }}' }
-    ];
+    // Show loading state
+    resultsList.innerHTML = '<div class="text-sm text-gray-500 p-2 flex items-center"><i class="las la-spinner animate-spin mr-2"></i>Searching...</div>';
+    resultsDiv.classList.remove('hidden');
     
-    // Filter results based on query
-    const filteredResults = mockResults.filter(item => 
-        item.name.toLowerCase().includes(query.toLowerCase())
-    ).slice(0, 5);
-    
-    if (filteredResults.length > 0) {
-        resultsList.innerHTML = filteredResults.map(result => `
-            <a href="${result.url}" class="flex items-center p-2 hover:bg-gray-50 rounded-lg transition-colors">
-                <div class="w-6 h-6 bg-${getTypeColor(result.type)}-100 rounded-lg flex items-center justify-center mr-3">
-                    <i class="las ${getTypeIcon(result.type)} text-${getTypeColor(result.type)}-600 text-sm"></i>
-                </div>
-                <div>
-                    <div class="text-sm font-medium text-gray-900">${result.name}</div>
-                    <div class="text-xs text-gray-500 capitalize">${result.type}</div>
-                </div>
-            </a>
-        `).join('');
-        resultsDiv.classList.remove('hidden');
-    } else {
-        resultsList.innerHTML = '<div class="text-sm text-gray-500 p-2">No results found</div>';
-        resultsDiv.classList.remove('hidden');
-    }
+    // Perform AJAX search
+    fetch('/api/global-search', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ query: query })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.results && data.results.length > 0) {
+            resultsList.innerHTML = data.results.map(result => `
+                <a href="${result.url}" class="flex items-center p-2 hover:bg-gray-50 rounded-lg transition-colors">
+                    <div class="w-6 h-6 bg-${getTypeColor(result.type)}-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="las ${getTypeIcon(result.type)} text-${getTypeColor(result.type)}-600 text-sm"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-gray-900">${result.name}</div>
+                        <div class="text-xs text-gray-500 capitalize">${result.type}</div>
+                    </div>
+                </a>
+            `).join('');
+        } else {
+            resultsList.innerHTML = '<div class="text-sm text-gray-500 p-2">No results found</div>';
+        }
+    })
+    .catch(error => {
+        console.error('Search error:', error);
+        resultsList.innerHTML = '<div class="text-sm text-red-500 p-2">Search error. Please try again.</div>';
+    });
 }
 
 function getTypeColor(type) {
