@@ -2443,6 +2443,9 @@
         #sidebar.collapsed .sidebar-footer p {
             display: none;
         }
+        #sidebar.collapsed .sidebar-footer .flex.items-center.justify-center {
+            display: none;
+        }
 
         /* Active navigation link styles */
         .nav-link.active {
