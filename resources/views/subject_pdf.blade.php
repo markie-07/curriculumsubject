@@ -4,81 +4,229 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Subject Details</title>
     <style>
-        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 9.5px; color: #333; line-height: 1.4; }
+        body {
+        font-family: 'DejaVu Sans', sans-serif;
+        font-size: 11pt;
+        line-height: 1.4;
+        margin: 45mm 15mm 20mm 15mm; /* Increased top margin */
+    }
 
-        /* --- PDF Page Setup --- */
-        @page {
-            header: header; /* Apply the named header to every page */
-            margin-top: 150px; /* Increased space for the header to prevent content overlap */
-            margin-bottom: 20px;
+    @page {
+        header: header;
+        footer: footer;
+        margin-top: 45mm; /* This reserves space for the header */
+        margin-bottom: 20mm;
+    }
+
+    .pdf-header {
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 6px;
+        width: 100%;
+    }
+
+    .pdf-header-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .pdf-header-table td {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .pdf-header-table .logo-cell {
+        width: 70px;
+        text-align: left;
+    }
+
+    .pdf-header-table img {
+        width: 60px;
+        height: 60px;
+    }
+
+    .pdf-header-table .text-cell h1 {
+        font-size: 15px;
+        font-weight: bold;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .pdf-header-table .text-cell p {
+        font-size: 10px;
+        margin: 3px 0 0 0;
+        color: #555;
+    }
+
+    .pdf-footer {
+        border-top: 1px solid #ccc;
+        font-size: 9pt;
+        color: #777;
+        text-align: center;
+        padding-top: 5px;
+    }
+
+        /* SECTION TITLES */
+        .section-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            background-color: #ecf0f1;
+            padding: 8px 12px;
+            border-left: 4px solid #3498db;
         }
 
-        /* --- HEADER --- */
-        .pdf-header { padding: 15px 0; position: relative; height: 70px; }
-        .pdf-header img { width: 40px; height: 40px; position: absolute; left: 0; top: 15px; }
-        .pdf-header .text-content { text-align: center; margin-left: 50px; margin-right: 50px; position: absolute; top: 10px; left: 50px; right: 50px; }
-        .pdf-header h1 { font-size: 14px; font-weight: bold; margin: 0; color: #2c3e50; line-height: 1.2; }
-        .pdf-header p { font-size: 10px; margin: 5px 0 0 0; color: #555; line-height: 1.1; }
+        /* TABLES */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            page-break-inside: avoid;
+        }
 
-        /* --- SECTIONS --- */
-        .section-title { font-size: 12px; font-weight: bold; color: #2c3e50; margin-top: 20px; margin-bottom: 10px; background-color: #ecf0f1; padding: 8px 12px; border-left: 4px solid #3498db; }
-        
-        /* --- TABLES --- */
-        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; page-break-inside: avoid; }
-        th, td { border: 1px solid #bdc3c7; padding: 7px; text-align: left; vertical-align: top; }
-        th { background-color: #f2f2f2; font-weight: bold; }
-        
-        .field-label { font-weight: bold; color: #000000; }
-        .description { white-space: pre-wrap; }
+        th, td {
+            border: 1px solid #bdc3c7;
+            padding: 6px 8px;
+            text-align: left;
+            vertical-align: top;
+        }
 
-        /* --- SPECIALIZED TABLES --- */
-        .info-table th { text-align: center; background-color: #dde1e3; }
-        .info-table .sub-header { font-weight: bold; margin-bottom: 5px; }
-        .core-values-table .values { font-weight: bold; }
-        
-        .weekly-plan-table { margin-bottom: 15px; }
-        .weekly-plan-table .header-row th { background-color: #34495e; color: #FFFFFF; font-size: 11px; text-align: center; }
-        .weekly-plan-table .sub-label { font-weight: bold; color: #000000; }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
 
-        .legend-box { margin-top: 15px; padding: 10px; border: 1px solid #ecf0f1; background-color: #f9f9f9; font-size: 9px; }
-        .legend-box ul { padding-left: 15px; margin: 0; }
-        
-        .policy-box .policy-title { font-weight: bold; margin-bottom: 3px; }
+        .field-label {
+            font-weight: bold;
+            color: #000;
+        }
 
-        /* --- APPROVAL SECTION --- */
-        .approval-table { margin-top: 30px; border: none; table-layout: fixed; }
-        .approval-table td { border: none; text-align: center; vertical-align: bottom; height: 100px; width: 33.33%; }
-        .approval-table .line { border-top: 1px solid #7f8c8d; width: 90%; margin: 0 auto; }
-        .approval-table .label { font-size: 9px; color: #555; }
-        .approval-table .name { font-weight: bold; padding-top: 5px; }
-        .approval-table .title { font-size: 9px; color: #7f8c8d; }
-        
-        .page-break { page-break-after: always; }
-        .text-center { text-align: center; }
+        .description {
+            white-space: pre-wrap;
+        }
+
+        .info-table th {
+            text-align: center;
+            background-color: #dde1e3;
+        }
+
+        .sub-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .core-values-table .values {
+            font-weight: bold;
+        }
+
+        .weekly-plan-table .header-row th {
+            background-color: #34495e;
+            color: #fff;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .weekly-plan-table td {
+            vertical-align: top;
+        }
+
+        .legend-box {
+            margin-top: 10px;
+            padding: 8px;
+            border: 1px solid #ecf0f1;
+            background-color: #f9f9f9;
+            font-size: 9px;
+        }
+
+        .legend-box ul {
+            padding-left: 15px;
+            margin: 0;
+        }
+
+        .policy-box {
+            margin-top: 5px;
+        }
+
+        .policy-box .policy-title {
+            font-weight: bold;
+            margin-bottom: 2px;
+            color: #2c3e50;
+        }
+
+        /* APPROVAL SECTION */
+        .approval-table {
+            margin-top: 30px;
+            border: none;
+            table-layout: fixed;
+        }
+
+        .approval-table td {
+            border: none;
+            text-align: center;
+            vertical-align: bottom;
+            height: 100px;
+            width: 33.33%;
+        }
+
+        .approval-table .line {
+            border-top: 1px solid #7f8c8d;
+            width: 90%;
+            margin: 0 auto;
+        }
+
+        .approval-table .label {
+            font-size: 9px;
+            color: #555;
+        }
+
+        .approval-table .name {
+            font-weight: bold;
+            padding-top: 5px;
+        }
+
+        .approval-table .title {
+            font-size: 9px;
+            color: #7f8c8d;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
     </style>
 </head>
 <body>
     <htmlpageheader name="header">
-        <div class="pdf-header">
-            @php
-                // Embed the image directly to prevent pathing issues in the PDF.
-                $imagePath = public_path('/images/BCPLOGO.png');
-                if (file_exists($imagePath)) {
-                    $imageData = base64_encode(file_get_contents($imagePath));
-                    $src = 'data:image/png;base64,' . $imageData;
-                } else {
-                    $src = ''; // Fallback if image is not found
-                }
-            @endphp
-            @if($src)
-                <img src="{{ $src }}" alt="BCP Logo">
-            @endif
-            <div class="text-content">
-                <h1>BESTLINK COLLEGE OF THE PHILIPPINES</h1>
-                <p>#1071 Brgy. Kaligayahan, Quirino Hi-way, Novaliches, Quezon City</p>
-            </div>
-        </div>
-    </htmlpageheader>
+    <div class="pdf-header">
+        @php
+            $imagePath = public_path('/images/BCPLOGO.png');
+            if (file_exists($imagePath)) {
+                $imageData = base64_encode(file_get_contents($imagePath));
+                $src = 'data:image/png;base64,' . $imageData;
+            } else {
+                $src = '';
+            }
+        @endphp
+
+        <table class="pdf-header-table">
+            <tr>
+                <td class="logo-cell">
+                    @if($src)
+                        <img src="{{ $src }}" alt="BCP Logo">
+                    @endif
+                </td>
+                <td class="text-cell">
+                    <h1>BESTLINK COLLEGE OF THE PHILIPPINES</h1>
+                    <p>#1071 Brgy. Kaligayahan, Quirino Hi-way, Novaliches, Quezon City</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+</htmlpageheader>
 
     <div class="section-title">COURSE INFORMATION</div>
     <table>
@@ -96,7 +244,6 @@
             <td>
                 @if(!empty($prerequisiteData) && isset($prerequisiteData['subjectToChildrenMap']))
                     @php
-                        // Get subjects that require this subject as a prerequisite
                         $childSubjects = $prerequisiteData['subjectToChildrenMap'][$subject->subject_code] ?? [];
                         $prereqToString = !empty($childSubjects) ? implode(', ', $childSubjects) : 'None';
                     @endphp
@@ -111,10 +258,7 @@
             <td colspan="3">
                 @if(!empty($prerequisiteData) && isset($prerequisiteData['subjectToParentsMap']))
                     @php
-                        // Get ONLY immediate/direct prerequisites (not the entire chain)
                         $directPrerequisites = $prerequisiteData['subjectToParentsMap'][$subject->subject_code] ?? [];
-                        
-                        // Sort prerequisites for consistent display
                         sort($directPrerequisites);
                     @endphp
                     @if(!empty($directPrerequisites))
@@ -128,11 +272,12 @@
             </td>
         </tr>
         <tr>
-            <td width="20%"><span class="field-label">Course Description</span></td>
+            <td><span class="field-label">Course Description</span></td>
             <td colspan="3" class="description">{{ $subject->course_description ?? 'N/A' }}</td>
         </tr>
     </table>
 
+    {{-- The rest of the HTML body remains the same --}}
     <div class="section-title">INSTITUTIONAL INFORMATION</div>
     <table class="info-table">
         <thead><tr><th colspan="2">VISION</th></tr></thead>
@@ -159,7 +304,6 @@
         <thead><tr><th>CORE VALUES</th></tr></thead>
         <tbody><tr><td><span class="values">FAITH, KNOWLEDGE, CHARITY AND HUMILITY</span><br><span class="values">FAITH (Fides)</span> represents BCP’s endeavor for expansion, development and for growth amidst the global challenges of the new millennium.<br><span class="values">KNOWLEDGE (Cognito)</span> connotes the institution’s efforts to impart excellent lifelong education that can be used as human tool so that one can liberate himself/herself from ignorance and poverty<br><span class="values">CHARITY (Caritas)</span> is the institution’s commitment towards its clienteles.<br><span class="values">HUMILITY (Humiliates)</span> refers to the institution’s recognition of the human frailty, its imperfection.</td></tr></tbody>
     </table>
-
     <div class="section-title">MAPPING GRIDS</div>
     <h3>PROGRAM MAPPING GRID</h3>
     @if(!empty($subject->program_mapping_grid))
@@ -170,7 +314,6 @@
         <table><thead><tr><th>CILO</th><th class="text-center">CTPSS</th><th class="text-center">ECC</th><th class="text-center">EPP</th><th class="text-center">GLC</th></tr></thead><tbody>@foreach($subject->course_mapping_grid as $row)<tr><td>{{ $row['cilo'] ?? '' }}</td><td class="text-center">{{ $row['ctpss'] ?? '' }}</td><td class="text-center">{{ $row['ecc'] ?? '' }}</td><td class="text-center">{{ $row['epp'] ?? '' }}</td><td class="text-center">{{ $row['glc'] ?? '' }}</td></tr>@endforeach</tbody></table>
     @else<p>No course mapping data available.</p>@endif
     <div class="legend-box"><span class="field-label">Legend:</span><ul><li><span class="field-label">L</span> – Facilitate Learning of the competencies</li><li><span class="field-label">P</span> – Allow student to practice competencies (No input but competency is evaluated)</li><li><span class="field-label">O</span> – Provide opportunity for development (No input or evaluation, but there is opportunity to practice the competencies)</li><li><span class="field-label">CTPSS</span> - critical thinking and problem-solving skills;</li><li><span class="field-label">ECC</span> - effective communication and collaboration;</li><li><span class="field-label">EPP</span> - ethical and professional practice; and,</li><li><span class="field-label">GLC</span> - global and lifelong learning commitment.</li></ul></div>
-
     <div class="section-title">LEARNING OUTCOMES</div>
     <table>
         <tr><td width="40%"><span class="field-label">PROGRAM INTENDED LEARNING OUTCOMES (PILO):</span></td><td class="description">{{ $subject->pilo_outcomes ?? 'N/A' }}</td></tr>
@@ -188,17 +331,14 @@
         </tr>
         <tr><td><span class="field-label">Learning Outcomes:</span></td><td class="description">{{ $subject->learning_outcomes ?? 'N/A' }}</td></tr>
     </table>
-    
     <div class="section-title">WEEKLY PLAN (WEEKS 1-15)</div>
     @if(!empty($subject->lessons) && is_array($subject->lessons))
         @foreach(collect($subject->lessons)->sortBy(fn($val, $key) => (int) filter_var($key, FILTER_SANITIZE_NUMBER_INT)) as $week => $details)
             @php
-                // Initialize lesson data array
                 $lessonData = [
                     'content' => '', 'silo' => '', 'at_onsite' => '', 'at_offsite' => '',
                     'tla_onsite' => '', 'tla_offsite' => '', 'ltsm' => '', 'output' => ''
                 ];
-                // Check if details is a string before exploding
                 if(is_string($details)) {
                     $parts = explode(',, ', $details);
                     foreach ($parts as $part) {
@@ -213,16 +353,15 @@
             @endphp
             <table class="weekly-plan-table">
                 <tr class="header-row"><th colspan="2">{{ $week }}</th></tr>
-                <tr><td width="50%"><span class="sub-label">Content:</span><br>{{ $lessonData['content'] ?: 'N/A' }}</td><td width="50%"><span class="sub-label">Student Intended Learning Outcomes:</span><br>{{ $lessonData['silo'] ?: 'N/A' }}</td></tr>
-                <tr><td colspan="2"><span class="sub-label">Assessment Tasks (ATs):</span></td></tr>
-                <tr><td width="50%"><span class="sub-label">ONSITE:</span><br>{{ $lessonData['at_onsite'] ?: 'N/A' }}</td><td width="50%"><span class="sub-label">OFFSITE:</span><br>{{ $lessonData['at_offsite'] ?: 'N/A' }}</td></tr>
-                <tr><td colspan="2"><span class="sub-label">Suggested Teaching/Learning Activities (TLAs):</span></td></tr>
-                <tr><td width="50%"><span class="sub-label">Face to Face (On-Site):</span><br>{{ $lessonData['tla_onsite'] ?: 'N/A' }}</td><td width="50%"><span class="sub-label">Online (Off-Site):</span><br>{{ $lessonData['tla_offsite'] ?: 'N/A' }}</td></tr>
-                <tr><td><span class="sub-label">Learning and Teaching Support Materials (LTSM):</span><br>{{ $lessonData['ltsm'] ?: 'N/A' }}</td><td><span class="sub-label">Output Materials:</span><br>{{ $lessonData['output'] ?: 'N/A' }}</td></tr>
+                <tr><td width="50%"><span class="field-label">Content:</span><br>{{ $lessonData['content'] ?: 'N/A' }}</td><td width="50%"><span class="field-label">Student Intended Learning Outcomes:</span><br>{{ $lessonData['silo'] ?: 'N/A' }}</td></tr>
+                <tr><td colspan="2"><span class="field-label">Assessment Tasks (ATs):</span></td></tr>
+                <tr><td width="50%"><span class="field-label">ONSITE:</span><br>{{ $lessonData['at_onsite'] ?: 'N/A' }}</td><td width="50%"><span class="field-label">OFFSITE:</span><br>{{ $lessonData['at_offsite'] ?: 'N/A' }}</td></tr>
+                <tr><td colspan="2"><span class="field-label">Suggested Teaching/Learning Activities (TLAs):</span></td></tr>
+                <tr><td width="50%"><span class="field-label">Face to Face (On-Site):</span><br>{{ $lessonData['tla_onsite'] ?: 'N/A' }}</td><td width="50%"><span class="field-label">Online (Off-Site):</span><br>{{ $lessonData['tla_offsite'] ?: 'N/A' }}</td></tr>
+                <tr><td><span class="field-label">Learning and Teaching Support Materials (LTSM):</span><br>{{ $lessonData['ltsm'] ?: 'N/A' }}</td><td><span class="field-label">Output Materials:</span><br>{{ $lessonData['output'] ?: 'N/A' }}</td></tr>
             </table>
         @endforeach
     @else<p>No weekly plan data available.</p>@endif
-    
     <div class="section-title">COURSE REQUIREMENTS AND POLICIES</div>
     <table>
         <tr><td width="30%"><span class="field-label">Basic Readings / Textbooks:</span></td><td class="description">{{ $subject->basic_readings ?? 'N/A' }}</td></tr>
@@ -236,34 +375,32 @@
         <tr><td><span class="field-label">Committee Members:</span></td><td class="description">{{ $subject->committee_members ?? 'N/A' }}</td></tr>
         <tr><td><span class="field-label">Consultation Schedule:</span></td><td class="description">{{ $subject->consultation_schedule ?? 'N/A' }}</td></tr>
     </table>
-
-    {{-- NEW SEPARATE GRADING SYSTEM SECTION --}}
     <div class="section-title">GRADING SYSTEM</div>
     <table>
         <tr>
-            <td>
+            <td style="border: none; padding: 0;">
                 @if($subject->grades->isNotEmpty() && !empty($subject->grades->first()->components))
                     @php
                         $gradeData = $subject->grades->first()->components;
                     @endphp
-                    <table style="margin-bottom: 0; border: none;">
+                    <table style="margin: 0;">
                         @foreach($gradeData as $period => $details)
                             @if(isset($details['components']) && count($details['components']) > 0)
                                 <tr>
-                                    <th colspan="2" style="background-color: #e2e8f0; text-align: left; border: 1px solid #bdc3c7; padding: 7px;">
+                                    <th colspan="2" style="background-color: #e2e8f0; text-align: left;">
                                         <strong>{{ ucfirst($period) }} (Overall: {{ $details['weight'] ?? 0 }}%)</strong>
                                     </th>
                                 </tr>
                                 @foreach($details['components'] as $component)
                                     <tr>
-                                        <td style="width: 70%; padding-left: 20px; border: 1px solid #bdc3c7;">{{ $component['name'] }}</td>
-                                        <td class="text-center" style="border: 1px solid #bdc3c7;">{{ $component['weight'] }}%</td>
+                                        <td style="width: 70%; padding-left: 20px;">{{ $component['name'] }}</td>
+                                        <td class="text-center">{{ $component['weight'] }}%</td>
                                     </tr>
                                     @if(isset($component['sub_components']) && count($component['sub_components']) > 0)
                                         @foreach($component['sub_components'] as $sub)
                                             <tr>
-                                                <td style="padding-left: 40px; font-style: italic; border: 1px solid #bdc3c7;">{{ $sub['name'] }}</td>
-                                                <td class="text-center" style="border: 1px solid #bdc3c7;">{{ $sub['weight'] }}%</td>
+                                                <td style="padding-left: 40px; font-style: italic;">{{ $sub['name'] }}</td>
+                                                <td class="text-center">{{ $sub['weight'] }}%</td>
                                             </tr>
                                         @endforeach
                                     @endif
@@ -272,12 +409,11 @@
                         @endforeach
                     </table>
                 @else
-                    <p style="margin:0;">No grading system has been set up for this subject.</p>
+                    <p style="padding: 6px 8px; margin: 0;">No grading system has been set up for this subject.</p>
                 @endif
             </td>
         </tr>
     </table>
-
     <div class="section-title">APPROVAL</div>
     <table class="approval-table">
         <tr>
