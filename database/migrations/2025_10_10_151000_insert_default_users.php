@@ -37,6 +37,18 @@ return new class extends Migration
                 ]);
             }
 
+            // Admin 2 - Edmalyn Cabales
+            if (!User::where('username', 'edmalyn')->exists()) {
+                User::create([
+                    'name' => 'Edmalyn Cabales',
+                    'username' => 'edmalyn',
+                    'email' => 'edmalyncabales3@gmail.com',
+                    'password' => Hash::make('admin123'),
+                    'role' => 'admin',
+                    'status' => 'active',
+                ]);
+            }
+
             // Employee User - Only has access to curriculum export tool
             if (!User::where('username', 'employee')->exists()) {
                 User::create([
@@ -84,7 +96,8 @@ return new class extends Migration
         if (Schema::hasTable('users')) {
             User::whereIn('username', [
                 'superadmin',
-                'admin', 
+                'admin',
+                'edmalyn',
                 'employee',
                 'markjames',
                 'karlfeudo'
