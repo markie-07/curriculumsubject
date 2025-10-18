@@ -134,9 +134,43 @@
             return $map[$subjectCode] ?? [];
         };
 
-        // Function to get DIRECT subjects that require this as prerequisite (immediate next subject only)
-        $getPrerequisiteTo = function($subjectCode, $map) {
-            return $map[$subjectCode] ?? [];
+        // Function to get IMMEDIATE next subject in prerequisite chain (not all children)
+        $getImmediateNextSubject = function($subjectCode, $childrenMap, $parentsMap) {
+            $directChildren = $childrenMap[$subjectCode] ?? [];
+            
+            if (empty($directChildren)) {
+                return [];
+            }
+            
+            // Remove duplicates first
+            $directChildren = array_unique($directChildren);
+            
+            // For a simple chain like NSTP 1 -> NSTP 2 -> NSTP 3 -> GE 1
+            // Each subject should only point to the immediate next subject
+            $immediateNext = [];
+            
+            foreach ($directChildren as $childCode) {
+                $childPrereqs = $parentsMap[$childCode] ?? [];
+                
+                // If this subject is the only prerequisite for the child, it's immediate next
+                if (count($childPrereqs) == 1 && in_array($subjectCode, $childPrereqs)) {
+                    $immediateNext[] = $childCode;
+                } else if (count($childPrereqs) > 1) {
+                    // For subjects with multiple prerequisites, check if this is the "latest" one
+                    // by checking if all other prerequisites of the child are also prerequisites of this subject
+                    $thisSubjectPrereqs = $parentsMap[$subjectCode] ?? [];
+                    $otherPrereqs = array_diff($childPrereqs, [$subjectCode]);
+                    
+                    // If all other prerequisites of the child are also prerequisites of this subject,
+                    // then this subject is the immediate prerequisite to the child
+                    if (empty(array_diff($otherPrereqs, $thisSubjectPrereqs))) {
+                        $immediateNext[] = $childCode;
+                    }
+                }
+            }
+            
+            // Remove any duplicates that might have been added
+            return array_unique($immediateNext);
         };
 
         // Recursive function to find ALL credit prerequisites in the chain
@@ -312,9 +346,9 @@
                 <td><span class="field-label">Pre-requisite to</span></td>
                 <td colspan="3">
                     @php
-                        // PRE-REQUISITE TO = The NEXT subject(s) you can take after completing this one
-                        $childSubjects = $getPrerequisiteTo($subject->subject_code, $subjectToChildrenMap);
-                        $prereqToString = !empty($childSubjects) ? implode(', ', $childSubjects) : 'None';
+                        // PRE-REQUISITE TO = The IMMEDIATE NEXT subject(s) you can take after completing this one
+                        $immediateNextSubjects = $getImmediateNextSubject($subject->subject_code, $subjectToChildrenMap, $subjectToParentsMap);
+                        $prereqToString = !empty($immediateNextSubjects) ? implode(', ', $immediateNextSubjects) : 'None';
                     @endphp
                     {{ $prereqToString }}
                 </td>

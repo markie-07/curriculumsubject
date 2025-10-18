@@ -1,6 +1,31 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    /* Custom scrollbar for dropdown */
+    #curriculum-options::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    #curriculum-options::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+    
+    #curriculum-options::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+    }
+    
+    #curriculum-options::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+    
+    /* Ensure dropdown stays within viewport */
+    #curriculum-dropdown-menu {
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+</style>
 <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-8">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {{-- Left Panel: Export Configuration --}}
@@ -22,12 +47,47 @@
                 <div class="space-y-6 mt-4">
                     <div>
                         <label for="curriculum-select" class="block text-sm font-medium text-gray-700 mb-2">Select Curriculum</label>
-                        <select id="curriculum-select" class="mt-1 block w-full py-3 px-4 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm transition-all">
-                            <option value="">-- Please select a curriculum --</option>
-                            @foreach($curriculums as $curriculum)
-                                <option value="{{ $curriculum->id }}">{{ $curriculum->curriculum }} ({{ $curriculum->program_code }})</option>
-                            @endforeach
-                        </select>
+                        <div class="relative">
+                            <!-- Custom Dropdown Button -->
+                            <button type="button" id="curriculum-dropdown-btn" class="relative w-full bg-white border border-gray-300 rounded-lg shadow-sm pl-4 pr-10 py-3 text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-400 hover:shadow-md">
+                                <span id="curriculum-selected-text" class="block truncate text-gray-500">-- Please select a curriculum --</span>
+                                <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <svg id="dropdown-arrow" class="h-5 w-5 text-gray-400 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </span>
+                            </button>
+
+                            <!-- Dropdown Menu -->
+                            <div id="curriculum-dropdown-menu" class="hidden absolute z-10 mt-1 w-full bg-white shadow-lg max-h-screen rounded-lg text-base ring-1 ring-black ring-opacity-5 focus:outline-none border border-gray-200 overflow-hidden" style="max-height: 500px;">
+                                <div class="sticky top-0 bg-white p-2 border-b border-gray-100">
+                                    <input type="text" id="curriculum-search" placeholder="Search curriculums..." class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div id="curriculum-options" class="py-1 overflow-y-auto" style="max-height: 450px;">
+                                    @foreach($curriculums as $curriculum)
+                                        <div class="curriculum-option cursor-pointer select-none relative py-3 pl-4 pr-9 hover:bg-blue-50 hover:text-blue-900 transition-colors duration-150" data-value="{{ $curriculum->id }}" data-text="{{ $curriculum->curriculum }} ({{ $curriculum->program_code }})">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <div class="font-medium text-gray-900">{{ $curriculum->curriculum }}</div>
+                                                    <div class="text-sm text-gray-500">{{ $curriculum->program_code }} • {{ $curriculum->academic_year }}</div>
+                                                </div>
+                                                <div class="hidden check-icon text-blue-600">
+                                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <div id="no-results" class="hidden px-4 py-3 text-center text-gray-500 text-sm">
+                                    No curriculums found
+                                </div>
+                            </div>
+
+                            <!-- Hidden input to store selected value -->
+                            <input type="hidden" id="curriculum-select" name="curriculum_id" value="">
+                        </div>
                     </div>
 
                     {{-- Course Type Filter --}}
@@ -212,6 +272,114 @@ document.addEventListener('DOMContentLoaded', function () {
     const noHistoryMessage = document.getElementById('no-history-msg');
     const historySearchInput = document.getElementById('history-search');
 
+    // Custom Dropdown Elements
+    const dropdownBtn = document.getElementById('curriculum-dropdown-btn');
+    const dropdownMenu = document.getElementById('curriculum-dropdown-menu');
+    const dropdownArrow = document.getElementById('dropdown-arrow');
+    const selectedText = document.getElementById('curriculum-selected-text');
+    const searchInput = document.getElementById('curriculum-search');
+    const curriculumOptions = document.querySelectorAll('.curriculum-option');
+    const noResults = document.getElementById('no-results');
+
+    // Custom Dropdown Functionality
+    let isDropdownOpen = false;
+
+    function toggleDropdown() {
+        isDropdownOpen = !isDropdownOpen;
+        if (isDropdownOpen) {
+            dropdownMenu.classList.remove('hidden');
+            dropdownArrow.style.transform = 'rotate(180deg)';
+            dropdownBtn.classList.add('ring-2', 'ring-blue-500', 'border-blue-500');
+            searchInput.focus();
+        } else {
+            dropdownMenu.classList.add('hidden');
+            dropdownArrow.style.transform = 'rotate(0deg)';
+            dropdownBtn.classList.remove('ring-2', 'ring-blue-500', 'border-blue-500');
+            searchInput.value = '';
+            filterOptions('');
+        }
+    }
+
+    function selectOption(option) {
+        const value = option.dataset.value;
+        const text = option.dataset.text;
+        
+        // Update hidden input
+        curriculumSelect.value = value;
+        
+        // Update display text
+        selectedText.textContent = text;
+        selectedText.classList.remove('text-gray-500');
+        selectedText.classList.add('text-gray-900');
+        
+        // Update check icons
+        curriculumOptions.forEach(opt => {
+            const checkIcon = opt.querySelector('.check-icon');
+            if (opt === option) {
+                checkIcon.classList.remove('hidden');
+                opt.classList.add('bg-blue-50');
+            } else {
+                checkIcon.classList.add('hidden');
+                opt.classList.remove('bg-blue-50');
+            }
+        });
+        
+        // Close dropdown
+        toggleDropdown();
+        
+        // Trigger change event
+        const changeEvent = new Event('change', { bubbles: true });
+        curriculumSelect.dispatchEvent(changeEvent);
+    }
+
+    function filterOptions(searchTerm) {
+        let visibleCount = 0;
+        curriculumOptions.forEach(option => {
+            const text = option.dataset.text.toLowerCase();
+            if (text.includes(searchTerm.toLowerCase())) {
+                option.style.display = 'block';
+                visibleCount++;
+            } else {
+                option.style.display = 'none';
+            }
+        });
+        
+        if (visibleCount === 0) {
+            noResults.classList.remove('hidden');
+        } else {
+            noResults.classList.add('hidden');
+        }
+    }
+
+    // Event Listeners
+    dropdownBtn.addEventListener('click', toggleDropdown);
+
+    curriculumOptions.forEach(option => {
+        option.addEventListener('click', () => selectOption(option));
+    });
+
+    searchInput.addEventListener('input', (e) => {
+        filterOptions(e.target.value);
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!dropdownBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+            if (isDropdownOpen) {
+                toggleDropdown();
+            }
+        }
+    });
+
+    // Handle keyboard navigation
+    dropdownBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleDropdown();
+        }
+    });
+
+    // Original change handler for curriculum selection
     curriculumSelect.addEventListener('change', function() {
         exportButton.disabled = !this.value;
         
@@ -405,7 +573,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Modal functions
     const showExportConfirmationModal = () => {
         const curriculumId = curriculumSelect.value;
-        const curriculumName = curriculumSelect.options[curriculumSelect.selectedIndex].text;
+        const curriculumName = selectedText.textContent;
         const selectedTypes = Array.from(document.querySelectorAll('input[name="course_types"]:checked'))
                                    .map(checkbox => checkbox.value);
         
@@ -488,7 +656,7 @@ document.addEventListener('DOMContentLoaded', function () {
         showExportSuccessModal();
 
         try {
-            const curriculumName = curriculumSelect.options[curriculumSelect.selectedIndex].text;
+            const curriculumName = selectedText.textContent;
             const filterText = selectedTypes.length > 0 ? ` (${selectedTypes.join(', ')})` : '';
             const fileName = `${curriculumName}${filterText}.pdf`;
             const newHistory = await saveExportHistory(curriculumId, fileName, 'PDF');

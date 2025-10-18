@@ -14,10 +14,10 @@
 
             {{-- Main Interactive Area --}}
             <div class="border border-gray-200 rounded-2xl p-8">
-                <div class="relative inline-block text-left w-full max-w-md">
+                <div class="relative inline-block text-left w-full max-w-9xl">
                     <div>
-                        <button type="button" id="agency-button" class="inline-flex justify-between w-full rounded-lg border border-gray-300 shadow-sm px-5 py-3 bg-white text-base font-medium text-gray-800 hover:bg-gray-50 hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200" aria-haspopup="true" aria-expanded="true">
-                            <span id="selected-agency" class="font-semibold">Select Agency</span>
+                        <button type="button" id="agency-button" class="inline-flex justify-center items-center w-full max-w-full rounded-lg border border-gray-300 shadow-sm px-5 py-3 bg-white text-base font-medium text-gray-800 hover:bg-gray-50 hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200" aria-haspopup="true" aria-expanded="true">
+                            <span id="selected-agency" class="font-semibold text-center text-gray-700">Select Agency</span>
                         </button>
                     </div>
 

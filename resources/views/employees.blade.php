@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto px-6 py-8">
+<div class="w-full max-w-full mx-auto px-6 py-8">
     @if(request()->routeIs('employees.create') || request()->routeIs('employees.edit'))
         <!-- ADD/EDIT EMPLOYEE FORM -->
         <div class="employee-header-gradient rounded-lg shadow-lg p-6 text-white mb-8">
@@ -43,7 +43,7 @@
         @endif
 
         <!-- Employee Form -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="w-full max-w-full bg-white rounded-lg shadow-md overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200">
                 <h2 class="text-xl font-semibold text-gray-800">Employee Information</h2>
                 <p class="text-gray-600 text-sm mt-1">
@@ -53,7 +53,7 @@
 
             <form method="POST" 
                   action="{{ request()->routeIs('employees.create') ? route('employees.store') : route('employees.update', $employee->id ?? '') }}" 
-                  class="p-6 space-y-6">
+                  class="w-full max-w-full p-6 space-y-6">
                 @csrf
                 @if(request()->routeIs('employees.edit'))
                     @method('PUT')
@@ -263,7 +263,7 @@
 
         <!-- Activity Statistics Dashboard -->
         @if(isset($stats))
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="w-full max-w-full grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div class="bg-white rounded-lg shadow p-6">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
@@ -330,7 +330,7 @@
         </div>
 
         <!-- Quick Actions -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div class="w-full max-w-full bg-white rounded-lg shadow-md p-6 mb-8">
             <div class="flex items-center justify-between">
                 <h3 class="text-lg font-semibold text-gray-800">Quick Actions</h3>
                 <div class="flex space-x-3">
@@ -346,7 +346,7 @@
         @endif
 
         <!-- Employee List -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="w-full max-w-full bg-white rounded-lg shadow-md overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200">
                 <h2 class="text-xl font-semibold text-gray-800">Employee Accounts</h2>
                 <p class="text-gray-600 text-sm mt-1">Total: {{ $employees->total() }} employees</p>
@@ -499,7 +499,7 @@
         {{-- Add Employee Modal --}}
         <div id="addEmployeeModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 ease-out hidden">
             <div class="flex items-center justify-center min-h-screen p-4">
-                <div class="relative bg-white w-full max-w-lg rounded-2xl shadow-2xl p-6 md:p-8 transform scale-95 opacity-0 transition-all duration-300 ease-out" id="employee-modal-panel">
+                <div class="relative bg-white w-full max-w-4xl rounded-2xl shadow-2xl p-6 md:p-8 transform scale-95 opacity-0 transition-all duration-300 ease-out" id="employee-modal-panel">
                     <button id="closeEmployeeModalButton" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none transition-colors duration-200 rounded-full p-1 hover:bg-slate-100" aria-label="Close modal">
                         <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -512,7 +512,7 @@
                         <p class="text-sm text-slate-500 mt-1">Create a new employee account with access credentials.</p>
                     </div>
 
-                    <form id="employeeForm" class="space-y-6">
+                    <form id="employeeForm" class="w-full max-w-full space-y-6">
                         @csrf
                         <div>
                             <label for="modal-name" class="block text-sm font-medium text-slate-700 mb-2">Full Name</label>
