@@ -134,7 +134,7 @@
             return $map[$subjectCode] ?? [];
         };
 
-        // Function to get subjects that require this as prerequisite (direct children only)
+        // Function to get DIRECT subjects that require this as prerequisite (immediate next subject only)
         $getPrerequisiteTo = function($subjectCode, $map) {
             return $map[$subjectCode] ?? [];
         };
@@ -273,7 +273,14 @@
     @endforeach
 
     {{-- ==================== PART 2: DETAILED SUBJECT SYLLABUS PAGES ==================== --}}
-    @foreach($curriculum->subjects as $subject)
+    @php
+        // Sort subjects by prerequisite order - subjects with no prerequisites first, then by dependency chain
+        $sortedSubjects = $curriculum->subjects->sortBy(function($subject) {
+            $prerequisites = $subjectToParentsMap[$subject->subject_code] ?? [];
+            return count($prerequisites); // Subjects with fewer prerequisites come first
+        });
+    @endphp
+    @foreach($sortedSubjects as $subject)
         <div class="page-break"></div>
 
         <div class="section-title">COURSE INFORMATION</div>
@@ -288,31 +295,28 @@
             </tr>
             <tr>
                 <td><span class="field-label">Course Type</span></td><td>{{ $subject->subject_type }}</td>
-                <td><span class="field-label">Pre-requisite to</span></td>
+                <td><span class="field-label">Credit Prerequisites</span></td>
                 <td>
                     @php
-                        // Get subjects that require this subject as a prerequisite
+                        // CREDIT PREREQUISITES = Subjects you must have COMPLETED/DONE before taking this subject
+                        $allCreditPrerequisites = $findAllCreditPrerequisites($subject->subject_code, $subjectToParentsMap);
+                        
+                        // Sort prerequisites for consistent display
+                        sort($allCreditPrerequisites);
+                        $prereqString = !empty($allCreditPrerequisites) ? implode(', ', $allCreditPrerequisites) : 'None';
+                    @endphp
+                    {{ $prereqString }}
+                </td>
+            </tr>
+             <tr>
+                <td><span class="field-label">Pre-requisite to</span></td>
+                <td colspan="3">
+                    @php
+                        // PRE-REQUISITE TO = The NEXT subject(s) you can take after completing this one
                         $childSubjects = $getPrerequisiteTo($subject->subject_code, $subjectToChildrenMap);
                         $prereqToString = !empty($childSubjects) ? implode(', ', $childSubjects) : 'None';
                     @endphp
                     {{ $prereqToString }}
-                </td>
-            </tr>
-             <tr>
-                <td><span class="field-label">Credit Prerequisites</span></td>
-                <td colspan="3">
-                    @php
-                        // Get ONLY immediate/direct prerequisites (not the entire chain)
-                        $directPrerequisites = $getImmediatePrerequisites($subject->subject_code, $subjectToParentsMap);
-                        
-                        // Sort prerequisites for consistent display
-                        sort($directPrerequisites);
-                    @endphp
-                    @if(!empty($directPrerequisites))
-                        {{ implode(', ', $directPrerequisites) }}
-                    @else
-                        None
-                    @endif
                 </td>
             </tr>
             <tr>

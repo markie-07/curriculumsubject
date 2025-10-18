@@ -107,8 +107,8 @@
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Prerequisite Subjects (Select one or more)</label>
-                    <div id="prerequisiteList" class="max-h-60 overflow-y-auto bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-3">
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Prerequisite Subjects (Click to toggle selection)</label>
+                    <div id="prerequisiteList" class="max-h-60 overflow-y-auto bg-slate-50 border border-slate-200 rounded-lg p-4">
                         <p class="text-slate-500">Select a subject to see available prerequisites.</p>
                     </div>
                 </div>
@@ -195,6 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let allSubjectsForCurriculum = [];
     let selectedCurriculum = { id: null, name: '-- Select a Curriculum --' };
     let selectedModalSubject = { code: null, name: 'Select a Subject' };
+    let prerequisiteSequence = []; // Track the order of prerequisite selection
 
     // --- Main Page Elements ---
     const setPrerequisiteBtn = document.getElementById('setPrerequisiteBtn');
@@ -407,6 +408,8 @@ document.addEventListener('DOMContentLoaded', () => {
             modalSelectorButton.querySelector('span').textContent = 'Select a curriculum first';
             modalSelectorButton.querySelector('span').classList.add('text-slate-500');
             savePrerequisitesBtn.disabled = true;
+            // Reset prerequisite sequence
+            prerequisiteSequence = [];
         }, 300);
     };
 
@@ -470,7 +473,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function populatePrerequisiteCheckboxes(selectedSubjectCode, existingPrerequisites = []) {
+    function populatePrerequisiteButtons(selectedSubjectCode, existingPrerequisites = []) {
         prerequisiteList.innerHTML = '';
         const eligibleSubjects = allSubjectsForCurriculum.filter(s => s.subject_code !== selectedSubjectCode);
 
@@ -479,20 +482,164 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Create a grid layout for buttons
+        const buttonGrid = document.createElement('div');
+        buttonGrid.className = 'grid grid-cols-1 sm:grid-cols-2 gap-3';
+
+        // Initialize sequence for existing prerequisites
+        prerequisiteSequence = [...existingPrerequisites];
+
         eligibleSubjects.forEach(subject => {
-            const isChecked = existingPrerequisites.includes(subject.subject_code);
-            const checkboxWrapper = document.createElement('div');
-            checkboxWrapper.className = 'flex items-center';
-            checkboxWrapper.innerHTML = `
-                <input type="checkbox" id="prereq-${subject.subject_code}" name="prerequisite_codes[]" value="${subject.subject_code}" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" ${isChecked ? 'checked' : ''}>
-                <label for="prereq-${subject.subject_code}" class="ml-3 text-sm text-gray-700">${subject.subject_name} (${subject.subject_code})</label>
+            const isSelected = existingPrerequisites.includes(subject.subject_code);
+            const sequenceNumber = isSelected ? prerequisiteSequence.indexOf(subject.subject_code) + 2 : 0; // Start from 2 (main subject is 1)
+            const buttonWrapper = document.createElement('div');
+            
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = `w-full p-3 rounded-lg border-2 text-left transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                isSelected 
+                    ? 'bg-blue-100 border-blue-500 text-blue-800 shadow-md' 
+                    : 'bg-white border-gray-300 text-gray-700 hover:border-blue-400 hover:bg-blue-50'
+            }`;
+            button.dataset.subjectCode = subject.subject_code;
+            button.dataset.selected = isSelected;
+            button.dataset.sequenceNumber = sequenceNumber;
+            
+            button.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <div class="font-semibold text-sm">${subject.subject_name}</div>
+                        <div class="text-xs opacity-75">${subject.subject_code}</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        ${isSelected 
+                            ? `<div class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">${sequenceNumber}</div>`
+                            : '<div class="w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-xs font-bold">+</div>'
+                        }
+                        <div class="flex-shrink-0">
+                            ${isSelected 
+                                ? '<svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>'
+                                : '<svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>'
+                            }
+                        </div>
+                    </div>
+                </div>
             `;
-            prerequisiteList.appendChild(checkboxWrapper);
+            
+            // Add click handler for toggle functionality
+            button.addEventListener('click', () => togglePrerequisiteButton(button));
+            
+            buttonWrapper.appendChild(button);
+            buttonGrid.appendChild(buttonWrapper);
+        });
+
+        prerequisiteList.appendChild(buttonGrid);
+        
+        // Create hidden inputs for form submission
+        updateHiddenInputs();
+    }
+
+    function togglePrerequisiteButton(button) {
+        const isSelected = button.dataset.selected === 'true';
+        const subjectCode = button.dataset.subjectCode;
+        
+        // Toggle selection state
+        button.dataset.selected = !isSelected;
+        
+        // Update sequence tracking
+        if (!isSelected) {
+            // Add to sequence
+            prerequisiteSequence.push(subjectCode);
+            const sequenceNumber = prerequisiteSequence.length + 1; // +1 because main subject is #1
+            button.dataset.sequenceNumber = sequenceNumber;
+            
+            // Update button appearance - select
+            button.className = button.className.replace(
+                'bg-white border-gray-300 text-gray-700 hover:border-blue-400 hover:bg-blue-50',
+                'bg-blue-100 border-blue-500 text-blue-800 shadow-md'
+            );
+            
+            // Update the sequence number and icons
+            updateButtonContent(button, true, sequenceNumber);
+        } else {
+            // Remove from sequence and reorder
+            const currentSequence = parseInt(button.dataset.sequenceNumber);
+            prerequisiteSequence = prerequisiteSequence.filter(code => code !== subjectCode);
+            button.dataset.sequenceNumber = 0;
+            
+            // Update button appearance - deselect
+            button.className = button.className.replace(
+                'bg-blue-100 border-blue-500 text-blue-800 shadow-md',
+                'bg-white border-gray-300 text-gray-700 hover:border-blue-400 hover:bg-blue-50'
+            );
+            
+            // Update this button content
+            updateButtonContent(button, false, 0);
+            
+            // Reorder sequence numbers for remaining selected buttons
+            updateAllSequenceNumbers();
+        }
+        
+        // Update hidden inputs for form submission
+        updateHiddenInputs();
+    }
+
+    function updateButtonContent(button, isSelected, sequenceNumber) {
+        const subjectName = button.querySelector('.font-semibold').textContent;
+        const subjectCode = button.querySelector('.text-xs').textContent;
+        
+        button.innerHTML = `
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <div class="font-semibold text-sm">${subjectName}</div>
+                    <div class="text-xs opacity-75">${subjectCode}</div>
+                </div>
+                <div class="flex items-center gap-2">
+                    ${isSelected 
+                        ? `<div class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">${sequenceNumber}</div>`
+                        : '<div class="w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-xs font-bold">+</div>'
+                    }
+                    <div class="flex-shrink-0">
+                        ${isSelected 
+                            ? '<svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>'
+                            : '<svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>'
+                        }
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function updateAllSequenceNumbers() {
+        // Update sequence numbers for all selected buttons
+        prerequisiteList.querySelectorAll('button[data-selected="true"]').forEach(button => {
+            const subjectCode = button.dataset.subjectCode;
+            const newSequenceNumber = prerequisiteSequence.indexOf(subjectCode) + 2; // +2 because main subject is #1
+            button.dataset.sequenceNumber = newSequenceNumber;
+            updateButtonContent(button, true, newSequenceNumber);
         });
     }
 
+    function updateHiddenInputs() {
+        // Remove existing hidden inputs
+        const existingInputs = prerequisiteForm.querySelectorAll('input[name="prerequisite_codes[]"]');
+        existingInputs.forEach(input => input.remove());
+        
+        // Add hidden inputs for selected prerequisites in sequence order
+        prerequisiteSequence.forEach(subjectCode => {
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'prerequisite_codes[]';
+            hiddenInput.value = subjectCode;
+            prerequisiteForm.appendChild(hiddenInput);
+        });
+        
+        // Enable/disable save button based on selection
+        savePrerequisitesBtn.disabled = !modalSubjectCodeInput.value; // Only require subject selection
+    }
+
     /**
-     * Renders the prerequisite chain with the corrected order.
+     * Renders the prerequisite chain with complete sequences.
      */
     function renderPrerequisiteChain(prerequisites, subjects) {
         prerequisiteChainContainer.innerHTML = '';
@@ -501,73 +648,90 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!hasPrerequisites) {
             prerequisiteChainContainer.innerHTML = '<p class="text-center text-gray-500 py-8">No prerequisites have been set for this curriculum yet.</p>';
-            savePrerequisiteChainBtn.classList.add('hidden');
             return;
         }
 
-        savePrerequisiteChainBtn.classList.remove('hidden');
-
         const subjectMap = new Map(subjects.map(s => [s.subject_code, s]));
 
-        const getSubjectColorClass = (subjectType) => {
-            const type = (subjectType || 'default').toLowerCase();
-            const geIdentifiers = ["ge", "general education", "gen ed", "general"];
-            if (type.includes('major')) return 'subject-tag-major';
-            if (type.includes('minor')) return 'subject-tag-minor';
+        const getSubjectColorClass = (type) => {
+            if (!type) return 'subject-tag-default';
+            const lowerType = type.toLowerCase();
+            const geIdentifiers = ['ge', 'general education', 'general', 'education'];
             if (type.includes('elective')) return 'subject-tag-elective';
-            if (geIdentifiers.some(id => type.includes(id))) return 'subject-tag-general';
+            if (geIdentifiers.some(id => type.includes(id))) return 'subject-tag-default';
             return 'subject-tag-default';
         };
-        
-        subjects.forEach(subject => {
-            const subjectCode = subject.subject_code;
+
+        // Build prerequisite maps
+        const directPrereqMap = {}; // subject -> its direct prerequisite
+        const childrenMap = {}; // subject -> subjects that require it
+
+        Object.keys(prerequisites).forEach(subjectCode => {
+            prerequisites[subjectCode].forEach(prereq => {
+                directPrereqMap[subjectCode] = prereq.prerequisite_subject_code;
+                if (!childrenMap[prereq.prerequisite_subject_code]) {
+                    childrenMap[prereq.prerequisite_subject_code] = [];
+                }
+                childrenMap[prereq.prerequisite_subject_code].push(subjectCode);
+            });
+        });
+
+        // Find chain starts (subjects with no prerequisites)
+        const chainStarts = subjects.filter(subject => !directPrereqMap[subject.subject_code]);
+        const processedSubjects = new Set();
+
+        chainStarts.forEach(startSubject => {
+            if (processedSubjects.has(startSubject.subject_code)) return;
             
-            if (prerequisites[subjectCode] && prerequisites[subjectCode].length > 0) {
-                const prereqs = prerequisites[subjectCode];
+            // Build complete chain from this start
+            const chain = [];
+            let currentSubject = startSubject.subject_code;
+            
+            // Follow the chain to the end
+            while (currentSubject && !processedSubjects.has(currentSubject)) {
+                const subject = subjectMap.get(currentSubject);
+                if (subject) {
+                    chain.push(subject);
+                    processedSubjects.add(currentSubject);
+                }
                 
-                // --- START: MODIFICATION FOR SORTING AND ORDER ---
-                const subjectOrderMap = new Map(subjects.map((s, index) => [s.subject_code, index]));
+                // Find next subject in chain
+                const nextSubjects = childrenMap[currentSubject];
+                currentSubject = nextSubjects && nextSubjects.length > 0 ? nextSubjects[0] : null;
+            }
 
-                const sortedPrereqs = [...prereqs].sort((a, b) => {
-                    const orderA = subjectOrderMap.get(a.prerequisite_subject_code);
-                    const orderB = subjectOrderMap.get(b.prerequisite_subject_code);
-                    return orderA - orderB;
-                });
-
+            // Only display if this is a meaningful chain (more than 1 subject or has prerequisites)
+            if (chain.length > 1 || prerequisites[startSubject.subject_code]) {
                 const chainDiv = document.createElement('div');
                 chainDiv.className = 'flex items-center justify-between gap-2 p-3 bg-gray-50 rounded-lg border';
                 
-                const subjectName = subject.subject_name;
-                const subjectColorClass = getSubjectColorClass(subject.subject_type);
-                const subjectHtml = `<span class="font-semibold px-3 py-1.5 rounded-md ${subjectColorClass}">${subjectName}</span>`;
-
-                const prereqHtml = sortedPrereqs.map(p => {
-                    const prereqSubject = subjectMap.get(p.prerequisite_subject_code);
-                    if (!prereqSubject) return ''; 
+                const chainHtml = chain.map((subject, index) => {
+                    const subjectName = subject.subject_name;
+                    const subjectColorClass = getSubjectColorClass(subject.subject_type);
+                    const sequenceNumber = index + 1;
+                    const isFirst = index === 0;
                     
-                    const prereqName = prereqSubject.subject_name;
-                    const prereqColorClass = getSubjectColorClass(prereqSubject.subject_type);
-                    return `<span class="font-semibold px-3 py-1.5 rounded-md ${prereqColorClass}">${prereqName}</span>`;
+                    return `
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 ${isFirst ? 'bg-green-600' : 'bg-blue-600'} text-white rounded-full flex items-center justify-center text-xs font-bold">${sequenceNumber}</div>
+                            <span class="font-semibold px-3 py-1.5 rounded-md ${subjectColorClass}">${subjectName}</span>
+                        </div>
+                    `;
                 }).join(' <span class="font-bold text-2xl text-gray-400 mx-2">&rarr;</span> ');
 
-                // *** THIS IS THE FIX FOR THE DISPLAY ORDER ***
                 chainDiv.innerHTML = `
                     <div class="flex-grow flex flex-wrap items-center gap-2">
-                        ${subjectHtml}
-                        <span class="font-bold text-2xl text-gray-400 mx-2">&rarr;</span>
-                        ${prereqHtml}
+                        ${chainHtml}
                     </div>
-                    <button class="edit-prereq-btn p-2 text-blue-600 hover:text-blue-800 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" data-subject-code="${subjectCode}">
+                    <button class="edit-prereq-btn p-2 text-blue-600 hover:text-blue-800 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" data-subject-code="${chain[0].subject_code}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
-                    </button>
+                        </button>
                 `;
-                // *** END OF FIX ***
 
                 prerequisiteChainContainer.appendChild(chainDiv);
             }
         });
 
-        addEditButtonListeners();
     }
     
     function addEditButtonListeners() {
@@ -590,7 +754,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const response = await fetch(`/api/prerequisites/${selectedCurriculum.id}`);
         const data = await response.json();
         const existingPrerequisites = data.prerequisites[subjectCode] ? data.prerequisites[subjectCode].map(p => p.prerequisite_subject_code) : [];
-        populatePrerequisiteCheckboxes(subjectCode, existingPrerequisites);
+        populatePrerequisiteButtons(subjectCode, existingPrerequisites);
     }
 
     prerequisiteForm.addEventListener('submit', async (e) => {

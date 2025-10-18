@@ -30,9 +30,15 @@ class SubjectExportController extends Controller
             $allPrerequisites = \App\Models\Prerequisite::where('curriculum_id', $curriculum->id)->get();
 
             // MAP 1: PARENTS (for Credit Prerequisites) - What subjects are required before this one
-            $subjectToParentsMap = $allPrerequisites->groupBy('subject_code')->map(function ($item) {
+            $directParentsMap = $allPrerequisites->groupBy('subject_code')->map(function ($item) {
                 return $item->pluck('prerequisite_subject_code')->all();
             })->all();
+            
+            // Create a complete prerequisites map that includes ALL dependencies (recursive)
+            $subjectToParentsMap = [];
+            foreach ($directParentsMap as $subjectCode => $directPrereqs) {
+                $subjectToParentsMap[$subjectCode] = $this->getAllPrerequisites($subjectCode, $directParentsMap, []);
+            }
 
             // MAP 2: CHILDREN (for Pre-requisite to) - What subjects require this one as prerequisite
             $subjectToChildrenMap = $allPrerequisites->groupBy('prerequisite_subject_code')->map(function ($item) {
@@ -69,5 +75,39 @@ class SubjectExportController extends Controller
         return response($mpdf->Output($fileName . '_details.pdf', 'S'))
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'attachment; filename="' . $fileName . '_details.pdf"');
+    }
+
+    /**
+     * Recursively get all prerequisites for a subject (including prerequisites of prerequisites)
+     * 
+     * @param string $subjectCode The subject to get prerequisites for
+     * @param array $directParentsMap Map of direct prerequisite relationships
+     * @param array $visited Array to track visited subjects (prevent infinite loops)
+     * @return array All prerequisite subject codes
+     */
+    private function getAllPrerequisites($subjectCode, $directParentsMap, $visited = [])
+    {
+        // Prevent infinite loops
+        if (in_array($subjectCode, $visited)) {
+            return [];
+        }
+        
+        $visited[] = $subjectCode;
+        $allPrereqs = [];
+        
+        // Get direct prerequisites for this subject
+        $directPrereqs = $directParentsMap[$subjectCode] ?? [];
+        
+        foreach ($directPrereqs as $prereq) {
+            // Add the direct prerequisite
+            $allPrereqs[] = $prereq;
+            
+            // Recursively get prerequisites of this prerequisite
+            $nestedPrereqs = $this->getAllPrerequisites($prereq, $directParentsMap, $visited);
+            $allPrereqs = array_merge($allPrereqs, $nestedPrereqs);
+        }
+        
+        // Remove duplicates and return
+        return array_unique($allPrereqs);
     }
 }

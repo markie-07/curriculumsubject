@@ -60,13 +60,19 @@ class PrerequisiteController extends Controller
             ->delete();
 
         // Now, add the new prerequisites from the form submission
+        // Logic: Create a sequential chain - Main subject → Prereq1 → Prereq2 → Prereq3...
         if (!empty($validated['prerequisite_codes'])) {
+            $previousSubject = $validated['subject_code']; // Start with main subject
+            
             foreach ($validated['prerequisite_codes'] as $prereqCode) {
                 Prerequisite::create([
                     'curriculum_id' => $validated['curriculum_id'],
-                    'subject_code' => $validated['subject_code'],
-                    'prerequisite_subject_code' => $prereqCode,
+                    'subject_code' => $prereqCode, // Current prerequisite subject
+                    'prerequisite_subject_code' => $previousSubject, // Previous subject in chain
                 ]);
+                
+                // Update previous subject for next iteration (creates sequential chain)
+                $previousSubject = $prereqCode;
             }
         }
 
