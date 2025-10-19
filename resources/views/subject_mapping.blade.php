@@ -570,11 +570,11 @@
                         if (part.startsWith('Detailed Lesson Content:')) lessonData.content = part.replace('Detailed Lesson Content:\n', '');
                         if (part.startsWith('Student Intended Learning Outcomes:')) lessonData.silo = part.replace('Student Intended Learning Outcomes:\n', '');
                         if (part.startsWith('Assessment:')) {
-                            const match = part.match(/ONSITE: (.*) OFFSITE: (.*)/);
+                            const match = part.match(/Assessment: ONSITE:\s*(.*)OFFSITE:\s*(.*)/s);
                             if (match) { lessonData.at_onsite = match[1]; lessonData.at_offsite = match[2]; }
                         }
                         if (part.startsWith('Activities:')) {
-                            const match = part.match(/ON-SITE: (.*) OFF-SITE: (.*)/);
+                            const match = part.match(/Activities: ON-SITE:\s*(.*)OFF-SITE:\s*(.*)/s);
                             if (match) { lessonData.tla_onsite = match[1]; lessonData.tla_offsite = match[2]; }
                         }
                         if (part.startsWith('Learning and Teaching Support Materials:')) lessonData.ltsm = part.replace('Learning and Teaching Support Materials:\n', '');
