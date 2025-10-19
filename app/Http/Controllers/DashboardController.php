@@ -22,6 +22,12 @@ class DashboardController extends Controller
         try {
             $user = Auth::user();
             
+            // Update user activity when visiting dashboard
+            if ($user) {
+                $user->last_activity = now();
+                $user->save();
+            }
+            
             // Redirect employees directly to curriculum export tool
             if ($user->role === 'employee') {
                 return redirect()->route('curriculum_export_tool');
@@ -71,8 +77,8 @@ class DashboardController extends Controller
      */
     private function getSystemStats()
     {
-        // Cache dashboard stats for 5 minutes to reduce database load
-        return Cache::remember('dashboard_stats', 300, function() {
+        // Cache dashboard stats for 5 seconds to allow real-time active user tracking
+        return Cache::remember('dashboard_stats', 5, function() {
             try {
                 // Optimized curriculum statistics with single query
                 $curriculumStats = DB::table('curriculums')
@@ -141,6 +147,9 @@ class DashboardController extends Controller
                     'total_admins' => $userStats->total_admins ?? 0,
                     'activities_today' => $activityStats->activities_today ?? 0,
                     'activities_this_week' => $activityStats->activities_this_week ?? 0,
+                    
+                    // Real-time Active Users (last 15 minutes)
+                    'active_users_online' => $this->getActiveUsersCount(),
                     
                     // Weekly activity data for chart
                     'weekly_activities' => $weeklyActivities,
@@ -380,6 +389,24 @@ class DashboardController extends Controller
             return User::where('role', 'employee')->where('status', 'inactive')->count();
         } catch (\Exception $e) {
             // If status column doesn't exist, return 0
+            return 0;
+        }
+    }
+
+    /**
+     * Get count of users who have been active in the last 5 seconds
+     */
+    private function getActiveUsersCount()
+    {
+        try {
+            // Count users who have been active in the last 5 seconds for real-time tracking
+            $activeThreshold = now()->subSeconds(5);
+            
+            return User::whereNotNull('last_activity')
+                      ->where('last_activity', '>=', $activeThreshold)
+                      ->count();
+        } catch (\Exception $e) {
+            \Log::error('Error counting active users: ' . $e->getMessage());
             return 0;
         }
     }

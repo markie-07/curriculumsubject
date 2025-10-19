@@ -248,9 +248,12 @@
                 <div class="text-center">
                     <p class="text-sm text-gray-600">
                         Didn't receive the code? 
-                        <a href="{{ route('otp.resend') }}" class="text-blue-600 hover:text-blue-500 font-medium">
-                            Resend OTP
-                        </a>
+                        <form method="POST" action="{{ route('otp.resend') }}" class="inline">
+                            @csrf
+                            <button type="submit" class="text-blue-600 hover:text-blue-500 font-medium underline bg-transparent border-none cursor-pointer">
+                                Resend OTP
+                            </button>
+                        </form>
                     </p>
                     <a href="{{ route('login') }}" class="text-sm text-gray-500 hover:text-gray-700 mt-2 inline-block">
                         Back to Login

@@ -17,11 +17,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'prevent.back' => \App\Http\Middleware\PreventBackHistory::class,
             'check.user.status' => \App\Http\Middleware\CheckUserStatus::class,
+            'update.activity' => \App\Http\Middleware\UpdateUserActivity::class,
         ]);
         
-        // Add CheckUserStatus middleware to web group for authenticated users
+        // Add CheckUserStatus and UpdateUserActivity middleware to web group for authenticated users
         $middleware->web(append: [
             \App\Http\Middleware\CheckUserStatus::class,
+            \App\Http\Middleware\UpdateUserActivity::class,
         ]);
         
         // Use custom CSRF middleware to exclude logout route

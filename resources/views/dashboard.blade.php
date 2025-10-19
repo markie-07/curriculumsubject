@@ -997,6 +997,13 @@
                     </div>
                     <span class="text-sm font-medium text-indigo-600" id="response-time">~120ms</span>
                 </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="las la-users text-teal-500 mr-2"></i>
+                        <span class="text-sm text-gray-600">Active Users Online</span>
+                    </div>
+                    <span class="text-sm font-medium text-teal-600" id="active-users">{{ $dashboardData['stats']['active_users_online'] ?? 0 }}</span>
+                </div>
             </div>
         </div>
 
@@ -1876,9 +1883,9 @@ function initializeSidebarEvents() {
 
 // Initialize widgets
 function initializeWidgets() {
-    // Update system health every 30 seconds
+    // Update system health every 5 seconds
     updateSystemHealth();
-    setInterval(updateSystemHealth, 30000);
+    setInterval(updateSystemHealth, 5000);
     
     // Add search input event listener
     const searchInput = document.getElementById('global-search');
