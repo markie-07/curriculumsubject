@@ -46,7 +46,6 @@ class EmployeeAccessTest extends TestCase
             '/pre_requisite',
             '/grade-setup',
             '/equivalency_tool',
-            '/subject_history',
             '/compliance-validator',
             '/employees'
         ];

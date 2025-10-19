@@ -5,7 +5,6 @@ use App\Http\Controllers\CurriculumController;
 use App\Http\Controllers\EmployeeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PrerequisiteController;
-use App\Http\Controllers\SubjectHistoryController;
 use App\Http\Controllers\EquivalencyToolController;
 use App\Http\Controllers\CurriculumExportToolController;
 use App\Http\Controllers\GradeController;
@@ -153,8 +152,6 @@ Route::middleware(['auth', 'prevent.back'])->group(function () {
             return view('equivalency_tool', compact('subjects', 'equivalencies'));
         })->name('equivalency_tool');
 
-        Route::get('/subject_history', [SubjectHistoryController::class, 'index'])->name('subject_history');
-        Route::post('/subject_history/{id}/retrieve', [SubjectHistoryController::class, 'retrieve'])->name('subject_history.retrieve');
 
         // CHED Compliance Validator
         Route::get('/compliance-validator', function () {

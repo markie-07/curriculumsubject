@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Subject;
+use App\Models\SubjectVersion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class SubjectController extends Controller
 {
@@ -145,7 +147,22 @@ class SubjectController extends Controller
             'approved_by' => $validated['approved_by'] ?? null,
         ];
 
-        $subject->update($updateData);
+        // Use database transaction to ensure data consistency
+        DB::transaction(function () use ($subject, $updateData, $request) {
+            // Get the next version number
+            $nextVersionNumber = SubjectVersion::where('subject_id', $subject->id)->max('version_number') + 1;
+            
+            // Save the current state as a version before updating
+            SubjectVersion::createFromSubject(
+                $subject, 
+                $nextVersionNumber,
+                $request->input('change_reason', 'Subject updated'),
+                $request->input('changed_by', 'System')
+            );
+            
+            // Update the subject with new data
+            $subject->update($updateData);
+        });
 
         // Flash success message for session-based requests
         session()->flash('success', 'Subject "' . $subject->subject_name . '" has been updated successfully!');
@@ -205,6 +222,78 @@ class SubjectController extends Controller
 
             // Return a generic error response
             return response()->json(['message' => 'An error occurred while deleting the subject.'], 500);
+        }
+    }
+
+    /**
+     * Get version history for a subject (current and previous version)
+     */
+    public function getVersionHistory($id)
+    {
+        try {
+            $currentSubject = Subject::findOrFail($id);
+            
+            // Get all versions from subject_versions table, ordered by version number descending
+            $allVersions = SubjectVersion::where('subject_id', $id)
+                ->orderBy('version_number', 'desc')
+                ->get();
+            
+            $previousVersions = [];
+            
+            if ($allVersions->count() > 0) {
+                // Convert all versions to subject-like format for consistency
+                foreach ($allVersions as $version) {
+                    $previousVersions[] = [
+                        'id' => $version->id,
+                        'subject_name' => $version->subject_name,
+                        'subject_code' => $version->subject_code,
+                        'subject_type' => $version->subject_type,
+                        'subject_unit' => $version->subject_unit,
+                        'units' => $version->subject_unit, // For compatibility with frontend
+                        'contact_hours' => $version->contact_hours,
+                        'prerequisites' => $version->prerequisites,
+                        'pre_requisite_to' => $version->pre_requisite_to,
+                        'course_description' => $version->course_description,
+                        'program_mapping_grid' => $version->program_mapping_grid,
+                        'course_mapping_grid' => $version->course_mapping_grid,
+                        'pilo_outcomes' => $version->pilo_outcomes,
+                        'cilo_outcomes' => $version->cilo_outcomes,
+                        'learning_outcomes' => $version->learning_outcomes,
+                        'lessons' => $version->lessons,
+                        'basic_readings' => $version->basic_readings,
+                        'extended_readings' => $version->extended_readings,
+                        'course_assessment' => $version->course_assessment,
+                        'committee_members' => $version->committee_members,
+                        'consultation_schedule' => $version->consultation_schedule,
+                        'prepared_by' => $version->prepared_by,
+                        'reviewed_by' => $version->reviewed_by,
+                        'approved_by' => $version->approved_by,
+                        'created_at' => $version->created_at,
+                        'updated_at' => $version->updated_at,
+                        'version_number' => $version->version_number,
+                        'change_reason' => $version->change_reason,
+                        'changed_by' => $version->changed_by,
+                    ];
+                }
+                
+                return response()->json([
+                    'hasOldVersion' => true,
+                    'currentVersion' => $currentSubject,
+                    'previousVersions' => $previousVersions,
+                    'totalVersions' => $allVersions->count()
+                ]);
+            } else {
+                return response()->json([
+                    'hasOldVersion' => false,
+                    'currentVersion' => $currentSubject,
+                    'previousVersions' => [],
+                    'totalVersions' => 0
+                ]);
+            }
+            
+        } catch (\Exception $e) {
+            Log::error('Error fetching subject version history: ' . $e->getMessage());
+            return response()->json(['message' => 'An error occurred while fetching version history.'], 500);
         }
     }
 }

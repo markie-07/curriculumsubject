@@ -73,4 +73,12 @@ class Subject extends Model
     {
         return $this->hasMany(Grade::class);
     }
+
+    /**
+     * Get the version history for the subject.
+     */
+    public function versions(): HasMany
+    {
+        return $this->hasMany(SubjectVersion::class);
+    }
 }

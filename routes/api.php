@@ -24,6 +24,7 @@ Route::get('/curriculum/{id}/details', [CurriculumController::class, 'getCurricu
 Route::get('/subjects', [SubjectController::class, 'index']);
 Route::post('/subjects', [SubjectController::class, 'store']);
 Route::get('/subjects/{id}', [SubjectController::class, 'show']);
+Route::get('/subjects/{id}/versions', [SubjectController::class, 'getVersionHistory']);
 Route::put('/subjects/{id}', [SubjectController::class, 'update']);
 Route::delete('/subjects/{subject}', [SubjectController::class, 'destroy']);
 

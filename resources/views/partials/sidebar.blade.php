@@ -195,24 +195,6 @@
         </a>
         @endif
 
-        <!-- Subject Offering History (Optional) -->
-        @if($isEmployee)
-        <div class="locked-item group flex items-center px-4 py-3 text-sm font-medium rounded-xl bg-gray-600/20 border border-gray-500/30 cursor-not-allowed opacity-60 relative">
-            <div class="w-8 h-8 bg-gray-600/30 rounded-lg flex items-center justify-center mr-3">
-                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.494h18"></path></svg>
-            </div>
-            <span class="nav-text text-gray-400">Subject Offering History</span>
-            <svg class="w-4 h-4 text-red-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-        </div>
-        @else
-        <a href="{{ route('subject_history') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-xl hover:bg-gradient-to-r hover:from-blue-800/50 hover:to-blue-700/50 transition-all duration-300 nav-link border border-transparent hover:border-blue-600/30 hover:shadow-lg hover:shadow-blue-900/20">
-            <div class="w-8 h-8 bg-blue-800/30 rounded-lg flex items-center justify-center mr-3 group-hover:bg-blue-600/40 transition-all duration-300 group-hover:scale-110">
-                <svg class="w-4 h-4 text-blue-300 group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.494h18"></path></svg>
-            </div>
-            <span class="nav-text group-hover:text-white transition-colors duration-300">Subject Offering History</span>
-        </a>
-        @endif
-
         <!-- Separator Line -->
         <div class="border-t border-blue-600/30 my-3"></div>
 

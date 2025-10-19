@@ -422,6 +422,67 @@
         </div>
     </div>
 
+    {{-- Subject Version Tracker Modal --}}
+    <div id="subjectVersionTrackerModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 ease-out hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="relative bg-white w-full max-w-4xl rounded-2xl shadow-2xl transform scale-95 opacity-0 transition-all duration-300 ease-out" id="version-tracker-modal-panel">
+                <div class="flex justify-between items-center p-6 border-b border-gray-200">
+                    <div>
+                        <h2 id="versionTrackerModalTitle" class="text-2xl font-bold text-gray-800">Subject Version Tracker</h2>
+                        <p id="versionTrackerModalSubtitle" class="text-sm text-gray-500 mt-1">Compare old and new versions</p>
+                    </div>
+                    <button id="closeVersionTrackerModalBtn" class="text-gray-400 hover:text-gray-600 focus:outline-none transition-colors duration-200" aria-label="Close modal">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="p-6">
+                    <!-- Loading State -->
+                    <div id="versionTrackerLoading" class="text-center py-12 hidden">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                        <p class="text-gray-500">Loading version history...</p>
+                    </div>
+                    
+                    <!-- Version Comparison -->
+                    <div id="versionTrackerContent" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Current Version Card -->
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-gray-800">Current Version</h3>
+                                <span class="px-3 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full">CURRENT</span>
+                            </div>
+                            <div id="newVersionCard" class="cursor-pointer transform transition-all duration-200 hover:scale-105 hover:shadow-lg">
+                                <!-- Current version subject card will be populated here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Version History List -->
+                        <div class="lg:col-span-2 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-gray-800">Version History</h3>
+                                <span id="versionCount" class="px-3 py-1 text-xs font-semibold text-blue-700 bg-blue-100 rounded-full">0 versions</span>
+                            </div>
+                            <div id="versionHistoryList" class="space-y-3 max-h-96 overflow-y-auto">
+                                <!-- Version history will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- No Previous Version State -->
+                    <div id="noOldVersion" class="text-center py-12 hidden">
+                        <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No Previous Version</h3>
+                        <p class="text-gray-500">This subject hasn't been modified yet.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- Delete modals removed --}}
 </main>
 <script>
@@ -433,6 +494,19 @@
         const editSubjectDetailsButton = document.getElementById('editSubjectDetailsButton');
         const importSubjectDetailsButton = document.getElementById('importSubjectDetailsButton');
         const editConfirmationModal = document.getElementById('editConfirmationModal');
+
+        // Version Tracker Modal Elements
+        const subjectVersionTrackerModal = document.getElementById('subjectVersionTrackerModal');
+        const closeVersionTrackerModalBtn = document.getElementById('closeVersionTrackerModalBtn');
+        const versionTrackerModalPanel = document.getElementById('version-tracker-modal-panel');
+        const versionTrackerLoading = document.getElementById('versionTrackerLoading');
+        const versionTrackerContent = document.getElementById('versionTrackerContent');
+        const newVersionCard = document.getElementById('newVersionCard');
+        const versionHistoryList = document.getElementById('versionHistoryList');
+        const versionCount = document.getElementById('versionCount');
+        const noOldVersion = document.getElementById('noOldVersion');
+        const versionTrackerModalTitle = document.getElementById('versionTrackerModalTitle');
+        const versionTrackerModalSubtitle = document.getElementById('versionTrackerModalSubtitle');
 
         // Detailed Content Elements
         const detailsCourseTitle = document.getElementById('detailsCourseTitle');
@@ -514,7 +588,7 @@
             return tableHtml;
         };
 
-        const showDetailsModal = (data) => {
+        const showDetailsModal = (data, showEditButton = true) => {
             const setText = (element, value) => {
                 if (element) {
                     element.textContent = value || 'N/A';
@@ -554,6 +628,13 @@
             const subjectDataString = JSON.stringify(data);
             editSubjectDetailsButton.dataset.subjectData = subjectDataString;
             importSubjectDetailsButton.dataset.subjectData = subjectDataString;
+            
+            // Show/hide edit button based on parameter
+            if (showEditButton) {
+                editSubjectDetailsButton.classList.remove('hidden');
+            } else {
+                editSubjectDetailsButton.classList.add('hidden');
+            }
 
             // Render mapping grids
             detailsProgramMapping.innerHTML = createMappingGridHtml(data.program_mapping_grid, 'PILO');
@@ -636,9 +717,221 @@
             }, 10);
         };
 
+        // --- VERSION TRACKER MODAL FUNCTIONS ---
+        
+        const showVersionTrackerModal = async (subjectData) => {
+            // Set modal title
+            versionTrackerModalTitle.textContent = `${subjectData.subject_name} Version History`;
+            versionTrackerModalSubtitle.textContent = `${subjectData.subject_code} - Compare versions`;
+            
+            // Show modal with loading state
+            subjectVersionTrackerModal.classList.remove('hidden');
+            setTimeout(() => {
+                subjectVersionTrackerModal.classList.remove('opacity-0');
+                versionTrackerModalPanel.classList.remove('opacity-0', 'scale-95');
+            }, 10);
+            
+            // Show loading state
+            versionTrackerLoading.classList.remove('hidden');
+            versionTrackerContent.classList.add('hidden');
+            noOldVersion.classList.add('hidden');
+            
+            try {
+                // Fetch subject version history
+                const response = await fetch(`/api/subjects/${subjectData.id}/versions`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch version history');
+                }
+                
+                const versionData = await response.json();
+                
+                // Hide loading state
+                versionTrackerLoading.classList.add('hidden');
+                
+                // Always show the current version
+                versionTrackerContent.classList.remove('hidden');
+                
+                // Create current version card (always available)
+                const newCard = createVersionCard(versionData.currentVersion, 'current');
+                newVersionCard.innerHTML = '';
+                newVersionCard.appendChild(newCard);
+                
+                // Add click handler for current version
+                newCard.addEventListener('click', () => {
+                    hideVersionTrackerModal();
+                    showDetailsModal(versionData.currentVersion, true); // true = show edit button
+                });
+                
+                // Update version count
+                versionCount.textContent = `${versionData.totalVersions} version${versionData.totalVersions !== 1 ? 's' : ''}`;
+                
+                if (versionData.hasOldVersion && versionData.previousVersions.length > 0) {
+                    // Clear version history list
+                    versionHistoryList.innerHTML = '';
+                    
+                    // Create version history items
+                    versionData.previousVersions.forEach((version, index) => {
+                        const versionItem = createVersionHistoryItem(version, index + 1);
+                        versionHistoryList.appendChild(versionItem);
+                    });
+                } else {
+                    // Show no versions message
+                    versionHistoryList.innerHTML = `
+                        <div class="text-center py-8 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50">
+                            <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <p class="text-sm text-gray-500">No previous versions available</p>
+                            <p class="text-xs text-gray-400 mt-1">This is the original version</p>
+                        </div>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('Error fetching version history:', error);
+                versionTrackerLoading.classList.add('hidden');
+                
+                // Still show current version even if API fails
+                versionTrackerContent.classList.remove('hidden');
+                
+                // Create current version card from the original subject data
+                const newCard = createVersionCard(subjectData, 'current');
+                newVersionCard.innerHTML = '';
+                newVersionCard.appendChild(newCard);
+                
+                // Add click handler for current version
+                newCard.addEventListener('click', () => {
+                    hideVersionTrackerModal();
+                    showDetailsModal(subjectData, true); // true = show edit button
+                });
+                
+                // Update version count to show error
+                versionCount.textContent = 'Error loading';
+                versionCount.className = 'px-3 py-1 text-xs font-semibold text-red-700 bg-red-100 rounded-full';
+                
+                // Show error message in version history area
+                versionHistoryList.innerHTML = `
+                    <div class="text-center py-8 border-2 border-dashed border-red-300 rounded-xl bg-red-50">
+                        <svg class="w-8 h-8 text-red-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        <p class="text-sm text-red-600">Error loading version history</p>
+                        <p class="text-xs text-red-400 mt-1">Could not fetch previous versions</p>
+                    </div>
+                `;
+            }
+        };
+        
+        const hideVersionTrackerModal = () => {
+            subjectVersionTrackerModal.classList.add('opacity-0');
+            versionTrackerModalPanel.classList.add('opacity-0', 'scale-95');
+            setTimeout(() => subjectVersionTrackerModal.classList.add('hidden'), 300);
+        };
+        
+        const createVersionCard = (subjectData, version) => {
+            const isCurrent = version === 'current' || version === 'new';
+            const card = document.createElement('div');
+            card.className = `bg-white border-2 ${isCurrent ? 'border-green-200 hover:border-green-300' : 'border-gray-200 hover:border-gray-300'} rounded-xl p-4 transition-all duration-200 hover:shadow-md`;
+            
+            // Determine subject type styling
+            let iconBgClass = 'bg-gray-100';
+            let iconTextClass = 'text-gray-600';
+            
+            const subjectType = subjectData.subject_type.toLowerCase();
+            if (subjectType.includes('major')) {
+                iconBgClass = 'bg-blue-100';
+                iconTextClass = 'text-blue-600';
+            } else if (subjectType.includes('minor')) {
+                iconBgClass = 'bg-purple-100';
+                iconTextClass = 'text-purple-600';
+            } else if (subjectType.includes('elective')) {
+                iconBgClass = 'bg-red-100';
+                iconTextClass = 'text-red-600';
+            } else {
+                iconBgClass = 'bg-orange-100';
+                iconTextClass = 'text-orange-600';
+            }
+            
+            card.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="flex-shrink-0 w-12 h-12 ${iconBgClass} rounded-lg flex items-center justify-center">
+                        <svg class="h-6 w-6 ${iconTextClass}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.494h18"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-sm font-semibold text-gray-900 truncate">${subjectData.subject_name}</h4>
+                        <p class="text-xs text-gray-500">${subjectData.subject_code}</p>
+                        <div class="flex items-center mt-1 space-x-2">
+                            <span class="text-xs px-2 py-1 rounded-full ${isCurrent ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}">${subjectData.subject_type}</span>
+                            <span class="text-xs text-gray-400">${subjectData.units} units</span>
+                        </div>
+                        ${subjectData.updated_at ? `<p class="text-xs text-gray-400 mt-1">Updated: ${new Date(subjectData.updated_at).toLocaleDateString()}</p>` : ''}
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        };
+
+        const createVersionHistoryItem = (versionData, displayNumber) => {
+            const item = document.createElement('div');
+            item.className = 'bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer hover:border-blue-300';
+            
+            // Format date
+            const versionDate = new Date(versionData.created_at);
+            const formattedDate = versionDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            item.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-semibold">
+                                v${versionData.version_number}
+                            </span>
+                            <div class="flex-1 min-w-0">
+                                <h5 class="text-sm font-medium text-gray-900 truncate">${versionData.subject_name}</h5>
+                                <p class="text-xs text-gray-500">${versionData.subject_code}</p>
+                            </div>
+                        </div>
+                        <div class="mt-2 flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <span class="text-xs text-gray-400">${formattedDate}</span>
+                                ${versionData.change_reason ? `<span class="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">${versionData.change_reason}</span>` : ''}
+                            </div>
+                            <span class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">${versionData.subject_type}</span>
+                        </div>
+                    </div>
+                    <div class="ml-3 flex-shrink-0">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+            `;
+            
+            // Add click handler
+            item.addEventListener('click', () => {
+                hideVersionTrackerModal();
+                showDetailsModal(versionData, false); // false = no edit button for old versions
+            });
+            
+            return item;
+        };
+
         // --- CORE EVENT LISTENERS ---
         closeDetailsModalButtonTop.addEventListener('click', hideDetailsModal);
         subjectDetailsModal.addEventListener('click', (e) => { if (e.target.id === 'subjectDetailsModal') hideDetailsModal(); });
+        
+        // Version Tracker Modal Event Listeners
+        closeVersionTrackerModalBtn.addEventListener('click', hideVersionTrackerModal);
+        subjectVersionTrackerModal.addEventListener('click', (e) => { if (e.target.id === 'subjectVersionTrackerModal') hideVersionTrackerModal(); });
         
         // --- EDIT SUBJECT BUTTON FUNCTIONALITY ---
         editSubjectDetailsButton.addEventListener('click', () => {
@@ -670,12 +963,12 @@
         });
 
         const addDoubleClickEvents = (item) => {
-            item.addEventListener('dblclick', () => showDetailsModal(JSON.parse(item.dataset.subjectData)));
+            item.addEventListener('dblclick', () => showVersionTrackerModal(JSON.parse(item.dataset.subjectData)));
         };
 
         const addDraggableEvents = (item) => {
             item.addEventListener('dragstart', (e) => {
-                if (!isEditing || item.dataset.status === 'removed' || (item.classList.contains('subject-card') && item.classList.contains('assigned-card'))) {
+                if (!isEditing || (item.classList.contains('subject-card') && item.classList.contains('assigned-card'))) {
                     e.preventDefault();
                     return;
                 }
@@ -732,10 +1025,6 @@
             }
             cardClasses += ` ${assignedClass} cursor-not-allowed`;
             statusHTML = `<span class="status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-200 text-gray-700">Assigned</span>`;
-            isDraggable = false;
-        } else if (status === 'removed') {
-            cardClasses += ' bg-white opacity-60 cursor-not-allowed removed-subject-card';
-            statusHTML = '<span class="text-xs font-semibold text-red-700 bg-red-100 px-2.5 py-1 rounded-full">Removed</span>';
             isDraggable = false;
         } else {
             cardClasses += ' bg-white hover:shadow-md hover:border-blue-400 cursor-grab active:cursor-grabbing';
@@ -1246,20 +1535,37 @@ const updateAllTotals = () => {
 
                 const originalSubjectCard = document.getElementById(`subject-${subjectData.subject_code.toLowerCase()}`);
                 if (originalSubjectCard) {
-                    originalSubjectCard.dataset.status = 'removed';
-                    originalSubjectCard.setAttribute('draggable', 'false');
-                    originalSubjectCard.classList.add('bg-white', 'opacity-60', 'cursor-not-allowed', 'removed-subject-card');
-                    originalSubjectCard.classList.remove('assigned-card', 'assigned-major', 'assigned-minor', 'assigned-elective', 'assigned-general');
+                    // Reset subject to Available status instead of Removed
+                    originalSubjectCard.dataset.status = '';
+                    originalSubjectCard.setAttribute('draggable', 'true');
+                    originalSubjectCard.classList.remove('assigned-card', 'assigned-major', 'assigned-minor', 'assigned-elective', 'assigned-general', 'bg-white', 'opacity-60', 'cursor-not-allowed', 'removed-subject-card');
+                    originalSubjectCard.classList.add('hover:shadow-lg', 'cursor-move');
 
+                    // Reset icon styling to original available state
                     const iconContainer = originalSubjectCard.querySelector('.flex-shrink-0');
                     const iconSvg = iconContainer.querySelector('svg');
-                    iconContainer.className = 'flex-shrink-0 w-12 h-12 icon-bg-default rounded-lg flex items-center justify-center transition-colors duration-300';
-                    iconSvg.className = 'h-6 w-6 text-gray-500 transition-colors duration-300';
+                    const subjectType = subjectData.subject_type.toLowerCase();
                     
+                    // Restore original icon styling based on subject type
+                    if (subjectType.includes('major')) {
+                        iconContainer.className = 'flex-shrink-0 w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center transition-colors duration-300';
+                        iconSvg.className = 'h-6 w-6 text-blue-600 transition-colors duration-300';
+                    } else if (subjectType.includes('minor')) {
+                        iconContainer.className = 'flex-shrink-0 w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center transition-colors duration-300';
+                        iconSvg.className = 'h-6 w-6 text-purple-600 transition-colors duration-300';
+                    } else if (subjectType.includes('elective')) {
+                        iconContainer.className = 'flex-shrink-0 w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center transition-colors duration-300';
+                        iconSvg.className = 'h-6 w-6 text-red-600 transition-colors duration-300';
+                    } else {
+                        iconContainer.className = 'flex-shrink-0 w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center transition-colors duration-300';
+                        iconSvg.className = 'h-6 w-6 text-orange-600 transition-colors duration-300';
+                    }
+                    
+                    // Reset status badge to Available
                     const statusBadge = originalSubjectCard.querySelector('.status-badge');
                     if (statusBadge) {
-                        statusBadge.textContent = 'Removed';
-                        statusBadge.className = 'status-badge text-xs font-semibold text-red-700 bg-red-100 px-2.5 py-1 rounded-full';
+                        statusBadge.textContent = 'Available';
+                        statusBadge.className = 'status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-green-200 text-green-700';
                     }
                 }
 
@@ -1268,7 +1574,7 @@ const updateAllTotals = () => {
                 // Use SweetAlert for success
                 Swal.fire({
                     title: 'Subject Removed Successfully!',
-                    text: `"${subjectData.subject_name}" (${subjectData.subject_code}) has been removed from Year ${year}, Semester ${semester} and added to Subject History.`,
+                    text: `"${subjectData.subject_name}" (${subjectData.subject_code}) has been removed from Year ${year}, Semester ${semester} and is now available for assignment.`,
                     icon: 'success',
                     confirmButtonText: 'OK',
                     confirmButtonColor: '#10B981',
@@ -1592,20 +1898,17 @@ function renderCurriculumOverview(yearLevel) {
             initDragAndDrop();
         }
 
-        function renderAvailableSubjects(subjects, mappedSubjects = [], removedSubjectCodes = []) {
+        function renderAvailableSubjects(subjects, mappedSubjects = []) {
             availableSubjectsContainer.innerHTML = '';
             const mappedSubjectCodes = new Set(mappedSubjects.map(s => s.subject_code));
-            const removedCodesSet = new Set(removedSubjectCodes);
 
             if (subjects.length === 0) {
                 availableSubjectsContainer.innerHTML = '<p class="text-gray-500 text-center mt-4">No available subjects found.</p>';
             } else {
                 subjects.forEach(subject => {
                     const isMapped = mappedSubjectCodes.has(subject.subject_code);
-                    const isRemoved = removedCodesSet.has(subject.subject_code);
-                    const status = isRemoved ? 'removed' : '';
                     
-                    const newSubjectCard = createSubjectCard(subject, isMapped, status);
+                    const newSubjectCard = createSubjectCard(subject, isMapped);
                     availableSubjectsContainer.appendChild(newSubjectCard);
                 });
             }
@@ -1660,7 +1963,7 @@ function renderCurriculumOverview(yearLevel) {
                     if (!data || !Array.isArray(data)) throw new Error('Invalid subjects data from server.');
                     
                     // Show all subjects as available (none are mapped yet)
-                    renderAvailableSubjects(data, [], []);
+                    renderAvailableSubjects(data, []);
                 })
                 .catch(error => {
                     console.error('Error loading subjects:', error);
@@ -1686,7 +1989,7 @@ function renderCurriculumOverview(yearLevel) {
                 .then(data => {
                     if (!data || !data.curriculum || !data.allSubjects) throw new Error('Invalid data structure from server.');
                     
-                    renderAvailableSubjects(data.allSubjects, data.curriculum.subjects, data.removedSubjectCodes);
+                    renderAvailableSubjects(data.allSubjects, data.curriculum.subjects);
                     populateMappedSubjects(data.curriculum.subjects);
                     
                     const hasMappedSubjects = data.curriculum.subjects.length > 0;

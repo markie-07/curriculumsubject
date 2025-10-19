@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Curriculum;
 use App\Models\Subject;
-use App\Models\SubjectHistory;
 use App\Models\Notification;
 use App\Services\CurriculumVersionService;
 use Illuminate\Http\Request;
@@ -168,15 +167,9 @@ class CurriculumController extends Controller
             $curriculum = Curriculum::with('subjects')->findOrFail($id);
             $allSubjects = Subject::all(); 
 
-            $removedSubjectCodes = SubjectHistory::where('curriculum_id', $id)
-                                                  ->where('action', 'removed')
-                                                  ->pluck('subject_code')
-                                                  ->unique();
-
             return response()->json([
                 'curriculum' => $curriculum,
                 'allSubjects' => $allSubjects,
-                'removedSubjectCodes' => $removedSubjectCodes,
             ]);
         } catch (\Exception $e) {
             Log::error('Error fetching curriculum data: ' . $e->getMessage());
@@ -326,17 +319,6 @@ public function saveSubjects(Request $request)
                      throw new \Exception('Subject could not be found in the specified curriculum to remove.');
                 }
 
-                // Create a record in the subject history table
-                SubjectHistory::create([
-                    'curriculum_id' => $validated['curriculumId'],
-                    'subject_id'    => $validated['subjectId'],
-                    'academic_year' => $curriculum->academic_year,
-                    'subject_name'  => $subject->subject_name,
-                    'subject_code'  => $subject->subject_code,
-                    'year'          => $validated['year'],
-                    'semester'      => $validated['semester'],
-                    'action'        => 'removed',
-                ]);
 
                 // Create version snapshot after removing subject
                 CurriculumVersionService::createSnapshotOnSubjectRemove(
