@@ -205,13 +205,87 @@ document.addEventListener('DOMContentLoaded', () => {
     subjectsModal.addEventListener('click', (e) => { if (e.target === subjectsModal) hideSubjectsModal(); });
 
     // --- Modal 2 Functions ---
-    const showSubjectDetailsModal = (subject) => {
-        populateDetailsModal(subject);
+    const showSubjectDetailsModal = async (subject) => {
+        // Show modal with loading state
         subjectDetailsModal.classList.remove('hidden');
         setTimeout(() => {
             subjectDetailsModal.classList.remove('opacity-0');
             subjectDetailsModalPanel.classList.remove('opacity-0', 'scale-95');
         }, 10);
+
+        // Show loading state
+        subjectDetailsContent.innerHTML = `
+            <div class="flex items-center justify-center py-12">
+                <div class="text-center">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p class="text-gray-500">Loading current subject data...</p>
+                </div>
+            </div>
+        `;
+
+        try {
+            // Fetch current/live subject data from the subjects API
+            const response = await fetch(`/api/subjects/${subject.id}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch subject data');
+            }
+            
+            const currentSubjectData = await response.json();
+            
+            // Populate modal with current data
+            populateDetailsModal(currentSubjectData);
+            
+        } catch (error) {
+            console.error('Error fetching current subject data:', error);
+            
+            // Fallback to historical data if current data fetch fails
+            subjectDetailsContent.innerHTML = `
+                <div class="text-center py-8">
+                    <div class="text-yellow-600 mb-4">
+                        <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Unable to load current data</h3>
+                    <p class="text-sm text-gray-500 mb-4">Showing historical data instead. The current subject data may have been updated since this snapshot was created.</p>
+                    <button id="show-historical-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
+                        Show Historical Data
+                    </button>
+                </div>
+            `;
+            
+            // Add event listener for historical data button
+            setTimeout(() => {
+                const historicalBtn = document.getElementById('show-historical-btn');
+                if (historicalBtn) {
+                    historicalBtn.addEventListener('click', () => {
+                        populateDetailsModalWithHistoricalIndicator(subject);
+                    });
+                }
+            }, 100);
+        }
+    };
+
+    // Function to populate modal with historical data and indicator
+    const populateDetailsModalWithHistoricalIndicator = (subject) => {
+        populateDetailsModal(subject);
+        
+        // Add historical data indicator at the top
+        setTimeout(() => {
+            const indicator = document.createElement('div');
+            indicator.className = 'bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6';
+            indicator.innerHTML = `
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    <span class="text-sm font-medium text-yellow-800">Showing Historical Data</span>
+                    <span class="text-xs text-yellow-600 ml-2">(This data may be outdated - current updates not reflected)</span>
+                </div>
+            `;
+            const content = subjectDetailsContent;
+            content.insertBefore(indicator, content.firstChild);
+        }, 50);
     };
     const hideSubjectDetailsModal = () => {
         subjectDetailsModal.classList.add('opacity-0');
@@ -367,6 +441,15 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         subjectDetailsContent.innerHTML = `
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span class="text-sm font-medium text-green-800">Showing Current Data</span>
+                    <span class="text-xs text-green-600 ml-2">(Last updated: ${subject.updated_at ? new Date(subject.updated_at).toLocaleString() : 'Unknown'})</span>
+                </div>
+            </div>
             <h3 class="text-xl font-bold text-gray-800 mb-4 pb-2 border-b">Course Information</h3>
             <div id="details-course-info" class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 bg-gray-50 p-4 rounded-lg"></div>
             
