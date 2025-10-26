@@ -30,6 +30,12 @@ class CurriculumController extends Controller
                     'program_code' => $curriculum->program_code,
                     'academic_year' => $curriculum->academic_year,
                     'year_level' => $curriculum->year_level,
+                    'compliance' => $curriculum->compliance,
+                    'memorandum_year' => $curriculum->memorandum_year,
+                    'memorandum_category' => $curriculum->memorandum_category,
+                    'memorandum' => $curriculum->memorandum,
+                    'semester_units' => $curriculum->semester_units,
+                    'total_units' => $curriculum->total_units,
                     'created_at' => $curriculum->created_at,
                     'subjects_count' => $curriculum->subjects_count,
                     'status' => $curriculum->subjects_count > 0 ? 'active' : 'inactive'
@@ -48,6 +54,13 @@ class CurriculumController extends Controller
             'programCode' => 'required|string|max:255|unique:curriculums,program_code',
             'academicYear' => 'required|string|max:255',
             'yearLevel' => 'required|in:Senior High,College',
+            'compliance' => 'nullable|string|in:CHED,DepEd',
+            'memorandumYear' => 'nullable|string|max:4',
+            'memorandumCategory' => 'nullable|string|max:255',
+            'memorandum' => 'nullable|string',
+            'semesterUnits' => 'nullable|array',
+            'semesterUnits.*' => 'nullable|numeric|min:0',
+            'totalUnits' => 'nullable|numeric|min:0',
         ]);
 
         $curriculum = Curriculum::create([
@@ -55,6 +68,12 @@ class CurriculumController extends Controller
             'program_code' => $validated['programCode'],
             'academic_year' => $validated['academicYear'],
             'year_level' => $validated['yearLevel'],
+            'compliance' => $validated['compliance'] ?? null,
+            'memorandum_year' => $validated['memorandumYear'] ?? null,
+            'memorandum_category' => $validated['memorandumCategory'] ?? null,
+            'memorandum' => $validated['memorandum'] ?? null,
+            'semester_units' => $validated['semesterUnits'] ?? null,
+            'total_units' => $validated['totalUnits'] ?? null,
         ]);
 
         // Create database notification for admins
@@ -96,6 +115,13 @@ class CurriculumController extends Controller
             'programCode' => 'required|string|max:255|unique:curriculums,program_code,' . $curriculum->id,
             'academicYear' => 'required|string|max:255',
             'yearLevel' => 'required|in:Senior High,College',
+            'compliance' => 'nullable|string|in:CHED,DepEd',
+            'memorandumYear' => 'nullable|string|max:4',
+            'memorandumCategory' => 'nullable|string|max:255',
+            'memorandum' => 'nullable|string',
+            'semesterUnits' => 'nullable|array',
+            'semesterUnits.*' => 'nullable|numeric|min:0',
+            'totalUnits' => 'nullable|numeric|min:0',
         ]);
         
         $curriculum->update([
@@ -103,6 +129,12 @@ class CurriculumController extends Controller
             'program_code' => $validated['programCode'],
             'academic_year' => $validated['academicYear'],
             'year_level' => $validated['yearLevel'],
+            'compliance' => $validated['compliance'] ?? null,
+            'memorandum_year' => $validated['memorandumYear'] ?? null,
+            'memorandum_category' => $validated['memorandumCategory'] ?? null,
+            'memorandum' => $validated['memorandum'] ?? null,
+            'semester_units' => $validated['semesterUnits'] ?? null,
+            'total_units' => $validated['totalUnits'] ?? null,
         ]);
 
         // Create database notification for admins
@@ -357,6 +389,34 @@ public function saveSubjects(Request $request)
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'A database error occurred while fetching curriculum details.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get subjects for a specific curriculum
+     */
+    public function getCurriculumSubjects($id)
+    {
+        try {
+            $curriculum = Curriculum::with('subjects')->findOrFail($id);
+            
+            $subjects = $curriculum->subjects->map(function ($subject) {
+                return [
+                    'id' => $subject->id,
+                    'subject_name' => $subject->subject_name,
+                    'subject_code' => $subject->subject_code,
+                    'subject_type' => $subject->subject_type,
+                    'subject_unit' => $subject->subject_unit,
+                    'contact_hours' => $subject->contact_hours,
+                ];
+            });
+
+            return response()->json($subjects);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'A database error occurred while fetching curriculum subjects.',
                 'error' => $e->getMessage()
             ], 500);
         }

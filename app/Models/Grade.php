@@ -18,6 +18,8 @@ class Grade extends Model
     protected $fillable = [
         'subject_id',
         'components', // This is our new JSON column
+        'curriculum_id', // For curriculum-based grading
+        'course_type', // 'minor' or 'major'
     ];
 
     /**
@@ -32,5 +34,10 @@ class Grade extends Model
     public function subject(): BelongsTo
     {
         return $this->belongsTo(Subject::class, 'subject_id', 'id');
+    }
+
+    public function curriculum(): BelongsTo
+    {
+        return $this->belongsTo(Curriculum::class, 'curriculum_id', 'id');
     }
 }

@@ -33,8 +33,6 @@
                                 <option value="" disabled selected>Select a Type</option>
                                 <option value="Major">Major</option>
                                 <option value="Minor">Minor</option>
-                                <option value="Elective">Elective</option>
-                                <option value="General">General Education</option>
                             </select>
                         </div>
                         <div>
@@ -128,7 +126,7 @@
                     <div class="p-8 border rounded-2xl shadow-md mapping-grid-container">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-xl font-semibold text-gray-700">PROGRAM MAPPING GRID</h3>
-                            <button id="add-program-mapping-row" type="button" class="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors">Add Row</button>
+                            <button id="add-program-mapping-row" type="button" class="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 hover:text-white transition-colors">Add Row</button>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="min-w-full bg-white border">
@@ -149,7 +147,7 @@
                     <div class="p-8 border rounded-2xl shadow-md mapping-grid-container">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-xl font-semibold text-gray-700">COURSE MAPPING GRID</h3>
-                            <button id="add-course-mapping-row" type="button" class="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors">Add Row</button>
+                            <button id="add-course-mapping-row" type="button" class="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 hover:text-white transition-colors">Add Row</button>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="min-w-full bg-white border">
@@ -215,14 +213,14 @@
             </div>
 
 
-            {{-- Weekly Plan (Weeks 1-15) --}}
+            {{-- Weekly Plan (Weeks 0-18) --}}
             <div class="mb-12">
                 <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
                     <svg class="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    Weekly Plan (Weeks 1-15)
+                    Weekly Plan (Weeks 0-18)
                 </h2>
                 <div class="space-y-4">
-                    @for ($i = 1; $i <= 15; $i++)
+                    @for ($i = 0; $i <= 18; $i++)
                         <div class="border rounded-2xl overflow-hidden shadow-sm">
                             <button type="button" class="w-full flex justify-between items-center p-4 bg-white hover:bg-gray-50 transition-colors" onclick="toggleAccordion(this)">
                                 <span class="font-semibold text-lg text-gray-700">Week {{ $i }}</span>
@@ -367,7 +365,7 @@
 
             {{-- Save/Update Button --}}
             <div class="mt-10 pt-6 border-t border-gray-200">
-                <button id="saveCourseButton" type="submit" class="w-full flex items-center justify-center space-x-2 px-6 py-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-100 transition-colors shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 border border-gray-300">
+                <button id="saveCourseButton" type="submit" class="w-full flex items-center justify-center space-x-2 px-6 py-4 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                     <span>Save Course</span>
                 </button>
@@ -445,6 +443,40 @@ document.addEventListener('DOMContentLoaded', function () {
     const saveButton = document.getElementById('saveCourseButton');
     const pageTitle = document.querySelector('h1.text-4xl');
 
+    // --- DEFAULT WEEK 0 CONTENT ---
+    const populateWeek0DefaultContent = () => {
+        // Only populate if Week 0 fields are empty (for new courses)
+        if (document.getElementById('week_0_content').value.trim() === '') {
+            document.getElementById('week_0_content').value = `BCP Vision, Mission, Goals, Objectives, Philosophy and School Organizational Structure School Policies Orientation in Online and Modular Learning System`;
+            
+            document.getElementById('week_0_silo').value = `Recite, internalize and explain the BCP Vision, Mission, Goals, Objectives and Philosophy
+Deepen knowledge on the school's policies, guidelines, rules and regulations.
+Familiarize on the new normal system of education through online, modular learning system and Blended Learning Delivery Modality (BLDM)`;
+            
+            document.getElementById('week_0_at_onsite').value = `Identify the Vision and Mission statements of BCP.
+Critically analyze these statements in 500 words, focusing on the following:
+The clarity and coherence of the statements.
+How these statements reflect the school's commitment to education.
+The alignment of these statements with the current educational landscape.
+Verify that the BCP VMGO are align with the school goals thru checklist (PMED tools)`;
+            
+            document.getElementById('week_0_at_offsite').value = `Navigate LMS and know the function of each feature.`;
+            
+            document.getElementById('week_0_tla_onsite').value = `Read and internalize the following printed materials for Students and Parents Orientation:`;
+            
+            document.getElementById('week_0_tla_offsite').value = `Presentation and Lecture Discussion (PowerPoint Presentation) of Students and Parents Orientation:`;
+            
+            document.getElementById('week_0_ltsm').value = `Instructional Materials
+Video Presentation of BCP Hymn
+YouTube Video Title: BESTLINK COLLEGE OF THE PHILIPPINES HYMN (BCP hymn)
+https://www.youtube.com/watch?v=NuEYO11Wb4E
+Student Hand Book
+Learning Management System`;
+            
+            document.getElementById('week_0_output').value = `Check alignment report`;
+        }
+    };
+
     // --- HELPER FUNCTIONS ---
 
     const collectMappingGridData = (tableBodyId) => {
@@ -469,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const collectWeeklyPlan = () => {
         const lessons = {};
-        for (let i = 1; i <= 15; i++) {
+        for (let i = 0; i <= 18; i++) {
             const content = document.getElementById(`week_${i}_content`).value;
             const silo = document.getElementById(`week_${i}_silo`).value;
             const atOnsite = document.getElementById(`week_${i}_at_onsite`).value;
@@ -510,7 +542,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const populateWeeklyPlan = (lessons) => {
         if (!lessons) return;
-        for (let i = 1; i <= 15; i++) {
+        for (let i = 0; i <= 18; i++) {
             const weekKey = `Week ${i}`;
             if (lessons[weekKey]) {
                 const lessonString = lessons[weekKey];
@@ -711,6 +743,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const subjectIdToEdit = urlParams.get('subject_id');
     if (subjectIdToEdit) {
         fetchSubjectData(subjectIdToEdit);
+    } else {
+        // For new courses, populate Week 0 with default BCP content
+        populateWeek0DefaultContent();
     }
 });
 </script>

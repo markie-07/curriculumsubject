@@ -120,6 +120,81 @@
                                     <svg class="w-5 h-5 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
                                 </div>
                             </div>
+                            
+                            <div>
+                                <label for="compliance" class="block text-sm font-medium text-slate-700 mb-1">Choose Compliance</label>
+                                <div class="relative">
+                                    <svg class="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c0 .621-.504 1.125-1.125 1.125H18a2.25 2.25 0 01-2.25-2.25M6.75 17.25h-.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V4.875c0-.621.504-1.125 1.125-1.125H6.75a1.125 1.125 0 011.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125z" /></svg>
+                                    <select id="compliance" name="compliance" class="w-full appearance-none pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required>
+                                        <option value="" disabled selected>Select Compliance</option>
+                                        <option value="CHED">CHED</option>
+                                        <option value="DepEd">DepEd</option>
+                                    </select>
+                                    <svg class="w-5 h-5 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
+                                </div>
+                            </div>
+                            
+                            <div id="memorandumContainer" class="hidden">
+                <!-- Year Selection for CHED (hidden by default) -->
+                <div id="yearContainer" class="hidden mb-4">
+                    <label for="memorandumYear" class="block text-sm font-medium text-slate-700 mb-1">Memorandum Year</label>
+                    <div class="relative">
+                        <svg class="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0h18M12 12.75h.008v.008H12v-.008z" /></svg>
+                        <select id="memorandumYear" name="memorandumYear" class="w-full appearance-none pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                            <option value="" disabled selected>Select Year</option>
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                            <option value="2019">2019</option>
+                            <option value="2018">2018</option>
+                            <option value="2017">2017</option>
+                            <option value="2016">2016</option>
+                        </select>
+                        <svg class="w-5 h-5 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
+                    </div>
+                </div>
+                
+                <!-- Category Selection for DepEd (hidden by default) -->
+                <div id="categoryContainer" class="hidden mb-4">
+                    <label for="memorandumCategory" class="block text-sm font-medium text-slate-700 mb-1">Document Category</label>
+                    <div class="relative">
+                        <svg class="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25H11.182c-.397 0-.779-.158-1.06-.44z" /></svg>
+                        <select id="memorandumCategory" name="memorandumCategory" class="w-full appearance-none pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                            <option value="" disabled selected>Select Category</option>
+                            <option value="Shape Paper">Shape Paper</option>
+                            <option value="Curriculum Guides (Core)">Curriculum Guides (Core)</option>
+                            <option value="Curriculum Guides (Academic)">Curriculum Guides (Academic)</option>
+                            <option value="Curriculum Guides (TechPro)">Curriculum Guides (TechPro)</option>
+                        </select>
+                        <svg class="w-5 h-5 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
+                    </div>
+                </div>
+                
+                <label for="memorandum" class="block text-sm font-medium text-slate-700 mb-1">Official Memorandum</label>
+                <div class="relative">
+                    <svg class="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c0 .621-.504 1.125-1.125 1.125H11.25a9 9 0 00-9-9V3.375c0-.621.504-1.125 1.125-1.125z" /></svg>
+                    <select id="memorandum" name="memorandum" class="w-full appearance-none pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                        <option value="" disabled selected>Select Memorandum</option>
+                    </select>
+                    <svg class="w-5 h-5 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
+                </div>
+            </div>
+                            
+                            <div id="unitsContainer" class="hidden">
+                                <label class="block text-sm font-medium text-slate-700 mb-3">Semester Units</label>
+                                <div id="semesterInputs" class="space-y-3">
+                                    <!-- Dynamic semester inputs will be inserted here -->
+                                </div>
+                                <div class="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-medium text-blue-800">Total Units:</span>
+                                        <span id="totalUnits" class="text-lg font-bold text-blue-900">0</span>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="pt-6 flex flex-col sm:flex-row-reverse gap-3">
                                 <button type="submit" id="submit-button" class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                                     <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z" clip-rule="evenodd" /></svg>
@@ -172,6 +247,19 @@
             const seniorHighCurriculums = document.getElementById('senior-high-curriculums');
             const collegeCurriculums = document.getElementById('college-curriculums');
             const searchBar = document.getElementById('search-bar');
+            
+            // New form elements
+            const complianceSelect = document.getElementById('compliance');
+            const memorandumContainer = document.getElementById('memorandumContainer');
+            const yearContainer = document.getElementById('yearContainer');
+            const categoryContainer = document.getElementById('categoryContainer');
+            const memorandumYearSelect = document.getElementById('memorandumYear');
+            const memorandumCategorySelect = document.getElementById('memorandumCategory');
+            const memorandumSelect = document.getElementById('memorandum');
+            const yearLevelSelect = document.getElementById('yearLevel');
+            const unitsContainer = document.getElementById('unitsContainer');
+            const semesterInputs = document.getElementById('semesterInputs');
+            const totalUnitsDisplay = document.getElementById('totalUnits');
 
             // Add/Edit Modal elements
             const addCurriculumModal = document.getElementById('addCurriculumModal');
@@ -200,6 +288,105 @@
             const closeSuccessModalButton = document.getElementById('closeSuccessModalButton');
 
             let currentAction = null; // To store the function to execute on confirmation.
+            
+            // Memorandum data organized by year - fetched from compliance validator structure
+            const memorandumData = {
+                'CHED': {
+                    '2025': [
+                        'CMO No. 1, series of 2025 – Guidelines for Micro-Credential Development, Approval, and Recognition in Higher Education',
+                        'CMO No. 2, series of 2025 – Updated List of Private Higher Education Institutions Granted Autonomous and Deregulated Status by Evaluation',
+                        'CMO No. 3, series of 2025 – Updated Guidelines for Securing Authority to Travel Abroad for State Universities and Colleges (SUCs)',
+                        'CMO No. 4, series of 2025 – Revised Policies, Standards and Guidelines for Associate in Radiologictechnology Education (ART) Program',
+                        'CMO No. 5, series of 2025 – Guidelines for the Accreditation of Hospitals and Primary Health Care Facilities for the Clinical Practice of Radiologic/X-RAY Technology Interns',
+                        'CMO No. 6, series of 2025 – Application Process for Authority to Offer Transnational Higher Education Pursuant to Republic Act No. 11448 or The Transnational Higher Education Act',
+                        'CMO No. 7, series of 2025 – Policies, Standards and Guidelines for the Implementation of the National Merchant Marine Aptitude Test (NaMMAT)',
+                        'CMO No. 9, series of 2025 – Updated Guidelines for the Scholarships for Staff and Instructors\' Knowledge Advancement Program (SIKAP) for Full-Time and Part-Time Study',
+                        'CMO No. 10, series of 2025 – Policies and Standards on Centers of Excellence (COE)',
+                        'CMO No. 11, series of 2025 – Implementing Rules and Regulations of Republic Act No. 12124, "An Act Institutionalizing the Expanded Tertiary Education Equivalency and Accreditation Program (ETEEAP) and Providing Funds Therefor"',
+                        'CMO No. 12, series of 2025 – Policies and Guidelines on Open Distance and e-Learning (ODeL)',
+                        'CMO No. 13, series of 2025 – Revised Policies and Guidelines for the CHED Merit Scholarship Program (CMSP)',
+                        'CMO No. 14, series of 2025 – Revised Implementing Guidelines for the CHED Scholarship Program for Future Statisticians (ESTATISKOLAR)',
+                        'CMO No. 15, series of 2025 – Updated Policies and Guidelines for the Grant of Autonomous and Deregulated Status to Private Higher Education Institutions'
+                    ],
+                    '2024': [
+                        'View all 2024 CHED Memorandum Orders on the official website'
+                    ],
+                    '2023': [
+                        'View all 2023 CHED Memorandum Orders on the official website'
+                    ],
+                    '2022': [
+                        'View all 2022 CHED Memorandum Orders on the official website'
+                    ],
+                    '2021': [
+                        'View all 2021 CHED Memorandum Orders on the official website'
+                    ],
+                    '2020': [
+                        'View all 2020 CHED Memorandum Orders on the official website'
+                    ],
+                    '2019': [
+                        'View all 2019 CHED Memorandum Orders on the official website'
+                    ],
+                    '2018': [
+                        'View all 2018 CHED Memorandum Orders on the official website'
+                    ],
+                    '2017': [
+                        'View all 2017 CHED Memorandum Orders on the official website'
+                    ],
+                    '2016': [
+                        'View all 2016 CHED Memorandum Orders on the official website'
+                    ]
+                },
+                'DepEd': {
+                    'Shape Paper': [
+                        'The Strengthened Senior High School Program Shaping Paper'
+                    ],
+                    'Curriculum Guides (Core)': [
+                        'Effective Communication - Core Subject Guide',
+                        'General Mathematics - Core Subject Guide',
+                        'General Science - Core Subject Guide',
+                        'Life and Career Skills - Core Subject Guide',
+                        'Mabisang Komunikasyon - Core Subject Guide',
+                        'Pag-aaral ng Kasaysayan at Lipunang Pilipino - Core Subject Guide'
+                    ],
+                    'Curriculum Guides (Academic)': [
+                        'Arts 1 (Creative Industries - Visual Art, Literary Art, Media Art, Applied Art, and Traditional Art)',
+                        'Arts 2 (Creative Industries II – Performing Arts)',
+                        'Social Science 1 (Introduction to Social Sciences)',
+                        'Humanities 1 (Creative Writing)',
+                        'Humanities 2 (Introduction to World Religions and Belief Systems)',
+                        'Engineering 1 (Calculus)',
+                        'Engineering 2 (Fundamentals of Programming)',
+                        'Engineering 3 (Basic Electricity and Electronics)',
+                        'Business 1 (Business Enterprise Simulation)',
+                        'Economics 1 (Introduction to Economics)',
+                        'Management 1 (Fundamentals of Accountancy, Business, and Management)',
+                        'Health Science 1 (Introduction to Health Science)',
+                        'Health Science 2 (Basic Human Anatomy and Physiology)'
+                    ],
+                    'Curriculum Guides (TechPro)': [
+                        'Digital Tools and Productivity Applications',
+                        'Multimedia Development and Design',
+                        'Computer Systems and Network Administration',
+                        'Web Development',
+                        'Computer Programming'
+                    ]
+                }
+            };
+            
+            // Function to fetch memorandums based on compliance, year, or category
+            const fetchMemorandumData = async (compliance, yearOrCategory = null) => {
+                try {
+                    if (compliance === 'CHED' && yearOrCategory) {
+                        return memorandumData[compliance][yearOrCategory] || [];
+                    } else if (compliance === 'DepEd' && yearOrCategory) {
+                        return memorandumData[compliance][yearOrCategory] || [];
+                    }
+                    return [];
+                } catch (error) {
+                    console.error('Error fetching memorandum data:', error);
+                    return [];
+                }
+            };
 
             // --- Modal Helper Functions ---
             const showSuccessModal = (title, message) => {
@@ -249,6 +436,168 @@
                 }
                 hideConfirmationModal();
             });
+            
+            // --- Dynamic Form Logic ---
+            
+            // Handle compliance selection
+            complianceSelect.addEventListener('change', function() {
+                const selectedCompliance = this.value;
+                
+                if (selectedCompliance === 'CHED') {
+                    // Show year selection for CHED
+                    yearContainer.classList.remove('hidden');
+                    categoryContainer.classList.add('hidden');
+                    memorandumSelect.innerHTML = '<option value="" disabled selected>Please select a year first</option>';
+                    memorandumContainer.classList.remove('hidden');
+                    
+                    // Manage validation
+                    memorandumYearSelect.setAttribute('required', 'required');
+                    memorandumCategorySelect.removeAttribute('required');
+                } else if (selectedCompliance === 'DepEd') {
+                    // Show category selection for DepEd
+                    categoryContainer.classList.remove('hidden');
+                    yearContainer.classList.add('hidden');
+                    memorandumSelect.innerHTML = '<option value="" disabled selected>Please select a category first</option>';
+                    memorandumContainer.classList.remove('hidden');
+                    
+                    // Manage validation
+                    memorandumCategorySelect.setAttribute('required', 'required');
+                    memorandumYearSelect.removeAttribute('required');
+                } else {
+                    memorandumContainer.classList.add('hidden');
+                    yearContainer.classList.add('hidden');
+                    categoryContainer.classList.add('hidden');
+                    
+                    // Remove validation when hidden
+                    memorandumYearSelect.removeAttribute('required');
+                    memorandumCategorySelect.removeAttribute('required');
+                    memorandumSelect.removeAttribute('required');
+                }
+            });
+            
+            // Handle year selection for CHED
+            memorandumYearSelect.addEventListener('change', function() {
+                const selectedYear = this.value;
+                const selectedCompliance = complianceSelect.value;
+                
+                if (selectedCompliance === 'CHED' && selectedYear) {
+                    loadMemorandums(selectedCompliance, selectedYear);
+                }
+            });
+            
+            // Handle category selection for DepEd
+            memorandumCategorySelect.addEventListener('change', function() {
+                const selectedCategory = this.value;
+                const selectedCompliance = complianceSelect.value;
+                
+                if (selectedCompliance === 'DepEd' && selectedCategory) {
+                    loadMemorandums(selectedCompliance, selectedCategory);
+                }
+            });
+            
+            // Function to load memorandums
+            const loadMemorandums = async (compliance, yearOrCategory = null) => {
+                memorandumSelect.innerHTML = '<option value="" disabled selected>Loading memorandums...</option>';
+                
+                try {
+                    const memorandums = await fetchMemorandumData(compliance, yearOrCategory);
+                    memorandumSelect.innerHTML = '<option value="" disabled selected>Select Memorandum</option>';
+                    
+                    memorandums.forEach(memo => {
+                        const option = document.createElement('option');
+                        option.value = memo;
+                        option.textContent = memo;
+                        memorandumSelect.appendChild(option);
+                    });
+                    
+                    // Add required validation when memorandums are loaded
+                    if (memorandums.length > 0) {
+                        memorandumSelect.setAttribute('required', 'required');
+                    }
+                } catch (error) {
+                    console.error('Error loading memorandums:', error);
+                    memorandumSelect.innerHTML = '<option value="" disabled selected>Error loading memorandums</option>';
+                }
+            };
+            
+            // Handle year level selection for units
+            yearLevelSelect.addEventListener('change', function() {
+                const selectedLevel = this.value;
+                generateSemesterInputs(selectedLevel);
+                
+                if (selectedLevel) {
+                    unitsContainer.classList.remove('hidden');
+                } else {
+                    unitsContainer.classList.add('hidden');
+                }
+            });
+            
+            // Generate semester inputs based on level
+            function generateSemesterInputs(level) {
+                semesterInputs.innerHTML = '';
+                let semesters = [];
+                
+                if (level === 'College') {
+                    semesters = [
+                        '1st Year First Semester',
+                        '1st Year Second Semester',
+                        '2nd Year First Semester',
+                        '2nd Year Second Semester',
+                        '3rd Year First Semester',
+                        '3rd Year Second Semester',
+                        '4th Year First Semester',
+                        '4th Year Second Semester'
+                    ];
+                } else if (level === 'Senior High') {
+                    semesters = [
+                        '1st Year First Semester',
+                        '1st Year Second Semester',
+                        '2nd Year First Semester',
+                        '2nd Year Second Semester'
+                    ];
+                }
+                
+                semesters.forEach((semester, index) => {
+                    const inputGroup = document.createElement('div');
+                    inputGroup.className = 'flex items-center gap-3';
+                    inputGroup.innerHTML = `
+                        <label class="text-sm font-medium text-slate-700 w-48 flex-shrink-0">${semester}:</label>
+                        <div class="relative flex-grow">
+                            <input type="number" 
+                                   id="semester_${index}" 
+                                   name="semester_units[${index}]" 
+                                   class="semester-unit-input w-full pl-3 pr-8 py-2 bg-slate-50 border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
+                                   placeholder="0" 
+                                   min="0" 
+                                   step="0.5">
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-slate-500">units</span>
+                        </div>
+                    `;
+                    semesterInputs.appendChild(inputGroup);
+                });
+                
+                // Add event listeners for automatic calculation
+                document.querySelectorAll('.semester-unit-input').forEach(input => {
+                    input.addEventListener('input', calculateTotalUnits);
+                });
+                
+                calculateTotalUnits();
+            }
+            
+            // Calculate total units
+            function calculateTotalUnits() {
+                const inputs = document.querySelectorAll('.semester-unit-input');
+                let total = 0;
+                
+                inputs.forEach(input => {
+                    const value = parseFloat(input.value) || 0;
+                    total += value;
+                });
+                
+                // Format total units without .0 for whole numbers
+                const formattedTotal = total % 1 === 0 ? Math.floor(total) : total.toFixed(1);
+                totalUnitsDisplay.textContent = formattedTotal;
+            }
 
             // --- Card & API Logic ---
             const createCurriculumCard = (curriculum) => {
@@ -277,26 +626,81 @@
                         Inactive
                     </span>`;
 
+                // Helper function to truncate long memorandum text
+                const truncateText = (text, maxLength = 60) => {
+                    if (!text) return 'Not specified';
+                    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+                };
+
+                // Format compliance badge
+                const complianceBadge = curriculum.compliance 
+                    ? `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${curriculum.compliance === 'CHED' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}">
+                        ${curriculum.compliance}
+                    </span>`
+                    : '';
+
+                // Format total units display (remove .0 from whole numbers)
+                const formatUnits = (units) => {
+                    if (!units) return '';
+                    const num = parseFloat(units);
+                    return num % 1 === 0 ? Math.floor(num) : num;
+                };
+
+                const totalUnitsDisplay = curriculum.total_units 
+                    ? `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        ${formatUnits(curriculum.total_units)} units
+                    </span>`
+                    : '';
+
+                // Format memorandum year/category display
+                const memorandumYearCategory = curriculum.memorandum_year 
+                    ? `Year ${curriculum.memorandum_year}` 
+                    : curriculum.memorandum_category 
+                        ? curriculum.memorandum_category 
+                        : '';
+
                 card.innerHTML = `
-                    <div class="flex-shrink-0 w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300">
-                        <svg class="w-6 h-6 text-slate-500 group-hover:text-blue-600 transition-colors duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <div class="flex-shrink-0 w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300">
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-blue-600 transition-colors duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                         </svg>
                     </div>
-                    <div class="flex-grow cursor-pointer" onclick="window.location.href='/subject_mapping?curriculumId=${curriculum.id}'">
-                        <div class="flex items-center justify-between mb-1">
-                            <h3 class="font-bold text-slate-800 group-hover:text-blue-600 transition-colors duration-300">${curriculum.curriculum_name}</h3>
-                            ${statusBadge}
+                    <div class="flex-grow cursor-pointer min-w-0" onclick="window.location.href='/subject_mapping?curriculumId=${curriculum.id}'">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-grow min-w-0 pr-2">
+                                <h3 class="font-bold text-slate-800 group-hover:text-blue-600 transition-colors duration-300 truncate mb-1">${curriculum.curriculum_name}</h3>
+                                <div class="flex items-center gap-2 text-sm text-slate-500 mb-1">
+                                    <span>${curriculum.program_code} • ${curriculum.academic_year}</span>
+                                </div>
+                                ${curriculum.memorandum ? `
+                                <p class="text-xs text-slate-400 truncate" title="${curriculum.memorandum}">
+                                    ${memorandumYearCategory ? `📅 ${memorandumYearCategory} ` : ''}📄 ${truncateText(curriculum.memorandum, 45)}
+                                </p>
+                                ` : memorandumYearCategory ? `
+                                <p class="text-xs text-slate-400">
+                                    📅 ${memorandumYearCategory} 📄 No memorandum selected
+                                </p>
+                                ` : ''}
+                                <p class="text-xs text-slate-400 mt-1">
+                                    Created: ${formattedDate} at ${formattedTime} • 
+                                    <span class="font-medium">${curriculum.subjects_count} subject${curriculum.subjects_count !== 1 ? 's' : ''}</span>
+                                </p>
+                            </div>
+                            <div class="flex flex-col items-end gap-1">
+                                <div class="flex items-center gap-1">
+                                    ${complianceBadge}
+                                    ${totalUnitsDisplay}
+                                    ${statusBadge}
+                                </div>
+                            </div>
                         </div>
-                        <p class="text-sm text-slate-500">${curriculum.program_code} &middot; ${curriculum.academic_year}</p>
-                        <p class="text-xs text-slate-400 mt-1">
-                            Created: ${formattedDate} at ${formattedTime} &middot; 
-                            <span class="font-medium">${curriculum.subjects_count} subject${curriculum.subjects_count !== 1 ? 's' : ''}</span>
-                        </p>
                     </div>
                     <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <button class="edit-btn p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-100 rounded-md transition-colors" data-id="${curriculum.id}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
+                        <button class="edit-btn p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-100 rounded-md transition-colors" data-id="${curriculum.id}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
                         </button>
                     </div>
                 `;
@@ -345,11 +749,76 @@
                     document.getElementById('programCode').value = curriculum.program_code;
                     document.getElementById('academicYear').value = curriculum.academic_year;
                     document.getElementById('yearLevel').value = curriculum.year_level;
+                    
+                    // Set compliance and memorandum if available
+                    if (curriculum.compliance) {
+                        document.getElementById('compliance').value = curriculum.compliance;
+                        complianceSelect.dispatchEvent(new Event('change'));
+                        
+                        // Set year if available and compliance is CHED
+                        if (curriculum.compliance === 'CHED' && curriculum.memorandum_year) {
+                            setTimeout(() => {
+                                document.getElementById('memorandumYear').value = curriculum.memorandum_year;
+                                memorandumYearSelect.dispatchEvent(new Event('change'));
+                                
+                                if (curriculum.memorandum) {
+                                    setTimeout(() => {
+                                        document.getElementById('memorandum').value = curriculum.memorandum;
+                                    }, 200);
+                                }
+                            }, 100);
+                        } else if (curriculum.compliance === 'DepEd' && curriculum.memorandum_category) {
+                            // Set category if available and compliance is DepEd
+                            setTimeout(() => {
+                                document.getElementById('memorandumCategory').value = curriculum.memorandum_category;
+                                memorandumCategorySelect.dispatchEvent(new Event('change'));
+                                
+                                if (curriculum.memorandum) {
+                                    setTimeout(() => {
+                                        document.getElementById('memorandum').value = curriculum.memorandum;
+                                    }, 200);
+                                }
+                            }, 100);
+                        } else if (curriculum.memorandum) {
+                            setTimeout(() => {
+                                document.getElementById('memorandum').value = curriculum.memorandum;
+                            }, 100);
+                        }
+                    }
+                    
+                    // Generate semester inputs and populate if data exists
+                    if (curriculum.year_level) {
+                        generateSemesterInputs(curriculum.year_level);
+                        
+                        // Populate semester units if available
+                        if (curriculum.semester_units) {
+                            setTimeout(() => {
+                                curriculum.semester_units.forEach((units, index) => {
+                                    const input = document.getElementById(`semester_${index}`);
+                                    if (input) {
+                                        input.value = units;
+                                    }
+                                });
+                                calculateTotalUnits();
+                            }, 100);
+                        }
+                    }
                 } else {
                     modalTitle.textContent = 'Create New Curriculum';
                     modalSubTitle.textContent = 'Fill in the details below to add a new curriculum.';
                     submitButton.querySelector('span').textContent = 'Create';
                     curriculumIdField.value = '';
+                    
+                    // Reset dynamic sections
+                    memorandumContainer.classList.add('hidden');
+                    yearContainer.classList.add('hidden');
+                    categoryContainer.classList.add('hidden');
+                    unitsContainer.classList.add('hidden');
+                    memorandumSelect.innerHTML = '<option value="" disabled selected>Select Memorandum</option>';
+                    memorandumYearSelect.value = '';
+                    memorandumCategorySelect.value = '';
+                    semesterInputs.innerHTML = '';
+                    totalUnitsDisplay.textContent = '0';
                 }
                 addCurriculumModal.classList.remove('hidden');
                 setTimeout(() => {
@@ -366,21 +835,39 @@
             
             const handleFormSubmit = (e) => {
                 e.preventDefault();
+                console.log('Form submit event triggered');
                 
                 const performSubmit = async () => {
+                    console.log('Perform submit function called');
                     const id = curriculumIdField.value;
                     const method = id ? 'PUT' : 'POST';
                     const url = id ? `/api/curriculums/${id}` : '/api/curriculums';
                     
                     const formData = new FormData(curriculumForm);
+                    // Collect semester units
+                    const semesterUnits = [];
+                    document.querySelectorAll('.semester-unit-input').forEach(input => {
+                        semesterUnits.push(parseFloat(input.value) || 0);
+                    });
+                    
                     const payload = {
                         curriculum: formData.get('curriculum'),
                         programCode: formData.get('programCode'),
                         academicYear: formData.get('academicYear'),
                         yearLevel: formData.get('yearLevel'),
+                        compliance: formData.get('compliance'),
+                        memorandumYear: formData.get('memorandumYear'),
+                        memorandumCategory: formData.get('memorandumCategory'),
+                        memorandum: formData.get('memorandum'),
+                        semesterUnits: semesterUnits,
+                        totalUnits: parseFloat(totalUnitsDisplay.textContent) || 0
                     };
                     
                     try {
+                        console.log('Submitting payload:', payload);
+                        console.log('URL:', url);
+                        console.log('Method:', method);
+                        
                         const response = await fetch(url, {
                             method: method,
                             headers: {
@@ -393,6 +880,8 @@
                         
                         if (!response.ok) {
                             const errorData = await response.json();
+                            console.error('Server error response:', errorData);
+                            console.error('Response status:', response.status);
                             throw errorData;
                         }
                         
@@ -411,11 +900,13 @@
                             }
                         });
                     } catch (error) {
+                        console.error('Form submission error:', error);
                         handleAjaxError(error);
                     }
                 };
 
                 const isUpdating = !!curriculumIdField.value;
+                console.log('Showing confirmation modal, isUpdating:', isUpdating);
                 showConfirmationModal({
                     title: isUpdating ? 'Update Curriculum?' : 'Create Curriculum?',
                     message: `Are you sure you want to ${isUpdating ? 'update' : 'create'} this curriculum?`,

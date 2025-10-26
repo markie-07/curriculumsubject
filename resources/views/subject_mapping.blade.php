@@ -25,6 +25,32 @@
     .assigned-card .subject-name {
         color: #4338ca;
     }
+    
+    /* Complete semester styling */
+    .semester-complete {
+        background-color: #f9fafb !important;
+        border-color: #d1d5db !important;
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+    
+    .semester-complete .add-subject-btn {
+        display: none !important;
+    }
+    
+    .semester-complete::before {
+        content: "✓ Complete";
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: #10b981;
+        color: white;
+        font-size: 10px;
+        font-weight: bold;
+        padding: 2px 6px;
+        border-radius: 4px;
+        z-index: 10;
+    }
 </style>
 <main class="flex-1 overflow-hidden bg-gray-100 p-6 flex flex-col">
     <div class="bg-white rounded-2xl shadow-xl p-8 flex-1 flex flex-col">
@@ -178,7 +204,7 @@
                 </div>
 
                 {{-- 4. Weekly Plan (Lessons) --}}
-                <h3 class="text-xl font-bold text-gray-800 mb-4 pt-4 pb-2 border-b">Weekly Plan (Weeks 1-15)</h3>
+                <h3 class="text-xl font-bold text-gray-800 mb-4 pt-4 pb-2 border-b">Weekly Plan (Weeks 0-18)</h3>
                 <div class="space-y-3" id="detailsLessonsContainer">
                     <p class="text-sm text-gray-500 mt-2">Loading weekly plan...</p>
                 </div>
@@ -972,6 +998,16 @@
                     e.preventDefault();
                     return;
                 }
+                
+                // Check if the subject tag is in a complete semester
+                if (item.classList.contains('subject-tag')) {
+                    const semesterDropzone = item.closest('.semester-dropzone');
+                    if (semesterDropzone && semesterDropzone.dataset.isComplete === 'true') {
+                        e.preventDefault();
+                        return;
+                    }
+                }
+                
                 draggedItem = item;
                 e.dataTransfer.setData('text/plain', item.dataset.subjectData);
                 setTimeout(() => item.classList.add('opacity-50', 'bg-gray-200'), 0);
@@ -1132,13 +1168,8 @@
             subjectTag.querySelector('.delete-subject-tag').onclick = (e) => {
                 e.stopPropagation();
                 const subjectTag = e.currentTarget.closest('.subject-tag');
-                if (subjectTag.dataset.isNew === 'true') {
-                    subjectTag.remove();
-                    updateUnitTotals();
-                } else {
-                    subjectTagToRemove = subjectTag;
-                    showRemoveConfirmationModal();
-                }
+                subjectTagToRemove = subjectTag;
+                showRemoveConfirmationModal();
             };
 
             addDraggableEvents(subjectTag);
@@ -1159,10 +1190,71 @@
     document.querySelectorAll('.semester-dropzone').forEach(dropzone => {
         let semesterTotal = 0;
         dropzone.querySelectorAll('.subject-tag').forEach(tag => {
+            // Count all subjects (both confirmed and pending) in unit totals
             const subjectData = JSON.parse(tag.dataset.subjectData);
             semesterTotal += parseInt(subjectData.subject_unit, 10) || 0;
         });
-        dropzone.querySelector('.semester-unit-total').textContent = `Units: ${semesterTotal}`;
+        
+        const unitLimit = parseFloat(dropzone.dataset.unitLimit) || 0;
+        const formatUnits = (units) => {
+            const num = parseFloat(units);
+            return num % 1 === 0 ? Math.floor(num) : num;
+        };
+        
+        // Update unit total display
+        const unitTotalElement = dropzone.querySelector('.semester-unit-total');
+        if (unitLimit > 0) {
+            const isOverLimit = semesterTotal > unitLimit;
+            unitTotalElement.textContent = `Units: ${formatUnits(semesterTotal)}/${formatUnits(unitLimit)}`;
+            unitTotalElement.className = `semester-unit-total text-sm font-bold ${isOverLimit ? 'text-red-600' : 'text-gray-700'}`;
+            
+            // Update progress bar
+            const progressBar = dropzone.querySelector('.unit-progress');
+            if (progressBar) {
+                const percentage = Math.min((semesterTotal / unitLimit) * 100, 100);
+                progressBar.style.width = `${percentage}%`;
+                
+                // Change color based on usage
+                const isComplete = semesterTotal >= unitLimit;
+                if (semesterTotal > unitLimit) {
+                    progressBar.className = 'unit-progress bg-red-500 h-full transition-all duration-300';
+                } else if (isComplete) {
+                    progressBar.className = 'unit-progress bg-green-500 h-full transition-all duration-300';
+                } else {
+                    progressBar.className = 'unit-progress bg-blue-500 h-full transition-all duration-300';
+                }
+            }
+            
+            // Update dropzone border color and add complete status
+            const isComplete = semesterTotal >= unitLimit;
+            dropzone.dataset.isComplete = isComplete;
+            
+            if (isOverLimit) {
+                dropzone.classList.add('border-red-400');
+                dropzone.classList.remove('border-gray-300', 'border-green-400', 'semester-complete');
+            } else if (isComplete) {
+                dropzone.classList.add('border-green-400', 'semester-complete');
+                dropzone.classList.remove('border-gray-300', 'border-red-400');
+                dropzone.style.position = 'relative'; // Needed for the ::before pseudo-element
+            } else {
+                dropzone.classList.add('border-gray-300');
+                dropzone.classList.remove('border-red-400', 'border-green-400', 'semester-complete');
+                dropzone.style.position = '';
+            }
+            
+            // Hide/show add subject button based on completion
+            const addSubjectBtn = dropzone.querySelector('.add-subject-btn-placeholder');
+            if (addSubjectBtn) {
+                if (isComplete) {
+                    addSubjectBtn.classList.add('hidden');
+                } else if (isEditing) {
+                    addSubjectBtn.classList.remove('hidden');
+                }
+            }
+        } else {
+            unitTotalElement.textContent = `Units: ${formatUnits(semesterTotal)}`;
+        }
+        
         grandTotal += semesterTotal;
     });
     
@@ -1272,21 +1364,107 @@ const updateAllTotals = () => {
 
         const dragOverHandler = (e) => {
             e.preventDefault();
-            e.currentTarget.classList.add('border-blue-500', 'bg-blue-50');
+            const dropzone = e.currentTarget;
+            
+            // Check if semester is complete
+            const isComplete = dropzone.dataset.isComplete === 'true';
+            if (isComplete) {
+                dropzone.classList.add('border-red-400', 'bg-red-50');
+                return;
+            }
+            
+            dropzone.classList.add('border-blue-500', 'bg-blue-50');
         };
 
         const dragLeaveHandler = (e) => {
-            e.currentTarget.classList.remove('border-blue-500', 'bg-blue-50');
+            const dropzone = e.currentTarget;
+            dropzone.classList.remove('border-blue-500', 'bg-blue-50', 'border-red-400', 'bg-red-50');
         };
 
     const dropHandler = (e) => {
         e.preventDefault();
         const dropzone = e.currentTarget;
-        dropzone.classList.remove('border-blue-500', 'bg-blue-50');
+        dropzone.classList.remove('border-blue-500', 'bg-blue-50', 'border-red-400', 'bg-red-50');
         if (!draggedItem) return;
+        
+        // Check if semester is complete
+        const isComplete = dropzone.dataset.isComplete === 'true';
+        if (isComplete) {
+            const year = dropzone.dataset.year;
+            const semester = dropzone.dataset.semester;
+            const semesterName = semester === '1' ? 'First' : 'Second';
+            
+            Swal.fire({
+                title: 'Semester Complete!',
+                html: `
+                    <div class="text-center">
+                        <div class="mb-3">
+                            <svg class="w-16 h-16 mx-auto text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <p class="text-gray-700">Year ${year}, ${semesterName} Semester has reached its unit limit.</p>
+                        <p class="text-sm text-gray-500 mt-2">You cannot add more subjects to this semester.</p>
+                    </div>
+                `,
+                icon: 'info',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#10B981'
+            });
+            return;
+        }
         
         const droppedSubjectData = JSON.parse(e.dataTransfer.getData('text/plain'));
         const targetContainer = dropzone.querySelector('.flex-wrap');
+        
+        // Check unit limit validation
+        const unitLimit = parseFloat(dropzone.dataset.unitLimit) || 0;
+        if (unitLimit > 0) {
+            let currentTotal = 0;
+            targetContainer.querySelectorAll('.subject-tag').forEach(tag => {
+                // Only count non-pending subjects in unit limit validation
+                if (tag.dataset.isPending !== 'true') {
+                    const subjectData = JSON.parse(tag.dataset.subjectData);
+                    currentTotal += parseInt(subjectData.subject_unit, 10) || 0;
+                }
+            });
+            
+            const newSubjectUnits = parseInt(droppedSubjectData.subject_unit, 10) || 0;
+            const wouldExceedLimit = (currentTotal + newSubjectUnits) > unitLimit;
+            
+            if (wouldExceedLimit) {
+                const year = dropzone.dataset.year;
+                const semester = dropzone.dataset.semester;
+                const formatUnits = (units) => {
+                    const num = parseFloat(units);
+                    return num % 1 === 0 ? Math.floor(num) : num;
+                };
+                
+                Swal.fire({
+                    title: 'Unit Limit Exceeded!',
+                    html: `
+                        <div class="text-left">
+                            <p class="mb-2">Cannot add <strong>"${droppedSubjectData.subject_name}"</strong> (${formatUnits(newSubjectUnits)} units) to Year ${year}, Semester ${semester}.</p>
+                            <div class="bg-red-50 border border-red-200 rounded-lg p-3">
+                                <p class="text-sm text-red-700">
+                                    <strong>Current:</strong> ${formatUnits(currentTotal)} units<br>
+                                    <strong>Adding:</strong> ${formatUnits(newSubjectUnits)} units<br>
+                                    <strong>Total would be:</strong> ${formatUnits(currentTotal + newSubjectUnits)} units<br>
+                                    <strong>Semester limit:</strong> ${formatUnits(unitLimit)} units
+                                </p>
+                            </div>
+                        </div>
+                    `,
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#EF4444',
+                    customClass: {
+                        popup: 'text-sm'
+                    }
+                });
+                return;
+            }
+        }
         
         const isDuplicateInSameSemester = Array.from(targetContainer.querySelectorAll('.subject-tag')).some(tag => JSON.parse(tag.dataset.subjectData).subject_code === droppedSubjectData.subject_code);
         
@@ -1408,6 +1586,33 @@ const updateAllTotals = () => {
         const toggleAddSubjectsMode = (semesterDropzone) => {
             // If we are turning the mode on
             if (semesterDropzone && !isAddingSubjectsMode) {
+                // Check if semester is complete
+                const isComplete = semesterDropzone.dataset.isComplete === 'true';
+                if (isComplete) {
+                    const year = semesterDropzone.dataset.year;
+                    const semester = semesterDropzone.dataset.semester;
+                    const semesterName = semester === '1' ? 'First' : 'Second';
+                    
+                    Swal.fire({
+                        title: 'Semester Complete!',
+                        html: `
+                            <div class="text-center">
+                                <div class="mb-3">
+                                    <svg class="w-16 h-16 mx-auto text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <p class="text-gray-700">Year ${year}, ${semesterName} Semester has reached its unit limit.</p>
+                                <p class="text-sm text-gray-500 mt-2">You cannot add more subjects to this semester.</p>
+                            </div>
+                        `,
+                        icon: 'info',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#10B981'
+                    });
+                    return;
+                }
+                
                 isAddingSubjectsMode = true;
                 activeSemesterForAdding = semesterDropzone;
                 
@@ -1421,7 +1626,6 @@ const updateAllTotals = () => {
                     }
                 });
 
-                semesterDropzone.querySelector('.add-subject-controls').classList.remove('hidden');
                 semesterDropzone.querySelector('.add-subject-btn-placeholder').classList.add('hidden');
 
             // If we are turning the mode off
@@ -1435,11 +1639,8 @@ const updateAllTotals = () => {
                 });
 
                 if (activeSemesterForAdding) {
-                    activeSemesterForAdding.querySelector('.add-subject-controls').classList.add('hidden');
                     activeSemesterForAdding.querySelector('.add-subject-btn-placeholder').classList.remove('hidden');
                 }
-                 // Also hide for all other semesters just in case
-                document.querySelectorAll('.add-subject-controls').forEach(div => div.classList.add('hidden'));
                 document.querySelectorAll('.add-subject-btn-placeholder').forEach(div => {
                     if (isEditing) div.classList.remove('hidden');
                 });
@@ -1506,10 +1707,71 @@ const updateAllTotals = () => {
 
             const subjectData = JSON.parse(subjectTagToRemove.dataset.subjectData);
             const dropzone = subjectTagToRemove.closest('.semester-dropzone');
-            const curriculumId = curriculumSelector.value;
             const year = dropzone.dataset.year;
             const semester = dropzone.dataset.semester;
+            const isNewSubject = subjectTagToRemove.dataset.isNew === 'true';
 
+            // Helper function to reset subject card appearance
+            const resetSubjectCard = (originalSubjectCard) => {
+                if (!originalSubjectCard) return;
+                
+                // Reset subject to Available status
+                originalSubjectCard.dataset.status = '';
+                originalSubjectCard.setAttribute('draggable', 'true');
+                originalSubjectCard.classList.remove('assigned-card', 'assigned-major', 'assigned-minor', 'assigned-elective', 'assigned-general', 'bg-white', 'opacity-60', 'cursor-not-allowed', 'removed-subject-card');
+                originalSubjectCard.classList.add('bg-white', 'hover:shadow-md', 'hover:border-blue-400', 'cursor-grab');
+
+                // Reset icon styling to original available state
+                const iconContainer = originalSubjectCard.querySelector('.flex-shrink-0');
+                const iconSvg = iconContainer?.querySelector('svg');
+                const subjectType = subjectData.subject_type.toLowerCase();
+                
+                // Restore original icon styling based on subject type
+                if (subjectType.includes('major')) {
+                    if (iconContainer) iconContainer.className = 'flex-shrink-0 w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center transition-colors duration-300';
+                    if (iconSvg) iconSvg.className = 'h-6 w-6 text-blue-600 transition-colors duration-300';
+                } else if (subjectType.includes('minor')) {
+                    if (iconContainer) iconContainer.className = 'flex-shrink-0 w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center transition-colors duration-300';
+                    if (iconSvg) iconSvg.className = 'h-6 w-6 text-purple-600 transition-colors duration-300';
+                } else if (subjectType.includes('elective')) {
+                    if (iconContainer) iconContainer.className = 'flex-shrink-0 w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center transition-colors duration-300';
+                    if (iconSvg) iconSvg.className = 'h-6 w-6 text-red-600 transition-colors duration-300';
+                } else {
+                    if (iconContainer) iconContainer.className = 'flex-shrink-0 w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center transition-colors duration-300';
+                    if (iconSvg) iconSvg.className = 'h-6 w-6 text-orange-600 transition-colors duration-300';
+                }
+                
+                // Reset status badge to Available
+                const statusBadge = originalSubjectCard.querySelector('.status-badge');
+                if (statusBadge) {
+                    statusBadge.textContent = 'Available';
+                    statusBadge.className = 'status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-green-100 text-green-700';
+                }
+                
+                // Uncheck checkbox if it exists and is checked
+                const checkbox = originalSubjectCard.querySelector('.add-subject-checkbox input');
+                if (checkbox && checkbox.checked) {
+                    checkbox.checked = false;
+                }
+            };
+
+            if (isNewSubject) {
+                // Handle new subjects (added via checkbox) - no API call needed
+                const isPending = subjectTagToRemove.dataset.isPending === 'true';
+                subjectTagToRemove.remove();
+                const originalSubjectCard = document.getElementById(`subject-${subjectData.subject_code.toLowerCase()}`);
+                resetSubjectCard(originalSubjectCard);
+                
+                // If it was a pending subject, don't need to update unit totals since it wasn't counted
+                if (!isPending) {
+                    updateUnitTotals();
+                }
+                hideRemoveConfirmationModal();
+                return;
+            }
+
+            // Handle existing subjects - need API call
+            const curriculumId = curriculumSelector.value;
             try {
                 const response = await fetch('/api/curriculum/remove-subject', {
                     method: 'POST',
@@ -1532,43 +1794,8 @@ const updateAllTotals = () => {
                 }
 
                 subjectTagToRemove.remove();
-
                 const originalSubjectCard = document.getElementById(`subject-${subjectData.subject_code.toLowerCase()}`);
-                if (originalSubjectCard) {
-                    // Reset subject to Available status instead of Removed
-                    originalSubjectCard.dataset.status = '';
-                    originalSubjectCard.setAttribute('draggable', 'true');
-                    originalSubjectCard.classList.remove('assigned-card', 'assigned-major', 'assigned-minor', 'assigned-elective', 'assigned-general', 'bg-white', 'opacity-60', 'cursor-not-allowed', 'removed-subject-card');
-                    originalSubjectCard.classList.add('hover:shadow-lg', 'cursor-move');
-
-                    // Reset icon styling to original available state
-                    const iconContainer = originalSubjectCard.querySelector('.flex-shrink-0');
-                    const iconSvg = iconContainer.querySelector('svg');
-                    const subjectType = subjectData.subject_type.toLowerCase();
-                    
-                    // Restore original icon styling based on subject type
-                    if (subjectType.includes('major')) {
-                        iconContainer.className = 'flex-shrink-0 w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center transition-colors duration-300';
-                        iconSvg.className = 'h-6 w-6 text-blue-600 transition-colors duration-300';
-                    } else if (subjectType.includes('minor')) {
-                        iconContainer.className = 'flex-shrink-0 w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center transition-colors duration-300';
-                        iconSvg.className = 'h-6 w-6 text-purple-600 transition-colors duration-300';
-                    } else if (subjectType.includes('elective')) {
-                        iconContainer.className = 'flex-shrink-0 w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center transition-colors duration-300';
-                        iconSvg.className = 'h-6 w-6 text-red-600 transition-colors duration-300';
-                    } else {
-                        iconContainer.className = 'flex-shrink-0 w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center transition-colors duration-300';
-                        iconSvg.className = 'h-6 w-6 text-orange-600 transition-colors duration-300';
-                    }
-                    
-                    // Reset status badge to Available
-                    const statusBadge = originalSubjectCard.querySelector('.status-badge');
-                    if (statusBadge) {
-                        statusBadge.textContent = 'Available';
-                        statusBadge.className = 'status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-green-200 text-green-700';
-                    }
-                }
-
+                resetSubjectCard(originalSubjectCard);
                 updateUnitTotals();
                 
                 // Use SweetAlert for success
@@ -1794,7 +2021,7 @@ const updateAllTotals = () => {
         typeFilter.addEventListener('change', filterSubjects);
 
 
-function renderCurriculumOverview(yearLevel) {
+function renderCurriculumOverview(yearLevel, semesterUnits = []) {
     let html = '';
     const isSeniorHigh = yearLevel === 'Senior High';
     const maxYear = isSeniorHigh ? 2 : 4;
@@ -1806,19 +2033,40 @@ function renderCurriculumOverview(yearLevel) {
         return 'th';
     };
 
+    // Helper function to get semester unit limit
+    const getSemesterLimit = (year, semester) => {
+        const semesterIndex = (year - 1) * 2 + (semester - 1);
+        return semesterUnits[semesterIndex] || 0;
+    };
+
+    // Helper function to format units without .0
+    const formatUnits = (units) => {
+        const num = parseFloat(units);
+        return num % 1 === 0 ? Math.floor(num) : num;
+    };
+
     for (let i = 1; i <= maxYear; i++) {
         const yearTitle = `${i}${getYearSuffix(i)} Year`;
+        const firstSemLimit = getSemesterLimit(i, 1);
+        const secondSemLimit = getSemesterLimit(i, 2);
+        
         html += `
             <div>
                 <h3 class="text-lg font-semibold text-gray-700 mb-3">${yearTitle}</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="semester-dropzone bg-white border-2 border-solid border-gray-300 rounded-lg p-4 transition-colors" data-year="${i}" data-semester="1">
+                    <div class="semester-dropzone bg-white border-2 border-solid border-gray-300 rounded-lg p-4 transition-colors" data-year="${i}" data-semester="1" data-unit-limit="${firstSemLimit}">
                         <div class="border-b border-gray-200 pb-2 mb-3">
                             <div class="flex justify-between items-center">
                                 <div>
                                     <h4 class="font-semibold text-gray-600">First Semester</h4>
+                                    ${firstSemLimit > 0 ? `<p class="text-xs text-blue-600 font-medium">Limit: ${formatUnits(firstSemLimit)} units</p>` : ''}
                                 </div>
-                                <div class="semester-unit-total text-sm font-bold text-gray-700">Units: 0</div>
+                                <div class="semester-unit-display">
+                                    <div class="semester-unit-total text-sm font-bold text-gray-700">Units: 0</div>
+                                    ${firstSemLimit > 0 ? `<div class="unit-limit-bar mt-1 bg-gray-200 rounded-full h-2 overflow-hidden">
+                                        <div class="unit-progress bg-blue-500 h-full transition-all duration-300" style="width: 0%"></div>
+                                    </div>` : ''}
+                                </div>
                             </div>
                             <div class="semester-type-totals mt-2 flex gap-x-3 gap-y-1 text-xs"></div>
                         </div>
@@ -1826,18 +2074,23 @@ function renderCurriculumOverview(yearLevel) {
                          <div class="add-subject-btn-placeholder mt-2 text-center hidden">
                             <button class="add-subject-btn text-blue-600 hover:text-blue-800 font-semibold text-sm py-2 px-4 rounded-lg hover:bg-blue-100 transition-all">+ Add Subject</button>
                         </div>
-                        <div class="add-subject-controls mt-3 pt-3 border-t hidden">
-                            <button class="save-selection-btn w-full bg-green-500 text-white px-3 py-2 rounded-md hover:bg-green-600">Save</button>
-                            <button class="cancel-selection-btn w-full bg-gray-200 mt-2 px-3 py-2 rounded-md hover:bg-gray-300">Cancel</button>
+                        <div class="add-all-btn-container mt-2 text-center hidden">
+                            <button class="add-all-btn bg-green-500 hover:bg-green-600 text-white font-semibold text-sm py-2 px-4 rounded-lg transition-all">Add All</button>
                         </div>
                     </div>
-                    <div class="semester-dropzone bg-white border-2 border-solid border-gray-300 rounded-lg p-4 transition-colors" data-year="${i}" data-semester="2">
+                    <div class="semester-dropzone bg-white border-2 border-solid border-gray-300 rounded-lg p-4 transition-colors" data-year="${i}" data-semester="2" data-unit-limit="${secondSemLimit}">
                         <div class="border-b border-gray-200 pb-2 mb-3">
                             <div class="flex justify-between items-center">
                                 <div>
                                     <h4 class="font-semibold text-gray-600">Second Semester</h4>
+                                    ${secondSemLimit > 0 ? `<p class="text-xs text-blue-600 font-medium">Limit: ${formatUnits(secondSemLimit)} units</p>` : ''}
                                 </div>
-                                <div class="semester-unit-total text-sm font-bold text-gray-700">Units: 0</div>
+                                <div class="semester-unit-display">
+                                    <div class="semester-unit-total text-sm font-bold text-gray-700">Units: 0</div>
+                                    ${secondSemLimit > 0 ? `<div class="unit-limit-bar mt-1 bg-gray-200 rounded-full h-2 overflow-hidden">
+                                        <div class="unit-progress bg-blue-500 h-full transition-all duration-300" style="width: 0%"></div>
+                                    </div>` : ''}
+                                </div>
                             </div>
                             <div class="semester-type-totals mt-2 flex gap-x-3 gap-y-1 text-xs"></div>
                         </div>
@@ -1845,9 +2098,8 @@ function renderCurriculumOverview(yearLevel) {
                          <div class="add-subject-btn-placeholder mt-2 text-center hidden">
                             <button class="add-subject-btn text-blue-600 hover:text-blue-800 font-semibold text-sm py-2 px-4 rounded-lg hover:bg-blue-100 transition-all">+ Add Subject</button>
                         </div>
-                        <div class="add-subject-controls mt-3 pt-3 border-t hidden">
-                            <button class="save-selection-btn w-full bg-green-500 text-white px-3 py-2 rounded-md hover:bg-green-600">Save</button>
-                            <button class="cancel-selection-btn w-full bg-gray-200 mt-2 px-3 py-2 rounded-md hover:bg-gray-300">Cancel</button>
+                        <div class="add-all-btn-container mt-2 text-center hidden">
+                            <button class="add-all-btn bg-green-500 hover:bg-green-600 text-white font-semibold text-sm py-2 px-4 rounded-lg transition-all">Add All</button>
                         </div>
                     </div>
                 </div>
@@ -1862,39 +2114,294 @@ function renderCurriculumOverview(yearLevel) {
                 });
             });
 
-            curriculumOverview.querySelectorAll('.cancel-selection-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    toggleAddSubjectsMode(null); // Cancel turns off the mode
+            // Add event listeners for Add All buttons
+            curriculumOverview.querySelectorAll('.add-all-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const semesterDropzone = e.target.closest('.semester-dropzone');
+                    confirmAllPendingSubjects(semesterDropzone);
                 });
             });
 
-            curriculumOverview.querySelectorAll('.save-selection-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const selectedCheckboxes = availableSubjectsContainer.querySelectorAll('.add-subject-checkbox input:checked');
+            // Add automatic checkbox functionality
+            availableSubjectsContainer.addEventListener('change', (e) => {
+                if (e.target.type === 'checkbox' && e.target.closest('.add-subject-checkbox') && isAddingSubjectsMode) {
+                    const checkbox = e.target;
+                    const subjectCard = checkbox.closest('.subject-card');
+                    const subjectData = JSON.parse(subjectCard.dataset.subjectData);
                     const targetContainer = activeSemesterForAdding.querySelector('.flex-wrap');
                     
-                    selectedCheckboxes.forEach(checkbox => {
-                        const subjectCard = checkbox.closest('.subject-card');
-                        const subjectData = JSON.parse(subjectCard.dataset.subjectData);
-                        
-                        // Check for duplicates before adding
+                    if (checkbox.checked) {
+                        // Adding subject - check validation
+                        const unitLimit = parseFloat(activeSemesterForAdding.dataset.unitLimit) || 0;
                         const isDuplicate = Array.from(targetContainer.querySelectorAll('.subject-tag')).some(tag => JSON.parse(tag.dataset.subjectData).subject_code === subjectData.subject_code);
-
-                        if (!isDuplicate) {
-                             const subjectTag = createSubjectTag(subjectData, true);
-                             subjectTag.dataset.isNew = 'true';
-                             targetContainer.appendChild(subjectTag);
-                             subjectCard.classList.add('assigned-card');
-                             subjectCard.setAttribute('draggable', false);
-                             subjectCard.querySelector('.status-badge').textContent = 'Assigned';
-                             subjectCard.querySelector('.status-badge').className = 'status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-200 text-gray-700';
+                        
+                        if (isDuplicate) {
+                            checkbox.checked = false;
+                            const year = activeSemesterForAdding.dataset.year;
+                            const semester = activeSemesterForAdding.dataset.semester;
+                            Swal.fire({
+                                title: 'Duplicate Subject!',
+                                text: `"${subjectData.subject_name}" is already assigned to Year ${year}, Semester ${semester}.`,
+                                icon: 'warning',
+                                confirmButtonText: 'OK',
+                                confirmButtonColor: '#F59E0B'
+                            });
+                            return;
                         }
-                    });
+                        
+                        if (unitLimit > 0) {
+                            let currentTotal = 0;
+                            // Count all subjects in the semester (both confirmed and pending)
+                            targetContainer.querySelectorAll('.subject-tag').forEach(tag => {
+                                const existingSubjectData = JSON.parse(tag.dataset.subjectData);
+                                currentTotal += parseInt(existingSubjectData.subject_unit, 10) || 0;
+                            });
+                            
+                            const newSubjectUnits = parseInt(subjectData.subject_unit, 10) || 0;
+                            const wouldExceedLimit = (currentTotal + newSubjectUnits) > unitLimit;
+                            
+                            if (wouldExceedLimit) {
+                                checkbox.checked = false;
+                                const year = activeSemesterForAdding.dataset.year;
+                                const semester = activeSemesterForAdding.dataset.semester;
+                                const formatUnits = (units) => {
+                                    const num = parseFloat(units);
+                                    return num % 1 === 0 ? Math.floor(num) : num;
+                                };
+                                
+                                Swal.fire({
+                                    title: 'Unit Limit Exceeded!',
+                                    html: `
+                                        <div class="text-left">
+                                            <p class="mb-2">Cannot add <strong>"${subjectData.subject_name}"</strong> (${formatUnits(newSubjectUnits)} units) to Year ${year}, Semester ${semester}.</p>
+                                            <div class="bg-red-50 border border-red-200 rounded-lg p-3">
+                                                <p class="text-sm text-red-700">
+                                                    <strong>Current:</strong> ${formatUnits(currentTotal)} units<br>
+                                                    <strong>Adding:</strong> ${formatUnits(newSubjectUnits)} units<br>
+                                                    <strong>Total would be:</strong> ${formatUnits(currentTotal + newSubjectUnits)} units<br>
+                                                    <strong>Semester limit:</strong> ${formatUnits(unitLimit)} units
+                                                </p>
+                                            </div>
+                                        </div>
+                                    `,
+                                    icon: 'error',
+                                    confirmButtonText: 'OK',
+                                    confirmButtonColor: '#EF4444'
+                                });
+                                return;
+                            }
+                        }
+                        
+                        // Add subject as pending (blurry) initially
+                        const subjectTag = createSubjectTag(subjectData, true);
+                        subjectTag.dataset.isNew = 'true';
+                        subjectTag.dataset.isPending = 'true';
+                        subjectTag.classList.add('opacity-50', 'pending-subject');
+                        targetContainer.appendChild(subjectTag);
+                        
+                        // Update subject card appearance to show it's selected (pending)
+                        const geIdentifiers = ["GE", "General Education", "Gen Ed", "General"];
+                        let pendingClass = 'assigned-card';
+                        let iconBgClass = 'icon-bg-default';
+                        let iconSvgClass = 'text-gray-500';
 
-                    updateUnitTotals();
-                    toggleAddSubjectsMode(null); // Turn off mode after saving
-                });
+                        switch (true) {
+                            case subjectData.subject_type === 'Major':
+                                pendingClass = 'assigned-major';
+                                iconBgClass = 'icon-bg-major';
+                                iconSvgClass = 'icon-major';
+                                break;
+                            case subjectData.subject_type === 'Minor':
+                                pendingClass = 'assigned-minor';
+                                iconBgClass = 'icon-bg-minor';
+                                iconSvgClass = 'icon-minor';
+                                break;
+                            case subjectData.subject_type === 'Elective':
+                                pendingClass = 'assigned-elective';
+                                iconBgClass = 'icon-bg-elective';
+                                iconSvgClass = 'icon-elective';
+                                break;
+                            case geIdentifiers.map(id => id.toLowerCase()).includes(subjectData.subject_type.toLowerCase()):
+                                pendingClass = 'assigned-general';
+                                iconBgClass = 'icon-bg-general';
+                                iconSvgClass = 'icon-general';
+                                break;
+                        }
+                        
+                        // Apply pending styling to subject card
+                        subjectCard.classList.remove('bg-white', 'hover:shadow-md', 'hover:border-blue-400', 'cursor-grab');
+                        subjectCard.classList.add(pendingClass, 'opacity-70', 'cursor-not-allowed');
+                        subjectCard.setAttribute('draggable', false);
+                        
+                        // Update icon styling
+                        const iconContainer = subjectCard.querySelector('.flex-shrink-0');
+                        const iconSvg = iconContainer?.querySelector('svg');
+                        if (iconContainer && iconSvg) {
+                            // Remove old classes
+                            iconContainer.classList.remove('icon-bg-default', 'bg-gray-100');
+                            iconSvg.classList.remove('text-gray-500');
+                            // Add new classes
+                            iconContainer.classList.add(iconBgClass);
+                            iconSvg.classList.add(iconSvgClass);
+                        }
+                        
+                        // Update status badge
+                        const statusBadge = subjectCard.querySelector('.status-badge');
+                        if (statusBadge) {
+                            statusBadge.textContent = 'Pending';
+                            statusBadge.className = 'status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-700';
+                        }
+                        
+                        // Show the "Add All" button for this semester if there are pending subjects
+                        showAddAllButton(activeSemesterForAdding);
+                        
+                        // Update unit totals to include pending subjects
+                        updateUnitTotals();
+                    } else {
+                        // Removing subject - find and remove from semester
+                        const subjectTagToRemove = Array.from(targetContainer.querySelectorAll('.subject-tag')).find(tag => {
+                            const tagData = JSON.parse(tag.dataset.subjectData);
+                            return tagData.subject_code === subjectData.subject_code;
+                        });
+                        
+                        if (subjectTagToRemove) {
+                            subjectTagToRemove.remove();
+                            
+                            // Reset subject card to normal appearance
+                            subjectCard.classList.remove('assigned-card', 'assigned-major', 'assigned-minor', 'assigned-elective', 'assigned-general', 'cursor-not-allowed');
+                            subjectCard.classList.add('bg-white', 'hover:shadow-md', 'hover:border-blue-400', 'cursor-grab');
+                            subjectCard.setAttribute('draggable', true);
+                            
+                            // Reset icon background and color to original subject type
+                            const iconContainer = subjectCard.querySelector('.flex-shrink-0');
+                            const iconSvg = iconContainer?.querySelector('svg');
+                            const subjectType = subjectData.subject_type.toLowerCase();
+                            
+                            // Restore original icon styling based on subject type
+                            if (subjectType.includes('major')) {
+                                if (iconContainer) iconContainer.className = 'flex-shrink-0 w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center transition-colors duration-300';
+                                if (iconSvg) iconSvg.className = 'h-6 w-6 text-blue-600 transition-colors duration-300';
+                            } else if (subjectType.includes('minor')) {
+                                if (iconContainer) iconContainer.className = 'flex-shrink-0 w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center transition-colors duration-300';
+                                if (iconSvg) iconSvg.className = 'h-6 w-6 text-purple-600 transition-colors duration-300';
+                            } else if (subjectType.includes('elective')) {
+                                if (iconContainer) iconContainer.className = 'flex-shrink-0 w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center transition-colors duration-300';
+                                if (iconSvg) iconSvg.className = 'h-6 w-6 text-red-600 transition-colors duration-300';
+                            } else {
+                                if (iconContainer) iconContainer.className = 'flex-shrink-0 w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center transition-colors duration-300';
+                                if (iconSvg) iconSvg.className = 'h-6 w-6 text-orange-600 transition-colors duration-300';
+                            }
+                            
+                            // Reset status badge
+                            subjectCard.querySelector('.status-badge').textContent = 'Available';
+                            subjectCard.querySelector('.status-badge').className = 'status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-green-100 text-green-700';
+                            
+                            updateUnitTotals();
+                            
+                            // Check if we need to hide Add All button
+                            if (activeSemesterForAdding) {
+                                showAddAllButton(activeSemesterForAdding);
+                            }
+                        }
+                    }
+                }
             });
+            
+            // Function to show/hide Add All button based on pending subjects
+            window.showAddAllButton = (semesterDropzone) => {
+                const pendingSubjects = semesterDropzone.querySelectorAll('.subject-tag[data-is-pending="true"]');
+                const addAllContainer = semesterDropzone.querySelector('.add-all-btn-container');
+                
+                if (pendingSubjects.length > 0) {
+                    addAllContainer.classList.remove('hidden');
+                } else {
+                    addAllContainer.classList.add('hidden');
+                }
+            };
+            
+            // Function to confirm all pending subjects in a semester
+            window.confirmAllPendingSubjects = (semesterDropzone) => {
+                const pendingSubjects = semesterDropzone.querySelectorAll('.subject-tag[data-is-pending="true"]');
+                
+                pendingSubjects.forEach(subjectTag => {
+                    // Make subject solid and remove pending state
+                    subjectTag.classList.remove('opacity-50', 'pending-subject');
+                    subjectTag.dataset.isPending = 'false';
+                    
+                    // Update corresponding subject card appearance
+                    const subjectData = JSON.parse(subjectTag.dataset.subjectData);
+                    const subjectCard = document.getElementById(`subject-${subjectData.subject_code.toLowerCase()}`);
+                    
+                    if (subjectCard) {
+                        // Apply proper styling based on subject type
+                        const geIdentifiers = ["GE", "General Education", "Gen Ed", "General"];
+                        let assignedClass = 'assigned-card';
+                        let iconBgClass = 'icon-bg-default';
+                        let iconSvgClass = 'text-gray-500';
+
+                        switch (true) {
+                            case subjectData.subject_type === 'Major':
+                                assignedClass = 'assigned-major';
+                                iconBgClass = 'icon-bg-major';
+                                iconSvgClass = 'icon-major';
+                                break;
+                            case subjectData.subject_type === 'Minor':
+                                assignedClass = 'assigned-minor';
+                                iconBgClass = 'icon-bg-minor';
+                                iconSvgClass = 'icon-minor';
+                                break;
+                            case subjectData.subject_type === 'Elective':
+                                assignedClass = 'assigned-elective';
+                                iconBgClass = 'icon-bg-elective';
+                                iconSvgClass = 'icon-elective';
+                                break;
+                            case geIdentifiers.map(id => id.toLowerCase()).includes(subjectData.subject_type.toLowerCase()):
+                                assignedClass = 'assigned-general';
+                                iconBgClass = 'icon-bg-general';
+                                iconSvgClass = 'icon-general';
+                                break;
+                        }
+                        
+                        subjectCard.classList.remove('opacity-70'); // Remove pending opacity
+                        subjectCard.classList.add(assignedClass, 'cursor-not-allowed');
+                        subjectCard.setAttribute('draggable', false);
+                        
+                        // Update icon styling
+                        const iconContainer = subjectCard.querySelector('.flex-shrink-0');
+                        const iconSvg = iconContainer?.querySelector('svg');
+                        if (iconContainer && iconSvg) {
+                            // Remove old classes
+                            iconContainer.classList.remove('icon-bg-default', 'icon-bg-major', 'icon-bg-minor', 'icon-bg-elective', 'icon-bg-general');
+                            iconSvg.classList.remove('text-gray-500', 'icon-major', 'icon-minor', 'icon-elective', 'icon-general');
+                            // Add new classes
+                            iconContainer.classList.add(iconBgClass);
+                            iconSvg.classList.add(iconSvgClass);
+                        }
+                        
+                        subjectCard.querySelector('.status-badge').textContent = 'Assigned';
+                        subjectCard.querySelector('.status-badge').className = 'status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-200 text-gray-700';
+                        
+                        // Hide and uncheck the checkbox
+                        const checkboxDiv = subjectCard.querySelector('.add-subject-checkbox');
+                        const checkbox = subjectCard.querySelector('.add-subject-checkbox input');
+                        if (checkboxDiv && checkbox) {
+                            checkboxDiv.classList.add('hidden');
+                            checkbox.checked = false;
+                        }
+                    }
+                });
+                
+                // Hide the Add All button
+                const addAllContainer = semesterDropzone.querySelector('.add-all-btn-container');
+                addAllContainer.classList.add('hidden');
+                
+                // Exit adding subjects mode to hide all remaining checkboxes
+                toggleAddSubjectsMode(null);
+                
+                // Update unit totals now that subjects are confirmed
+                updateUnitTotals();
+            };
+            
             initDragAndDrop();
         }
 
@@ -1941,6 +2448,7 @@ function renderCurriculumOverview(yearLevel) {
                         const option = new Option(optionText, curriculum.id);
                         option.dataset.yearLevel = curriculum.year_level;
                         option.dataset.academicYear = curriculum.academic_year;
+                        option.dataset.semesterUnits = JSON.stringify(curriculum.semester_units || []);
                         curriculumSelector.appendChild(option);
                     });
                     const urlParams = new URLSearchParams(window.location.search);
@@ -1979,7 +2487,8 @@ function renderCurriculumOverview(yearLevel) {
             }
 
             const yearLevel = selectedOption.dataset.yearLevel;
-            renderCurriculumOverview(yearLevel);
+            const semesterUnits = JSON.parse(selectedOption.dataset.semesterUnits || '[]');
+            renderCurriculumOverview(yearLevel, semesterUnits);
 
             fetch(`/api/curriculums/${id}`)
                 .then(response => {

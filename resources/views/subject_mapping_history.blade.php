@@ -459,7 +459,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <h3 class="text-xl font-bold text-gray-800 mb-4 pt-4 pb-2 border-b">Learning Outcomes</h3>
             <div id="details-learning-outcomes-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8"></div>
 
-            <h3 class="text-xl font-bold text-gray-800 mb-4 pt-4 pb-2 border-b">Weekly Plan (Weeks 1-15)</h3>
+            <h3 class="text-xl font-bold text-gray-800 mb-4 pt-4 pb-2 border-b">Weekly Plan (Weeks 0-18)</h3>
             <div class="space-y-3" id="details-lessons-container"></div>
 
             <h3 class="text-xl font-bold text-gray-800 mb-4 pt-8 pb-2 border-b">Course Requirements and Policies</h3>

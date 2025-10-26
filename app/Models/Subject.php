@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Subject extends Model
 {
@@ -64,6 +65,14 @@ class Subject extends Model
     public function prerequisites(): HasMany
     {
         return $this->hasMany(Prerequisite::class, 'subject_code', 'subject_code');
+    }
+
+    /**
+     * Get the grade for the subject.
+     */
+    public function grade(): HasOne
+    {
+        return $this->hasOne(Grade::class, 'subject_id', 'id');
     }
 
     /**

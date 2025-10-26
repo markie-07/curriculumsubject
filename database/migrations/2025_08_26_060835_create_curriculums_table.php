@@ -18,6 +18,12 @@ return new class extends Migration
                 $table->string('program_code')->unique();
                 $table->string('academic_year');
                 $table->string('year_level'); // Can be 'Senior High' or 'College'
+                $table->string('compliance')->nullable(); // CHED or DepEd
+                $table->string('memorandum_year')->nullable(); // For CHED memorandums
+                $table->string('memorandum_category')->nullable(); // For DepEd memorandums
+                $table->text('memorandum')->nullable(); // Selected memorandum text
+                $table->json('semester_units')->nullable(); // Array of semester unit values
+                $table->decimal('total_units', 8, 2)->nullable(); // Total calculated units
                 $table->timestamps();
             });
         }

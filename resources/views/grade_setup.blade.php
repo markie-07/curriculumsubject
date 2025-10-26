@@ -18,8 +18,8 @@
             <form id="grade-setup-form" onsubmit="return false;">
                 @csrf
                 <div class="mb-8">
-                    <h1 class="text-2xl font-bold text-gray-800">Grade Scheme Setup</h1>
-                    <p class="text-sm text-gray-600 mt-1">Design and manage grading component weights for subjects.</p>
+                    <h1 class="text-2xl font-bold text-gray-800">Curriculum Grade Scheme Setup</h1>
+                    <p class="text-sm text-gray-600 mt-1">Design and manage grading schemes for entire curriculums with automatic minor course grading.</p>
                 </div>
 
                 {{-- Subject Selection --}}
@@ -28,12 +28,62 @@
                         <div class="w-10 h-10 flex-shrink-0 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7" /></svg>
                         </div>
-                        <h2 class="text-xl font-semibold text-gray-700">Select Subject</h2>
+                        <h2 class="text-xl font-semibold text-gray-700">Select Curriculum</h2>
                     </div>
                     <div>
-                        <label for="subject-select" class="block text-sm font-medium text-gray-600 mb-1">Subject / Course</label>
-                        <select id="subject-select" class="w-full py-3 pl-4 pr-10 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm transition-colors">
-                            <option value="">Loading subjects...</option>
+                        <label for="curriculum-select" class="block text-sm font-medium text-gray-600 mb-1">Curriculum</label>
+                        <select id="curriculum-select" class="w-full py-3 pl-4 pr-10 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm transition-colors">
+                            <option value="">Loading curriculums...</option>
+                        </select>
+                    </div>
+                </div>
+
+                {{-- Course Type Selection --}}
+                <div id="course-type-section" class="mt-8 border border-gray-200 bg-gray-50/50 p-6 rounded-xl hidden">
+                    <div class="flex items-center gap-3 pb-3 mb-4">
+                        <div class="w-10 h-10 flex-shrink-0 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                        </div>
+                        <h2 class="text-xl font-semibold text-gray-700">Course Type</h2>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button id="minor-courses-btn" type="button" class="p-4 border-2 border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors text-left">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-800">Minor Courses</h3>
+                                    <p class="text-sm text-gray-600">Auto-assign default grades</p>
+                                </div>
+                            </div>
+                        </button>
+                        <button id="major-courses-btn" type="button" class="p-4 border-2 border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors text-left">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C20.168 18.477 18.582 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-800">Major Courses</h3>
+                                    <p class="text-sm text-gray-600">Manual grade setup</p>
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Subject Selection for Major Courses --}}
+                <div id="major-subject-section" class="mt-8 border border-gray-200 bg-gray-50/50 p-6 rounded-xl hidden">
+                    <div class="flex items-center gap-3 pb-3 mb-4">
+                        <div class="w-10 h-10 flex-shrink-0 bg-green-100 text-green-600 rounded-lg flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C20.168 18.477 18.582 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                        </div>
+                        <h2 class="text-xl font-semibold text-gray-700">Select Major Subject</h2>
+                    </div>
+                    <div>
+                        <label for="major-subject-select" class="block text-sm font-medium text-gray-600 mb-1">Major Subject</label>
+                        <select id="major-subject-select" class="w-full py-3 pl-4 pr-10 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 sm:text-sm transition-colors">
+                            <option value="">Select a major subject...</option>
                         </select>
                     </div>
                 </div>
@@ -47,7 +97,7 @@
                             </div>
                             <div>
                                 <h2 class="text-xl font-semibold text-gray-700">Semestral Grade Components</h2>
-                                <p class="text-sm text-amber-600 font-medium mt-1 subject-reminder-text">⚠️ Please select a subject first before adding grade components</p>
+                                <p class="text-sm text-amber-600 font-medium mt-1 curriculum-reminder-text">⚠️ Please select a curriculum first to set up grades</p>
                             </div>
                         </div>
                         <button id="add-grade-component-btn" type="button" class="flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-800 transition-colors py-2 px-3 rounded-lg hover:bg-indigo-50">
@@ -91,18 +141,9 @@
 
         {{-- Grade History --}}
         <div class="lg:col-span-1 bg-white/70 backdrop-blur-xl p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200/80">
-            <h2 class="text-xl font-bold text-gray-700 mb-4 pb-3 border-b">Grade History</h2>
+            <h2 class="text-xl font-bold text-gray-700 mb-4 pb-3 border-b">Curriculum Grade History</h2>
             <div id="grade-history-container" class="space-y-4">
-                 @if(isset($subjects) && $subjects->count() > 0)
-                    @foreach($subjects as $subject)
-                        <div class="grade-history-card p-4 border rounded-lg hover:bg-gray-50 transition-colors duration-200" data-subject-id="{{ $subject->id }}">
-                            <p class="font-semibold text-gray-800">{{ $subject->subject_name }}</p>
-                            <p class="text-sm text-gray-500">{{ $subject->subject_code }}</p>
-                        </div>
-                    @endforeach
-                @else
-                    <p id="no-history-message" class="text-gray-500">No subjects with grade schemes.</p>
-                @endif
+                <p id="no-history-message" class="text-gray-500">No curriculums with grade schemes yet.</p>
             </div>
         </div>
     </div>
@@ -225,11 +266,157 @@
     </div>
 </div>
 
+{{-- Curriculum Grade Details Modal --}}
+<div id="curriculum-grade-modal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white w-full max-w-6xl rounded-2xl shadow-2xl" id="curriculum-grade-modal-panel">
+            {{-- Modal Header --}}
+            <div class="flex justify-between items-center p-6 border-b border-gray-200">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 flex-shrink-0 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800" id="curriculum-modal-title">Curriculum Grade Schemes</h3>
+                        <p class="text-sm text-gray-600" id="curriculum-modal-subtitle">View all subjects and their grade configurations</p>
+                    </div>
+                </div>
+                <button id="close-curriculum-modal-btn" class="text-gray-400 hover:text-gray-700 transition-colors rounded-full p-1 hover:bg-gray-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            {{-- Modal Body --}}
+            <div class="p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {{-- Minor Subjects --}}
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 pb-3 border-b border-gray-200">
+                            <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                            </div>
+                            <h4 class="text-lg font-semibold text-gray-800">Minor Subjects</h4>
+                            <span class="text-sm text-gray-500">(Auto-assigned grades)</span>
+                        </div>
+                        <div id="minor-subjects-container" class="space-y-3">
+                            <p class="text-gray-500 text-sm">No minor subjects found.</p>
+                        </div>
+                    </div>
+
+                    {{-- Major Subjects --}}
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 pb-3 border-b border-gray-200">
+                            <div class="w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C20.168 18.477 18.582 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                            </div>
+                            <h4 class="text-lg font-semibold text-gray-800">Major Subjects</h4>
+                            <span class="text-sm text-gray-500">(Custom grades)</span>
+                        </div>
+                        <div id="major-subjects-container" class="space-y-3">
+                            <p class="text-gray-500 text-sm">No major subjects found.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    let subjects = [];
-    const defaultStructure = {}; // Start with an empty structure
+    let curriculums = [];
+    let currentCurriculumSubjects = [];
+    const defaultMinorGradeStructure = {
+        'Prelim': { 
+            weight: 30, 
+            components: [
+                {
+                    name: 'A.1 CLASS STANDING',
+                    weight: 40,
+                    sub_components: [
+                        { name: 'Attendance', weight: 10 },
+                        { name: 'Written Works', weight: 50 },
+                        { name: 'Performance Task', weight: 40 }
+                    ]
+                },
+                {
+                    name: 'A.2 PROJECT',
+                    weight: 25,
+                    sub_components: [
+                        { name: 'Course-Based Output Off-Campus Requirements', weight: 100 }
+                    ]
+                },
+                {
+                    name: 'A.3 EXAMINATION',
+                    weight: 35,
+                    sub_components: [
+                        { name: 'Written Examination', weight: 100 }
+                    ]
+                }
+            ]
+        },
+        'Midterm': { 
+            weight: 30, 
+            components: [
+                {
+                    name: 'A.1 CLASS STANDING',
+                    weight: 40,
+                    sub_components: [
+                        { name: 'Attendance', weight: 10 },
+                        { name: 'Written Works', weight: 50 },
+                        { name: 'Performance Task', weight: 40 }
+                    ]
+                },
+                {
+                    name: 'A.2 PROJECT',
+                    weight: 25,
+                    sub_components: [
+                        { name: 'Course-Based Output Off-Campus Requirements', weight: 100 }
+                    ]
+                },
+                {
+                    name: 'A.3 EXAMINATION',
+                    weight: 35,
+                    sub_components: [
+                        { name: 'Written Examination', weight: 100 }
+                    ]
+                }
+            ]
+        },
+        'Finals': { 
+            weight: 40, 
+            components: [
+                {
+                    name: 'A.1 CLASS STANDING',
+                    weight: 40,
+                    sub_components: [
+                        { name: 'Attendance', weight: 10 },
+                        { name: 'Written Works', weight: 50 },
+                        { name: 'Performance Task', weight: 40 }
+                    ]
+                },
+                {
+                    name: 'A.2 PROJECT',
+                    weight: 25,
+                    sub_components: [
+                        { name: 'Course-Based Output Off-Campus Requirements', weight: 100 }
+                    ]
+                },
+                {
+                    name: 'A.3 EXAMINATION',
+                    weight: 35,
+                    sub_components: [
+                        { name: 'Written Examination', weight: 100 }
+                    ]
+                }
+            ]
+        }
+    };
 
     // Main form elements
     const accordionContainer = document.getElementById('semestral-grade-accordion');
@@ -237,19 +424,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressCircle = document.getElementById('progress-circle');
     const addGradeBtn = document.getElementById('setGradeSchemeButton');
     const updateGradeSetupBtn = document.getElementById('update-grade-setup-btn');
-    const subjectSelect = document.getElementById('subject-select');
+    const curriculumSelect = document.getElementById('curriculum-select');
+    const courseTypeSection = document.getElementById('course-type-section');
+    const majorSubjectSection = document.getElementById('major-subject-section');
+    const majorSubjectSelect = document.getElementById('major-subject-select');
     const gradeHistoryContainer = document.getElementById('grade-history-container');
     const addGradeComponentBtn = document.getElementById('add-grade-component-btn');
+    const minorCoursesBtn = document.getElementById('minor-courses-btn');
+    const majorCoursesBtn = document.getElementById('major-courses-btn');
 
     // Modal elements
     const gradeModal = document.getElementById('grade-modal');
+    const curriculumGradeModal = document.getElementById('curriculum-grade-modal');
     const closeModalBtn = document.getElementById('close-modal-btn');
+    const closeCurriculumModalBtn = document.getElementById('close-curriculum-modal-btn');
     const modalContent = document.getElementById('modal-content');
     const editGradeSetupBtn = document.getElementById('edit-grade-setup-btn');
     
     // State
     let isEditMode = false;
+    let currentCurriculumId = null;
     let currentSubjectId = null;
+    let currentCourseType = null; // 'minor' or 'major'
     let componentCounter = 0;
 
     const createGradeComponent = (period = `component${++componentCounter}`, weight = 0, components = []) => {
@@ -309,11 +505,33 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     addGradeComponentBtn.addEventListener('click', () => {
-        // Check if a subject is selected first
-        if (!subjectSelect.value) {
+        // Check if a curriculum and course type is selected first
+        if (!currentCurriculumId) {
             Swal.fire({
-                title: 'Select a Subject First',
-                text: 'Please select a subject before adding grade components.',
+                title: 'Select a Curriculum First',
+                text: 'Please select a curriculum before adding grade components.',
+                icon: 'warning',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#4f46e5'
+            });
+            return;
+        }
+        
+        if (!currentCourseType) {
+            Swal.fire({
+                title: 'Select Course Type First',
+                text: 'Please select a course type (Minor or Major) before adding grade components.',
+                icon: 'warning',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#4f46e5'
+            });
+            return;
+        }
+        
+        if (currentCourseType === 'major' && !currentSubjectId) {
+            Swal.fire({
+                title: 'Select a Major Subject First',
+                text: 'Please select a major subject before adding grade components.',
                 icon: 'warning',
                 confirmButtonText: 'OK',
                 confirmButtonColor: '#4f46e5'
@@ -430,7 +648,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
         
-        const saveButtonIsDisabled = semestralTotal !== 100 || !allSubTotalsCorrect || !subjectSelect.value;
+        // Check curriculum-based validation instead of old subject selection
+        const hasValidSelection = currentCurriculumId && currentCourseType && 
+            (currentCourseType === 'minor' || (currentCourseType === 'major' && currentSubjectId));
+        
+        const saveButtonIsDisabled = semestralTotal !== 100 || !allSubTotalsCorrect || !hasValidSelection;
         addGradeBtn.disabled = saveButtonIsDisabled;
         updateGradeSetupBtn.disabled = saveButtonIsDisabled;
     };
@@ -465,7 +687,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const loadGradeDataToDOM = (componentsData) => {
         accordionContainer.innerHTML = ''; // Clear existing components
-        const dataToLoad = componentsData && Object.keys(componentsData).length > 0 ? componentsData : defaultStructure;
+        const dataToLoad = componentsData && Object.keys(componentsData).length > 0 ? componentsData : {};
         
         Object.keys(dataToLoad).forEach(period => {
             const periodData = dataToLoad[period];
@@ -530,74 +752,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
-    const fetchAndPopulateSubjects = async () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const newSubjectId = urlParams.get('new_subject_id');
-        const newSubjectName = urlParams.get('new_subject_name');
-
-        try {
-            // Show loading state
-            subjectSelect.innerHTML = '<option value="">Loading subjects...</option>';
-            subjectSelect.disabled = true;
-            
-            console.log('Fetching subjects from API...');
-            const data = await fetchAPI('subjects');
-            console.log('Subjects received:', data);
-            
-            subjects = data;
-            
-            // Clear loading and populate subjects
-            subjectSelect.innerHTML = '<option value="" disabled selected>Select a Subject</option>';
-            subjectSelect.disabled = false;
-            
-            if (subjects && subjects.length > 0) {
-                subjects.forEach(subject => {
-                    const option = new Option(`${subject.subject_name} (${subject.subject_code})`, subject.id);
-                    subjectSelect.add(option);
-                });
-                console.log(`Successfully loaded ${subjects.length} subjects`);
-            } else {
-                subjectSelect.innerHTML = '<option value="" disabled>No subjects available</option>';
-                console.log('No subjects found in database');
-            }
-
-            if (newSubjectId && newSubjectName) {
-                if (![...subjectSelect.options].some(opt => opt.value == newSubjectId)) {
-                    const newOption = new Option(decodeURIComponent(newSubjectName), newSubjectId);
-                    subjectSelect.add(newOption);
-                }
-                subjectSelect.value = newSubjectId;
-                subjectSelect.dispatchEvent(new Event('change'));
-            }
-        } catch (error) {
-            console.error('Failed to load subjects:', error);
-            subjectSelect.disabled = false;
-            
-            // Show error state with better messaging
-            subjectSelect.innerHTML = '<option value="" disabled selected>Failed to load subjects - Please refresh the page</option>';
-            
-            // Show user-friendly error
-            Swal.fire({
-                title: 'Loading Error',
-                text: `Failed to load subjects: ${error.message}. Please check your connection and refresh the page.`,
-                icon: 'error',
-                confirmButtonText: 'Refresh Page',
-                cancelButtonText: 'Try Again',
-                showCancelButton: true,
-                confirmButtonColor: '#4f46e5'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.reload();
-                } else if (result.dismiss === Swal.DismissReason.cancel) {
-                    fetchAndPopulateSubjects(); // Retry
-                }
-            });
-        }
-    };
+    // Old subject fetching function removed - now using curriculum-based workflow
 
     const fetchGradeSetupForSubject = (subjectId) => {
         if (!subjectId) {
-            loadGradeDataToDOM(defaultStructure);
+            loadGradeDataToDOM({});
             toggleGradeComponents(true);
             return;
         }
@@ -612,13 +771,13 @@ document.addEventListener('DOMContentLoaded', () => {
                  toggleGradeComponents(true); // Disable form if grade exists
                  addGradeBtn.disabled = true;
             } else {
-                 loadGradeDataToDOM(defaultStructure);
+                 loadGradeDataToDOM({});
                  toggleGradeComponents(false); // Enable form if no grade exists
                  addGradeBtn.disabled = false;
             }
             calculateAndUpdateTotals();
         }).catch(() => {
-            loadGradeDataToDOM(defaultStructure);
+            loadGradeDataToDOM({});
             toggleGradeComponents(false);
             addGradeBtn.disabled = false;
             calculateAndUpdateTotals();
@@ -671,10 +830,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     accordionContainer.addEventListener('input', calculateAndUpdateTotals);
-    subjectSelect.addEventListener('change', (e) => {
-        fetchGradeSetupForSubject(e.target.value);
-        updateSubjectSelectionUI(e.target.value);
-    });
+    // Old subject selection event listener removed - now using curriculum-based workflow
     
     const updateSubjectSelectionUI = (subjectId) => {
         const reminderText = document.querySelector('.subject-reminder-text');
@@ -706,22 +862,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle the actual save logic when user confirms
     const handleGradeSchemeSave = async () => {
-        const payload = { subject_id: subjectSelect.value, components: getGradeDataFromDOM() };
+        let payload;
+        
+        if (currentCourseType === 'minor') {
+            // Save grades for all minor subjects in the curriculum
+            const minorSubjects = currentCurriculumSubjects.filter(subject => subject.subject_type === 'Minor');
+            payload = {
+                curriculum_id: currentCurriculumId,
+                course_type: 'minor',
+                subjects: minorSubjects.map(subject => ({
+                    subject_id: subject.id,
+                    components: defaultMinorGradeStructure
+                }))
+            };
+        } else if (currentCourseType === 'major') {
+            // Save grades for the selected major subject
+            payload = {
+                curriculum_id: currentCurriculumId,
+                course_type: 'major',
+                subjects: [{
+                    subject_id: currentSubjectId,
+                    components: getGradeDataFromDOM()
+                }]
+            };
+        }
+
         try {
-            console.log('Saving grade scheme with payload:', payload);
-            const data = await fetchAPI('grades', { method: 'POST', body: JSON.stringify(payload) });
-            console.log('Grade scheme saved successfully:', data);
+            console.log('Saving curriculum grade scheme with payload:', payload);
+            const data = await fetchAPI('curriculum-grades', { method: 'POST', body: JSON.stringify(payload) });
+            console.log('Curriculum grade scheme saved successfully:', data);
             
-            // Show success modal instead of SweetAlert
+            // Show success modal
             document.getElementById('gradeSchemeSuccessModal').classList.remove('hidden');
             
-            addSubjectToHistory(data.subject);
-            subjectSelect.value = '';
-            loadGradeDataToDOM(defaultStructure);
-            toggleGradeComponents(true);
-            addGradeBtn.disabled = true;
+            // Add curriculum to history
+            addCurriculumToHistory(data.curriculum);
+            
+            // Reset form
+            resetForm();
+            
         } catch(e) { 
-            console.error('Failed to save grade scheme:', e);
+            console.error('Failed to save curriculum grade scheme:', e);
             Swal.fire('Error!', 'Failed to save grade scheme: ' + e.message, 'error');
         }
     };
@@ -809,8 +990,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = e.target.closest('.grade-history-card');
         if (card) {
             const subjectId = card.dataset.subjectId;
-            subjectSelect.value = subjectId;
-            fetchGradeSetupForSubject(subjectId);
+            // Updated to work with curriculum-based workflow
+            // This functionality needs to be updated for curriculum-based grade history
             try {
                 const gradeData = await fetchAPI(`grades/${subjectId}`);
                 
@@ -855,17 +1036,385 @@ document.addEventListener('DOMContentLoaded', () => {
                 modalContent.innerHTML = contentHtml;
                 showModal('grade-modal');
 
-            } catch (error) { Swal.fire('Error', 'Could not fetch grade details.', 'error'); }
+            } catch (error) { 
+                console.error('Error fetching grade details:', error);
+                console.log('Could not fetch grade details. This might be because no grades are set for this subject.');
+            }
         }
     });
     
     closeModalBtn.addEventListener('click', () => hideModal('grade-modal'));
     gradeModal.addEventListener('click', (e) => { if (e.target.id === 'grade-modal') hideModal('grade-modal'); });
 
-    fetchAndPopulateSubjects();
-    loadGradeDataToDOM(defaultStructure);
+    // New curriculum-based functions
+    const fetchAndPopulateCurriculums = async () => {
+        try {
+            console.log('Fetching curriculums from API...');
+            curriculums = await fetchAPI('curriculums');
+            console.log('Curriculums received:', curriculums);
+            
+            curriculumSelect.innerHTML = '<option value="">Select a curriculum...</option>';
+            curriculums.forEach(curriculum => {
+                const option = document.createElement('option');
+                option.value = curriculum.id;
+                option.textContent = `${curriculum.curriculum_name} (${curriculum.program_code})`;
+                curriculumSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error fetching curriculums:', error);
+            curriculumSelect.innerHTML = '<option value="">Error loading curriculums</option>';
+        }
+    };
+
+    const handleCurriculumSelection = async () => {
+        const curriculumId = curriculumSelect.value;
+        if (!curriculumId) {
+            courseTypeSection.classList.add('hidden');
+            majorSubjectSection.classList.add('hidden');
+            return;
+        }
+
+        currentCurriculumId = curriculumId;
+        
+        // Fetch subjects for this curriculum
+        try {
+            console.log('Fetching subjects for curriculum:', curriculumId);
+            currentCurriculumSubjects = await fetchAPI(`curriculums/${curriculumId}/subjects`);
+            console.log('Curriculum subjects received:', currentCurriculumSubjects);
+            
+            // Show course type selection
+            courseTypeSection.classList.remove('hidden');
+            majorSubjectSection.classList.add('hidden');
+            
+            // Reset selections
+            currentCourseType = null;
+            currentSubjectId = null;
+            resetCourseTypeButtons();
+            
+        } catch (error) {
+            console.error('Error fetching curriculum subjects:', error);
+            // Don't show error modal, just log it
+            console.log('Could not fetch curriculum subjects. Please check the API endpoint.');
+        }
+    };
+
+    const handleCourseTypeSelection = (courseType) => {
+        currentCourseType = courseType;
+        updateCourseTypeButtons(courseType);
+        
+        if (courseType === 'minor') {
+            // Auto-assign default grades to all minor subjects
+            majorSubjectSection.classList.add('hidden');
+            loadGradeDataToDOM(defaultMinorGradeStructure);
+            toggleGradeComponents(false);
+            addGradeBtn.disabled = false;
+            document.querySelector('.curriculum-reminder-text').textContent = '✅ Minor courses selected - default grades loaded';
+        } else if (courseType === 'major') {
+            // Show major subject selection
+            majorSubjectSection.classList.remove('hidden');
+            populateMajorSubjects();
+            loadGradeDataToDOM({});
+            toggleGradeComponents(true);
+            addGradeBtn.disabled = true;
+            document.querySelector('.curriculum-reminder-text').textContent = '⚠️ Please select a major subject to set up grades';
+        }
+    };
+
+    const populateMajorSubjects = () => {
+        const majorSubjects = currentCurriculumSubjects.filter(subject => subject.subject_type === 'Major');
+        
+        majorSubjectSelect.innerHTML = '<option value="">Select a major subject...</option>';
+        majorSubjects.forEach(subject => {
+            const option = document.createElement('option');
+            option.value = subject.id;
+            option.textContent = `${subject.subject_name} (${subject.subject_code})`;
+            majorSubjectSelect.appendChild(option);
+        });
+    };
+
+    const handleMajorSubjectSelection = () => {
+        const subjectId = majorSubjectSelect.value;
+        if (!subjectId) {
+            loadGradeDataToDOM({});
+            toggleGradeComponents(true);
+            addGradeBtn.disabled = true;
+            return;
+        }
+
+        currentSubjectId = subjectId;
+        loadGradeDataToDOM({});
+        toggleGradeComponents(false);
+        addGradeBtn.disabled = false;
+        document.querySelector('.curriculum-reminder-text').textContent = '✅ Major subject selected - ready to set up grades';
+    };
+
+    const updateCourseTypeButtons = (selectedType) => {
+        resetCourseTypeButtons();
+        
+        if (selectedType === 'minor') {
+            minorCoursesBtn.classList.add('border-blue-500', 'bg-blue-50');
+            minorCoursesBtn.classList.remove('border-gray-300');
+        } else if (selectedType === 'major') {
+            majorCoursesBtn.classList.add('border-green-500', 'bg-green-50');
+            majorCoursesBtn.classList.remove('border-gray-300');
+        }
+    };
+
+    const resetCourseTypeButtons = () => {
+        minorCoursesBtn.classList.remove('border-blue-500', 'bg-blue-50');
+        minorCoursesBtn.classList.add('border-gray-300');
+        majorCoursesBtn.classList.remove('border-green-500', 'bg-green-50');
+        majorCoursesBtn.classList.add('border-gray-300');
+    };
+
+    const updateCurriculumSelectionUI = () => {
+        courseTypeSection.classList.add('hidden');
+        majorSubjectSection.classList.add('hidden');
+        document.querySelector('.curriculum-reminder-text').textContent = '⚠️ Please select a curriculum first to set up grades';
+    };
+
+    const addCurriculumToHistory = (curriculum) => {
+        const noHistoryMessage = document.getElementById('no-history-message');
+        if (noHistoryMessage) noHistoryMessage.remove();
+        
+        // Check if curriculum already exists in history
+        if (document.querySelector(`.grade-history-card[data-curriculum-id="${curriculum.id}"]`)) return;
+        
+        const card = document.createElement('div');
+        card.className = 'grade-history-card p-4 border rounded-lg hover:bg-gray-50 transition-colors duration-200 cursor-pointer';
+        card.dataset.curriculumId = curriculum.id;
+        card.innerHTML = `
+            <p class="font-semibold text-gray-800">${curriculum.curriculum_name}</p>
+            <p class="text-sm text-gray-500">${curriculum.program_code} - ${curriculum.academic_year}</p>
+        `;
+        
+        // Add click event to show curriculum grade modal
+        card.addEventListener('click', () => showCurriculumGradeModal(curriculum.id));
+        
+        gradeHistoryContainer.appendChild(card);
+    };
+
+    const resetForm = () => {
+        curriculumSelect.value = '';
+        courseTypeSection.classList.add('hidden');
+        majorSubjectSection.classList.add('hidden');
+        majorSubjectSelect.innerHTML = '<option value="">Select a major subject...</option>';
+        currentCurriculumId = null;
+        currentSubjectId = null;
+        currentCourseType = null;
+        currentCurriculumSubjects = [];
+        resetCourseTypeButtons();
+        loadGradeDataToDOM({});
+        toggleGradeComponents(true);
+        addGradeBtn.disabled = true;
+        updateCurriculumSelectionUI();
+    };
+
+    const showCurriculumGradeModal = async (curriculumId) => {
+        try {
+            // Fetch curriculum details and subjects with grades
+            console.log('Fetching curriculum grade details for:', curriculumId);
+            const data = await fetchAPI(`curriculum-grades/${curriculumId}`);
+            console.log('Curriculum grade details received:', data);
+            
+            // Update modal title
+            document.getElementById('curriculum-modal-title').textContent = data.curriculum.curriculum_name;
+            document.getElementById('curriculum-modal-subtitle').textContent = `${data.curriculum.program_code} - Grade Schemes Overview`;
+            
+            // Populate minor subjects
+            const minorContainer = document.getElementById('minor-subjects-container');
+            const minorSubjects = data.subjects.filter(subject => subject.subject_type === 'Minor');
+            
+            if (minorSubjects.length > 0) {
+                minorContainer.innerHTML = minorSubjects.map(subject => {
+                    const hasGrades = subject.has_grades;
+                    const cardClass = hasGrades ? 'subject-card p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors' : 'subject-card p-3 border rounded-lg cursor-not-allowed transition-colors bg-gray-200 opacity-60';
+                    const statusText = hasGrades ? 'Default grades applied' : 'No grades set';
+                    const statusColor = hasGrades ? 'text-blue-600' : 'text-gray-400';
+                    
+                    return `
+                        <div class="${cardClass}" data-subject-id="${subject.id}" data-has-grades="${hasGrades}">
+                            <p class="font-medium text-gray-800">${subject.subject_name}</p>
+                            <p class="text-sm text-gray-500">${subject.subject_code}</p>
+                            <p class="text-xs ${statusColor} mt-1">${statusText}</p>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                minorContainer.innerHTML = '<p class="text-gray-500 text-sm">No minor subjects found.</p>';
+            }
+            
+            // Populate major subjects
+            const majorContainer = document.getElementById('major-subjects-container');
+            const majorSubjects = data.subjects.filter(subject => subject.subject_type === 'Major');
+            
+            if (majorSubjects.length > 0) {
+                majorContainer.innerHTML = majorSubjects.map(subject => {
+                    const hasGrades = subject.has_grades;
+                    const cardClass = hasGrades ? 'subject-card p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors' : 'subject-card p-3 border rounded-lg cursor-not-allowed transition-colors bg-gray-200 opacity-60';
+                    const statusText = hasGrades ? 'Custom grades set' : 'No grades set';
+                    const statusColor = hasGrades ? 'text-green-600' : 'text-gray-400';
+                    
+                    return `
+                        <div class="${cardClass}" data-subject-id="${subject.id}" data-has-grades="${hasGrades}">
+                            <p class="font-medium text-gray-800">${subject.subject_name}</p>
+                            <p class="text-sm text-gray-500">${subject.subject_code}</p>
+                            <p class="text-xs ${statusColor} mt-1">${statusText}</p>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                majorContainer.innerHTML = '<p class="text-gray-500 text-sm">No major subjects found.</p>';
+            }
+            
+            // Add click events to subject cards (only for subjects with grades)
+            document.querySelectorAll('.subject-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const hasGrades = card.dataset.hasGrades === 'true';
+                    if (hasGrades) {
+                        const subjectId = card.dataset.subjectId;
+                        showSubjectGradeDetails(subjectId);
+                    }
+                });
+            });
+            
+            // Show modal
+            showModal('curriculum-grade-modal');
+            
+        } catch (error) {
+            console.error('Error fetching curriculum grade details:', error);
+            // Remove the SweetAlert error and just log it
+            console.log('Could not fetch curriculum grade details. This might be because the API endpoint needs to be implemented.');
+        }
+    };
+
+    const showSubjectGradeDetails = async (subjectId) => {
+        try {
+            console.log('Fetching subject grade details for:', subjectId);
+            const data = await fetchAPI(`grades/${subjectId}`);
+            console.log('Subject grade details received:', data);
+            
+            // Build the grade details HTML
+            let contentHtml = '<div class="space-y-6">';
+            
+            if (data && data.components && Object.keys(data.components).length > 0) {
+                for (const [period, periodData] of Object.entries(data.components)) {
+                    contentHtml += `
+                        <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+                            <h4 class="font-bold text-lg capitalize text-gray-800 flex items-center gap-3 border-b pb-3 mb-3">
+                                ${period} <span class="text-sm font-bold text-gray-500 ml-auto">${periodData.weight}%</span>
+                            </h4>
+                            <div class="flow-root">
+                                <div class="-my-2 divide-y divide-gray-100">`;
+
+                    if (!periodData.components || periodData.components.length === 0) {
+                        contentHtml += '<p class="text-sm text-gray-500 py-3">No components for this period.</p>';
+                    } else {
+                        periodData.components.forEach(comp => {
+                            contentHtml += `
+                                <div class="py-3">
+                                    <div class="flex items-center justify-between gap-4">
+                                        <p class="font-medium text-gray-700">${comp.name}</p>
+                                        <p class="font-mono text-base text-gray-900">${comp.weight}%</p>
+                                    </div>`;
+                            
+                            if (comp.sub_components && comp.sub_components.length > 0) {
+                                contentHtml += '<div class="mt-2 pl-6 border-l-2 border-gray-200 space-y-2">';
+                                comp.sub_components.forEach(sub => {
+                                    contentHtml += `
+                                        <div class="flex items-center justify-between text-sm">
+                                            <p class="text-gray-600">${sub.name}</p>
+                                            <p class="font-mono text-gray-600">${sub.weight}%</p>
+                                        </div>`;
+                                });
+                                contentHtml += '</div>';
+                            }
+                            contentHtml += '</div>';
+                        });
+                    }
+                    contentHtml += `</div></div></div>`;
+                }
+            } else {
+                contentHtml += '<p class="text-gray-500 text-center py-8">No grade components found for this subject.</p>';
+            }
+            
+            contentHtml += '</div>';
+            
+            // Populate the modal content
+            modalContent.innerHTML = contentHtml;
+            
+            // Close curriculum modal first
+            hideModal('curriculum-grade-modal');
+            
+            // Show the grade details modal
+            showModal('grade-modal');
+            
+        } catch (error) {
+            console.error('Error fetching subject grade details:', error);
+            // Don't show error modal, just log it
+            console.log('Could not fetch subject grade details. This might be because no grades are set for this subject.');
+        }
+    };
+
+    // Function to fetch and display existing curriculum grades in history
+    const fetchAndPopulateGradeHistory = async () => {
+        try {
+            console.log('Fetching existing curriculum grades for history...');
+            const data = await fetchAPI('curriculum-grades');
+            console.log('Curriculum grades history received:', data);
+            console.log('Data type:', typeof data);
+            console.log('Data length:', data ? data.length : 'null/undefined');
+            
+            const noHistoryMessage = document.getElementById('no-history-message');
+            if (data && Array.isArray(data) && data.length > 0) {
+                console.log('Found', data.length, 'curriculums with grades');
+                if (noHistoryMessage) noHistoryMessage.remove();
+                
+                data.forEach((curriculum, index) => {
+                    console.log(`Adding curriculum ${index + 1}:`, curriculum);
+                    addCurriculumToHistory(curriculum);
+                });
+            } else {
+                console.log('No curriculum grades found or data is not an array');
+                if (!noHistoryMessage) {
+                    const message = document.createElement('p');
+                    message.id = 'no-history-message';
+                    message.className = 'text-gray-500';
+                    message.textContent = 'No curriculums with grade schemes yet.';
+                    gradeHistoryContainer.appendChild(message);
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching curriculum grades history:', error);
+            console.error('Error details:', error.message);
+            // Don't show error to user, just keep the no-history message
+            const noHistoryMessage = document.getElementById('no-history-message');
+            if (!noHistoryMessage) {
+                const message = document.createElement('p');
+                message.id = 'no-history-message';
+                message.className = 'text-gray-500';
+                message.textContent = 'No curriculums with grade schemes yet.';
+                gradeHistoryContainer.appendChild(message);
+            }
+        }
+    };
+
+    // Initialize curriculum-based workflow
+    fetchAndPopulateCurriculums();
+    fetchAndPopulateGradeHistory();
+    loadGradeDataToDOM({});
     toggleGradeComponents(true);
-    updateSubjectSelectionUI(null); // Initialize UI state
+    updateCurriculumSelectionUI();
+    
+    // Event Listeners for new curriculum workflow
+    curriculumSelect.addEventListener('change', handleCurriculumSelection);
+    minorCoursesBtn.addEventListener('click', () => handleCourseTypeSelection('minor'));
+    majorCoursesBtn.addEventListener('click', () => handleCourseTypeSelection('major'));
+    majorSubjectSelect.addEventListener('change', handleMajorSubjectSelection);
+    closeCurriculumModalBtn.addEventListener('click', () => hideModal('curriculum-grade-modal'));
+    curriculumGradeModal.addEventListener('click', (e) => { 
+        if (e.target.id === 'curriculum-grade-modal') hideModal('curriculum-grade-modal'); 
+    });
 });
 </script>
 

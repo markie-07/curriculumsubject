@@ -54,8 +54,15 @@
             </div>
             
             <div class="mt-6 text-right">
-                <button id="savePrerequisiteChainBtn" class="bg-green-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-green-700 transition-colors shadow-md hidden">
-                    Save
+                <button id="savePrerequisiteChainBtn" class="bg-green-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-green-700 transition-colors shadow-md hidden disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400" disabled>
+                    <span class="save-btn-text">Save</span>
+                    <span class="save-btn-loading hidden flex items-center">
+                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Saving...
+                    </span>
                 </button>
             </div>
 
@@ -84,9 +91,26 @@
                 <input type="hidden" id="modalCurriculumId" name="curriculum_id">
                 <input type="hidden" id="modalSubjectCode" name="subject_code">
                 
-                <div class="bg-slate-50 p-4 rounded-lg border">
-                    <p class="text-sm font-medium text-slate-600">Curriculum:</p>
-                    <p id="modalCurriculumName" class="text-lg font-bold text-slate-800"></p>
+                <div>
+                    <label for="modal-curriculum-selector-button" class="block text-sm font-medium text-slate-700 mb-2">Select Curriculum</label>
+                    <div id="modal-custom-curriculum-selector" class="relative">
+                        <button type="button" id="modal-curriculum-selector-button" class="w-full border border-slate-300 rounded-lg p-3 flex justify-between items-center bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <span class="text-slate-500 truncate pr-2">-- Select a Curriculum --</span>
+                            <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div id="modal-curriculum-dropdown-panel" class="absolute z-30 w-full mt-1 bg-white border border-slate-300 rounded-lg shadow-lg hidden">
+                            <div class="p-2">
+                                <input type="text" id="modal-curriculum-search-input" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500" placeholder="Search for a curriculum...">
+                            </div>
+                            <ul id="modal-curriculum-options-list" class="max-h-60 overflow-y-auto">
+                                @foreach($curriculums as $curriculum)
+                                    <li class="px-4 py-2 hover:bg-blue-100 cursor-pointer" data-value="{{ $curriculum->id }}" data-name="{{ $curriculum->curriculum }} ({{ $curriculum->program_code }})">
+                                        {{ $curriculum->curriculum }} ({{ $curriculum->program_code }})
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
                 </div>
                 
                 <div>
@@ -152,6 +176,25 @@
         <p id="success-modal-message" class="text-sm text-slate-500 mt-2"></p>
         <div class="mt-6">
             <button id="closeSuccessModalButton" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-all">OK</button>
+        </div>
+    </div>
+</div>
+
+{{-- Prerequisite Success Modal --}}
+<div id="prerequisiteSuccessModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 ease-out hidden">
+    <div class="relative bg-white w-full max-w-md rounded-2xl shadow-2xl p-8 text-center transform scale-95 opacity-0 transition-all duration-300 ease-out" id="prerequisite-success-modal-panel">
+        <div class="w-16 h-16 rounded-full bg-green-100 p-3 flex items-center justify-center mx-auto mb-6">
+            <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+        </div>
+        <h3 class="text-xl font-bold text-slate-800 mb-4">Prerequisites Set Successfully!</h3>
+        <p class="text-sm text-slate-600 mb-6">Your prerequisites have been saved successfully.</p>
+        
+        <div class="flex justify-center">
+            <button id="closePrerequisiteSuccessModal" class="w-full px-6 py-3 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-all">
+                Great!
+            </button>
         </div>
     </div>
 </div>
@@ -253,7 +296,52 @@ document.addEventListener('DOMContentLoaded', () => {
     const hideConfirmationModal = () => {
         confirmationModal.classList.add('opacity-0');
         confirmationModalPanel.classList.add('opacity-0', 'scale-95');
-        setTimeout(() => confirmationModal.classList.add('hidden'), 300);
+        setTimeout(() => {
+            confirmationModal.classList.add('hidden');
+        }, 300);
+        
+        // Only reset loading state, don't disable button when just closing modal
+        resetSaveButtonLoadingState();
+    };
+    
+    const resetSaveButtonLoadingState = () => {
+        // Only reset loading animation, keep button enabled if it was enabled
+        document.querySelector('.save-btn-text').classList.remove('hidden');
+        document.querySelector('.save-btn-loading').classList.add('hidden');
+    };
+    
+    const resetSaveButtonState = () => {
+        // Reset loading state and disable button (used after successful save)
+        document.querySelector('.save-btn-text').classList.remove('hidden');
+        document.querySelector('.save-btn-loading').classList.add('hidden');
+        savePrerequisiteChainBtn.disabled = true;
+    };
+    
+    const enableSaveButton = () => {
+        savePrerequisiteChainBtn.disabled = false;
+    };
+
+    // Prerequisite Success Modal Functions
+    const prerequisiteSuccessModal = document.getElementById('prerequisiteSuccessModal');
+    const prerequisiteSuccessModalPanel = document.getElementById('prerequisite-success-modal-panel');
+    const prerequisiteSuccessSubjectName = document.getElementById('prerequisiteSuccessSubjectName');
+    const prerequisiteSuccessSubjectCode = document.getElementById('prerequisiteSuccessSubjectCode');
+    const prerequisiteSuccessCurriculumName = document.getElementById('prerequisiteSuccessCurriculumName');
+    const closePrerequisiteSuccessModal = document.getElementById('closePrerequisiteSuccessModal');
+    const addAnotherPrerequisite = document.getElementById('addAnotherPrerequisite');
+
+    const showPrerequisiteSuccessModal = () => {
+        prerequisiteSuccessModal.classList.remove('hidden');
+        setTimeout(() => {
+            prerequisiteSuccessModal.classList.remove('opacity-0');
+            prerequisiteSuccessModalPanel.classList.remove('opacity-0', 'scale-95');
+        }, 10);
+    };
+
+    const hidePrerequisiteSuccessModal = () => {
+        prerequisiteSuccessModal.classList.add('opacity-0');
+        prerequisiteSuccessModalPanel.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => prerequisiteSuccessModal.classList.add('hidden'), 300);
     };
 
     // Modal Event Listeners
@@ -264,19 +352,28 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     closeSuccessModalButton.addEventListener('click', hideSuccessModal);
     
+    // Prerequisite Success Modal Event Listeners
+    closePrerequisiteSuccessModal.addEventListener('click', hidePrerequisiteSuccessModal);
+    
     // Compliance Validator Modal Event Listeners
     document.getElementById('cancelComplianceValidator').addEventListener('click', () => {
         document.getElementById('complianceValidatorModal').classList.add('hidden');
         document.getElementById('prerequisitesSuccessModal').classList.remove('hidden');
+        // Disable save button since prerequisites have been saved
+        resetSaveButtonState();
     });
     
     document.getElementById('confirmComplianceValidator').addEventListener('click', () => {
+        // Disable save button since prerequisites have been saved
+        resetSaveButtonState();
         window.location.href = '{{ route('compliance.validator') }}';
     });
     
     // Prerequisites Success Modal Event Listener
     document.getElementById('closePrerequisitesSuccessModal').addEventListener('click', () => {
         document.getElementById('prerequisitesSuccessModal').classList.add('hidden');
+        // Disable save button since prerequisites have been saved
+        resetSaveButtonState();
     });
     
     // --- Main Curriculum Searchable Dropdown Elements ---
@@ -296,6 +393,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const prerequisiteList = document.getElementById('prerequisiteList');
     const prerequisiteForm = document.getElementById('prerequisiteForm');
     const savePrerequisitesBtn = document.getElementById('savePrerequisitesBtn');
+    
+    // --- Modal Curriculum Searchable Dropdown Elements ---
+    const modalCurriculumCustomSelector = document.getElementById('modal-custom-curriculum-selector');
+    const modalCurriculumSelectorButton = document.getElementById('modal-curriculum-selector-button');
+    const modalCurriculumDropdownPanel = document.getElementById('modal-curriculum-dropdown-panel');
+    const modalCurriculumSearchInput = document.getElementById('modal-curriculum-search-input');
+    const modalCurriculumOptionsList = document.getElementById('modal-curriculum-options-list');
     
     // --- Modal Subject Searchable Dropdown Elements ---
     const modalCustomSelector = document.getElementById('modal-custom-subject-selector');
@@ -339,6 +443,46 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', (e) => {
         if (!mainCustomSelector.contains(e.target)) mainDropdownPanel.classList.add('hidden');
         if (!modalCustomSelector.contains(e.target)) modalDropdownPanel.classList.add('hidden');
+        if (!modalCurriculumCustomSelector.contains(e.target)) modalCurriculumDropdownPanel.classList.add('hidden');
+    });
+
+    // --- Modal Curriculum Dropdown Logic ---
+    modalCurriculumSelectorButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        modalCurriculumDropdownPanel.classList.toggle('hidden');
+    });
+
+    modalCurriculumSearchInput.addEventListener('input', () => {
+        const filter = modalCurriculumSearchInput.value.toLowerCase();
+        modalCurriculumOptionsList.querySelectorAll('li').forEach(option => {
+            option.style.display = option.textContent.toLowerCase().includes(filter) ? '' : 'none';
+        });
+    });
+
+    modalCurriculumOptionsList.addEventListener('click', (e) => {
+        if (e.target.tagName === 'LI') {
+            const curriculumId = e.target.dataset.value;
+            const curriculumName = e.target.dataset.name;
+            
+            // Update modal curriculum selection
+            modalCurriculumIdInput.value = curriculumId;
+            modalCurriculumSelectorButton.querySelector('span').textContent = curriculumName;
+            modalCurriculumSelectorButton.querySelector('span').classList.remove('text-slate-500');
+            modalCurriculumDropdownPanel.classList.add('hidden');
+            
+            // Reset subject selection
+            selectedModalSubject.code = null;
+            selectedModalSubject.name = 'Select a Subject';
+            modalSelectorButton.querySelector('span').textContent = 'Select a Subject';
+            modalSelectorButton.querySelector('span').classList.add('text-slate-500');
+            
+            // Clear prerequisite list
+            prerequisiteList.innerHTML = '<p class="text-slate-500">Select a subject to see available prerequisites.</p>';
+            savePrerequisitesBtn.disabled = true;
+            
+            // Fetch subjects for this curriculum
+            fetchSubjectsForModal(curriculumId);
+        }
     });
 
     // --- Modal Subject Dropdown Logic ---
@@ -366,33 +510,34 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Modal Controls ---
-    const showModal = (subjectCodeToEdit = null) => {
-        if (!selectedCurriculum.id) {
-            showConfirmationModal({
-                title: 'No Curriculum Selected',
-                message: 'Please select a curriculum from the main dropdown first.',
-                icon: `<svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`,
-                confirmButtonClass: 'bg-yellow-600 hover:bg-yellow-700',
-                onConfirm: () => {}
-            });
-            return;
-        }
-        
-        modalCurriculumIdInput.value = selectedCurriculum.id;
-        modalCurriculumName.textContent = selectedCurriculum.name;
-        
-        fetchSubjectsForModal(selectedCurriculum.id).then(() => {
-            if (subjectCodeToEdit) {
-                const subject = allSubjectsForCurriculum.find(s => s.subject_code === subjectCodeToEdit);
-                if (subject) {
-                    selectedModalSubject.code = subject.subject_code;
-                    selectedModalSubject.name = `${subject.subject_name} (${subject.subject_code})`;
-                    modalSelectorButton.querySelector('span').textContent = selectedModalSubject.name;
-                    modalSelectorButton.querySelector('span').classList.remove('text-slate-500');
-                    handleSubjectSelection(subjectCodeToEdit);
+    const showModal = (subjectCodeToEdit = null, curriculumIdFromEdit = null) => {
+        // If editing from main page and curriculum is selected, pre-populate
+        if (curriculumIdFromEdit && selectedCurriculum.id) {
+            modalCurriculumIdInput.value = selectedCurriculum.id;
+            modalCurriculumSelectorButton.querySelector('span').textContent = selectedCurriculum.name;
+            modalCurriculumSelectorButton.querySelector('span').classList.remove('text-slate-500');
+            
+            fetchSubjectsForModal(selectedCurriculum.id).then(() => {
+                if (subjectCodeToEdit) {
+                    const subject = allSubjectsForCurriculum.find(s => s.subject_code === subjectCodeToEdit);
+                    if (subject) {
+                        selectedModalSubject.code = subject.subject_code;
+                        selectedModalSubject.name = `${subject.subject_name} (${subject.subject_code})`;
+                        modalSelectorButton.querySelector('span').textContent = selectedModalSubject.name;
+                        modalSelectorButton.querySelector('span').classList.remove('text-slate-500');
+                        handleSubjectSelection(subjectCodeToEdit);
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            // Reset modal to default state
+            modalCurriculumIdInput.value = '';
+            modalCurriculumSelectorButton.querySelector('span').textContent = '-- Select a Curriculum --';
+            modalCurriculumSelectorButton.querySelector('span').classList.add('text-slate-500');
+            modalSelectorButton.querySelector('span').textContent = 'Select a curriculum first';
+            modalSelectorButton.querySelector('span').classList.add('text-slate-500');
+            prerequisiteList.innerHTML = '<p class="text-slate-500">Select a curriculum and subject to see available prerequisites.</p>';
+        }
 
         prerequisiteModal.classList.remove('hidden');
         setTimeout(() => modalPanel.classList.remove('opacity-0', 'scale-95'), 10);
@@ -404,9 +549,16 @@ document.addEventListener('DOMContentLoaded', () => {
             prerequisiteModal.classList.add('hidden');
             prerequisiteForm.reset();
             modalOptionsList.innerHTML = '';
-            prerequisiteList.innerHTML = '<p class="text-slate-500">Select a subject to see available prerequisites.</p>';
+            prerequisiteList.innerHTML = '<p class="text-slate-500">Select a curriculum and subject to see available prerequisites.</p>';
+            
+            // Reset curriculum dropdown
+            modalCurriculumSelectorButton.querySelector('span').textContent = '-- Select a Curriculum --';
+            modalCurriculumSelectorButton.querySelector('span').classList.add('text-slate-500');
+            
+            // Reset subject dropdown
             modalSelectorButton.querySelector('span').textContent = 'Select a curriculum first';
             modalSelectorButton.querySelector('span').classList.add('text-slate-500');
+            
             savePrerequisitesBtn.disabled = true;
             // Reset prerequisite sequence
             prerequisiteSequence = [];
@@ -443,6 +595,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    async function fetchPrerequisiteDataAfterSave(curriculumId) {
+        try {
+            const response = await fetch(`/api/prerequisites/${curriculumId}`);
+            if (!response.ok) throw new Error('Failed to fetch data.');
+            
+            const data = await response.json();
+            renderPrerequisiteChain(data.prerequisites || {}, data.subjects || [], false); // Don't disable save button
+        } catch (error) {
+            console.error('Error fetching prerequisite data after save:', error);
+            prerequisiteChainContainer.innerHTML = '<p class="text-center text-red-500 py-8">Could not load prerequisite data.</p>';
+        }
+    }
+
     async function fetchSubjectsForModal(curriculumId) {
         try {
             const response = await fetch(`/api/prerequisites/${curriculumId}`);
@@ -462,14 +627,63 @@ document.addEventListener('DOMContentLoaded', () => {
         modalSelectorButton.querySelector('span').textContent = subjects.length > 0 ? 'Select a Subject' : 'No subjects available';
         modalSelectorButton.disabled = subjects.length === 0;
 
+        if (subjects.length === 0) {
+            return;
+        }
+
+        // Group subjects by year and semester
+        const subjectsByYearSemester = {};
         subjects.forEach(subject => {
-            const li = document.createElement('li');
-            li.className = 'px-4 py-2 hover:bg-blue-100 cursor-pointer';
-            li.dataset.value = subject.subject_code;
-            const subjectName = `${subject.subject_name} (${subject.subject_code})`;
-            li.dataset.name = subjectName;
-            li.textContent = subjectName;
-            modalOptionsList.appendChild(li);
+            const year = subject.pivot?.year || 'Unassigned';
+            const semester = subject.pivot?.semester || 'Unassigned';
+            const key = `${year}-${semester}`;
+            
+            if (!subjectsByYearSemester[key]) {
+                subjectsByYearSemester[key] = {
+                    year: year,
+                    semester: semester,
+                    subjects: []
+                };
+            }
+            subjectsByYearSemester[key].subjects.push(subject);
+        });
+
+        // Sort the groups by year and semester
+        const sortedGroups = Object.values(subjectsByYearSemester).sort((a, b) => {
+            if (a.year === 'Unassigned') return 1;
+            if (b.year === 'Unassigned') return -1;
+            if (a.year !== b.year) return parseInt(a.year) - parseInt(b.year);
+            return parseInt(a.semester) - parseInt(b.semester);
+        });
+
+        // Create sections for each year-semester group
+        sortedGroups.forEach(group => {
+            // Create section header
+            let headerText = '';
+            if (group.year === 'Unassigned') {
+                headerText = 'Unassigned Subjects';
+            } else {
+                const yearSuffix = group.year == 1 ? 'st' : group.year == 2 ? 'nd' : group.year == 3 ? 'rd' : 'th';
+                const semesterName = group.semester == 1 ? 'First' : 'Second';
+                headerText = `${group.year}${yearSuffix} Year - ${semesterName} Semester`;
+            }
+            
+            const headerLi = document.createElement('li');
+            headerLi.className = 'px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-100 border-b border-slate-200';
+            headerLi.textContent = headerText;
+            headerLi.style.cursor = 'default';
+            modalOptionsList.appendChild(headerLi);
+
+            // Add subjects for this section
+            group.subjects.forEach(subject => {
+                const li = document.createElement('li');
+                li.className = 'px-4 py-2 hover:bg-blue-100 cursor-pointer pl-6';
+                li.dataset.value = subject.subject_code;
+                const subjectName = `${subject.subject_name} (${subject.subject_code})`;
+                li.dataset.name = subjectName;
+                li.textContent = subjectName;
+                modalOptionsList.appendChild(li);
+            });
         });
     }
 
@@ -482,58 +696,104 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Create a grid layout for buttons
-        const buttonGrid = document.createElement('div');
-        buttonGrid.className = 'grid grid-cols-1 sm:grid-cols-2 gap-3';
-
         // Initialize sequence for existing prerequisites
         prerequisiteSequence = [...existingPrerequisites];
 
+        // Group subjects by year and semester
+        const subjectsByYearSemester = {};
         eligibleSubjects.forEach(subject => {
-            const isSelected = existingPrerequisites.includes(subject.subject_code);
-            const sequenceNumber = isSelected ? prerequisiteSequence.indexOf(subject.subject_code) + 2 : 0; // Start from 2 (main subject is 1)
-            const buttonWrapper = document.createElement('div');
+            const year = subject.pivot?.year || 'Unassigned';
+            const semester = subject.pivot?.semester || 'Unassigned';
+            const key = `${year}-${semester}`;
             
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.className = `w-full p-3 rounded-lg border-2 text-left transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                isSelected 
-                    ? 'bg-blue-100 border-blue-500 text-blue-800 shadow-md' 
-                    : 'bg-white border-gray-300 text-gray-700 hover:border-blue-400 hover:bg-blue-50'
-            }`;
-            button.dataset.subjectCode = subject.subject_code;
-            button.dataset.selected = isSelected;
-            button.dataset.sequenceNumber = sequenceNumber;
-            
-            button.innerHTML = `
-                <div class="flex items-center justify-between">
-                    <div class="flex-1">
-                        <div class="font-semibold text-sm">${subject.subject_name}</div>
-                        <div class="text-xs opacity-75">${subject.subject_code}</div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        ${isSelected 
-                            ? `<div class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">${sequenceNumber}</div>`
-                            : '<div class="w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-xs font-bold">+</div>'
-                        }
-                        <div class="flex-shrink-0">
-                            ${isSelected 
-                                ? '<svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>'
-                                : '<svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>'
-                            }
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // Add click handler for toggle functionality
-            button.addEventListener('click', () => togglePrerequisiteButton(button));
-            
-            buttonWrapper.appendChild(button);
-            buttonGrid.appendChild(buttonWrapper);
+            if (!subjectsByYearSemester[key]) {
+                subjectsByYearSemester[key] = {
+                    year: year,
+                    semester: semester,
+                    subjects: []
+                };
+            }
+            subjectsByYearSemester[key].subjects.push(subject);
         });
 
-        prerequisiteList.appendChild(buttonGrid);
+        // Sort the groups by year and semester
+        const sortedGroups = Object.values(subjectsByYearSemester).sort((a, b) => {
+            if (a.year === 'Unassigned') return 1;
+            if (b.year === 'Unassigned') return -1;
+            if (a.year !== b.year) return parseInt(a.year) - parseInt(b.year);
+            return parseInt(a.semester) - parseInt(b.semester);
+        });
+
+        // Create sections for each year-semester group
+        sortedGroups.forEach(group => {
+            // Create section header
+            const sectionHeader = document.createElement('div');
+            sectionHeader.className = 'mb-3 mt-4 first:mt-0';
+            
+            let headerText = '';
+            if (group.year === 'Unassigned') {
+                headerText = 'Unassigned Subjects';
+            } else {
+                const yearSuffix = group.year == 1 ? 'st' : group.year == 2 ? 'nd' : group.year == 3 ? 'rd' : 'th';
+                const semesterName = group.semester == 1 ? 'First' : 'Second';
+                headerText = `${group.year}${yearSuffix} Year - ${semesterName} Semester`;
+            }
+            
+            sectionHeader.innerHTML = `
+                <h4 class="text-sm font-semibold text-slate-700 mb-2 pb-1 border-b border-slate-200">
+                    ${headerText}
+                </h4>
+            `;
+            prerequisiteList.appendChild(sectionHeader);
+
+            // Create grid for this section's subjects
+            const buttonGrid = document.createElement('div');
+            buttonGrid.className = 'grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4';
+
+            group.subjects.forEach(subject => {
+                const isSelected = existingPrerequisites.includes(subject.subject_code);
+                const sequenceNumber = isSelected ? prerequisiteSequence.indexOf(subject.subject_code) + 2 : 0; // Start from 2 (main subject is 1)
+                
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = `w-full p-3 rounded-lg border-2 text-left transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    isSelected 
+                        ? 'bg-blue-100 border-blue-500 text-blue-800 shadow-md' 
+                        : 'bg-white border-gray-300 text-gray-700 hover:border-blue-400 hover:bg-blue-50'
+                }`;
+                button.dataset.subjectCode = subject.subject_code;
+                button.dataset.selected = isSelected;
+                button.dataset.sequenceNumber = sequenceNumber;
+            
+                button.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="font-semibold text-sm">${subject.subject_name}</div>
+                            <div class="text-xs opacity-75">${subject.subject_code}</div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            ${isSelected 
+                                ? `<div class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">${sequenceNumber}</div>`
+                                : '<div class="w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-xs font-bold">+</div>'
+                            }
+                            <div class="flex-shrink-0">
+                                ${isSelected 
+                                    ? '<svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>'
+                                    : '<svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>'
+                                }
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add click handler for toggle functionality
+                button.addEventListener('click', () => togglePrerequisiteButton(button));
+                
+                buttonGrid.appendChild(button);
+            });
+
+            prerequisiteList.appendChild(buttonGrid);
+        });
         
         // Create hidden inputs for form submission
         updateHiddenInputs();
@@ -641,14 +901,22 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * Renders the prerequisite chain with complete sequences.
      */
-    function renderPrerequisiteChain(prerequisites, subjects) {
+    function renderPrerequisiteChain(prerequisites, subjects, disableSaveButton = true) {
         prerequisiteChainContainer.innerHTML = '';
 
         const hasPrerequisites = Object.keys(prerequisites).some(key => prerequisites[key].length > 0);
 
         if (!hasPrerequisites) {
             prerequisiteChainContainer.innerHTML = '<p class="text-center text-gray-500 py-8">No prerequisites have been set for this curriculum yet.</p>';
+            savePrerequisiteChainBtn.classList.add('hidden');
             return;
+        }
+
+        // Show save button when there are prerequisites
+        savePrerequisiteChainBtn.classList.remove('hidden');
+        // Only disable save button if explicitly requested (for initial loads)
+        if (disableSaveButton) {
+            savePrerequisiteChainBtn.disabled = true;
         }
 
         const subjectMap = new Map(subjects.map(s => [s.subject_code, s]));
@@ -723,35 +991,31 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="flex-grow flex flex-wrap items-center gap-2">
                         ${chainHtml}
                     </div>
-                    <button class="edit-prereq-btn p-2 text-blue-600 hover:text-blue-800 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" data-subject-code="${chain[0].subject_code}">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
-                        </button>
                 `;
 
                 prerequisiteChainContainer.appendChild(chainDiv);
             }
         });
 
+        // Edit buttons removed - no longer needed
     }
     
-    function addEditButtonListeners() {
-        document.querySelectorAll('.edit-prereq-btn').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const subjectCodeToEdit = e.currentTarget.dataset.subjectCode;
-                showModal(subjectCodeToEdit);
-            });
-        });
-    }
+    // Edit button functionality removed
 
     async function handleSubjectSelection(subjectCode) {
         modalSubjectCodeInput.value = subjectCode;
         savePrerequisitesBtn.disabled = !subjectCode;
 
-        if (!subjectCode || !selectedCurriculum.id) {
-            prerequisiteList.innerHTML = '<p class="text-gray-500">Select a subject to see available prerequisites.</p>';
+        const curriculumId = modalCurriculumIdInput.value;
+        if (!subjectCode || !curriculumId) {
+            prerequisiteList.innerHTML = '<p class="text-gray-500">Select a curriculum and subject to see available prerequisites.</p>';
             return;
         }
-        const response = await fetch(`/api/prerequisites/${selectedCurriculum.id}`);
+        
+        // Don't enable save button just for selecting a subject
+        // Save button will be enabled only after successfully saving prerequisites in modal
+        
+        const response = await fetch(`/api/prerequisites/${curriculumId}`);
         const data = await response.json();
         const existingPrerequisites = data.prerequisites[subjectCode] ? data.prerequisites[subjectCode].map(p => p.prerequisite_subject_code) : [];
         populatePrerequisiteButtons(subjectCode, existingPrerequisites);
@@ -784,15 +1048,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
             hideModal();
             
-            // Use SweetAlert for success
-            Swal.fire({
-                title: 'Success!',
-                text: 'Prerequisites have been saved successfully!',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            }).then(() => {
-                fetchPrerequisiteData(data.curriculum_id);
-            });
+            // Update main page curriculum selection to match modal selection
+            const savedCurriculumId = data.curriculum_id;
+            const curriculumOption = mainOptionsList.querySelector(`li[data-value="${savedCurriculumId}"]`);
+            if (curriculumOption) {
+                selectedCurriculum.id = savedCurriculumId;
+                selectedCurriculum.name = curriculumOption.dataset.name;
+                mainSelectorButton.querySelector('span').textContent = selectedCurriculum.name;
+                mainSelectorButton.querySelector('span').classList.remove('text-gray-500');
+                // Enable the Set Prerequisite button
+                setPrerequisiteBtn.disabled = false;
+            }
+            
+            // Fetch and display the prerequisite chain immediately (without disabling save button)
+            await fetchPrerequisiteDataAfterSave(savedCurriculumId);
+            
+            // Enable save button since new prerequisites were added
+            enableSaveButton();
+            
+            // Show custom success modal
+            showPrerequisiteSuccessModal();
         } catch (error) {
             console.error('Error saving prerequisites:', error);
             Swal.fire({
@@ -807,12 +1082,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     savePrerequisiteChainBtn.addEventListener('click', () => {
+        // Show loading state but don't disable button yet
+        document.querySelector('.save-btn-text').classList.add('hidden');
+        document.querySelector('.save-btn-loading').classList.remove('hidden');
+        
         showConfirmationModal({
             title: 'Save Prerequisite Chain?',
             message: 'Are you sure you want to save the current prerequisite chain configuration?',
             icon: `<svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
             confirmButtonClass: 'bg-blue-600 hover:bg-blue-700',
             onConfirm: () => {
+                // Now disable the button since user confirmed the save
+                savePrerequisiteChainBtn.disabled = true;
                 // Show traditional compliance validator modal
                 document.getElementById('complianceValidatorModal').classList.remove('hidden');
             }

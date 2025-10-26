@@ -27,6 +27,22 @@ class Curriculum extends Model
         'program_code',
         'academic_year',
         'year_level',
+        'compliance',
+        'memorandum_year',
+        'memorandum_category',
+        'memorandum',
+        'semester_units',
+        'total_units',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'semester_units' => 'array',
+        'total_units' => 'decimal:2',
     ];
 
     /**

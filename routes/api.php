@@ -18,6 +18,7 @@ Route::delete('/curriculums/{id}', [CurriculumController::class, 'destroy']);
 Route::post('/curriculums/save', [CurriculumController::class, 'saveSubjects']);
 Route::post('/curriculum/remove-subject', [CurriculumController::class, 'removeSubject']);
 Route::get('/curriculum/{id}/details', [CurriculumController::class, 'getCurriculumDetailsForExport']);
+Route::get('/curriculums/{id}/subjects', [CurriculumController::class, 'getCurriculumSubjects']);
 
 
 // --- Subject Routes ---
@@ -36,6 +37,11 @@ Route::post('/prerequisites', [PrerequisiteController::class, 'store']);
 // --- Grade Routes ---
 Route::post('/grades', [GradeController::class, 'store']);
 Route::get('/grades/{subjectId}', [GradeController::class, 'show']);
+
+// --- Curriculum Grade Routes ---
+Route::get('/curriculum-grades', [GradeController::class, 'getAllCurriculumGrades']);
+Route::post('/curriculum-grades', [GradeController::class, 'storeCurriculumGrades']);
+Route::get('/curriculum-grades/{curriculumId}', [GradeController::class, 'getCurriculumGrades']);
 
 
 // --- Equivalency Tool Routes ---
