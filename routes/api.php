@@ -37,6 +37,7 @@ Route::post('/prerequisites', [PrerequisiteController::class, 'store']);
 // --- Grade Routes ---
 Route::post('/grades', [GradeController::class, 'store']);
 Route::get('/grades/{subjectId}', [GradeController::class, 'show']);
+Route::get('/grades/{subjectId}/version-history', [GradeController::class, 'getGradeVersionHistory']);
 
 // --- Curriculum Grade Routes ---
 Route::get('/curriculum-grades', [GradeController::class, 'getAllCurriculumGrades']);

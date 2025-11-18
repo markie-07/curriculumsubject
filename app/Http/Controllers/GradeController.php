@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Grade;
+use App\Models\GradeVersion;
 use App\Models\Subject;
 use App\Models\Curriculum;
 use Illuminate\Http\Request;
@@ -46,13 +47,49 @@ class GradeController extends Controller
         $validated = $request->validate([
             'subject_id' => 'required|exists:subjects,id',
             'components' => 'required|array', // Ensure 'components' is a valid array/object
+            'curriculum_id' => 'nullable|exists:curriculums,id',
+            'course_type' => 'nullable|in:minor,major',
         ]);
 
-        // Find or create the grade setup for the given subject
-        $grade = Grade::updateOrCreate(
-            ['subject_id' => $validated['subject_id']],
-            ['components' => $validated['components']]
-        );
+        DB::beginTransaction();
+        try {
+            // Find existing grade to check if this is an update
+            $existingGrade = Grade::where('subject_id', $validated['subject_id'])->first();
+            
+            // If grade exists, save current version before updating
+            if ($existingGrade) {
+                GradeVersion::createFromGrade(
+                    $existingGrade,
+                    'Grade scheme updated',
+                    auth()->user()->name ?? 'System'
+                );
+            }
+
+            // Prepare data for update/create
+            $gradeData = ['components' => $validated['components']];
+            
+            // Add curriculum_id and course_type if provided
+            if (isset($validated['curriculum_id'])) {
+                $gradeData['curriculum_id'] = $validated['curriculum_id'];
+            }
+            if (isset($validated['course_type'])) {
+                $gradeData['course_type'] = $validated['course_type'];
+            }
+
+            // Find or create the grade setup for the given subject
+            $grade = Grade::updateOrCreate(
+                ['subject_id' => $validated['subject_id']],
+                $gradeData
+            );
+            
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to save grade scheme: ' . $e->getMessage()
+            ], 500);
+        }
         
         // Return the subject details so the JavaScript can add it to the "Grade History" list.
         $subject = Subject::find($validated['subject_id']);
@@ -81,6 +118,89 @@ class GradeController extends Controller
     }
 
     /**
+     * Get grade version history for a specific subject
+     */
+    public function getGradeVersionHistory($subjectId)
+    {
+        try {
+            // Get current grade with subject relationship
+            $currentGrade = Grade::with('subject.curriculums')->where('subject_id', $subjectId)->first();
+            
+            if (!$currentGrade) {
+                return response()->json([
+                    'current_version' => null,
+                    'previous_version' => null,
+                    'has_previous_version' => false,
+                    'message' => 'No grade scheme found for this subject'
+                ]);
+            }
+
+            // Get curriculum_id and course_type from grade, or infer from subject's first curriculum
+            $curriculumId = $currentGrade->curriculum_id;
+            $courseType = $currentGrade->course_type;
+            
+            // If curriculum_id or course_type is NULL, try to get from subject's curriculum relationship
+            if (!$curriculumId || !$courseType) {
+                $subject = $currentGrade->subject;
+                $firstCurriculum = $subject->curriculums()->first();
+                
+                if ($firstCurriculum) {
+                    $curriculumId = $curriculumId ?? $firstCurriculum->id;
+                }
+                
+                // Infer course_type from subject_type if not set
+                if (!$courseType && $subject) {
+                    $courseType = strtolower($subject->subject_type) === 'major' ? 'major' : 'minor';
+                }
+            }
+
+            // Get all previous versions, newest first
+            $versions = GradeVersion::where('subject_id', $subjectId)
+                ->orderBy('version_number', 'desc')
+                ->get();
+
+            $versionsArray = $versions->map(function ($v) use ($curriculumId, $courseType) {
+                return [
+                    'version_number' => $v->version_number,
+                    'components' => $v->components,
+                    'curriculum_id' => $v->curriculum_id ?? $curriculumId,
+                    'course_type' => $v->course_type ?? $courseType,
+                    'change_reason' => $v->change_reason,
+                    'changed_by' => $v->changed_by,
+                    'created_at' => $v->created_at,
+                ];
+            })->values();
+
+            $previousVersion = $versions->first();
+
+            return response()->json([
+                'current_version' => [
+                    'components' => $currentGrade->components,
+                    'curriculum_id' => $curriculumId,
+                    'course_type' => $courseType,
+                    'updated_at' => $currentGrade->updated_at,
+                ],
+                'previous_version' => $previousVersion ? [
+                    'version_number' => $previousVersion->version_number,
+                    'components' => $previousVersion->components,
+                    'curriculum_id' => $previousVersion->curriculum_id ?? $curriculumId,
+                    'course_type' => $previousVersion->course_type ?? $courseType,
+                    'change_reason' => $previousVersion->change_reason,
+                    'changed_by' => $previousVersion->changed_by,
+                    'created_at' => $previousVersion->created_at,
+                ] : null,
+                'versions' => $versionsArray,
+                'has_previous_version' => $previousVersion !== null,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to fetch grade version history: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Store curriculum-based grade schemes
      */
     public function storeCurriculumGrades(Request $request)
@@ -100,6 +220,18 @@ class GradeController extends Controller
             $savedSubjects = [];
 
             foreach ($validated['subjects'] as $subjectData) {
+                // Find existing grade to check if this is an update
+                $existingGrade = Grade::where('subject_id', $subjectData['subject_id'])->first();
+                
+                // If grade exists, save current version before updating
+                if ($existingGrade) {
+                    GradeVersion::createFromGrade(
+                        $existingGrade,
+                        'Curriculum grade scheme updated',
+                        auth()->user()->name ?? 'System'
+                    );
+                }
+                
                 $grade = Grade::updateOrCreate(
                     ['subject_id' => $subjectData['subject_id']],
                     [
@@ -159,21 +291,35 @@ class GradeController extends Controller
     public function getAllCurriculumGrades()
     {
         try {
-            // Get all curriculums that have at least one subject with grades
-            $curriculumsWithGrades = Curriculum::whereHas('subjects.grade')
+            // Get all curriculums that have at least one subject with grades for that curriculum
+            $curriculumsWithGrades = Curriculum::whereHas('subjects.grade', function ($query) {
+                    $query->whereColumn('grades.curriculum_id', 'curriculums.id')
+                        ->orWhereNull('grades.curriculum_id');
+                })
                 ->with(['subjects' => function ($query) {
                     $query->whereHas('grade');
                 }])
                 ->get()
                 ->map(function ($curriculum) {
+                    // Count only subjects that have grades for this specific curriculum
+                    $subjectsWithGradesCount = $curriculum->subjects->filter(function ($subject) use ($curriculum) {
+                        return $subject->grade && 
+                            ($subject->grade->curriculum_id == $curriculum->id || $subject->grade->curriculum_id === null);
+                    })->count();
+                    
                     return [
                         'id' => $curriculum->id,
                         'curriculum_name' => $curriculum->curriculum,
                         'program_code' => $curriculum->program_code,
                         'academic_year' => $curriculum->academic_year,
-                        'subjects_with_grades_count' => $curriculum->subjects->count()
+                        'subjects_with_grades_count' => $subjectsWithGradesCount
                     ];
-                });
+                })
+                ->filter(function ($curriculum) {
+                    // Only include curriculums that actually have subjects with grades
+                    return $curriculum['subjects_with_grades_count'] > 0;
+                })
+                ->values();
 
             return response()->json($curriculumsWithGrades);
 
@@ -194,15 +340,19 @@ class GradeController extends Controller
                 $query->with('grade');
             }])->findOrFail($curriculumId);
 
-            $subjects = $curriculum->subjects->map(function ($subject) {
+            $subjects = $curriculum->subjects->map(function ($subject) use ($curriculumId) {
+                // Check if the subject has a grade AND if that grade belongs to this curriculum
+                $hasGradesForThisCurriculum = $subject->grade && 
+                    ($subject->grade->curriculum_id == $curriculumId || $subject->grade->curriculum_id === null);
+                
                 return [
                     'id' => $subject->id,
                     'subject_name' => $subject->subject_name,
                     'subject_code' => $subject->subject_code,
                     'subject_type' => $subject->subject_type,
                     'subject_unit' => $subject->subject_unit,
-                    'has_grades' => $subject->grade ? true : false,
-                    'grade_components' => $subject->grade ? $subject->grade->components : null,
+                    'has_grades' => $hasGradesForThisCurriculum,
+                    'grade_components' => $hasGradesForThisCurriculum ? $subject->grade->components : null,
                 ];
             });
 

@@ -395,14 +395,20 @@ public function saveSubjects(Request $request)
     }
 
     /**
-     * Get subjects for a specific curriculum
+     * Get subjects available for a specific curriculum (subjects linked to this curriculum)
      */
     public function getCurriculumSubjects($id)
     {
         try {
-            $curriculum = Curriculum::with('subjects')->findOrFail($id);
+            $curriculum = Curriculum::findOrFail($id);
             
-            $subjects = $curriculum->subjects->map(function ($subject) {
+            // Get all subjects that are linked to this curriculum (available for this curriculum)
+            // This includes subjects that were created with this curriculum selected
+            // We get subjects that either have no year/semester assigned (available for mapping)
+            // or subjects that are already mapped to this curriculum
+            $subjects = Subject::whereHas('curriculums', function($query) use ($id) {
+                $query->where('curriculum_id', $id);
+            })->get()->map(function ($subject) {
                 return [
                     'id' => $subject->id,
                     'subject_name' => $subject->subject_name,
@@ -410,11 +416,19 @@ public function saveSubjects(Request $request)
                     'subject_type' => $subject->subject_type,
                     'subject_unit' => $subject->subject_unit,
                     'contact_hours' => $subject->contact_hours,
+                    'course_description' => $subject->course_description,
+                    'created_at' => $subject->created_at,
                 ];
             });
 
+            // Debug logging
+            \Log::info("Curriculum ID: $id");
+            \Log::info("Found subjects count: " . $subjects->count());
+            \Log::info("Subjects: " . $subjects->toJson());
+
             return response()->json($subjects);
         } catch (\Exception $e) {
+            \Log::error("Error in getCurriculumSubjects: " . $e->getMessage());
             return response()->json([
                 'message' => 'A database error occurred while fetching curriculum subjects.',
                 'error' => $e->getMessage()

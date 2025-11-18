@@ -13,9 +13,11 @@
 
             {{-- Section 1: Course Information --}}
             <div class="mb-12">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
-                    <svg class="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-                    Course Information
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center justify-between">
+                    <span class="flex items-center">
+                        <svg class="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                        Course Information
+                    </span>
                 </h2>
                 <div class="bg-white p-8 rounded-2xl shadow-md border border-gray-100">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -44,12 +46,13 @@
                             <input type="number" name="contact_hours" id="contact_hours" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
                         <div>
-                            <label for="prerequisites" class="block text-sm font-medium text-gray-700">Credit Prerequisites</label>
-                            <input type="text" name="prerequisites" id="prerequisites" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        </div>
-                        <div class="lg:col-span-3">
-                            <label for="pre_requisite_to" class="block text-sm font-medium text-gray-700">Pre-requisite to</label>
-                            <input type="text" name="pre_requisite_to" id="pre_requisite_to" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Applicable Curriculums</label>
+                            <button type="button" id="openCurriculumModal" class="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-left hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                                <span class="text-gray-500" id="curriculumButtonText">Select curriculums for this subject...</span>
+                                <svg class="w-5 h-5 text-gray-400 float-right mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
                         </div>
                         <div class="lg:col-span-3">
                             <label for="course_description" class="block text-sm font-medium text-gray-700">Course Description</label>
@@ -391,6 +394,59 @@
     </div>
 </div>
 
+{{-- Curriculum Selection Modal --}}
+<div id="curriculumSelectionModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="relative bg-white w-full max-w-4xl rounded-2xl shadow-2xl">
+            <div class="flex justify-between items-center p-6 border-b border-gray-200">
+                <h3 class="text-xl font-semibold text-gray-800">Select Applicable Curriculums</h3>
+                <button id="closeCurriculumModal" class="text-gray-400 hover:text-gray-600 focus:outline-none transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <p class="text-sm text-gray-600 mb-4">Choose which curriculums this subject will be available for in subject mapping:</p>
+
+                <div class="mb-4">
+                    <div class="relative">
+                        <input id="curriculumSearchInput" type="text" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search curriculum...">
+                        <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="text-sm font-semibold text-gray-700">Senior High</h4>
+                            <label class="inline-flex items-center gap-2 text-sm text-gray-600"><input id="selectAllSeniorHigh" type="checkbox" class="w-4 h-4 text-blue-600 rounded"> <span>Select all</span></label>
+                        </div>
+                        <div id="seniorHighContainer" class="max-h-80 overflow-y-auto space-y-3"></div>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="text-sm font-semibold text-gray-700">College</h4>
+                            <label class="inline-flex items-center gap-2 text-sm text-gray-600"><input id="selectAllCollege" type="checkbox" class="w-4 h-4 text-blue-600 rounded"> <span>Select all</span></label>
+                        </div>
+                        <div id="collegeContainer" class="max-h-80 overflow-y-auto space-y-3"></div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-4 mt-6 pt-4 border-t border-gray-200">
+                    <button id="cancelCurriculumSelection" class="px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                        Cancel
+                    </button>
+                    <button id="confirmCurriculumSelection" class="px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                        Apply Selection
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Course Success Modal --}}
 <div id="courseSuccessModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
     <div class="flex items-center justify-center min-h-screen p-4">
@@ -576,8 +632,6 @@ Learning Management System`;
         document.getElementById('subject_type').value = subject.subject_type;
         document.getElementById('credit_units').value = subject.subject_unit;
         document.getElementById('contact_hours').value = subject.contact_hours;
-        document.getElementById('prerequisites').value = subject.prerequisites;
-        document.getElementById('pre_requisite_to').value = subject.pre_requisite_to;
         document.getElementById('course_description').value = subject.course_description;
         document.getElementById('pilo_outcomes').value = subject.pilo_outcomes;
         document.getElementById('cilo_outcomes').value = subject.cilo_outcomes;
@@ -590,6 +644,12 @@ Learning Management System`;
         document.getElementById('prepared_by').value = subject.prepared_by;
         document.getElementById('reviewed_by').value = subject.reviewed_by;
         document.getElementById('approved_by').value = subject.approved_by;
+
+        // Load curriculum relationships if available
+        if (subject.curriculums && subject.curriculums.length > 0) {
+            selectedCurriculums = new Set(subject.curriculums.map(c => c.id));
+            updateCurriculumButtonText();
+        }
 
         populateMappingGrid('program-mapping-table-body', subject.program_mapping_grid, 'pilo');
         populateMappingGrid('course-mapping-table-body', subject.course_mapping_grid, 'cilo');
@@ -633,8 +693,6 @@ Learning Management System`;
             subject_type: document.getElementById('subject_type').value,
             subject_unit: document.getElementById('credit_units').value,
             contact_hours: document.getElementById('contact_hours').value,
-            prerequisites: document.getElementById('prerequisites').value,
-            pre_requisite_to: document.getElementById('pre_requisite_to').value,
             course_description: document.getElementById('course_description').value,
             pilo_outcomes: document.getElementById('pilo_outcomes').value,
             cilo_outcomes: document.getElementById('cilo_outcomes').value,
@@ -651,6 +709,7 @@ Learning Management System`;
             lessons: collectWeeklyPlan(),
             program_mapping_grid: collectMappingGridData('program-mapping-table-body'),
             course_mapping_grid: collectMappingGridData('course-mapping-table-body'),
+            curriculum_ids: Array.from(selectedCurriculums), // Include selected curriculums
         };
 
         const subjectId = subjectIdField.value;
@@ -736,6 +795,132 @@ Learning Management System`;
         if (e.target.classList.contains('delete-row-btn')) {
             e.target.closest('tr').remove();
         }
+    });
+
+    // --- CURRICULUM SELECTION MODAL ---
+    let selectedCurriculums = new Set();
+    let allCurriculums = [];
+
+    const loadCurriculums = async () => {
+        try {
+            const response = await fetch('/api/curriculums');
+            if (response.ok) {
+                allCurriculums = await response.json();
+                renderCurriculumChecklist();
+            } else {
+                console.error('Failed to load curriculums');
+            }
+        } catch (error) {
+            console.error('Error loading curriculums:', error);
+        }
+    };
+
+    const renderCurriculumChecklist = () => {
+        const term = (document.getElementById('curriculumSearchInput')?.value || '').toLowerCase();
+        const filterMatch = (c) => {
+            const s = `${c.curriculum_name} ${c.program_code} ${c.academic_year}`.toLowerCase();
+            return term === '' || s.includes(term);
+        };
+
+        const seniorHigh = allCurriculums.filter(c => c.year_level === 'Senior High' && filterMatch(c));
+        const college = allCurriculums.filter(c => c.year_level === 'College' && filterMatch(c));
+
+        const renderGroup = (containerId, list) => {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            list.forEach(curriculum => {
+                const isSelected = selectedCurriculums.has(curriculum.id);
+                const card = document.createElement('div');
+                card.className = `border rounded-lg p-4 cursor-pointer transition-all duration-200 ${isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`;
+                card.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <input type="checkbox" class="curriculum-checkbox w-5 h-5 text-blue-600 rounded focus:ring-blue-500" data-curriculum-id="${curriculum.id}" ${isSelected ? 'checked' : ''}>
+                        <div class="flex-1">
+                            <h4 class="font-medium text-gray-900">${curriculum.curriculum_name}</h4>
+                            <p class="text-sm text-gray-600">${curriculum.program_code} - ${curriculum.academic_year}</p>
+                        </div>
+                    </div>`;
+                card.addEventListener('click', (e) => {
+                    if (e.target.tagName !== 'INPUT') {
+                        const checkbox = card.querySelector('input[type="checkbox"]');
+                        checkbox.checked = !checkbox.checked;
+                        checkbox.dispatchEvent(new Event('change'));
+                    }
+                });
+                const checkbox = card.querySelector('input[type="checkbox"]');
+                checkbox.addEventListener('change', (e) => {
+                    const curriculumId = parseInt(e.target.dataset.curriculumId);
+                    if (e.target.checked) {
+                        selectedCurriculums.add(curriculumId);
+                    } else {
+                        selectedCurriculums.delete(curriculumId);
+                    }
+                    renderCurriculumChecklist();
+                });
+                container.appendChild(card);
+            });
+        };
+
+        renderGroup('seniorHighContainer', seniorHigh);
+        renderGroup('collegeContainer', college);
+
+        const shToggle = document.getElementById('selectAllSeniorHigh');
+        const coToggle = document.getElementById('selectAllCollege');
+        shToggle.checked = seniorHigh.length > 0 && seniorHigh.every(c => selectedCurriculums.has(c.id));
+        coToggle.checked = college.length > 0 && college.every(c => selectedCurriculums.has(c.id));
+        shToggle.onchange = (e) => {
+            if (e.target.checked) {
+                seniorHigh.forEach(c => selectedCurriculums.add(c.id));
+            } else {
+                seniorHigh.forEach(c => selectedCurriculums.delete(c.id));
+            }
+            renderCurriculumChecklist();
+        };
+        coToggle.onchange = (e) => {
+            if (e.target.checked) {
+                college.forEach(c => selectedCurriculums.add(c.id));
+            } else {
+                college.forEach(c => selectedCurriculums.delete(c.id));
+            }
+            renderCurriculumChecklist();
+        };
+    };
+
+    const updateCurriculumButtonText = () => {
+        const buttonText = document.getElementById('curriculumButtonText');
+        if (selectedCurriculums.size === 0) {
+            buttonText.textContent = 'Select curriculums for this subject...';
+            buttonText.className = 'text-gray-500';
+        } else {
+            const selectedNames = allCurriculums
+                .filter(c => selectedCurriculums.has(c.id))
+                .map(c => c.curriculum_name);
+            buttonText.textContent = `${selectedCurriculums.size} curriculum(s) selected: ${selectedNames.join(', ')}`;
+            buttonText.className = 'text-gray-800';
+        }
+    };
+
+    // Modal event listeners
+    document.getElementById('openCurriculumModal').addEventListener('click', () => {
+        document.getElementById('curriculumSelectionModal').classList.remove('hidden');
+        loadCurriculums();
+    });
+
+    document.getElementById('closeCurriculumModal').addEventListener('click', () => {
+        document.getElementById('curriculumSelectionModal').classList.add('hidden');
+    });
+
+    document.getElementById('cancelCurriculumSelection').addEventListener('click', () => {
+        document.getElementById('curriculumSelectionModal').classList.add('hidden');
+    });
+
+    document.getElementById('confirmCurriculumSelection').addEventListener('click', () => {
+        document.getElementById('curriculumSelectionModal').classList.add('hidden');
+        updateCurriculumButtonText();
+    });
+
+    document.getElementById('curriculumSearchInput')?.addEventListener('input', () => {
+        renderCurriculumChecklist();
     });
 
     // --- INITIALIZATION ---

@@ -92,9 +92,30 @@
             <div class="lg:col-span-2 bg-gray-50 border border-gray-200 rounded-xl p-6 flex flex-col h-[calc(100vh-200px)]">
                 <div class="pb-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center">
                     <h2 class="text-xl font-semibold text-gray-800 mb-2 sm:mb-0">Curriculum Overview</h2>
-                    <select id="curriculumSelector" class="w-full sm:w-auto border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-                        <option value="">Select a Curriculum</option>
-                    </select>
+                    <div class="relative w-full sm:w-auto">
+                        <div id="curriculumDropdown" class="relative">
+                            <button type="button" id="curriculumDropdownButton" class="w-full sm:w-auto border border-gray-300 rounded-lg p-2 bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500 transition flex justify-between items-center min-w-48">
+                                <span id="curriculumDropdownText" class="text-gray-500">Select a Curriculum</span>
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            
+                            <div id="curriculumDropdownMenu" class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg hidden max-h-80 overflow-hidden">
+                                <div class="p-2 border-b border-gray-200">
+                                    <input type="text" id="curriculumSearchInput" placeholder="Search curriculums..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                                </div>
+                                <div id="curriculumOptions" class="max-h-60 overflow-y-auto">
+                                    <!-- Options will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Hidden select for form compatibility -->
+                        <select id="curriculumSelector" class="hidden">
+                            <option value="">Select a Curriculum</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div id="grand-total-container" class="hidden mt-4 p-4 bg-gray-100 border border-gray-200 text-gray-800 rounded-lg flex justify-between items-center">
@@ -2407,14 +2428,17 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
 
         function renderAvailableSubjects(subjects, mappedSubjects = []) {
             availableSubjectsContainer.innerHTML = '';
-            const mappedSubjectCodes = new Set(mappedSubjects.map(s => s.subject_code));
+            const mappedSubjectCodes = new Set(
+                (mappedSubjects || [])
+                    .filter(s => s.pivot && s.pivot.year != null && s.pivot.semester != null)
+                    .map(s => s.subject_code)
+            );
 
             if (subjects.length === 0) {
                 availableSubjectsContainer.innerHTML = '<p class="text-gray-500 text-center mt-4">No available subjects found.</p>';
             } else {
                 subjects.forEach(subject => {
                     const isMapped = mappedSubjectCodes.has(subject.subject_code);
-                    
                     const newSubjectCard = createSubjectCard(subject, isMapped);
                     availableSubjectsContainer.appendChild(newSubjectCard);
                 });
@@ -2438,10 +2462,17 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
             updateUnitTotals();
         }
 
+        let allCurriculums = [];
+        let filteredCurriculums = [];
+
         function fetchCurriculums() {
             fetch('/api/curriculums')
                 .then(response => response.json())
                 .then(curriculums => {
+                    allCurriculums = curriculums;
+                    filteredCurriculums = [...curriculums];
+                    
+                    // Update hidden select for compatibility
                     curriculumSelector.innerHTML = '<option value="">Select a Curriculum</option>';
                     curriculums.forEach(curriculum => {
                         const optionText = `${curriculum.year_level}: ${curriculum.program_code} ${curriculum.curriculum_name} (${curriculum.academic_year})`;
@@ -2451,13 +2482,77 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
                         option.dataset.semesterUnits = JSON.stringify(curriculum.semester_units || []);
                         curriculumSelector.appendChild(option);
                     });
+                    
+                    // Populate searchable dropdown
+                    populateCurriculumOptions();
+                    
                     const urlParams = new URLSearchParams(window.location.search);
                     const newCurriculumId = urlParams.get('curriculumId');
                     if (newCurriculumId) {
-                        curriculumSelector.value = newCurriculumId;
+                        selectCurriculum(newCurriculumId);
                         setTimeout(() => fetchCurriculumData(newCurriculumId), 100);
                     }
                 });
+        }
+
+        function populateCurriculumOptions() {
+            const optionsContainer = document.getElementById('curriculumOptions');
+            optionsContainer.innerHTML = '';
+            
+            if (filteredCurriculums.length === 0) {
+                optionsContainer.innerHTML = '<div class="px-3 py-2 text-gray-500 text-sm">No curriculums found</div>';
+                return;
+            }
+            
+            filteredCurriculums.forEach(curriculum => {
+                const optionText = `${curriculum.year_level}: ${curriculum.program_code} ${curriculum.curriculum_name} (${curriculum.academic_year})`;
+                const option = document.createElement('div');
+                option.className = 'px-3 py-2 hover:bg-blue-50 cursor-pointer text-sm border-b border-gray-100 last:border-b-0';
+                option.textContent = optionText;
+                option.dataset.curriculumId = curriculum.id;
+                option.dataset.yearLevel = curriculum.year_level;
+                option.dataset.academicYear = curriculum.academic_year;
+                option.dataset.semesterUnits = JSON.stringify(curriculum.semester_units || []);
+                
+                option.addEventListener('click', () => {
+                    selectCurriculum(curriculum.id, optionText);
+                    document.getElementById('curriculumDropdownMenu').classList.add('hidden');
+                });
+                
+                optionsContainer.appendChild(option);
+            });
+        }
+
+        function selectCurriculum(curriculumId, optionText = null) {
+            // Update hidden select
+            curriculumSelector.value = curriculumId;
+            
+            // Update dropdown display
+            const dropdownText = document.getElementById('curriculumDropdownText');
+            if (optionText) {
+                dropdownText.textContent = optionText;
+                dropdownText.className = 'text-gray-800';
+            } else {
+                // Find curriculum by ID
+                const curriculum = allCurriculums.find(c => c.id == curriculumId);
+                if (curriculum) {
+                    const text = `${curriculum.year_level}: ${curriculum.program_code} ${curriculum.curriculum_name} (${curriculum.academic_year})`;
+                    dropdownText.textContent = text;
+                    dropdownText.className = 'text-gray-800';
+                }
+            }
+            
+            // Trigger change event to load curriculum data
+            curriculumSelector.dispatchEvent(new Event('change'));
+        }
+
+        function filterCurriculums(searchTerm) {
+            const term = searchTerm.toLowerCase();
+            filteredCurriculums = allCurriculums.filter(curriculum => {
+                const searchText = `${curriculum.year_level} ${curriculum.program_code} ${curriculum.curriculum_name} ${curriculum.academic_year}`.toLowerCase();
+                return searchText.includes(term);
+            });
+            populateCurriculumOptions();
         }
 
         // Load all subjects initially
@@ -2490,18 +2585,28 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
             const semesterUnits = JSON.parse(selectedOption.dataset.semesterUnits || '[]');
             renderCurriculumOverview(yearLevel, semesterUnits);
 
-            fetch(`/api/curriculums/${id}`)
-                .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.json();
-                })
-                .then(data => {
-                    if (!data || !data.curriculum || !data.allSubjects) throw new Error('Invalid data structure from server.');
+            // Fetch curriculum data and available subjects in parallel
+            const curriculumDataPromise = fetch(`/api/curriculums/${id}`).then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            });
+            
+            const availableSubjectsPromise = fetch(`/api/curriculums/${id}/subjects`).then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            }).then(subjects => {
+                console.log('Available subjects for curriculum', id, ':', subjects);
+                return subjects;
+            });
+            
+            Promise.all([curriculumDataPromise, availableSubjectsPromise])
+                .then(([curriculumData, availableSubjects]) => {
+                    if (!curriculumData || !curriculumData.curriculum) throw new Error('Invalid curriculum data structure from server.');
                     
-                    renderAvailableSubjects(data.allSubjects, data.curriculum.subjects);
-                    populateMappedSubjects(data.curriculum.subjects);
+                    renderAvailableSubjects(availableSubjects || [], curriculumData.curriculum.subjects || []);
+                    populateMappedSubjects(curriculumData.curriculum.subjects || []);
                     
-                    const hasMappedSubjects = data.curriculum.subjects.length > 0;
+                    const hasMappedSubjects = curriculumData.curriculum.subjects.length > 0;
                     
                     if (hasMappedSubjects) {
                         toggleEditMode(false);
@@ -2599,20 +2704,39 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
 
 
 
+        // Searchable dropdown event listeners
+        document.getElementById('curriculumDropdownButton').addEventListener('click', () => {
+            const menu = document.getElementById('curriculumDropdownMenu');
+            menu.classList.toggle('hidden');
+            if (!menu.classList.contains('hidden')) {
+                document.getElementById('curriculumSearchInput').focus();
+            }
+        });
+
+        document.getElementById('curriculumSearchInput').addEventListener('input', (e) => {
+            filterCurriculums(e.target.value);
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('curriculumDropdown');
+            if (!dropdown.contains(e.target)) {
+                document.getElementById('curriculumDropdownMenu').classList.add('hidden');
+            }
+        });
+
+        // Original curriculum selector change event (for compatibility)
         curriculumSelector.addEventListener('change', (e) => {
             const curriculumId = e.target.value;
             if (curriculumId) {
                 fetchCurriculumData(curriculumId);
             } else {
                 curriculumOverview.innerHTML = '<p class="text-gray-500 text-center mt-4">Select a curriculum from the dropdown to start mapping subjects.</p>';
-                // Keep showing all subjects even when no curriculum is selected
-                loadAllSubjects();
-                updateUnitTotals();
-                document.getElementById('editCurriculumButton').classList.add('hidden');
-                toggleEditMode(false);
+                availableSubjectsContainer.innerHTML = '<p class="text-gray-500 text-center mt-4">Select a curriculum to view subjects.</p>';
+                document.getElementById('grand-total-container').classList.add('hidden');
             }
         });
-        
+
         // Load all subjects initially when page loads
         loadAllSubjects();
         fetchCurriculums();

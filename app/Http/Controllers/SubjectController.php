@@ -24,8 +24,6 @@ class SubjectController extends Controller
             'subject_type' => 'required|string|in:Major,Minor,Elective,General',
             'lessons' => 'nullable|array',
             'contact_hours' => 'nullable|integer',
-            'prerequisites' => 'nullable|string',
-            'pre_requisite_to' => 'nullable|string',
             'course_description' => 'nullable|string',
             'program_mapping_grid' => 'nullable|array',
             'course_mapping_grid' => 'nullable|array',
@@ -40,6 +38,8 @@ class SubjectController extends Controller
             'prepared_by' => 'nullable|string',
             'reviewed_by' => 'nullable|string',
             'approved_by' => 'nullable|string',
+            'curriculum_ids' => 'nullable|array',
+            'curriculum_ids.*' => 'integer|exists:curriculums,id',
         ]);
 
         $subject = Subject::create([
@@ -49,8 +49,6 @@ class SubjectController extends Controller
             'subject_unit' => $validated['subject_unit'],
             'lessons' => $validated['lessons'] ?? null,
             'contact_hours' => $validated['contact_hours'] ?? null,
-            'prerequisites' => $validated['prerequisites'] ?? null,
-            'pre_requisite_to' => $validated['pre_requisite_to'] ?? null,
             'course_description' => $validated['course_description'] ?? null,
             'program_mapping_grid' => $validated['program_mapping_grid'] ?? null,
             'course_mapping_grid' => $validated['course_mapping_grid'] ?? null,
@@ -66,6 +64,18 @@ class SubjectController extends Controller
             'reviewed_by' => $validated['reviewed_by'] ?? null,
             'approved_by' => $validated['approved_by'] ?? null,
         ]);
+
+        // Attach subject to selected curriculums if provided
+        if (!empty($validated['curriculum_ids'])) {
+            $attachData = [];
+            foreach ($validated['curriculum_ids'] as $curriculumId) {
+                $attachData[$curriculumId] = [
+                    'year' => null,     // Will be set during subject mapping
+                    'semester' => null  // Will be set during subject mapping
+                ];
+            }
+            $subject->curriculums()->attach($attachData);
+        }
 
         // Flash success message for session-based requests
         session()->flash('success', 'Subject "' . $subject->subject_name . '" has been created successfully!');
@@ -90,7 +100,8 @@ class SubjectController extends Controller
 
     public function show($id)
     {
-        return response()->json(Subject::findOrFail($id));
+        $subject = Subject::with('curriculums')->findOrFail($id);
+        return response()->json($subject);
     }
 
     public function update(Request $request, $id)
@@ -104,8 +115,6 @@ class SubjectController extends Controller
             'subject_type' => 'required|string|in:Major,Minor,Elective,General',
             'lessons' => 'nullable|array',
             'contact_hours' => 'nullable|integer',
-            'prerequisites' => 'nullable|string',
-            'pre_requisite_to' => 'nullable|string',
             'course_description' => 'nullable|string',
             'program_mapping_grid' => 'nullable|array',
             'course_mapping_grid' => 'nullable|array',
@@ -120,6 +129,8 @@ class SubjectController extends Controller
             'prepared_by' => 'nullable|string',
             'reviewed_by' => 'nullable|string',
             'approved_by' => 'nullable|string',
+            'curriculum_ids' => 'nullable|array',
+            'curriculum_ids.*' => 'integer|exists:curriculums,id',
         ]);
 
         $updateData = [
@@ -129,8 +140,6 @@ class SubjectController extends Controller
             'subject_unit' => $validated['subject_unit'],
             'lessons' => $validated['lessons'] ?? null,
             'contact_hours' => $validated['contact_hours'] ?? null,
-            'prerequisites' => $validated['prerequisites'] ?? null,
-            'pre_requisite_to' => $validated['pre_requisite_to'] ?? null,
             'course_description' => $validated['course_description'] ?? null,
             'program_mapping_grid' => $validated['program_mapping_grid'] ?? null,
             'course_mapping_grid' => $validated['course_mapping_grid'] ?? null,
@@ -148,7 +157,7 @@ class SubjectController extends Controller
         ];
 
         // Use database transaction to ensure data consistency
-        DB::transaction(function () use ($subject, $updateData, $request) {
+        DB::transaction(function () use ($subject, $updateData, $request, $validated) {
             // Get the next version number
             $nextVersionNumber = SubjectVersion::where('subject_id', $subject->id)->max('version_number') + 1;
             
@@ -162,6 +171,18 @@ class SubjectController extends Controller
             
             // Update the subject with new data
             $subject->update($updateData);
+            
+            // Update curriculum relationships
+            if (isset($validated['curriculum_ids'])) {
+                $syncData = [];
+                foreach ($validated['curriculum_ids'] as $curriculumId) {
+                    $syncData[$curriculumId] = [
+                        'year' => null,     // Will be set during subject mapping
+                        'semester' => null  // Will be set during subject mapping
+                    ];
+                }
+                $subject->curriculums()->sync($syncData);
+            }
         });
 
         // Flash success message for session-based requests
