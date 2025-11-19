@@ -30,13 +30,27 @@
 
             {{-- Curriculums Section --}}
             <div class="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
-                <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold text-slate-700 mb-4 sm:mb-0">Existing Curriculums</h2>
-                    <div class="relative w-full sm:w-72">
-                        <svg class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
-                        </svg>
-                        <input type="text" id="search-bar" placeholder="Search..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200">
+                <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                    <h2 class="text-xl font-bold text-slate-700">Existing Curriculums</h2>
+                    <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                        {{-- Version Filter --}}
+                        <div class="relative w-full sm:w-48">
+                            <svg class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 01.628.74v2.288a2.25 2.25 0 01-.659 1.59l-4.682 4.683a2.25 2.25 0 00-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 018 18.25v-5.757a2.25 2.25 0 00-.659-1.591L2.659 6.22A2.25 2.25 0 012 4.629V2.34a.75.75 0 01.628-.74z" clip-rule="evenodd" />
+                            </svg>
+                            <select id="version-filter" class="w-full appearance-none pl-10 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200">
+                                <option value="new" selected>New</option>
+                                <option value="old">Old</option>
+                            </select>
+                            <svg class="w-5 h-5 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
+                        </div>
+                        {{-- Search Bar --}}
+                        <div class="relative w-full sm:w-72">
+                            <svg class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+                            </svg>
+                            <input type="text" id="search-bar" placeholder="Search..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200">
+                        </div>
                     </div>
                 </div>
 
@@ -247,6 +261,7 @@
             const seniorHighCurriculums = document.getElementById('senior-high-curriculums');
             const collegeCurriculums = document.getElementById('college-curriculums');
             const searchBar = document.getElementById('search-bar');
+            const versionFilter = document.getElementById('version-filter');
             
             // New form elements
             const complianceSelect = document.getElementById('compliance');
@@ -606,25 +621,11 @@
                 card.dataset.name = curriculum.curriculum_name.toLowerCase();
                 card.dataset.code = curriculum.program_code.toLowerCase();
                 card.dataset.id = curriculum.id;
+                card.dataset.version = curriculum.version_status || 'new';
 
                 const date = new Date(curriculum.created_at);
                 const formattedDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 const formattedTime = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-
-                // Determine status badge
-                const statusBadge = curriculum.status === 'active' 
-                    ? `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                        </svg>
-                        Active
-                    </span>`
-                    : `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                        </svg>
-                        Inactive
-                    </span>`;
 
                 // Helper function to truncate long memorandum text
                 const truncateText = (text, maxLength = 60) => {
@@ -655,9 +656,24 @@
                     </span>`
                     : '';
 
+                // Version status badge
+                const versionBadge = curriculum.version_status === 'old'
+                    ? `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
+                        </svg>
+                        Old Version
+                    </span>`
+                    : `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                        </svg>
+                        New
+                    </span>`;
+
                 // Format memorandum year/category display
                 const memorandumYearCategory = curriculum.memorandum_year 
-                    ? `Year ${curriculum.memorandum_year}` 
+                    ? curriculum.memorandum_year
                     : curriculum.memorandum_category 
                         ? curriculum.memorandum_category 
                         : '';
@@ -677,11 +693,11 @@
                                 </div>
                                 ${curriculum.memorandum ? `
                                 <p class="text-xs text-slate-400 truncate" title="${curriculum.memorandum}">
-                                    ${memorandumYearCategory ? `📅 ${memorandumYearCategory} ` : ''}📄 ${truncateText(curriculum.memorandum, 45)}
+                                    ${memorandumYearCategory ? `${memorandumYearCategory} ` : ''}• ${truncateText(curriculum.memorandum, 45)}
                                 </p>
                                 ` : memorandumYearCategory ? `
                                 <p class="text-xs text-slate-400">
-                                    📅 ${memorandumYearCategory} 📄 No memorandum selected
+                                    ${memorandumYearCategory} • No memorandum selected
                                 </p>
                                 ` : ''}
                                 <p class="text-xs text-slate-400 mt-1">
@@ -691,18 +707,14 @@
                             </div>
                             <div class="flex flex-col items-end gap-1">
                                 <div class="flex items-center gap-1">
+                                    ${versionBadge}
                                     ${complianceBadge}
                                     ${totalUnitsDisplay}
-                                    ${statusBadge}
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <button class="edit-btn p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-100 rounded-md transition-colors" data-id="${curriculum.id}">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
-                        </button>
-                    </div>
+
                 `;
                 return card;
             };
@@ -728,6 +740,9 @@
                 if (collegeCount === 0) collegeCurriculums.innerHTML = '<p class="text-slate-500 text-sm py-4">No College curriculums found.</p>';
                 
                 attachActionListeners();
+                
+                // Apply filter after rendering to hide old versions by default
+                filterCurriculums();
             };
             
             const fetchCurriculums = () => {
@@ -917,45 +932,33 @@
             };
             
             const attachActionListeners = () => {
-                // Edit button
-                document.querySelectorAll('.edit-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const id = e.currentTarget.dataset.id;
-                        showConfirmationModal({
-                            title: 'Edit Curriculum?',
-                            message: 'Are you sure you want to edit this curriculum?',
-                            icon: `<svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>`,
-                            confirmButtonClass: 'bg-blue-600 hover:bg-blue-700',
-                            async onConfirm() {
-                                try {
-                                    const response = await fetch(`/api/curriculums/${id}`);
-                                    const data = await response.json();
-                                    if (!response.ok) throw data;
-                                    if (data.curriculum) {
-                                        showAddEditModal(true, data.curriculum);
-                                    } else {
-                                        throw new Error('Invalid data format received.');
-                                    }
-                                } catch (error) {
-                                   handleAjaxError(error, 'Failed to load curriculum data.');
-                                }
-                            }
-                        });
-                    });
-                });
-                
-                // Delete functionality removed
+                // Edit and delete functionality removed
             };
 
             searchBar.addEventListener('input', (e) => {
                 const searchTerm = e.target.value.toLowerCase();
+                filterCurriculums();
+            });
+
+            versionFilter.addEventListener('change', (e) => {
+                filterCurriculums();
+            });
+
+            function filterCurriculums() {
+                const searchTerm = searchBar.value.toLowerCase();
+                const versionStatus = versionFilter.value;
+                
                 document.querySelectorAll('.curriculum-card').forEach(card => {
                     const name = card.dataset.name;
                     const code = card.dataset.code;
-                    card.style.display = (name.includes(searchTerm) || code.includes(searchTerm)) ? 'flex' : 'none';
+                    const version = card.dataset.version;
+                    
+                    const matchesSearch = name.includes(searchTerm) || code.includes(searchTerm);
+                    const matchesVersion = version === versionStatus;
+                    
+                    card.style.display = (matchesSearch && matchesVersion) ? 'flex' : 'none';
                 });
-            });
+            }
 
             addCurriculumButton.addEventListener('click', () => showAddEditModal());
             closeModalButton.addEventListener('click', hideAddEditModal);

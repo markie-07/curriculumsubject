@@ -79,10 +79,15 @@
                         <option value="All Types">All Types</option>
                         <option value="Major">Major</option>
                         <option value="Minor">Minor</option>
-                        <option value="Elective">Elective</option>
-                        <option value="GE">General Education</option>
                     </select>
                 </div>
+
+                <button id="openAddSubjectsModal" class="w-full mb-3 px-3 py-2 text-sm bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all flex items-center justify-center gap-2 font-medium hidden">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Add Subjects
+                </button>
 
                 <div id="availableSubjects" class="flex-1 overflow-y-auto pr-2 -mr-2 space-y-3 pt-2.5">
                     <p class="text-gray-500 text-center mt-4">Select a curriculum to view subjects.</p>
@@ -94,9 +99,9 @@
                     <h2 class="text-xl font-semibold text-gray-800 mb-2 sm:mb-0">Curriculum Overview</h2>
                     <div class="relative w-full sm:w-auto">
                         <div id="curriculumDropdown" class="relative">
-                            <button type="button" id="curriculumDropdownButton" class="w-full sm:w-auto border border-gray-300 rounded-lg p-2 bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500 transition flex justify-between items-center min-w-48">
-                                <span id="curriculumDropdownText" class="text-gray-500">Select a Curriculum</span>
-                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <button type="button" id="curriculumDropdownButton" class="w-full sm:w-[850px] border border-gray-300 rounded-lg p-2 bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500 transition flex justify-between items-center">
+                                <span id="curriculumDropdownText" class="text-gray-500 truncate">Select a Curriculum</span>
+                                <svg class="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
@@ -132,7 +137,7 @@
                         <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
                         Edit
                     </button>
-                    <button id="saveCurriculumButton" class="px-6 py-3 rounded-lg text-sm font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors shadow-md" disabled>
+                    <button id="saveCurriculumButton" class="px-6 py-3 rounded-lg text-sm font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors shadow-md hidden" disabled>
                         <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v6a2 2 0 002 2h6m4-4H9m0 0V9m0 0V5a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2h-3m-4-4V9"></path></svg>
                         Save the Mapping
                     </button>
@@ -531,6 +536,71 @@
     </div>
 
     {{-- Delete modals removed --}}
+
+    {{-- Add Subjects Modal --}}
+    <div id="addSubjectsModal" class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-60 transition-opacity duration-300 ease-out hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="relative bg-white w-full max-w-3xl rounded-2xl shadow-2xl transform scale-95 opacity-0 transition-all duration-300 ease-out flex flex-col max-h-[90vh]" id="add-subjects-modal-panel">
+                
+                {{-- Modal Header --}}
+                <div class="flex justify-between items-center p-6 border-b border-gray-200">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Add Subjects to Curriculum</h2>
+                        <p class="text-sm text-gray-500 mt-1">Select subjects to add to the available subjects list</p>
+                    </div>
+                    <button id="closeAddSubjectsModal" class="text-gray-400 hover:text-gray-600 focus:outline-none transition-colors duration-200" aria-label="Close modal">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                
+                {{-- Search Bar --}}
+                <div class="p-4 border-b border-gray-200">
+                    <div class="relative">
+                        <input type="text" id="modalSubjectSearch" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search subjects...">
+                        <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                </div>
+                
+                {{-- Subject List with Two Columns --}}
+                <div class="flex-1 overflow-y-auto p-6">
+                    <div class="grid grid-cols-2 gap-6">
+                        {{-- Minor Subjects Column --}}
+                        <div>
+                            <h3 class="text-lg font-semibold text-purple-700 mb-3 pb-2 border-b border-purple-200">Minor Subjects</h3>
+                            <div id="modalMinorSubjectList" class="space-y-2">
+                                <p class="text-gray-500 text-center py-8 text-sm">Loading...</p>
+                            </div>
+                        </div>
+                        
+                        {{-- Major Subjects Column --}}
+                        <div>
+                            <h3 class="text-lg font-semibold text-blue-700 mb-3 pb-2 border-b border-blue-200">Major Subjects</h3>
+                            <div id="modalMajorSubjectList" class="space-y-2">
+                                <p class="text-gray-500 text-center py-8 text-sm">Loading...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {{-- Modal Footer --}}
+                <div class="flex justify-between items-center p-6 border-t border-gray-200 bg-gray-50">
+                    <div class="flex flex-col">
+                        <p class="text-sm text-gray-600">
+                            <span id="selectedSubjectsCount" class="font-semibold text-blue-600">0</span> subject(s) selected
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1" id="modalUnitLimitDisplay">
+                            Units: 0 selected / 0 remaining
+                        </p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button id="cancelAddSubjects" class="px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">Cancel</button>
+                        <button id="confirmAddSubjects" class="px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">Add Selected Subjects</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </main>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -576,6 +646,19 @@
         const detailsReviewedBy = document.getElementById('detailsReviewedBy');
         const detailsApprovedBy = document.getElementById('detailsApprovedBy');
         const detailsCreatedAt = document.getElementById('detailsCreatedAt');
+
+        // Add Subjects Modal Elements
+        const addSubjectsModal = document.getElementById('addSubjectsModal');
+        const addSubjectsModalPanel = document.getElementById('add-subjects-modal-panel');
+        const openAddSubjectsModalBtn = document.getElementById('openAddSubjectsModal');
+        const closeAddSubjectsModalBtn = document.getElementById('closeAddSubjectsModal');
+        const cancelAddSubjectsBtn = document.getElementById('cancelAddSubjects');
+        const confirmAddSubjectsBtn = document.getElementById('confirmAddSubjects');
+        const modalSubjectSearch = document.getElementById('modalSubjectSearch');
+        const modalSubjectList = document.getElementById('modalSubjectList');
+        const selectedSubjectsCount = document.getElementById('selectedSubjectsCount');
+        let allSystemSubjects = [];
+        let selectedSubjectsForAdding = new Set();
 
         // --- CORE ELEMENTS & STATE ---
         const searchInput = document.getElementById('searchInput');
@@ -1923,6 +2006,10 @@ const updateAllTotals = () => {
                 // Exit edit mode after successful save
                 toggleEditMode(false);
                 
+                // Hide Save button and show Edit button
+                document.getElementById('saveCurriculumButton').classList.add('hidden');
+                document.getElementById('editCurriculumButton').classList.remove('hidden');
+                
                 // Show traditional modal for prerequisites setup
                 document.getElementById('proceedToPrerequisitesModal').classList.remove('hidden');
             } else {
@@ -2013,6 +2100,55 @@ const updateAllTotals = () => {
             toggleEditMode(false); 
         });
 
+
+        // Function to render available subjects in the left panel
+        function renderAvailableSubjects(availableSubjects, mappedSubjects) {
+            availableSubjectsContainer.innerHTML = '';
+            
+            if (!availableSubjects || availableSubjects.length === 0) {
+                availableSubjectsContainer.innerHTML = '<p class="text-gray-500 text-center mt-4">No subjects available for this curriculum.</p>';
+                return;
+            }
+            
+            // Create a set of mapped subject IDs for quick lookup
+            const mappedSubjectIds = new Set(mappedSubjects.map(s => s.id));
+            
+            availableSubjects.forEach(subject => {
+                const isMapped = mappedSubjectIds.has(subject.id);
+                const subjectCard = createSubjectCard(subject, isMapped);
+                availableSubjectsContainer.appendChild(subjectCard);
+            });
+        }
+        
+        // Function to populate mapped subjects in the curriculum overview
+        function populateMappedSubjects(mappedSubjects) {
+            // Clear all existing subject tags
+            document.querySelectorAll('.semester-dropzone .flex-wrap').forEach(container => {
+                container.innerHTML = '';
+            });
+            
+            if (!mappedSubjects || mappedSubjects.length === 0) {
+                return;
+            }
+            
+            // Group subjects by year and semester
+            mappedSubjects.forEach(subject => {
+                if (subject.pivot && subject.pivot.year && subject.pivot.semester) {
+                    const dropzone = document.querySelector(
+                        `.semester-dropzone[data-year="${subject.pivot.year}"][data-semester="${subject.pivot.semester}"]`
+                    );
+                    
+                    if (dropzone) {
+                        const container = dropzone.querySelector('.flex-wrap');
+                        const subjectTag = createSubjectTag(subject, isEditing);
+                        container.appendChild(subjectTag);
+                    }
+                }
+            });
+            
+            // Update unit totals after populating
+            updateUnitTotals();
+        }
 
         function filterSubjects() {
             const searchTerm = searchInput.value.toLowerCase();
@@ -2469,17 +2605,21 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
             fetch('/api/curriculums')
                 .then(response => response.json())
                 .then(curriculums => {
-                    allCurriculums = curriculums;
-                    filteredCurriculums = [...curriculums];
+                    // Filter out old versions - only show new versions
+                    const newCurriculums = curriculums.filter(curriculum => curriculum.version_status !== 'old');
+                    
+                    allCurriculums = newCurriculums;
+                    filteredCurriculums = [...newCurriculums];
                     
                     // Update hidden select for compatibility
                     curriculumSelector.innerHTML = '<option value="">Select a Curriculum</option>';
-                    curriculums.forEach(curriculum => {
+                    newCurriculums.forEach(curriculum => {
                         const optionText = `${curriculum.year_level}: ${curriculum.program_code} ${curriculum.curriculum_name} (${curriculum.academic_year})`;
                         const option = new Option(optionText, curriculum.id);
                         option.dataset.yearLevel = curriculum.year_level;
                         option.dataset.academicYear = curriculum.academic_year;
                         option.dataset.semesterUnits = JSON.stringify(curriculum.semester_units || []);
+                        option.dataset.totalUnits = curriculum.total_units || 0;
                         curriculumSelector.appendChild(option);
                     });
                     
@@ -2541,6 +2681,11 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
                     dropdownText.className = 'text-gray-800';
                 }
             }
+            
+            // Update URL to persist curriculum selection
+            const url = new URL(window.location);
+            url.searchParams.set('curriculumId', curriculumId);
+            window.history.pushState({}, '', url);
             
             // Trigger change event to load curriculum data
             curriculumSelector.dispatchEvent(new Event('change'));
@@ -2611,12 +2756,17 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
                     if (hasMappedSubjects) {
                         toggleEditMode(false);
                         document.getElementById('editCurriculumButton').classList.remove('hidden');
+                        document.getElementById('saveCurriculumButton').classList.add('hidden');
                     } else {
                         toggleEditMode(true);
                         document.getElementById('editCurriculumButton').classList.add('hidden');
+                        const saveBtn = document.getElementById('saveCurriculumButton');
+                        saveBtn.classList.remove('hidden');
+                        saveBtn.disabled = false;
                     }
                     
-                    document.getElementById('editCurriculumButton').classList.remove('hidden');
+                    // Show the Add Subjects button when curriculum is selected
+                    openAddSubjectsModalBtn.classList.remove('hidden');
                 })
                 .catch(error => {
                     console.error('Error fetching curriculum data:', error);
@@ -2652,6 +2802,16 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
         document.getElementById('confirmEditBtn').addEventListener('click', () => {
             editConfirmationModal.classList.add('hidden');
             toggleEditMode(true);
+            
+            // Hide Edit button and show Save button
+            document.getElementById('editCurriculumButton').classList.add('hidden');
+            const saveBtn = document.getElementById('saveCurriculumButton');
+            saveBtn.classList.remove('hidden');
+            saveBtn.disabled = false;
+        });
+
+        document.getElementById('saveCurriculumButton').addEventListener('click', () => {
+            document.getElementById('saveMappingModal').classList.remove('hidden');
         });
 
         const reassignModal = document.getElementById('reassignConfirmationModal');
@@ -2703,6 +2863,326 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
         });
 
 
+        // --- ADD SUBJECTS MODAL FUNCTIONALITY ---
+        
+        // Function to show Add Subjects Modal
+        const showAddSubjectsModal = () => {
+            // Get max units from selected curriculum
+            const selectedOption = curriculumSelector.options[curriculumSelector.selectedIndex];
+            const maxTotalUnits = parseFloat(selectedOption.dataset.totalUnits) || 0;
+            
+            // Calculate current total units from available subjects
+            let currentTotalUnits = 0;
+            availableSubjectsContainer.querySelectorAll('.subject-card').forEach(card => {
+                const subjectData = JSON.parse(card.dataset.subjectData);
+                currentTotalUnits += parseFloat(subjectData.subject_unit) || 0;
+            });
+            
+            // Store these in modal dataset for easy access
+            addSubjectsModal.dataset.maxUnits = maxTotalUnits;
+            addSubjectsModal.dataset.currentUnits = currentTotalUnits;
+            
+            // Update initial display
+            updateSelectedCount();
+
+            // Fetch all subjects from the system
+            fetch('/api/subjects')
+                .then(response => response.json())
+                .then(subjects => {
+                    allSystemSubjects = subjects;
+                    renderModalSubjectList(subjects);
+                    
+                    // Show modal with animation
+                    addSubjectsModal.classList.remove('hidden');
+                    setTimeout(() => {
+                        addSubjectsModal.classList.remove('opacity-0');
+                        addSubjectsModalPanel.classList.remove('opacity-0', 'scale-95');
+                    }, 10);
+                })
+                .catch(error => {
+                    console.error('Error loading subjects:', error);
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Failed to load subjects. Please try again.',
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#EF4444'
+                    });
+                });
+        };
+        
+        // Function to hide Add Subjects Modal
+        const hideAddSubjectsModal = () => {
+            addSubjectsModal.classList.add('opacity-0');
+            addSubjectsModalPanel.classList.add('opacity-0', 'scale-95');
+            setTimeout(() => {
+                addSubjectsModal.classList.add('hidden');
+                selectedSubjectsForAdding.clear();
+                updateSelectedCount();
+            }, 300);
+        };
+        
+        // Function to render subject list in modal
+        const renderModalSubjectList = (subjects) => {
+            const modalMinorSubjectList = document.getElementById('modalMinorSubjectList');
+            const modalMajorSubjectList = document.getElementById('modalMajorSubjectList');
+            
+            if (!subjects || subjects.length === 0) {
+                modalMinorSubjectList.innerHTML = '<p class="text-gray-500 text-center py-8 text-sm">No subjects available</p>';
+                modalMajorSubjectList.innerHTML = '<p class="text-gray-500 text-center py-8 text-sm">No subjects available</p>';
+                return;
+            }
+            
+            // Get currently available subjects for this curriculum
+            const currentlyAvailableSubjectCodes = new Set();
+            availableSubjectsContainer.querySelectorAll('.subject-card').forEach(card => {
+                const subjectData = JSON.parse(card.dataset.subjectData);
+                currentlyAvailableSubjectCodes.add(subjectData.subject_code);
+            });
+            
+            // Separate subjects by type
+            const minorSubjects = subjects.filter(s => s.subject_type === 'Minor');
+            const majorSubjects = subjects.filter(s => s.subject_type === 'Major');
+            
+            // Clear both lists
+            modalMinorSubjectList.innerHTML = '';
+            modalMajorSubjectList.innerHTML = '';
+            
+            // Function to create subject item
+            const createSubjectItem = (subject) => {
+                const isAlreadyAvailable = currentlyAvailableSubjectCodes.has(subject.subject_code);
+                
+                const subjectItem = document.createElement('div');
+                subjectItem.className = `p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors ${isAlreadyAvailable ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`;
+                subjectItem.dataset.subjectCode = subject.subject_code;
+                subjectItem.dataset.subjectData = JSON.stringify(subject);
+                subjectItem.dataset.subjectUnit = subject.subject_unit; // Store unit for easy access
+                
+                // Determine subject type color for badge
+                let typeColorClass = 'bg-gray-100 text-gray-700';
+                if (subject.subject_type === 'Major') typeColorClass = 'bg-blue-100 text-blue-700';
+                else if (subject.subject_type === 'Minor') typeColorClass = 'bg-purple-100 text-purple-700';
+                else if (subject.subject_type === 'Elective') typeColorClass = 'bg-red-100 text-red-700';
+                else if (subject.subject_type.toLowerCase().includes('ge') || subject.subject_type.toLowerCase().includes('general')) typeColorClass = 'bg-orange-100 text-orange-700';
+                
+                subjectItem.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <input type="checkbox" 
+                               class="subject-checkbox h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 mt-0.5 flex-shrink-0 ${isAlreadyAvailable ? 'cursor-not-allowed' : 'cursor-pointer'}" 
+                               ${isAlreadyAvailable ? 'disabled' : ''}
+                               data-subject-code="${subject.subject_code}"
+                               data-subject-unit="${subject.subject_unit}">
+                        <div class="flex-grow min-w-0">
+                            <p class="font-semibold text-gray-800 text-sm truncate">${subject.subject_name}</p>
+                            <p class="text-xs text-gray-500 mt-0.5">${subject.subject_code} • ${subject.subject_unit} units</p>
+                            ${isAlreadyAvailable ? '<p class="text-xs text-gray-400 mt-1">Already added</p>' : ''}
+                        </div>
+                        <span class="text-xs font-semibold px-2 py-1 rounded-full ${typeColorClass} flex-shrink-0">${subject.subject_type}</span>
+                    </div>
+                `;
+                
+                // Add click handler for the entire item (if not already available)
+                if (!isAlreadyAvailable) {
+                    subjectItem.addEventListener('click', (e) => {
+                        if (e.target.type !== 'checkbox') {
+                            const checkbox = subjectItem.querySelector('.subject-checkbox');
+                            if (!checkbox.disabled) {
+                                checkbox.checked = !checkbox.checked;
+                                checkbox.dispatchEvent(new Event('change'));
+                            }
+                        }
+                    });
+                }
+                
+                return subjectItem;
+            };
+            
+            // Populate Minor subjects
+            if (minorSubjects.length === 0) {
+                modalMinorSubjectList.innerHTML = '<p class="text-gray-500 text-center py-8 text-sm">No minor subjects</p>';
+            } else {
+                minorSubjects.forEach(subject => {
+                    modalMinorSubjectList.appendChild(createSubjectItem(subject));
+                });
+            }
+            
+            // Populate Major subjects
+            if (majorSubjects.length === 0) {
+                modalMajorSubjectList.innerHTML = '<p class="text-gray-500 text-center py-8 text-sm">No major subjects</p>';
+            } else {
+                majorSubjects.forEach(subject => {
+                    modalMajorSubjectList.appendChild(createSubjectItem(subject));
+                });
+            }
+            
+            // Add change event listeners to checkboxes
+            document.querySelectorAll('.subject-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const subjectCode = e.target.dataset.subjectCode;
+                    const subjectUnit = parseFloat(e.target.dataset.subjectUnit) || 0;
+                    
+                    // Check limits before allowing check
+                    if (e.target.checked) {
+                        const maxUnits = parseFloat(addSubjectsModal.dataset.maxUnits) || 0;
+                        const currentUnits = parseFloat(addSubjectsModal.dataset.currentUnits) || 0;
+                        
+                        // Calculate units of already selected subjects
+                        let selectedUnits = 0;
+                        selectedSubjectsForAdding.forEach(code => {
+                            const subject = allSystemSubjects.find(s => s.subject_code === code);
+                            if (subject) selectedUnits += parseFloat(subject.subject_unit) || 0;
+                        });
+                        
+                        // Check if adding this subject exceeds limit
+                        if (currentUnits + selectedUnits + subjectUnit > maxUnits) {
+                            e.target.checked = false;
+                            Swal.fire({
+                                title: 'Unit Limit Reached',
+                                text: `Cannot add this subject. Total units would exceed the curriculum limit of ${maxUnits}.`,
+                                icon: 'warning',
+                                confirmButtonText: 'OK',
+                                confirmButtonColor: '#F59E0B'
+                            });
+                            return;
+                        }
+                        
+                        selectedSubjectsForAdding.add(subjectCode);
+                    } else {
+                        selectedSubjectsForAdding.delete(subjectCode);
+                    }
+                    updateSelectedCount();
+                });
+            });
+        };
+        
+        // Function to update selected count and unit display
+        const updateSelectedCount = () => {
+            selectedSubjectsCount.textContent = selectedSubjectsForAdding.size;
+            
+            const maxUnits = parseFloat(addSubjectsModal.dataset.maxUnits) || 0;
+            const currentUnits = parseFloat(addSubjectsModal.dataset.currentUnits) || 0;
+            
+            let selectedUnits = 0;
+            selectedSubjectsForAdding.forEach(code => {
+                const subject = allSystemSubjects.find(s => s.subject_code === code);
+                if (subject) selectedUnits += parseFloat(subject.subject_unit) || 0;
+            });
+            
+            const totalUsed = currentUnits + selectedUnits;
+            const remaining = Math.max(0, maxUnits - totalUsed);
+            
+            const unitDisplay = document.getElementById('modalUnitLimitDisplay');
+            unitDisplay.textContent = `Units: ${totalUsed} used / ${remaining} remaining (Max: ${maxUnits})`;
+            
+            if (totalUsed >= maxUnits) {
+                unitDisplay.classList.add('text-red-600');
+                unitDisplay.classList.remove('text-gray-500');
+            } else {
+                unitDisplay.classList.remove('text-red-600');
+                unitDisplay.classList.add('text-gray-500');
+            }
+        };
+        
+        // Function to filter modal subject list
+        const filterModalSubjects = (searchTerm) => {
+            const term = searchTerm.toLowerCase();
+            
+            const filterList = (listId) => {
+                const list = document.getElementById(listId);
+                if (!list) return;
+                
+                Array.from(list.children).forEach(item => {
+                    // Skip if it's not a subject item (e.g. "No subjects" message)
+                    if (!item.dataset.subjectData) return;
+                    
+                    const subjectData = JSON.parse(item.dataset.subjectData);
+                    const matchesSearch = subjectData.subject_name.toLowerCase().includes(term) || 
+                                         subjectData.subject_code.toLowerCase().includes(term);
+                    item.style.display = matchesSearch ? 'block' : 'none';
+                });
+            };
+            
+            filterList('modalMinorSubjectList');
+            filterList('modalMajorSubjectList');
+        };
+        
+        // Event listeners for Add Subjects Modal
+        openAddSubjectsModalBtn.addEventListener('click', showAddSubjectsModal);
+        closeAddSubjectsModalBtn.addEventListener('click', hideAddSubjectsModal);
+        cancelAddSubjectsBtn.addEventListener('click', hideAddSubjectsModal);
+        
+        modalSubjectSearch.addEventListener('input', (e) => {
+            filterModalSubjects(e.target.value);
+        });
+        
+        confirmAddSubjectsBtn.addEventListener('click', () => {
+            if (selectedSubjectsForAdding.size === 0) {
+                Swal.fire({
+                    title: 'No Subjects Selected',
+                    text: 'Please select at least one subject to add.',
+                    icon: 'warning',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#F59E0B'
+                });
+                return;
+            }
+            
+            const curriculumId = curriculumSelector.value;
+            if (!curriculumId) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'No curriculum selected.',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#EF4444'
+                });
+                return;
+            }
+            
+            // Get selected subjects data
+            const subjectsToAdd = allSystemSubjects.filter(subject => 
+                selectedSubjectsForAdding.has(subject.subject_code)
+            );
+            
+            // Send request to add subjects to curriculum
+            fetch(`/api/curriculums/${curriculumId}/add-subjects`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                body: JSON.stringify({
+                    subject_ids: subjectsToAdd.map(s => s.id)
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideAddSubjectsModal();
+                
+                Swal.fire({
+                    title: 'Success!',
+                    text: `${selectedSubjectsForAdding.size} subject(s) added to curriculum successfully!`,
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#10B981',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+                
+                // Refresh the curriculum data to show new subjects
+                fetchCurriculumData(curriculumId);
+            })
+            .catch(error => {
+                console.error('Error adding subjects:', error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to add subjects. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#EF4444'
+                });
+            });
+        });
 
         // Searchable dropdown event listeners
         document.getElementById('curriculumDropdownButton').addEventListener('click', () => {

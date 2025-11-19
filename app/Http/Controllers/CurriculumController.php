@@ -22,6 +22,7 @@ class CurriculumController extends Controller
         $curriculums = Curriculum::withCount('subjects')
             ->orderBy('year_level')
             ->orderBy('curriculum')
+            ->orderByDesc('academic_year')
             ->get()
             ->map(function ($curriculum) {
                 return [
@@ -36,9 +37,9 @@ class CurriculumController extends Controller
                     'memorandum' => $curriculum->memorandum,
                     'semester_units' => $curriculum->semester_units,
                     'total_units' => $curriculum->total_units,
+                    'version_status' => $curriculum->version_status,
                     'created_at' => $curriculum->created_at,
                     'subjects_count' => $curriculum->subjects_count,
-                    'status' => $curriculum->subjects_count > 0 ? 'active' : 'inactive'
                 ];
             });
         return response()->json($curriculums);
@@ -51,7 +52,7 @@ class CurriculumController extends Controller
     {
         $validated = $request->validate([
             'curriculum' => 'required|string|max:255',
-            'programCode' => 'required|string|max:255|unique:curriculums,program_code',
+            'programCode' => 'required|string|max:255',
             'academicYear' => 'required|string|max:255',
             'yearLevel' => 'required|in:Senior High,College',
             'compliance' => 'nullable|string|in:CHED,DepEd',
@@ -62,6 +63,18 @@ class CurriculumController extends Controller
             'semesterUnits.*' => 'nullable|numeric|min:0',
             'totalUnits' => 'nullable|numeric|min:0',
         ]);
+
+        // Check for existing curricula with the same name and year level
+        $existingCurricula = Curriculum::where('curriculum', $validated['curriculum'])
+            ->where('year_level', $validated['yearLevel'])
+            ->get();
+
+        // Mark all existing curricula with the same name as old version
+        if ($existingCurricula->isNotEmpty()) {
+            foreach ($existingCurricula as $existing) {
+                $existing->update(['version_status' => 'old']);
+            }
+        }
 
         $curriculum = Curriculum::create([
             'curriculum' => $validated['curriculum'],
@@ -74,6 +87,7 @@ class CurriculumController extends Controller
             'memorandum' => $validated['memorandum'] ?? null,
             'semester_units' => $validated['semesterUnits'] ?? null,
             'total_units' => $validated['totalUnits'] ?? null,
+            'version_status' => 'new', // New curricula are marked as 'new'
         ]);
 
         // Create database notification for admins
@@ -112,7 +126,7 @@ class CurriculumController extends Controller
         $curriculum = Curriculum::findOrFail($id);
         $validated = $request->validate([
             'curriculum' => 'required|string|max:255',
-            'programCode' => 'required|string|max:255|unique:curriculums,program_code,' . $curriculum->id,
+            'programCode' => 'required|string|max:255',
             'academicYear' => 'required|string|max:255',
             'yearLevel' => 'required|in:Senior High,College',
             'compliance' => 'nullable|string|in:CHED,DepEd',
@@ -431,6 +445,71 @@ public function saveSubjects(Request $request)
             \Log::error("Error in getCurriculumSubjects: " . $e->getMessage());
             return response()->json([
                 'message' => 'A database error occurred while fetching curriculum subjects.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Add subjects to a curriculum's available subjects pool
+     */
+    public function addSubjectsToCurriculum(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'subject_ids' => 'required|array',
+            'subject_ids.*' => 'exists:subjects,id',
+        ]);
+
+        try {
+            $curriculum = Curriculum::findOrFail($id);
+            
+            // Get existing subject IDs for this curriculum
+            $existingSubjectIds = $curriculum->subjects()->pluck('subjects.id')->toArray();
+            
+            // Filter out subjects that are already linked to this curriculum
+            $newSubjectIds = array_diff($validated['subject_ids'], $existingSubjectIds);
+            
+            if (empty($newSubjectIds)) {
+                return response()->json([
+                    'message' => 'All selected subjects are already available for this curriculum.',
+                    'added_count' => 0
+                ]);
+            }
+            
+            // Attach new subjects to curriculum without year/semester (making them available for mapping)
+            foreach ($newSubjectIds as $subjectId) {
+                $curriculum->subjects()->attach($subjectId, [
+                    'year' => null,
+                    'semester' => null,
+                ]);
+            }
+            
+            $addedCount = count($newSubjectIds);
+            
+            // Create database notification for admins
+            if (Auth::check()) {
+                Notification::createForAdmins(
+                    'success',
+                    'Subjects Added to Curriculum',
+                    $addedCount . ' subject(s) added to curriculum "' . $curriculum->curriculum . '" by ' . Auth::user()->name,
+                    ['curriculum_id' => $curriculum->id, 'action' => 'subjects_added', 'count' => $addedCount]
+                );
+            }
+            
+            return response()->json([
+                'message' => $addedCount . ' subject(s) added to curriculum successfully!',
+                'added_count' => $addedCount,
+                'notification' => [
+                    'type' => 'success',
+                    'title' => 'Subjects Added!',
+                    'message' => $addedCount . ' subject(s) have been added to the curriculum successfully!'
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error("Error in addSubjectsToCurriculum: " . $e->getMessage());
+            return response()->json([
+                'message' => 'An error occurred while adding subjects to curriculum.',
                 'error' => $e->getMessage()
             ], 500);
         }

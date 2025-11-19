@@ -19,6 +19,7 @@ Route::post('/curriculums/save', [CurriculumController::class, 'saveSubjects']);
 Route::post('/curriculum/remove-subject', [CurriculumController::class, 'removeSubject']);
 Route::get('/curriculum/{id}/details', [CurriculumController::class, 'getCurriculumDetailsForExport']);
 Route::get('/curriculums/{id}/subjects', [CurriculumController::class, 'getCurriculumSubjects']);
+Route::post('/curriculums/{id}/add-subjects', [CurriculumController::class, 'addSubjectsToCurriculum']);
 
 
 // --- Subject Routes ---

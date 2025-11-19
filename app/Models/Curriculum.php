@@ -33,6 +33,7 @@ class Curriculum extends Model
         'memorandum',
         'semester_units',
         'total_units',
+        'version_status',
     ];
 
     /**

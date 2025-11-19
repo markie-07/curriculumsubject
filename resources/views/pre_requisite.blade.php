@@ -39,9 +39,11 @@
                         </div>
                         <ul id="curriculum-options-list" class="max-h-60 overflow-y-auto">
                             @foreach($curriculums as $curriculum)
-                                <li class="px-4 py-2 hover:bg-blue-100 cursor-pointer" data-value="{{ $curriculum->id }}" data-name="{{ $curriculum->curriculum }} ({{ $curriculum->program_code }})">
-                                    {{ $curriculum->curriculum }} ({{ $curriculum->program_code }})
-                                </li>
+                                @if($curriculum->version_status != 'old')
+                                    <li class="px-4 py-2 hover:bg-blue-100 cursor-pointer" data-value="{{ $curriculum->id }}" data-name="{{ $curriculum->curriculum }} ({{ $curriculum->program_code }}) - {{ $curriculum->academic_year }}">
+                                        {{ $curriculum->curriculum }} ({{ $curriculum->program_code }}) - {{ $curriculum->academic_year }}
+                                    </li>
+                                @endif
                             @endforeach
                         </ul>
                     </div>
@@ -104,9 +106,11 @@
                             </div>
                             <ul id="modal-curriculum-options-list" class="max-h-60 overflow-y-auto">
                                 @foreach($curriculums as $curriculum)
-                                    <li class="px-4 py-2 hover:bg-blue-100 cursor-pointer" data-value="{{ $curriculum->id }}" data-name="{{ $curriculum->curriculum }} ({{ $curriculum->program_code }})">
-                                        {{ $curriculum->curriculum }} ({{ $curriculum->program_code }})
-                                    </li>
+                                    @if($curriculum->version_status != 'old')
+                                        <li class="px-4 py-2 hover:bg-blue-100 cursor-pointer" data-value="{{ $curriculum->id }}" data-name="{{ $curriculum->curriculum }} ({{ $curriculum->program_code }}) - {{ $curriculum->academic_year }}">
+                                            {{ $curriculum->curriculum }} ({{ $curriculum->program_code }}) - {{ $curriculum->academic_year }}
+                                        </li>
+                                    @endif
                                 @endforeach
                             </ul>
                         </div>
@@ -114,7 +118,7 @@
                 </div>
                 
                 <div>
-                    <label for="modal-subject-selector-button" class="block text-sm font-medium text-slate-700 mb-2">Subject (Takes the Prerequisites)</label>
+                    <label for="modal-subject-selector-button" class="block text-sm font-medium text-slate-700 mb-2">Subject</label>
                     <div id="modal-custom-subject-selector" class="relative">
                         <button type="button" id="modal-subject-selector-button" class="w-full border border-slate-300 rounded-lg p-3 flex justify-between items-center bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <span class="text-slate-500 truncate pr-2">Select a curriculum first</span>
@@ -131,7 +135,7 @@
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Prerequisite Subjects (Click to toggle selection)</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Pre-requisite to</label>
                     <div id="prerequisiteList" class="max-h-60 overflow-y-auto bg-slate-50 border border-slate-200 rounded-lg p-4">
                         <p class="text-slate-500">Select a subject to see available prerequisites.</p>
                     </div>
@@ -1110,7 +1114,7 @@ document.addEventListener('DOMContentLoaded', () => {
             mainSelectorButton.querySelector('span').textContent = selectedCurriculum.name;
             mainSelectorButton.querySelector('span').classList.remove('text-gray-500');
             fetchPrerequisiteData(curriculumIdFromUrl);
-            showModal();
+            showModal(null, curriculumIdFromUrl);
         }
     }
 });
