@@ -1695,10 +1695,10 @@ const updateAllTotals = () => {
                 if (isComplete) {
                     const year = semesterDropzone.dataset.year;
                     const semester = semesterDropzone.dataset.semester;
-                    const semesterName = semester === '1' ? 'First' : 'Second';
+                    const semesterLabel = semesterDropzone.querySelector('h4').textContent;
                     
                     Swal.fire({
-                        title: 'Semester Complete!',
+                        title: 'Unit Limit Reached!',
                         html: `
                             <div class="text-center">
                                 <div class="mb-3">
@@ -1706,8 +1706,8 @@ const updateAllTotals = () => {
                                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                                     </svg>
                                 </div>
-                                <p class="text-gray-700">Year ${year}, ${semesterName} Semester has reached its unit limit.</p>
-                                <p class="text-sm text-gray-500 mt-2">You cannot add more subjects to this semester.</p>
+                                <p class="text-gray-700">Year ${year}, ${semesterLabel} has reached its unit limit.</p>
+                                <p class="text-sm text-gray-500 mt-2">You cannot add more subjects to this term.</p>
                             </div>
                         `,
                         icon: 'info',
@@ -2207,6 +2207,19 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
         const firstSemLimit = getSemesterLimit(i, 1);
         const secondSemLimit = getSemesterLimit(i, 2);
         
+        let firstSemLabel = 'First Semester';
+        let secondSemLabel = 'Second Semester';
+
+        if (isSeniorHigh) {
+            if (i === 1) {
+                firstSemLabel = 'First Quarter';
+                secondSemLabel = 'Second Quarter';
+            } else if (i === 2) {
+                firstSemLabel = 'Third Quarter';
+                secondSemLabel = 'Fourth Quarter';
+            }
+        }
+        
         html += `
             <div>
                 <h3 class="text-lg font-semibold text-gray-700 mb-3">${yearTitle}</h3>
@@ -2215,7 +2228,7 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
                         <div class="border-b border-gray-200 pb-2 mb-3">
                             <div class="flex justify-between items-center">
                                 <div>
-                                    <h4 class="font-semibold text-gray-600">First Semester</h4>
+                                    <h4 class="font-semibold text-gray-600">${firstSemLabel}</h4>
                                     ${firstSemLimit > 0 ? `<p class="text-xs text-blue-600 font-medium">Limit: ${formatUnits(firstSemLimit)} units</p>` : ''}
                                 </div>
                                 <div class="semester-unit-display">
@@ -2239,7 +2252,7 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
                         <div class="border-b border-gray-200 pb-2 mb-3">
                             <div class="flex justify-between items-center">
                                 <div>
-                                    <h4 class="font-semibold text-gray-600">Second Semester</h4>
+                                    <h4 class="font-semibold text-gray-600">${secondSemLabel}</h4>
                                     ${secondSemLimit > 0 ? `<p class="text-xs text-blue-600 font-medium">Limit: ${formatUnits(secondSemLimit)} units</p>` : ''}
                                 </div>
                                 <div class="semester-unit-display">

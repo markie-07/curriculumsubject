@@ -52,7 +52,29 @@
 
         {{-- Curriculums Display Section --}}
         <div class="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
-             <h2 class="text-xl font-bold text-slate-700 mb-6">Mapped Curriculums</h2>
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                <h2 class="text-xl font-bold text-slate-700">Mapped Curriculums</h2>
+                <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                    {{-- Version Filter --}}
+                    <div class="relative w-full sm:w-48">
+                        <svg class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 01.628.74v2.288a2.25 2.25 0 01-.659 1.59l-4.682 4.683a2.25 2.25 0 00-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 018 18.25v-5.757a2.25 2.25 0 00-.659-1.591L2.659 6.22A2.25 2.25 0 012 4.629V2.34a.75.75 0 01.628-.74z" clip-rule="evenodd" />
+                        </svg>
+                        <select id="version-filter" class="w-full appearance-none pl-10 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200">
+                            <option value="new" selected>New</option>
+                            <option value="old">Old</option>
+                        </select>
+                        <svg class="w-5 h-5 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
+                    </div>
+                    {{-- Search Bar --}}
+                    <div class="relative w-full sm:w-72">
+                        <svg class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+                        </svg>
+                        <input type="text" id="search-bar" placeholder="Search..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200">
+                    </div>
+                </div>
+            </div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-10">
                 <div>
                     <h3 class="flex items-center gap-3 text-lg font-semibold text-slate-800 mb-4 pb-2 border-b border-slate-200">
@@ -172,6 +194,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Containers
     const seniorHighList = document.getElementById('senior-high-curriculums');
     const collegeList = document.getElementById('college-curriculums');
+    const searchBar = document.getElementById('search-bar');
+    const versionFilter = document.getElementById('version-filter');
     
     // Modal 1 (Curriculum Overview)
     const subjectsModal = document.getElementById('subjectsModal');
@@ -302,43 +326,106 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = document.createElement('div');
         card.className = 'curriculum-history-card group bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-4 hover:border-blue-500 hover:shadow-lg transition-all duration-300 cursor-pointer';
         card.dataset.id = curriculum.id;
-        card.dataset.name = curriculum.curriculum_name;
-        card.dataset.code = curriculum.program_code;
+        card.dataset.name = curriculum.curriculum_name.toLowerCase();
+        card.dataset.code = curriculum.program_code.toLowerCase();
         card.dataset.yearLevel = curriculum.year_level;
+        card.dataset.version = curriculum.version_status || 'new';
+
         const date = new Date(curriculum.created_at);
         const formattedDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        const formattedTime = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+        // Helper function to truncate long memorandum text
+        const truncateText = (text, maxLength = 60) => {
+            if (!text) return 'Not specified';
+            return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+        };
+
+        // Format compliance badge
+        const complianceBadge = curriculum.compliance 
+            ? `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${curriculum.compliance === 'CHED' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}">
+                ${curriculum.compliance}
+            </span>`
+            : '';
+
+        // Format total units display (remove .0 from whole numbers)
+        const formatUnits = (units) => {
+            if (!units) return '';
+            const num = parseFloat(units);
+            return num % 1 === 0 ? Math.floor(num) : num;
+        };
+
+        const totalUnitsDisplay = curriculum.total_units 
+            ? `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                ${formatUnits(curriculum.total_units)} units
+            </span>`
+            : '';
+
+        // Version status badge
+        const versionBadge = curriculum.version_status === 'old'
+            ? `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
+                </svg>
+                Old
+            </span>`
+            : `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                </svg>
+                New
+            </span>`;
+
+        // Format memorandum year/category display
+        const memorandumYearCategory = curriculum.memorandum_year 
+            ? curriculum.memorandum_year
+            : curriculum.memorandum_category 
+                ? curriculum.memorandum_category 
+                : '';
+
         card.innerHTML = `
             <div class="flex-shrink-0 w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300">
                 <svg class="w-6 h-6 text-slate-500 group-hover:text-blue-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
             </div>
-            <div class="flex-1">
-                <h3 class="font-bold text-slate-800 group-hover:text-blue-600">${curriculum.curriculum_name}</h3>
-                <p class="text-sm text-slate-500">${curriculum.program_code} &middot; ${curriculum.academic_year}</p>
-                <p class="text-xs text-slate-400 mt-1">Created: ${formattedDate}</p>
-            </div>
-            <div class="flex items-center gap-2 text-slate-400 group-hover:text-blue-500 transition-colors duration-300">
-                <span class="text-xs font-medium">View History</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-            </div>`;
-        // Add version history button
-        const versionButton = document.createElement('button');
-        versionButton.className = 'absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-blue-100 hover:bg-blue-200 text-blue-600 p-2 rounded-lg';
-        versionButton.innerHTML = `
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-        `;
-        versionButton.title = 'View Version History';
-        versionButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            // Trigger the same action as the main card click
-            card.click();
-        });
-        card.style.position = 'relative';
-        card.appendChild(versionButton);
+            <div class="flex-1 min-w-0">
+                <div class="flex items-start justify-between">
+                    <div class="flex-grow min-w-0 pr-2">
+                        <h3 class="font-bold text-slate-800 group-hover:text-blue-600 truncate">${curriculum.curriculum_name}</h3>
+                        <p class="text-sm text-slate-500">${curriculum.program_code} &middot; ${curriculum.academic_year}</p>
+                        
+                        ${curriculum.memorandum ? `
+                        <p class="text-xs text-slate-400 truncate mt-1" title="${curriculum.memorandum}">
+                            ${memorandumYearCategory ? `${memorandumYearCategory} ` : ''}• ${truncateText(curriculum.memorandum, 45)}
+                        </p>
+                        ` : memorandumYearCategory ? `
+                        <p class="text-xs text-slate-400 mt-1">
+                            ${memorandumYearCategory} • No memorandum selected
+                        </p>
+                        ` : ''}
 
+                        <p class="text-xs text-slate-400 mt-1">
+                            Created: ${formattedDate} at ${formattedTime} • 
+                            <span class="font-medium">${curriculum.subjects_count || 0} subject${curriculum.subjects_count !== 1 ? 's' : ''}</span>
+                        </p>
+                    </div>
+                    <div class="flex flex-col items-end gap-1">
+                        <div class="flex items-center gap-1">
+                            ${versionBadge}
+                            ${complianceBadge}
+                            ${totalUnitsDisplay}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+            
+        // Add version history button (hidden but functional if needed)
+        const versionButton = document.createElement('button');
+        versionButton.className = 'hidden'; // Keeping it hidden as per design, or remove if not needed
+        
         card.addEventListener('click', async () => {
             modalCurriculumTitle.textContent = `${curriculum.curriculum_name} (${curriculum.program_code})` ;
             modalSubjectsContent.innerHTML = '<p class="text-gray-500 text-center">Loading history...</p>';
@@ -641,7 +728,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                     const semesterBox = document.createElement('div');
                     semesterBox.className = 'bg-gray-50 border-2 border-solid border-gray-200 rounded-lg p-4';
-                    const semesterTitle = j === 1 ? 'First Semester' : 'Second Semester';
+                    
+                    let semesterTitle = j === 1 ? 'First Semester' : 'Second Semester';
+                    if (yearLevel === 'Senior High') {
+                         if (i === 1) {
+                            semesterTitle = j === 1 ? 'First Quarter' : 'Second Quarter';
+                        } else if (i === 2) {
+                            semesterTitle = j === 1 ? 'Third Quarter' : 'Fourth Quarter';
+                        }
+                    }
+
                     let totalUnits = 0;
                     semesterSubjects.forEach(s => {
                         // Don't count removed subjects in the total units
@@ -696,6 +792,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             if (seniorHighCount === 0) seniorHighList.innerHTML = '<p class="text-slate-500 text-sm py-4">No Senior High curriculums found.</p>';
             if (collegeCount === 0) collegeList.innerHTML = '<p class="text-slate-500 text-sm py-4">No College curriculums found.</p>';
+            
+            // Apply initial filter
+            filterCurriculums();
         } catch (error) {
             console.error('Failed to fetch curriculums:', error);
             seniorHighList.innerHTML = '<p class="text-red-500">Failed to load curriculums.</p>';
@@ -704,6 +803,26 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     fetchAndDisplayCurriculums();
+
+    // Filter Logic
+    function filterCurriculums() {
+        const searchTerm = searchBar.value.toLowerCase();
+        const versionStatus = versionFilter.value;
+        
+        document.querySelectorAll('.curriculum-history-card').forEach(card => {
+            const name = card.dataset.name;
+            const code = card.dataset.code;
+            const version = card.dataset.version;
+            
+            const matchesSearch = name.includes(searchTerm) || code.includes(searchTerm);
+            const matchesVersion = version === versionStatus;
+            
+            card.style.display = (matchesSearch && matchesVersion) ? 'flex' : 'none';
+        });
+    }
+
+    searchBar.addEventListener('input', filterCurriculums);
+    versionFilter.addEventListener('change', filterCurriculums);
 });
 </script>
 

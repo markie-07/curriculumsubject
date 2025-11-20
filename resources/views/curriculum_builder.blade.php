@@ -198,7 +198,7 @@
             </div>
                             
                             <div id="unitsContainer" class="hidden">
-                                <label class="block text-sm font-medium text-slate-700 mb-3">Semester Units</label>
+                                <label id="semesterUnitsLabel" class="block text-sm font-medium text-slate-700 mb-3">Semester Units</label>
                                 <div id="semesterInputs" class="space-y-3">
                                     <!-- Dynamic semester inputs will be inserted here -->
                                 </div>
@@ -540,6 +540,13 @@
                 const selectedLevel = this.value;
                 generateSemesterInputs(selectedLevel);
                 
+                const semesterUnitsLabel = document.getElementById('semesterUnitsLabel');
+                if (selectedLevel === 'Senior High') {
+                    semesterUnitsLabel.textContent = 'Quarter Units';
+                } else {
+                    semesterUnitsLabel.textContent = 'Semester Units';
+                }
+
                 if (selectedLevel) {
                     unitsContainer.classList.remove('hidden');
                 } else {
@@ -565,10 +572,10 @@
                     ];
                 } else if (level === 'Senior High') {
                     semesters = [
-                        '1st Year First Semester',
-                        '1st Year Second Semester',
-                        '2nd Year First Semester',
-                        '2nd Year Second Semester'
+                        '1st Year First Quarter',
+                        '1st Year Second Quarter',
+                        '2nd Year Third Quarter',
+                        '2nd Year Fourth Quarter'
                     ];
                 }
                 
@@ -662,7 +669,7 @@
                         <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
                         </svg>
-                        Old Version
+                        Old
                     </span>`
                     : `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
                         <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -804,6 +811,13 @@
                     // Generate semester inputs and populate if data exists
                     if (curriculum.year_level) {
                         generateSemesterInputs(curriculum.year_level);
+                        
+                        const semesterUnitsLabel = document.getElementById('semesterUnitsLabel');
+                        if (curriculum.year_level === 'Senior High') {
+                            semesterUnitsLabel.textContent = 'Quarter Units';
+                        } else {
+                            semesterUnitsLabel.textContent = 'Semester Units';
+                        }
                         
                         // Populate semester units if available
                         if (curriculum.semester_units) {

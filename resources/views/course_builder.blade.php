@@ -395,53 +395,46 @@
 </div>
 
 {{-- Curriculum Selection Modal --}}
-<div id="curriculumSelectionModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
-    <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="relative bg-white w-full max-w-4xl rounded-2xl shadow-2xl">
-            <div class="flex justify-between items-center p-6 border-b border-gray-200">
-                <h3 class="text-xl font-semibold text-gray-800">Select Applicable Curriculums</h3>
-                <button id="closeCurriculumModal" class="text-gray-400 hover:text-gray-600 focus:outline-none transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
+<div id="curriculumSelectionModal" class="fixed inset-0 z-50 overflow-hidden bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden flex items-center justify-center p-4">
+    <div class="relative bg-white w-full max-w-7xl h-[85vh] flex flex-col rounded-2xl shadow-2xl">
+        <div class="flex justify-between items-center p-6 border-b border-gray-200 shrink-0">
+            <h3 class="text-xl font-semibold text-gray-800">Select Applicable Curriculums</h3>
+        </div>
+        
+        <div class="p-6 flex-1 flex flex-col overflow-hidden">
+            <p class="text-sm text-gray-600 mb-4 shrink-0">Choose which curriculums this subject will be available for in subject mapping:</p>
+
+            <div class="mb-4 shrink-0">
+                <div class="relative">
+                    <input id="curriculumSearchInput" type="text" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search curriculum...">
+                    <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
             </div>
-            
-            <div class="p-6">
-                <p class="text-sm text-gray-600 mb-4">Choose which curriculums this subject will be available for in subject mapping:</p>
 
-                <div class="mb-4">
-                    <div class="relative">
-                        <input id="curriculumSearchInput" type="text" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search curriculum...">
-                        <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 overflow-hidden min-h-0">
+                <div class="flex flex-col h-full min-h-0">
+                    <div class="flex items-center justify-between mb-2 shrink-0">
+                        <h4 id="seniorHighHeader" class="text-sm font-semibold text-gray-700">Senior High</h4>
+                        <label class="inline-flex items-center gap-2 text-sm text-gray-600"><input id="selectAllSeniorHigh" type="checkbox" class="w-4 h-4 text-blue-600 rounded"> <span>Select all</span></label>
                     </div>
+                    <div id="seniorHighContainer" class="flex-1 overflow-y-auto space-y-3 pr-2 min-h-0"></div>
                 </div>
+                <div class="flex flex-col h-full min-h-0">
+                    <div class="flex items-center justify-between mb-2 shrink-0">
+                        <h4 id="collegeHeader" class="text-sm font-semibold text-gray-700">College</h4>
+                        <label class="inline-flex items-center gap-2 text-sm text-gray-600"><input id="selectAllCollege" type="checkbox" class="w-4 h-4 text-blue-600 rounded"> <span>Select all</span></label>
+                    </div>
+                    <div id="collegeContainer" class="flex-1 overflow-y-auto space-y-3 pr-2 min-h-0"></div>
+                </div>
+            </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <h4 class="text-sm font-semibold text-gray-700">Senior High</h4>
-                            <label class="inline-flex items-center gap-2 text-sm text-gray-600"><input id="selectAllSeniorHigh" type="checkbox" class="w-4 h-4 text-blue-600 rounded"> <span>Select all</span></label>
-                        </div>
-                        <div id="seniorHighContainer" class="max-h-80 overflow-y-auto space-y-3"></div>
-                    </div>
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <h4 class="text-sm font-semibold text-gray-700">College</h4>
-                            <label class="inline-flex items-center gap-2 text-sm text-gray-600"><input id="selectAllCollege" type="checkbox" class="w-4 h-4 text-blue-600 rounded"> <span>Select all</span></label>
-                        </div>
-                        <div id="collegeContainer" class="max-h-80 overflow-y-auto space-y-3"></div>
-                    </div>
-                </div>
-
-                <div class="flex justify-end gap-4 mt-6 pt-4 border-t border-gray-200">
-                    <button id="cancelCurriculumSelection" class="px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                        Cancel
-                    </button>
-                    <button id="confirmCurriculumSelection" class="px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
-                        Apply Selection
-                    </button>
-                </div>
+            <div class="flex justify-end gap-4 mt-6 pt-4 border-t border-gray-200 shrink-0">
+                <button id="cancelCurriculumSelection" class="px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                    Cancel
+                </button>
+                <button id="confirmCurriculumSelection" class="px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                    Apply Selection
+                </button>
             </div>
         </div>
     </div>
@@ -805,7 +798,9 @@ Learning Management System`;
         try {
             const response = await fetch('/api/curriculums');
             if (response.ok) {
-                allCurriculums = await response.json();
+                const data = await response.json();
+                // Filter to match Curriculum Builder's "New" view (includes null as new)
+                allCurriculums = data.filter(c => (c.version_status || 'new') === 'new');
                 renderCurriculumChecklist();
             } else {
                 console.error('Failed to load curriculums');
@@ -823,7 +818,8 @@ Learning Management System`;
         };
 
         const seniorHigh = allCurriculums.filter(c => c.year_level === 'Senior High' && filterMatch(c));
-        const college = allCurriculums.filter(c => c.year_level === 'College' && filterMatch(c));
+        // Match Curriculum Builder logic: anything not Senior High goes to College
+        const college = allCurriculums.filter(c => c.year_level !== 'Senior High' && filterMatch(c));
 
         const renderGroup = (containerId, list) => {
             const container = document.getElementById(containerId);
@@ -864,6 +860,16 @@ Learning Management System`;
         renderGroup('seniorHighContainer', seniorHigh);
         renderGroup('collegeContainer', college);
 
+        // Update Header Counts
+        const shSelectedCount = seniorHigh.filter(c => selectedCurriculums.has(c.id)).length;
+        const coSelectedCount = college.filter(c => selectedCurriculums.has(c.id)).length;
+        
+        const shHeader = document.getElementById('seniorHighHeader');
+        if (shHeader) shHeader.textContent = `Senior High (${shSelectedCount} selected)`;
+        
+        const coHeader = document.getElementById('collegeHeader');
+        if (coHeader) coHeader.textContent = `College (${coSelectedCount} selected)`;
+
         const shToggle = document.getElementById('selectAllSeniorHigh');
         const coToggle = document.getElementById('selectAllCollege');
         shToggle.checked = seniorHigh.length > 0 && seniorHigh.every(c => selectedCurriculums.has(c.id));
@@ -892,10 +898,7 @@ Learning Management System`;
             buttonText.textContent = 'Select curriculums for this subject...';
             buttonText.className = 'text-gray-500';
         } else {
-            const selectedNames = allCurriculums
-                .filter(c => selectedCurriculums.has(c.id))
-                .map(c => c.curriculum_name);
-            buttonText.textContent = `${selectedCurriculums.size} curriculum(s) selected: ${selectedNames.join(', ')}`;
+            buttonText.textContent = `${selectedCurriculums.size} Curriculum(s) Selected`;
             buttonText.className = 'text-gray-800';
         }
     };
@@ -906,9 +909,10 @@ Learning Management System`;
         loadCurriculums();
     });
 
-    document.getElementById('closeCurriculumModal').addEventListener('click', () => {
-        document.getElementById('curriculumSelectionModal').classList.add('hidden');
-    });
+    // Close button removed
+    // document.getElementById('closeCurriculumModal').addEventListener('click', () => {
+    //     document.getElementById('curriculumSelectionModal').classList.add('hidden');
+    // });
 
     document.getElementById('cancelCurriculumSelection').addEventListener('click', () => {
         document.getElementById('curriculumSelectionModal').classList.add('hidden');

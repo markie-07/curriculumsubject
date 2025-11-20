@@ -12,9 +12,9 @@
 </style>
 
 <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 sm:p-6 md:p-8">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {{-- Grade Scheme Setup Form --}}
-        <div class="lg:col-span-2 bg-white/70 backdrop-blur-xl p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200/80">
+        <div id="grade-setup-card" class="lg:col-span-2 bg-white/70 backdrop-blur-xl p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200/80">
             <form id="grade-setup-form" onsubmit="return false;">
                 @csrf
                 <div class="mb-8">
@@ -108,7 +108,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                 </svg>
-                                Update Minor Grades
+                                Create new grades
                             </button>
                             <button id="add-grade-component-btn" type="button" class="flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-800 transition-colors py-2 px-3 rounded-lg hover:bg-indigo-50">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -151,8 +151,8 @@
         </div>
 
         {{-- Grade History --}}
-        <div class="lg:col-span-1 bg-white/70 backdrop-blur-xl p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200/80">
-            <h2 class="text-xl font-bold text-gray-700 mb-4 pb-3 border-b">Curriculum Grade History</h2>
+        <div id="grade-history-card-main" class="lg:col-span-1 bg-white/70 backdrop-blur-xl p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200/80 flex flex-col">
+            <h2 id="grade-history-title" class="text-xl font-bold text-gray-700 mb-4 pb-3 border-b">Curriculum Grade History</h2>
             
             {{-- View Mode Toggle --}}
             <div class="mb-4 flex gap-2 bg-gray-100 p-1 rounded-lg">
@@ -237,7 +237,7 @@
                 </button>
             </div>
             
-            <div id="grade-history-container" class="space-y-4 max-h-[600px] overflow-y-auto">
+            <div id="grade-history-container" class="space-y-4 flex-1 overflow-y-auto min-h-0">
                 <p id="no-history-message" class="text-gray-500">No curriculums with grade schemes yet.</p>
             </div>
         </div>
@@ -317,7 +317,7 @@
             <div class="w-12 h-12 rounded-full bg-orange-100 p-2 flex items-center justify-center mx-auto mb-4">
                 <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
             </div>
-            <h3 class="text-lg font-semibold text-gray-800">Update Minor Grades</h3>
+            <h3 class="text-lg font-semibold text-gray-800">Create New Grades</h3>
             <p class="text-sm text-gray-500 mt-2">Are you sure you want to update the grade for minor subjects? This will unlock the grade components for editing.</p>
             <div class="mt-6 flex justify-center gap-4">
                 <button id="cancelUpdateMinorGrades" class="w-full px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">No</button>
@@ -334,7 +334,7 @@
             <div class="w-12 h-12 rounded-full bg-yellow-100 p-2 flex items-center justify-center mx-auto mb-4">
                 <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
             </div>
-            <h3 class="text-lg font-semibold text-gray-800">Update Grade Subject</h3>
+            <h3 class="text-lg font-semibold text-gray-800">Create New Grade Subject</h3>
             <p class="text-sm text-gray-500 mt-2">Are you sure you want to update this grade subject?</p>
             <div class="mt-6 flex justify-center gap-4">
                 <button id="cancelEditGradeScheme" class="w-full px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">No</button>
@@ -371,7 +371,7 @@
         {{-- Modal Footer --}}
         <div class="flex justify-end p-5 bg-white border-t border-gray-200 rounded-b-2xl">
             <button id="edit-grade-setup-btn" class="text-white bg-blue-600 hover:bg-blue-700 font-semibold py-2 px-5 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                Update
+                Create new
             </button>
         </div>
         </div>
@@ -570,17 +570,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        // For minor courses, check if curriculum is selected (since minor courses work with curriculum-based workflow)
-        if (currentCourseType === 'minor' && !currentCurriculumId) {
-            Swal.fire({
-                title: 'Select a Curriculum First',
-                text: 'Please select a curriculum before adding grade components for minor courses.',
-                icon: 'warning',
-                confirmButtonText: 'OK',
-                confirmButtonColor: '#4f46e5'
-            });
-            return;
-        }
+
         
         // Add the grade component
         accordionContainer.appendChild(createGradeComponent());
@@ -1557,67 +1547,24 @@ document.addEventListener('DOMContentLoaded', () => {
         dropdownContainer.innerHTML = '';
         majorSubjectSelect.innerHTML = '<option value="">Select a major subject...</option>';
         
-        // Check grade status for each subject
-        for (const subject of majorSubjects) {
-            // Check if subject has grades
-            let hasGrades = false;
-            try {
-                const gradeData = await fetchAPI(`grades/${subject.id}/version-history`);
-                hasGrades = gradeData && gradeData.current_version;
-            } catch (error) {
-                hasGrades = false;
-            }
-            
-            // Create custom dropdown option with badge
+        // OPTIMIZED: Display all subjects immediately without checking grades
+        // Grade status will be checked when user selects a subject
+        majorSubjects.forEach(subject => {
+            // Create custom dropdown option
             const optionDiv = document.createElement('div');
-            
-            // Apply different styles based on graded status
-            if (hasGrades) {
-                // Graded subjects - disabled style
-                optionDiv.className = 'px-4 py-2 cursor-not-allowed flex items-center justify-between bg-gray-50 opacity-60';
-                optionDiv.title = 'This subject already has grades set up';
-            } else {
-                // Available subjects - clickable
-                optionDiv.className = 'px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between transition-colors';
-            }
-            
+            optionDiv.className = 'px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between transition-colors';
             optionDiv.dataset.subjectId = subject.id;
             optionDiv.dataset.subjectName = subject.subject_name;
             optionDiv.dataset.subjectCode = subject.subject_code;
             
-            // Create badge if graded
-            const badge = hasGrades 
-                ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Graded</span>'
-                : '';
-            
-            const textColor = hasGrades ? 'text-gray-500' : 'text-gray-900';
             optionDiv.innerHTML = `
-                <span class="text-sm ${textColor}">${subject.subject_name} <span class="text-gray-400">(${subject.subject_code})</span></span>
-                ${badge}
+                <span class="text-sm text-gray-900">${subject.subject_name} <span class="text-gray-900">(${subject.subject_code})</span></span>
             `;
             
-            // Add click handler - different behavior for graded vs non-graded subjects
-            if (!hasGrades) {
-                // Non-graded subjects: single click to select
-                optionDiv.addEventListener('click', () => {
-                    selectMajorSubject(subject.id, subject.subject_name, subject.subject_code);
-                });
-            } else {
-                // Graded subjects: double click to view grade details
-                let clickCount = 0;
-                optionDiv.addEventListener('click', () => {
-                    clickCount++;
-                    if (clickCount === 1) {
-                        setTimeout(() => {
-                            if (clickCount === 2) {
-                                // Double click detected - show grade details
-                                showGradeComponentDetails(subject.id, subject.subject_name, subject.subject_code);
-                            }
-                            clickCount = 0;
-                        }, 300);
-                    }
-                });
-            }
+            // Single click to select
+            optionDiv.addEventListener('click', () => {
+                selectMajorSubject(subject.id, subject.subject_name, subject.subject_code);
+            });
             
             dropdownContainer.appendChild(optionDiv);
             
@@ -1626,7 +1573,7 @@ document.addEventListener('DOMContentLoaded', () => {
             option.value = subject.id;
             option.textContent = `${subject.subject_name} (${subject.subject_code})`;
             majorSubjectSelect.appendChild(option);
-        }
+        });
     };
     
     // Function to show grade component details for graded subjects
@@ -1813,7 +1760,7 @@ document.addEventListener('DOMContentLoaded', () => {
             : '<span class="inline-block px-2 py-1 text-xs font-semibold text-blue-700 bg-blue-100 rounded-full">College</span>';
         
         const card = document.createElement('div');
-        card.className = 'grade-history-card p-4 border rounded-lg hover:bg-gray-50 transition-colors duration-200 cursor-pointer';
+        card.className = 'grade-history-card p-4 border rounded-lg hover:bg-gray-50 cursor-pointer';
         card.dataset.curriculumId = curriculum.id;
         card.dataset.curriculumType = curriculumType;
         card.dataset.curriculumName = curriculum.curriculum_name.toLowerCase();
@@ -2227,7 +2174,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Function to fetch and display all curriculums in history
+    // Function to fetch and display all curriculums in history (OPTIMIZED)
     const fetchAndPopulateGradeHistory = async () => {
         try {
             console.log('Fetching all curriculums for history...');
@@ -2241,29 +2188,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (allCurriculums && allCurriculums.length > 0) {
                 console.log('Found', allCurriculums.length, 'curriculums');
                 
-                // Process each curriculum to ensure minor subjects have grades
-                for (const curriculum of allCurriculums) {
-                    console.log(`Processing curriculum:`, curriculum);
-                    console.log(`Curriculum properties:`, {
-                        id: curriculum.id,
-                        curriculum: curriculum.curriculum,
-                        curriculum_name: curriculum.curriculum_name,
-                        program_code: curriculum.program_code,
-                        academic_year: curriculum.academic_year,
-                        year: curriculum.year
-                    });
-                    
-                    try {
-                        // Fetch subjects for this curriculum
-                        const subjects = await fetchAPI(`curriculums/${curriculum.id}/subjects`);
-                        const minorSubjects = subjects.filter(s => s.subject_type === 'Minor');
-                        
-                        // No auto-assignment logic - grades must be set manually
-                    } catch (error) {
-                        console.error(`Error processing curriculum ${curriculum.id}:`, error);
-                    }
-                    
-                    // Add curriculum to history
+                // OPTIMIZED: Directly add curriculums without fetching subjects
+                // Subjects are only fetched when user clicks on a curriculum
+                allCurriculums.forEach(curriculum => {
                     addCurriculumToHistory({
                         id: curriculum.id,
                         curriculum_name: curriculum.curriculum || curriculum.curriculum_name || 'Unknown Curriculum',
@@ -2271,9 +2198,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         academic_year: curriculum.academic_year || curriculum.year || 'N/A',
                         curriculum_type: curriculum.curriculum_type || curriculum.type || null
                     });
-                }
+                });
             } else {
                 console.log('No curriculums found');
+                const noHistoryMessage = document.getElementById('no-history-message');
                 if (!noHistoryMessage) {
                     const message = document.createElement('p');
                     message.id = 'no-history-message';
@@ -2347,68 +2275,45 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
-    // Function to display all subjects
+    // Function to display all subjects (OPTIMIZED)
     const displayAllSubjects = async () => {
         try {
             gradeHistoryContainer.innerHTML = '';
             const allSubjects = await fetchAPI('subjects');
             
             if (allSubjects && allSubjects.length > 0) {
-                // Check grade status for each subject
-                for (const subject of allSubjects) {
-                    // Check if subject has grades
-                    let hasGrades = false;
-                    try {
-                        const gradeData = await fetchAPI(`grades/${subject.id}/version-history`);
-                        hasGrades = gradeData && gradeData.current_version;
-                    } catch (error) {
-                        hasGrades = false;
-                    }
-                    
+                // OPTIMIZED: Display all subjects immediately without checking grades
+                // Grade status will be checked only when user clicks on a subject
+                allSubjects.forEach(subject => {
                     const card = document.createElement('div');
                     
-                    // Apply different styles based on grade status
-                    if (hasGrades) {
-                        card.className = 'subject-history-card p-4 border rounded-lg hover:bg-gray-50 transition-colors duration-200 cursor-pointer';
-                    } else {
-                        card.className = 'subject-history-card p-4 border rounded-lg transition-colors duration-200 cursor-not-allowed bg-gray-50 opacity-60';
-                        card.title = 'This subject has no grades set up yet';
-                    }
+                    // Default styling - we'll check grades on click
+                    card.className = 'subject-history-card p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors';
                     
                     card.dataset.subjectId = subject.id;
                     card.dataset.subjectType = subject.subject_type.toLowerCase();
                     card.dataset.subjectName = subject.subject_name.toLowerCase();
                     card.dataset.subjectCode = (subject.subject_code || '').toLowerCase();
-                    card.dataset.hasGrades = hasGrades;
                     
                     const typeBadge = subject.subject_type === 'Major'
                         ? '<span class="inline-block px-2 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full">Major</span>'
                         : '<span class="inline-block px-2 py-1 text-xs font-semibold text-blue-700 bg-blue-100 rounded-full">Minor</span>';
                     
-                    const gradeStatusBadge = hasGrades
-                        ? '<span class="inline-block px-2 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full ml-1">Graded</span>'
-                        : '<span class="inline-block px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-200 rounded-full ml-1">Not Graded</span>';
-                    
-                    const textColor = hasGrades ? 'text-gray-800' : 'text-gray-500';
-                    
                     card.innerHTML = `
                         <div class="flex items-start justify-between gap-2 mb-2">
-                            <p class="font-semibold ${textColor} flex-1">${subject.subject_name}</p>
+                            <p class="font-semibold text-gray-800 flex-1">${subject.subject_name}</p>
                             <div class="flex gap-1">
                                 ${typeBadge}
-                                ${gradeStatusBadge}
                             </div>
                         </div>
                         <p class="text-sm text-gray-500">${subject.subject_code} - ${subject.subject_unit} units</p>
                     `;
                     
-                    // Add double-click event to show subject grade details (only for graded subjects)
-                    if (hasGrades) {
-                        card.addEventListener('dblclick', () => showSubjectGradeDetails(subject.id));
-                    }
+                    // Add double-click event to show subject grade details
+                    card.addEventListener('dblclick', () => showSubjectGradeDetails(subject.id));
                     
                     gradeHistoryContainer.appendChild(card);
-                }
+                });
             } else {
                 gradeHistoryContainer.innerHTML = '<p class="text-gray-500">No subjects found.</p>';
             }
@@ -2463,6 +2368,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // View mode switching
     viewModeButtons.forEach(button => {
         button.addEventListener('click', async () => {
+            // Clear container immediately to prevent transition/overlap issues
+            gradeHistoryContainer.innerHTML = '';
+            
             // Update active button styling
             viewModeButtons.forEach(btn => {
                 btn.classList.remove('bg-white', 'text-indigo-600', 'shadow-sm');
@@ -2481,6 +2389,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 curriculumTypeFilters.classList.remove('hidden');
                 subjectTypeFilters.classList.add('hidden');
                 
+                // Update Title
+                document.getElementById('grade-history-title').textContent = 'Curriculum Grade History';
+                
                 // Reset curriculum filter buttons
                 curriculumFilterButtons.forEach(btn => {
                     btn.classList.remove('bg-indigo-600', 'text-white');
@@ -2495,6 +2406,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Show subject filters, hide curriculum filters
                 curriculumTypeFilters.classList.add('hidden');
                 subjectTypeFilters.classList.remove('hidden');
+                
+                // Update Title
+                document.getElementById('grade-history-title').textContent = 'Subject Grade History';
                 
                 // Reset subject filter buttons
                 subjectFilterButtons.forEach(btn => {
@@ -2587,6 +2501,20 @@ document.addEventListener('DOMContentLoaded', () => {
     curriculumGradeModal.addEventListener('click', (e) => { 
         if (e.target.id === 'curriculum-grade-modal') hideModal('curriculum-grade-modal'); 
     });
+
+    // Sync History Card Height with Setup Card
+    const setupCard = document.getElementById('grade-setup-card');
+    const historyCard = document.getElementById('grade-history-card-main');
+
+    if (setupCard && historyCard) {
+        const resizeObserver = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                // Use offsetHeight to include padding and borders
+                historyCard.style.height = `${entry.target.offsetHeight}px`;
+            }
+        });
+        resizeObserver.observe(setupCard);
+    }
 });
 </script>
 
