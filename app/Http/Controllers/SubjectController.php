@@ -174,12 +174,22 @@ class SubjectController extends Controller
             
             // Update curriculum relationships
             if (isset($validated['curriculum_ids'])) {
+                $currentCurriculums = $subject->curriculums()->get();
                 $syncData = [];
                 foreach ($validated['curriculum_ids'] as $curriculumId) {
-                    $syncData[$curriculumId] = [
-                        'year' => null,     // Will be set during subject mapping
-                        'semester' => null  // Will be set during subject mapping
-                    ];
+                    // Check if already attached to preserve mapping
+                    $existing = $currentCurriculums->find($curriculumId);
+                    if ($existing) {
+                        $syncData[$curriculumId] = [
+                            'year' => $existing->pivot->year,
+                            'semester' => $existing->pivot->semester
+                        ];
+                    } else {
+                        $syncData[$curriculumId] = [
+                            'year' => null,
+                            'semester' => null
+                        ];
+                    }
                 }
                 $subject->curriculums()->sync($syncData);
             }

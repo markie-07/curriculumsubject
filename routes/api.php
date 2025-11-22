@@ -20,6 +20,8 @@ Route::post('/curriculum/remove-subject', [CurriculumController::class, 'removeS
 Route::get('/curriculum/{id}/details', [CurriculumController::class, 'getCurriculumDetailsForExport']);
 Route::get('/curriculums/{id}/subjects', [CurriculumController::class, 'getCurriculumSubjects']);
 Route::post('/curriculums/{id}/add-subjects', [CurriculumController::class, 'addSubjectsToCurriculum']);
+Route::post('/curriculums/{id}/approve', [CurriculumController::class, 'approve']);
+Route::post('/curriculums/{id}/reject', [CurriculumController::class, 'reject']);
 
 
 // --- Subject Routes ---

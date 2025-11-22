@@ -34,6 +34,7 @@ class Curriculum extends Model
         'semester_units',
         'total_units',
         'version_status',
+        'approval_status',
     ];
 
     /**

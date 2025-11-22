@@ -324,12 +324,33 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Card Creation Functions ---
     const createCurriculumCard = (curriculum) => {
         const card = document.createElement('div');
-        card.className = 'curriculum-history-card group bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-4 hover:border-blue-500 hover:shadow-lg transition-all duration-300 cursor-pointer';
+        
+        // Determine card border, icon, and title colors based on approval status
+        const approvalStatus = curriculum.approval_status || 'processing';
+        let cardBorderClass = 'border-slate-200 hover:border-blue-500';
+        let iconBgClass = 'bg-slate-100 group-hover:bg-blue-100';
+        let iconColorClass = 'text-slate-500 group-hover:text-blue-600';
+        let titleColorClass = 'text-slate-800 group-hover:text-blue-600';
+        
+        if (approvalStatus === 'approved') {
+            cardBorderClass = 'border-green-400 hover:border-green-500';
+            iconBgClass = 'bg-green-100 group-hover:bg-green-200';
+            iconColorClass = 'text-green-600 group-hover:text-green-700';
+            titleColorClass = 'text-green-700 group-hover:text-green-800';
+        } else if (approvalStatus === 'rejected') {
+            cardBorderClass = 'border-red-400 hover:border-red-500';
+            iconBgClass = 'bg-red-100 group-hover:bg-red-200';
+            iconColorClass = 'text-red-600 group-hover:text-red-700';
+            titleColorClass = 'text-red-700 group-hover:text-red-800';
+        }
+        
+        card.className = `curriculum-history-card group relative bg-white p-4 rounded-xl border ${cardBorderClass} flex items-center gap-4 hover:shadow-lg transition-all duration-300 cursor-pointer`;
         card.dataset.id = curriculum.id;
         card.dataset.name = curriculum.curriculum_name.toLowerCase();
         card.dataset.code = curriculum.program_code.toLowerCase();
         card.dataset.yearLevel = curriculum.year_level;
         card.dataset.version = curriculum.version_status || 'new';
+        card.dataset.approvalStatus = approvalStatus;
 
         const date = new Date(curriculum.created_at);
         const formattedDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
@@ -356,10 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const totalUnitsDisplay = curriculum.total_units 
-            ? `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
+            ? `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
                 ${formatUnits(curriculum.total_units)} units
             </span>`
             : '';
@@ -379,6 +397,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 New
             </span>`;
 
+        // Approval status badge
+        let approvalBadge = '';
+        if (approvalStatus === 'approved') {
+            approvalBadge = `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                </svg>
+                Approved
+            </span>`;
+        } else if (approvalStatus === 'rejected') {
+            approvalBadge = `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+                </svg>
+                Rejected
+            </span>`;
+        } else {
+            approvalBadge = `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
+                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
+                </svg>
+                Processing
+            </span>`;
+        }
+
         // Format memorandum year/category display
         const memorandumYearCategory = curriculum.memorandum_year 
             ? curriculum.memorandum_year
@@ -387,35 +430,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 : '';
 
         card.innerHTML = `
-            <div class="flex-shrink-0 w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300">
-                <svg class="w-6 h-6 text-slate-500 group-hover:text-blue-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
+            <div class="flex-shrink-0 w-10 h-10 ${iconBgClass} rounded-lg flex items-center justify-center transition-colors duration-300">
+                <svg class="w-5 h-5 ${iconColorClass} transition-colors duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                </svg>
             </div>
-            <div class="flex-1 min-w-0">
+            <div class="flex-grow min-w-0">
                 <div class="flex items-start justify-between">
                     <div class="flex-grow min-w-0 pr-2">
-                        <h3 class="font-bold text-slate-800 group-hover:text-blue-600 truncate">${curriculum.curriculum_name}</h3>
-                        <p class="text-sm text-slate-500">${curriculum.program_code} &middot; ${curriculum.academic_year}</p>
-                        
+                        <h3 class="font-bold ${titleColorClass} transition-colors duration-300 truncate mb-1">${curriculum.curriculum_name}</h3>
+                        <div class="flex items-center gap-2 text-sm text-slate-500 mb-1">
+                            <span>${curriculum.program_code} • ${curriculum.academic_year}</span>
+                        </div>
                         ${curriculum.memorandum ? `
-                        <p class="text-xs text-slate-400 truncate mt-1" title="${curriculum.memorandum}">
+                        <p class="text-xs text-slate-400 truncate" title="${curriculum.memorandum}">
                             ${memorandumYearCategory ? `${memorandumYearCategory} ` : ''}• ${truncateText(curriculum.memorandum, 45)}
                         </p>
                         ` : memorandumYearCategory ? `
-                        <p class="text-xs text-slate-400 mt-1">
+                        <p class="text-xs text-slate-400">
                             ${memorandumYearCategory} • No memorandum selected
                         </p>
                         ` : ''}
-
                         <p class="text-xs text-slate-400 mt-1">
                             Created: ${formattedDate} at ${formattedTime} • 
                             <span class="font-medium">${curriculum.subjects_count || 0} subject${curriculum.subjects_count !== 1 ? 's' : ''}</span>
                         </p>
                     </div>
                     <div class="flex flex-col items-end gap-1">
-                        <div class="flex items-center gap-1">
-                            ${versionBadge}
+                        <div class="flex items-center gap-1 flex-wrap justify-end">
                             ${complianceBadge}
                             ${totalUnitsDisplay}
+                            ${versionBadge}
+                            ${approvalBadge}
                         </div>
                     </div>
                 </div>
@@ -434,14 +480,55 @@ document.addEventListener('DOMContentLoaded', () => {
                 const response = await fetch(`/api/curriculum-history/${curriculum.id}/versions`);
                 const data = await response.json();
                 
+                console.log('Version history response:', data); // Debug log
+                
                 if (data.success && data.versions && data.versions.length > 0) {
                      renderVersionHistoryInModal(data.versions, curriculum.year_level);
                 } else {
-                    modalSubjectsContent.innerHTML = '<p class="text-gray-500 text-center">No version history found for this curriculum.</p>';
+                    // No version history found, show current curriculum state instead
+                    console.log('No version history found, fetching current curriculum state');
+                    const curriculumResponse = await fetch(`/api/curriculums/${curriculum.id}`);
+                    const curriculumData = await curriculumResponse.json();
+                    
+                    if (curriculumData.curriculum && curriculumData.curriculum.subjects) {
+                        // Create a pseudo-version from current state
+                        const createdDate = new Date(curriculum.created_at || new Date());
+                        const formattedCreatedAt = createdDate.toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'short', 
+                            day: 'numeric' 
+                        }) + ' at ' + createdDate.toLocaleTimeString('en-US', { 
+                            hour: '2-digit', 
+                            minute: '2-digit', 
+                            hour12: true 
+                        });
+                        
+                        const currentVersion = {
+                            id: 'current',
+                            version_number: 1,
+                            change_description: 'Current curriculum state',
+                            changed_by: 'System',
+                            created_at: formattedCreatedAt,
+                            snapshot_data: {
+                                subjects: curriculumData.curriculum.subjects.map(s => ({
+                                    id: s.id,
+                                    subject_name: s.subject_name,
+                                    subject_code: s.subject_code,
+                                    subject_type: s.subject_type,
+                                    subject_unit: s.subject_unit,
+                                    pivot: s.pivot
+                                }))
+                            },
+                            is_current: true
+                        };
+                        renderVersionHistoryInModal([currentVersion], curriculum.year_level);
+                    } else {
+                        modalSubjectsContent.innerHTML = '<p class="text-gray-500 text-center">No subjects mapped to this curriculum yet.</p>';
+                    }
                 }
             } catch (error) {
                 console.error('Failed to fetch version history:', error);
-                modalSubjectsContent.innerHTML = '<p class="text-red-500 text-center">Could not load version history.</p>';
+                modalSubjectsContent.innerHTML = '<p class="text-red-500 text-center">Could not load version history. Error: ' + error.message + '</p>';
             }
         });
         return card;

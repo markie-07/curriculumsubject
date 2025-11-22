@@ -135,6 +135,10 @@ Route::middleware(['auth', 'prevent.back'])->group(function () {
             return view('curriculum_builder');
         })->name('curriculum_builder');
 
+        Route::get('/official_curriculum', function () {
+            return view('official_curriculum');
+        })->name('official_curriculum');
+
         Route::get('/subject_mapping', function () {
             return view('subject_mapping');
         })->name('subject_mapping');

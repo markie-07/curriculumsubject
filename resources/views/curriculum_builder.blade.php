@@ -44,6 +44,19 @@
                             </select>
                             <svg class="w-5 h-5 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
                         </div>
+                        {{-- Approval Status Filter --}}
+                        <div class="relative w-full sm:w-48">
+                            <svg class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                            </svg>
+                            <select id="approval-filter" class="w-full appearance-none pl-10 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200">
+                                <option value="all" selected>All Status</option>
+                                <option value="processing">Processing</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                            <svg class="w-5 h-5 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
+                        </div>
                         {{-- Search Bar --}}
                         <div class="relative w-full sm:w-72">
                             <svg class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -624,11 +637,32 @@
             // --- Card & API Logic ---
             const createCurriculumCard = (curriculum) => {
                 const card = document.createElement('div');
-                card.className = 'curriculum-card group relative bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-4 hover:border-blue-500 hover:shadow-lg transition-all duration-300';
+                
+                // Determine card border, icon, and title colors based on approval status
+                const approvalStatus = curriculum.approval_status || 'processing';
+                let cardBorderClass = 'border-slate-200 hover:border-blue-500';
+                let iconBgClass = 'bg-slate-100 group-hover:bg-blue-100';
+                let iconColorClass = 'text-slate-500 group-hover:text-blue-600';
+                let titleColorClass = 'text-slate-800 group-hover:text-blue-600';
+                
+                if (approvalStatus === 'approved') {
+                    cardBorderClass = 'border-green-400 hover:border-green-500';
+                    iconBgClass = 'bg-green-100 group-hover:bg-green-200';
+                    iconColorClass = 'text-green-600 group-hover:text-green-700';
+                    titleColorClass = 'text-green-700 group-hover:text-green-800';
+                } else if (approvalStatus === 'rejected') {
+                    cardBorderClass = 'border-red-400 hover:border-red-500';
+                    iconBgClass = 'bg-red-100 group-hover:bg-red-200';
+                    iconColorClass = 'text-red-600 group-hover:text-red-700';
+                    titleColorClass = 'text-red-700 group-hover:text-red-800';
+                }
+                
+                card.className = `curriculum-card group relative bg-white p-4 rounded-xl border ${cardBorderClass} flex items-center gap-4 hover:shadow-lg transition-all duration-300`;
                 card.dataset.name = curriculum.curriculum_name.toLowerCase();
                 card.dataset.code = curriculum.program_code.toLowerCase();
                 card.dataset.id = curriculum.id;
                 card.dataset.version = curriculum.version_status || 'new';
+                card.dataset.approvalStatus = approvalStatus;
 
                 const date = new Date(curriculum.created_at);
                 const formattedDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
@@ -655,10 +689,7 @@
                 };
 
                 const totalUnitsDisplay = curriculum.total_units 
-                    ? `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
+                    ? `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
                         ${formatUnits(curriculum.total_units)} units
                     </span>`
                     : '';
@@ -678,6 +709,31 @@
                         New
                     </span>`;
 
+                // Approval status badge
+                let approvalBadge = '';
+                if (approvalStatus === 'approved') {
+                    approvalBadge = `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                        </svg>
+                        Approved
+                    </span>`;
+                } else if (approvalStatus === 'rejected') {
+                    approvalBadge = `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+                        </svg>
+                        Rejected
+                    </span>`;
+                } else {
+                    approvalBadge = `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
+                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
+                        </svg>
+                        Processing
+                    </span>`;
+                }
+
                 // Format memorandum year/category display
                 const memorandumYearCategory = curriculum.memorandum_year 
                     ? curriculum.memorandum_year
@@ -685,16 +741,36 @@
                         ? curriculum.memorandum_category 
                         : '';
 
+                // Approve/Reject buttons - only show if status is processing
+                const actionButtons = approvalStatus === 'processing' ? `
+                    <div class="flex gap-2 mt-2">
+                        <button onclick="event.stopPropagation(); approveCurriculum(${curriculum.id})" 
+                                class="approve-btn px-3 py-1.5 bg-transparent border border-green-600 text-green-600 hover:bg-green-600 hover:text-white text-xs font-medium rounded-lg transition-all duration-200 flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                            </svg>
+                            Approve
+                        </button>
+                        <button onclick="event.stopPropagation(); rejectCurriculum(${curriculum.id})" 
+                                class="reject-btn px-3 py-1.5 bg-transparent border border-red-600 text-red-600 hover:bg-red-600 hover:text-white text-xs font-medium rounded-lg transition-all duration-200 flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+                            </svg>
+                            Reject
+                        </button>
+                    </div>
+                ` : '';
+
                 card.innerHTML = `
-                    <div class="flex-shrink-0 w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300">
-                        <svg class="w-5 h-5 text-slate-500 group-hover:text-blue-600 transition-colors duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <div class="flex-shrink-0 w-10 h-10 ${iconBgClass} rounded-lg flex items-center justify-center transition-colors duration-300">
+                        <svg class="w-5 h-5 ${iconColorClass} transition-colors duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                         </svg>
                     </div>
-                    <div class="flex-grow cursor-pointer min-w-0" onclick="window.location.href='/subject_mapping?curriculumId=${curriculum.id}'">
+                    <div class="flex-grow ${approvalStatus === 'approved' ? 'cursor-default' : 'cursor-pointer'} min-w-0" onclick="${approvalStatus === 'approved' ? '' : `window.location.href='/subject_mapping?curriculumId=${curriculum.id}'`}">
                         <div class="flex items-start justify-between">
                             <div class="flex-grow min-w-0 pr-2">
-                                <h3 class="font-bold text-slate-800 group-hover:text-blue-600 transition-colors duration-300 truncate mb-1">${curriculum.curriculum_name}</h3>
+                                <h3 class="font-bold ${titleColorClass} transition-colors duration-300 truncate mb-1">${curriculum.curriculum_name}</h3>
                                 <div class="flex items-center gap-2 text-sm text-slate-500 mb-1">
                                     <span>${curriculum.program_code} • ${curriculum.academic_year}</span>
                                 </div>
@@ -713,11 +789,13 @@
                                 </p>
                             </div>
                             <div class="flex flex-col items-end gap-1">
-                                <div class="flex items-center gap-1">
-                                    ${versionBadge}
+                                <div class="flex items-center gap-1 flex-wrap justify-end">
                                     ${complianceBadge}
                                     ${totalUnitsDisplay}
+                                    ${versionBadge}
+                                    ${approvalBadge}
                                 </div>
+                                ${actionButtons}
                             </div>
                         </div>
                     </div>
@@ -949,8 +1027,9 @@
                 // Edit and delete functionality removed
             };
 
+            const approvalFilter = document.getElementById('approval-filter');
+
             searchBar.addEventListener('input', (e) => {
-                const searchTerm = e.target.value.toLowerCase();
                 filterCurriculums();
             });
 
@@ -958,19 +1037,26 @@
                 filterCurriculums();
             });
 
+            approvalFilter.addEventListener('change', (e) => {
+                filterCurriculums();
+            });
+
             function filterCurriculums() {
                 const searchTerm = searchBar.value.toLowerCase();
                 const versionStatus = versionFilter.value;
+                const approvalStatus = approvalFilter.value;
                 
                 document.querySelectorAll('.curriculum-card').forEach(card => {
                     const name = card.dataset.name;
                     const code = card.dataset.code;
                     const version = card.dataset.version;
+                    const approval = card.dataset.approvalStatus;
                     
                     const matchesSearch = name.includes(searchTerm) || code.includes(searchTerm);
                     const matchesVersion = version === versionStatus;
+                    const matchesApproval = approvalStatus === 'all' || approval === approvalStatus;
                     
-                    card.style.display = (matchesSearch && matchesVersion) ? 'flex' : 'none';
+                    card.style.display = (matchesSearch && matchesVersion && matchesApproval) ? 'flex' : 'none';
                 });
             }
 
@@ -978,6 +1064,83 @@
             closeModalButton.addEventListener('click', hideAddEditModal);
             cancelModalButton.addEventListener('click', hideAddEditModal);
             curriculumForm.addEventListener('submit', handleFormSubmit);
+
+            // Global functions for approve/reject (accessible from onclick)
+            window.approveCurriculum = async (curriculumId) => {
+                showConfirmationModal({
+                    title: 'Approve Curriculum?',
+                    message: 'Are you sure you want to approve this curriculum?',
+                    icon: `<svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
+                    confirmButtonClass: 'bg-green-600 hover:bg-green-700',
+                    onConfirm: async () => {
+                        try {
+                            const response = await fetch(`/api/curriculums/${curriculumId}/approve`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                    'Accept': 'application/json',
+                                }
+                            });
+
+                            if (!response.ok) {
+                                throw new Error('Failed to approve curriculum');
+                            }
+
+                            const result = await response.json();
+                            
+                            // Show success notification
+                            if (result.notification) {
+                                showSuccessModal(result.notification.title, result.notification.message);
+                            }
+                            
+                            // Refresh the curriculum list
+                            fetchCurriculums();
+                        } catch (error) {
+                            console.error('Error approving curriculum:', error);
+                            showSuccessModal('Error', 'Failed to approve curriculum. Please try again.');
+                        }
+                    }
+                });
+            };
+
+            window.rejectCurriculum = async (curriculumId) => {
+                showConfirmationModal({
+                    title: 'Reject Curriculum?',
+                    message: 'Are you sure you want to reject this curriculum?',
+                    icon: `<svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
+                    confirmButtonClass: 'bg-red-600 hover:bg-red-700',
+                    onConfirm: async () => {
+                        try {
+                            const response = await fetch(`/api/curriculums/${curriculumId}/reject`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                    'Accept': 'application/json',
+                                }
+                            });
+
+                            if (!response.ok) {
+                                throw new Error('Failed to reject curriculum');
+                            }
+
+                            const result = await response.json();
+                            
+                            // Show success notification
+                            if (result.notification) {
+                                showSuccessModal(result.notification.title, result.notification.message);
+                            }
+                            
+                            // Refresh the curriculum list
+                            fetchCurriculums();
+                        } catch (error) {
+                            console.error('Error rejecting curriculum:', error);
+                            showSuccessModal('Error', 'Failed to reject curriculum. Please try again.');
+                        }
+                    }
+                });
+            };
 
             fetchCurriculums();
         });

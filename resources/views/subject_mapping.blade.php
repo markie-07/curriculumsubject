@@ -51,6 +51,48 @@
         border-radius: 4px;
         z-index: 10;
     }
+    
+    /* Custom checkbox styling with checkmark */
+    .add-subject-checkbox input[type="checkbox"] {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        border: 2px solid #D1D5DB;
+        border-radius: 0.25rem;
+        background-color: white;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .add-subject-checkbox input[type="checkbox"]:hover {
+        border-color: #9CA3AF;
+    }
+    
+    .add-subject-checkbox input[type="checkbox"]:checked {
+        background-color: #2563EB;
+        border-color: #2563EB;
+    }
+    
+    .add-subject-checkbox input[type="checkbox"]:checked::after {
+        content: "✓";
+        display: block;
+        color: white;
+        font-size: 1rem;
+        font-weight: bold;
+        line-height: 1;
+        text-align: center;
+    }
+    
+    .add-subject-checkbox input[type="checkbox"]:focus {
+        outline: 2px solid #3B82F6;
+        outline-offset: 2px;
+    }
 </style>
 <main class="flex-1 overflow-hidden bg-gray-100 p-6 flex flex-col">
     <div class="bg-white rounded-2xl shadow-xl p-8 flex-1 flex flex-col">
@@ -1190,7 +1232,7 @@
                 ${statusHTML}
             </div>
             <div class="add-subject-checkbox hidden ml-2">
-                <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                <input type="checkbox">
             </div>`;
         
         if(isDraggable) {
@@ -1825,24 +1867,16 @@ const updateAllTotals = () => {
                 originalSubjectCard.classList.remove('assigned-card', 'assigned-major', 'assigned-minor', 'assigned-elective', 'assigned-general', 'bg-white', 'opacity-60', 'cursor-not-allowed', 'removed-subject-card');
                 originalSubjectCard.classList.add('bg-white', 'hover:shadow-md', 'hover:border-blue-400', 'cursor-grab');
 
-                // Reset icon styling to original available state
+                // Reset icon styling to default gray state (not colored by type)
                 const iconContainer = originalSubjectCard.querySelector('.flex-shrink-0');
                 const iconSvg = iconContainer?.querySelector('svg');
-                const subjectType = subjectData.subject_type.toLowerCase();
                 
-                // Restore original icon styling based on subject type
-                if (subjectType.includes('major')) {
-                    if (iconContainer) iconContainer.className = 'flex-shrink-0 w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center transition-colors duration-300';
-                    if (iconSvg) iconSvg.className = 'h-6 w-6 text-blue-600 transition-colors duration-300';
-                } else if (subjectType.includes('minor')) {
-                    if (iconContainer) iconContainer.className = 'flex-shrink-0 w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center transition-colors duration-300';
-                    if (iconSvg) iconSvg.className = 'h-6 w-6 text-purple-600 transition-colors duration-300';
-                } else if (subjectType.includes('elective')) {
-                    if (iconContainer) iconContainer.className = 'flex-shrink-0 w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center transition-colors duration-300';
-                    if (iconSvg) iconSvg.className = 'h-6 w-6 text-red-600 transition-colors duration-300';
-                } else {
-                    if (iconContainer) iconContainer.className = 'flex-shrink-0 w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center transition-colors duration-300';
-                    if (iconSvg) iconSvg.className = 'h-6 w-6 text-orange-600 transition-colors duration-300';
+                // Reset to default gray styling for available subjects
+                if (iconContainer) {
+                    iconContainer.className = 'flex-shrink-0 w-12 h-12 icon-bg-default rounded-lg flex items-center justify-center transition-colors duration-300';
+                }
+                if (iconSvg) {
+                    iconSvg.className = 'h-6 w-6 text-gray-500 transition-colors duration-300';
                 }
                 
                 // Reset status badge to Available
@@ -1863,14 +1897,19 @@ const updateAllTotals = () => {
                 // Handle new subjects (added via checkbox) - no API call needed
                 const isPending = subjectTagToRemove.dataset.isPending === 'true';
                 subjectTagToRemove.remove();
-                const originalSubjectCard = document.getElementById(`subject-${subjectData.subject_code.toLowerCase()}`);
-                resetSubjectCard(originalSubjectCard);
                 
                 // If it was a pending subject, don't need to update unit totals since it wasn't counted
                 if (!isPending) {
                     updateUnitTotals();
                 }
+                
                 hideRemoveConfirmationModal();
+                
+                // Reload the page to ensure the subject card is properly reset
+                setTimeout(() => {
+                    window.location.reload();
+                }, 300);
+                
                 return;
             }
 
@@ -1898,18 +1937,19 @@ const updateAllTotals = () => {
                 }
 
                 subjectTagToRemove.remove();
-                const originalSubjectCard = document.getElementById(`subject-${subjectData.subject_code.toLowerCase()}`);
-                resetSubjectCard(originalSubjectCard);
                 updateUnitTotals();
                 
-                // Use SweetAlert for success
+                // Hide the modal first
+                hideRemoveConfirmationModal();
+                
+                // Show success message and then reload the page
                 Swal.fire({
                     title: 'Subject Removed Successfully!',
-                    text: `"${subjectData.subject_name}" (${subjectData.subject_code}) has been removed from Year ${year}, Semester ${semester} and is now available for assignment.`,
+                    text: `"${subjectData.subject_name}" (${subjectData.subject_code}) has been removed from Year ${year}, Semester ${semester}.`,
                     icon: 'success',
                     confirmButtonText: 'OK',
                     confirmButtonColor: '#10B981',
-                    timer: 5000,
+                    timer: 2000,
                     timerProgressBar: true,
                     showClass: {
                         popup: 'animate__animated animate__fadeInDown'
@@ -1917,6 +1957,9 @@ const updateAllTotals = () => {
                     hideClass: {
                         popup: 'animate__animated animate__fadeOutUp'
                     }
+                }).then(() => {
+                    // Reload the page to refresh the curriculum data and reset all subject cards
+                    window.location.reload();
                 });
 
             } catch (error) {
@@ -2618,8 +2661,11 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
             fetch('/api/curriculums')
                 .then(response => response.json())
                 .then(curriculums => {
-                    // Filter out old versions - only show new versions
-                    const newCurriculums = curriculums.filter(curriculum => curriculum.version_status !== 'old');
+                    // Filter out old versions and approved curriculums - only show new versions that are not approved
+                    const newCurriculums = curriculums.filter(curriculum => 
+                        curriculum.version_status !== 'old' && 
+                        curriculum.approval_status !== 'approved'
+                    );
                     
                     allCurriculums = newCurriculums;
                     filteredCurriculums = [...newCurriculums];
@@ -3172,6 +3218,30 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
             .then(data => {
                 hideAddSubjectsModal();
                 
+                // Manually add the new subjects to the Available Subjects list immediately for Real-time feedback
+                if (availableSubjectsContainer) {
+                    // Remove "No subjects available" or "Select a curriculum" message if it exists
+                    const noSubjectsMsg = availableSubjectsContainer.querySelector('p.text-center');
+                    if (noSubjectsMsg) {
+                        noSubjectsMsg.remove();
+                    }
+
+                    subjectsToAdd.forEach(subject => {
+                        // Check if card already exists to prevent duplicates
+                        const existingCard = document.getElementById(`subject-${subject.subject_code.toLowerCase()}`);
+                        if (!existingCard) {
+                            const newCard = createSubjectCard(subject, false); // isMapped = false
+                            availableSubjectsContainer.appendChild(newCard);
+                            
+                            // Add animation for better UX
+                            newCard.classList.add('animate__animated', 'animate__fadeIn');
+                            
+                            // Scroll to the new item (optional, but nice)
+                            newCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }
+                    });
+                }
+
                 Swal.fire({
                     title: 'Success!',
                     text: `${selectedSubjectsForAdding.size} subject(s) added to curriculum successfully!`,
@@ -3182,7 +3252,7 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
                     timerProgressBar: true
                 });
                 
-                // Refresh the curriculum data to show new subjects
+                // Refresh the curriculum data to ensure consistency (background)
                 fetchCurriculumData(curriculumId);
             })
             .catch(error => {

@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('curriculums', function (Blueprint $table) {
-            $table->string('version_status')->default('new')->after('total_units');
+            // if (!Schema::hasColumn('curriculums', 'version_status')) {
+            //     $table->string('version_status')->default('new')->after('total_units');
+            // }
         });
     }
 

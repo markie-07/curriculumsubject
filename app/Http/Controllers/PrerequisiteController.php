@@ -54,6 +54,13 @@ class PrerequisiteController extends Controller
             'prerequisite_codes.*' => 'string', // Ensure all items in the array are strings
         ]);
 
+        $curriculum = Curriculum::findOrFail($validated['curriculum_id']);
+
+        // If curriculum was rejected, revert to processing on modification
+        if ($curriculum->approval_status === 'rejected') {
+            $curriculum->update(['approval_status' => 'processing']);
+        }
+
         // First, delete all existing prerequisites for this subject to avoid duplicates
         Prerequisite::where('curriculum_id', $validated['curriculum_id'])
             ->where('subject_code', $validated['subject_code'])

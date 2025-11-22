@@ -38,6 +38,7 @@ class CurriculumController extends Controller
                     'semester_units' => $curriculum->semester_units,
                     'total_units' => $curriculum->total_units,
                     'version_status' => $curriculum->version_status,
+                    'approval_status' => $curriculum->approval_status,
                     'created_at' => $curriculum->created_at,
                     'subjects_count' => $curriculum->subjects_count,
                 ];
@@ -237,6 +238,11 @@ public function saveSubjects(Request $request)
     ]);
 
     $curriculum = Curriculum::findOrFail($validated['curriculumId']);
+
+    // If curriculum was rejected, revert to processing on modification
+    if ($curriculum->approval_status === 'rejected') {
+        $curriculum->update(['approval_status' => 'processing']);
+    }
     
     // Get existing subjects before clearing to track changes
     $existingSubjects = $curriculum->subjects()->get()->keyBy('id');
@@ -350,6 +356,12 @@ public function saveSubjects(Request $request)
             
             DB::transaction(function () use ($validated, &$subjectName) {
                 $curriculum = Curriculum::findOrFail($validated['curriculumId']);
+                
+                // If curriculum was rejected, revert to processing on modification
+                if ($curriculum->approval_status === 'rejected') {
+                    $curriculum->update(['approval_status' => 'processing']);
+                }
+
                 $subject = Subject::findOrFail($validated['subjectId']);
                 
                 // Store subject name for use outside transaction
@@ -463,6 +475,11 @@ public function saveSubjects(Request $request)
         try {
             $curriculum = Curriculum::findOrFail($id);
             
+            // If curriculum was rejected, revert to processing on modification
+            if ($curriculum->approval_status === 'rejected') {
+                $curriculum->update(['approval_status' => 'processing']);
+            }
+            
             // Get existing subject IDs for this curriculum
             $existingSubjectIds = $curriculum->subjects()->pluck('subjects.id')->toArray();
             
@@ -510,6 +527,80 @@ public function saveSubjects(Request $request)
             \Log::error("Error in addSubjectsToCurriculum: " . $e->getMessage());
             return response()->json([
                 'message' => 'An error occurred while adding subjects to curriculum.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Approve a curriculum
+     */
+    public function approve($id)
+    {
+        try {
+            $curriculum = Curriculum::findOrFail($id);
+            $curriculum->update(['approval_status' => 'approved']);
+
+            // Create database notification for admins
+            if (Auth::check()) {
+                Notification::createForAdmins(
+                    'success',
+                    'Curriculum Approved',
+                    'Curriculum "' . $curriculum->curriculum . '" has been approved by ' . Auth::user()->name,
+                    ['curriculum_id' => $curriculum->id, 'action' => 'approved']
+                );
+            }
+
+            return response()->json([
+                'message' => 'Curriculum approved successfully!',
+                'curriculum' => $curriculum,
+                'notification' => [
+                    'type' => 'success',
+                    'title' => 'Curriculum Approved!',
+                    'message' => 'Curriculum "' . $curriculum->curriculum . '" has been approved successfully!'
+                ]
+            ]);
+        } catch (\Exception $e) {
+            \Log::error("Error approving curriculum: " . $e->getMessage());
+            return response()->json([
+                'message' => 'An error occurred while approving the curriculum.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Reject a curriculum
+     */
+    public function reject($id)
+    {
+        try {
+            $curriculum = Curriculum::findOrFail($id);
+            $curriculum->update(['approval_status' => 'rejected']);
+
+            // Create database notification for admins
+            if (Auth::check()) {
+                Notification::createForAdmins(
+                    'warning',
+                    'Curriculum Rejected',
+                    'Curriculum "' . $curriculum->curriculum . '" has been rejected by ' . Auth::user()->name,
+                    ['curriculum_id' => $curriculum->id, 'action' => 'rejected']
+                );
+            }
+
+            return response()->json([
+                'message' => 'Curriculum rejected successfully!',
+                'curriculum' => $curriculum,
+                'notification' => [
+                    'type' => 'warning',
+                    'title' => 'Curriculum Rejected!',
+                    'message' => 'Curriculum "' . $curriculum->curriculum . '" has been rejected.'
+                ]
+            ]);
+        } catch (\Exception $e) {
+            \Log::error("Error rejecting curriculum: " . $e->getMessage());
+            return response()->json([
+                'message' => 'An error occurred while rejecting the curriculum.',
                 'error' => $e->getMessage()
             ], 500);
         }
