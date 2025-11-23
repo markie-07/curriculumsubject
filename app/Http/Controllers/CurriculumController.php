@@ -247,8 +247,11 @@ public function saveSubjects(Request $request)
     // Get existing subjects before clearing to track changes
     $existingSubjects = $curriculum->subjects()->get()->keyBy('id');
     
+    // Arrays to track all changes for a single version snapshot
+    $changeDescriptions = [];
+    
     // Use a transaction to ensure data integrity
-    DB::transaction(function () use ($curriculum, $validated, $existingSubjects) {
+    DB::transaction(function () use ($curriculum, $validated, $existingSubjects, &$changeDescriptions) {
         $newSubjectMappings = [];
         foreach ($validated['curriculumData'] as $data) {
             if (empty($data['subjects'])) {
@@ -279,47 +282,55 @@ public function saveSubjects(Request $request)
 
         // Identify added subjects
         $addedSubjects = $newSubjectIds->diff($existingSubjects->keys());
-        foreach ($addedSubjects as $subjectId) {
-            $subject = Subject::find($subjectId);
-            CurriculumVersionService::createSnapshotOnSubjectAdd(
-                $curriculum->id, 
-                $subject->subject_name
-            );
+        if ($addedSubjects->isNotEmpty()) {
+            $addedNames = [];
+            foreach ($addedSubjects as $subjectId) {
+                $subject = Subject::find($subjectId);
+                $addedNames[] = $subject->subject_name;
+            }
+            if (count($addedNames) > 0) {
+                $changeDescriptions[] = count($addedNames) . " subject(s) added: " . implode(', ', $addedNames);
+            }
         }
 
         // Identify removed subjects
         $removedSubjects = $existingSubjects->keys()->diff($newSubjectIds);
-        foreach ($removedSubjects as $subjectId) {
-            $subject = $existingSubjects[$subjectId];
-            CurriculumVersionService::createSnapshotOnSubjectRemove(
-                $curriculum->id, 
-                $subject->subject_name,
-                [
-                    'subject_name' => $subject->subject_name,
-                    'subject_code' => $subject->subject_code,
-                    'subject_type' => $subject->subject_type,
-                    'subject_unit' => $subject->subject_unit,
-                    'year' => $subject->pivot->year,
-                    'semester' => $subject->pivot->semester,
-                ]
-            );
+        if ($removedSubjects->isNotEmpty()) {
+            $removedNames = [];
+            foreach ($removedSubjects as $subjectId) {
+                $subject = $existingSubjects[$subjectId];
+                $removedNames[] = $subject->subject_name;
+            }
+            if (count($removedNames) > 0) {
+                $changeDescriptions[] = count($removedNames) . " subject(s) removed: " . implode(', ', $removedNames);
+            }
         }
 
         // Identify moved subjects
+        $movedSubjects = [];
         foreach ($existingSubjects as $subject) {
             if (isset($newSubjectMappings[$subject->id])) {
                 $oldMapping = $subject->pivot;
                 $newMapping = (object)$newSubjectMappings[$subject->id];
                 
                 if ($oldMapping->year != $newMapping->year || $oldMapping->semester != $newMapping->semester) {
-                    CurriculumVersionService::createSnapshotOnUpdate(
-                        $curriculum->id,
-                        "Moved subject '{$subject->subject_name}' from Year {$oldMapping->year}, Sem {$oldMapping->semester} to Year {$newMapping->year}, Sem {$newMapping->semester}"
-                    );
+                    $movedSubjects[] = "{$subject->subject_name} (Year {$oldMapping->year}, Sem {$oldMapping->semester} → Year {$newMapping->year}, Sem {$newMapping->semester})";
                 }
             }
         }
+        if (count($movedSubjects) > 0) {
+            $changeDescriptions[] = count($movedSubjects) . " subject(s) moved: " . implode('; ', $movedSubjects);
+        }
     });
+
+    // Create a SINGLE version snapshot if there were any changes
+    if (!empty($changeDescriptions)) {
+        $fullDescription = "Curriculum mapping updated - " . implode('; ', $changeDescriptions);
+        CurriculumVersionService::createSnapshotOnUpdate(
+            $curriculum->id,
+            $fullDescription
+        );
+    }
 
     session()->flash('success', 'Curriculum subjects have been saved successfully!');
     

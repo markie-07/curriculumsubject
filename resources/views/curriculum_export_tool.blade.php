@@ -27,7 +27,7 @@
     }
 </style>
 <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-8">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {{-- Left Panel: Export Configuration --}}
         <div class="lg:col-span-2 bg-white p-8 rounded-2xl shadow-xl border border-gray-200">
             <div class="pb-6 border-b border-gray-200 flex items-center gap-4">
@@ -45,12 +45,31 @@
             <div class="mt-8">
                 <h2 class="text-xl font-semibold text-gray-800">Export Configuration</h2>
                 <div class="space-y-6 mt-4">
+                    {{-- Curriculum Status Filter --}}
+                    <div>
+                        <label for="curriculum-status-filter" class="block text-sm font-medium text-gray-700 mb-2">Filter by Curriculum Status</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                                </svg>
+                            </div>
+                            <select id="curriculum-status-filter" name="curriculum_status" class="block w-full pl-10 pr-10 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
+                                <option value="" selected disabled>-- Select Status --</option>
+                                <option value="processing">Processing</option>
+                                <option value="new">New</option>
+                                <option value="old">Old</option>
+                            </select>
+                        </div>
+                        <p class="mt-2 text-xs text-gray-500">Filter curriculums by their approval status.</p>
+                    </div>
+                    
                     <div>
                         <label for="curriculum-select" class="block text-sm font-medium text-gray-700 mb-2">Select Curriculum</label>
                         <div class="relative">
                             <!-- Custom Dropdown Button -->
-                            <button type="button" id="curriculum-dropdown-btn" class="relative w-full bg-white border border-gray-300 rounded-lg shadow-sm pl-4 pr-10 py-3 text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-400 hover:shadow-md">
-                                <span id="curriculum-selected-text" class="block truncate text-gray-500">-- Please select a curriculum --</span>
+                            <button type="button" id="curriculum-dropdown-btn" class="relative w-full bg-gray-100 border border-gray-300 rounded-lg shadow-sm pl-4 pr-10 py-3 text-left cursor-not-allowed opacity-60 focus:outline-none transition-all duration-200" disabled>
+                                <span id="curriculum-selected-text" class="block truncate text-gray-500">-- Please select a status first --</span>
                                 <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                     <svg id="dropdown-arrow" class="h-5 w-5 text-gray-400 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -65,7 +84,11 @@
                                 </div>
                                 <div id="curriculum-options" class="py-1 overflow-y-auto" style="max-height: 450px;">
                                     @foreach($curriculums as $curriculum)
-                                        <div class="curriculum-option cursor-pointer select-none relative py-3 pl-4 pr-9 hover:bg-blue-50 hover:text-blue-900 transition-colors duration-150" data-value="{{ $curriculum->id }}" data-text="{{ $curriculum->curriculum }} ({{ $curriculum->program_code }})">
+                                        <div class="curriculum-option cursor-pointer select-none relative py-3 pl-4 pr-9 hover:bg-blue-50 hover:text-blue-900 transition-colors duration-150" 
+                                             data-value="{{ $curriculum->id }}" 
+                                             data-text="{{ $curriculum->curriculum }} ({{ $curriculum->program_code }}) - {{ $curriculum->academic_year }}" 
+                                             data-version-status="{{ $curriculum->version_status ?? 'new' }}"
+                                             data-approval-status="{{ $curriculum->approval_status ?? 'processing' }}">
                                             <div class="flex items-center justify-between">
                                                 <div>
                                                     <div class="font-medium text-gray-900">{{ $curriculum->curriculum }}</div>
@@ -101,14 +124,6 @@
                             <label class="flex items-center p-3 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
                                 <input type="checkbox" name="course_types" value="Minor" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                                 <span class="ml-3 text-sm font-medium text-gray-700">Minor</span>
-                            </label>
-                            <label class="flex items-center p-3 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-                                <input type="checkbox" name="course_types" value="Elective" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                <span class="ml-3 text-sm font-medium text-gray-700">Elective</span>
-                            </label>
-                            <label class="flex items-center p-3 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-                                <input type="checkbox" name="course_types" value="General Education" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                <span class="ml-3 text-sm font-medium text-gray-700">General Education</span>
                             </label>
                         </div>
                         <p class="mt-2 text-xs text-gray-500">Leave unchecked to include all course types in the export.</p>
@@ -167,7 +182,7 @@
         </div>
 
         {{-- Right Panel: Export History --}}
-        <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-200">
+        <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-200 flex flex-col">
             <h2 class="text-2xl font-bold text-gray-900 mb-6 pb-4 border-b border-gray-200">Export History</h2>
             
             <div class="relative mb-4">
@@ -179,7 +194,7 @@
                 </div>
             </div>
             
-            <div id="export-history" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+            <div id="export-history" class="space-y-4 flex-1 overflow-y-auto pr-2 min-h-0">
                 @forelse ($exportHistories as $history)
                     <div class="history-item flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
                         <div class="flex items-center gap-4">
@@ -332,11 +347,44 @@ document.addEventListener('DOMContentLoaded', function () {
         curriculumSelect.dispatchEvent(changeEvent);
     }
 
-    function filterOptions(searchTerm) {
+    function filterOptions(searchTerm = '') {
+        const statusFilter = document.getElementById('curriculum-status-filter');
+        const selectedStatus = statusFilter ? statusFilter.value : '';
         let visibleCount = 0;
+        
+        // If no status selected, hide all options
+        if (!selectedStatus) {
+            curriculumOptions.forEach(option => {
+                option.style.display = 'none';
+            });
+            noResults.classList.remove('hidden');
+            return;
+        }
+        
         curriculumOptions.forEach(option => {
             const text = option.dataset.text.toLowerCase();
-            if (text.includes(searchTerm.toLowerCase())) {
+            const versionStatus = option.dataset.versionStatus || 'new';
+            const approvalStatus = option.dataset.approvalStatus || 'processing';
+            
+            // Check search match
+            const searchMatch = text.includes(searchTerm.toLowerCase());
+            
+            // Check status match based on selected filter
+            let statusMatch = false;
+            
+            if (selectedStatus === 'processing') {
+                // For processing, check approval status
+                statusMatch = approvalStatus === 'processing';
+            } else if (selectedStatus === 'new') {
+                // For new, check version status AND approved
+                statusMatch = versionStatus === 'new' && approvalStatus === 'approved';
+            } else if (selectedStatus === 'old') {
+                // For old, check version status AND approved
+                statusMatch = versionStatus === 'old' && approvalStatus === 'approved';
+            }
+            
+            // Show option if both search and status match
+            if (searchMatch && statusMatch) {
                 option.style.display = 'block';
                 visibleCount++;
             } else {
@@ -350,6 +398,47 @@ document.addEventListener('DOMContentLoaded', function () {
             noResults.classList.add('hidden');
         }
     }
+
+    // Status filter event listener
+    const statusFilter = document.getElementById('curriculum-status-filter');
+    
+    statusFilter.addEventListener('change', () => {
+        const selectedStatus = statusFilter.value;
+        
+        // Enable or disable curriculum dropdown based on status selection
+        if (selectedStatus) {
+            // Enable dropdown
+            dropdownBtn.disabled = false;
+            dropdownBtn.classList.remove('cursor-not-allowed', 'opacity-60', 'bg-gray-100');
+            dropdownBtn.classList.add('cursor-pointer', 'bg-white', 'hover:border-gray-400', 'hover:shadow-md');
+            selectedText.textContent = '-- Please select a curriculum --';
+        } else {
+            // Disable dropdown
+            dropdownBtn.disabled = true;
+            dropdownBtn.classList.add('cursor-not-allowed', 'opacity-60', 'bg-gray-100');
+            dropdownBtn.classList.remove('cursor-pointer', 'bg-white', 'hover:border-gray-400', 'hover:shadow-md');
+            selectedText.textContent = '-- Please select a status first --';
+        }
+        
+        // Reset curriculum selection when status changes
+        curriculumSelect.value = '';
+        selectedText.classList.add('text-gray-500');
+        selectedText.classList.remove('text-gray-900');
+        
+        // Reset check icons
+        curriculumOptions.forEach(opt => {
+            const checkIcon = opt.querySelector('.check-icon');
+            checkIcon.classList.add('hidden');
+            opt.classList.remove('bg-blue-50');
+        });
+        
+        // Hide preview
+        hideCurriculumPreview();
+        exportButton.disabled = true;
+        
+        // Apply filter
+        filterOptions(searchInput.value);
+    });
 
     // Event Listeners
     dropdownBtn.addEventListener('click', toggleDropdown);
@@ -482,6 +571,13 @@ document.addEventListener('DOMContentLoaded', function () {
         
         // Filter subjects based on selected types
         let filteredSubjects = currentCurriculumData.subjects || [];
+        
+        // Exclude subjects with invalid year/semester (unmapped subjects)
+        filteredSubjects = filteredSubjects.filter(subject => 
+            subject.year !== 'N/A' && subject.semester !== 'N/A' && 
+            subject.year != null && subject.semester != null
+        );
+
         if (selectedTypes.length > 0) {
             const geIdentifiers = ["GE", "General Education", "Gen Ed", "General"];
             

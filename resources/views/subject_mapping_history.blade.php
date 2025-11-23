@@ -3,35 +3,7 @@
 @section('content')
 <!-- SweetAlert2 CDN -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<style>
-    /* Add styles for the subject cards inside the modal, similar to subject_mapping.blade.php */
-    .subject-tag {
-        transition: all 0.2s ease-in-out;
-    }
-    .subject-tag-major { background-color: #DBEAFE; border-color: #BFDBFE; }
-    .subject-tag-major .text-main { color: #1E40AF; font-weight: bold; }
-    .subject-tag-major .text-code { color: #1D4ED8; }
-    .subject-tag-major .icon { color: #3B82F6; }
-    .subject-tag-major .unit-badge { background-color: #BFDBFE; color: #1E40AF; }
 
-    .subject-tag-minor { background-color: #E9D5FF; border-color: #D8B4FE; }
-    .subject-tag-minor .text-main { color: #5B21B6; font-weight: bold; }
-    .subject-tag-minor .text-code { color: #6D28D9; }
-    .subject-tag-minor .icon { color: #8B5CF6; }
-    .subject-tag-minor .unit-badge { background-color: #D8B4FE; color: #5B21B6; }
-
-    .subject-tag-elective { background-color: #FEE2E2; border-color: #FECACA; }
-    .subject-tag-elective .text-main { color: #991B1B; font-weight: bold; }
-    .subject-tag-elective .text-code { color: #B91C1C; }
-    .subject-tag-elective .icon { color: #EF4444; }
-    .subject-tag-elective .unit-badge { background-color: #FECACA; color: #991B1B; }
-
-    .subject-tag-general { background-color: #FFEDD5; border-color: #FED7AA; }
-    .subject-tag-general .text-main { color: #9A3412; font-weight: bold; }
-    .subject-tag-general .text-code { color: #C2410C; }
-    .subject-tag-general .icon { color: #F97316; }
-    .subject-tag-general .unit-badge { background-color: #FED7AA; color: #9A3412; }
-</style>
 
 <main class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-4 sm:p-6 md:p-8">
     <div>
@@ -63,6 +35,19 @@
                         <select id="version-filter" class="w-full appearance-none pl-10 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200">
                             <option value="new" selected>New</option>
                             <option value="old">Old</option>
+                        </select>
+                        <svg class="w-5 h-5 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
+                    </div>
+                    {{-- Status Filter --}}
+                    <div class="relative w-full sm:w-48">
+                        <svg class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                        </svg>
+                        <select id="status-filter" class="w-full appearance-none pl-10 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200">
+                            <option value="all" selected>All Status</option>
+                            <option value="processing">Processing</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
                         </select>
                         <svg class="w-5 h-5 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
                     </div>
@@ -99,11 +84,81 @@
         <div id="subjectsModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 ease-out hidden">
             <div class="flex items-center justify-center min-h-screen p-4">
                 <div class="relative bg-gray-50 border border-gray-200 w-full max-w-7xl rounded-2xl shadow-2xl transform scale-95 opacity-0 transition-all duration-300 ease-out flex flex-col h-[90vh]" id="modal-panel-subjects">
-                    <div class="p-6 border-b border-gray-200 bg-white rounded-t-2xl flex justify-between items-center">
-                        <h2 id="modal-curriculum-title" class="text-2xl font-bold text-slate-800">Subjects</h2>
-                        <button id="closeSubjectsModal" class="text-slate-400 hover:text-slate-600 focus:outline-none transition-colors duration-200 rounded-full p-1 hover:bg-slate-100" aria-label="Close modal">
-                            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                        </button>
+                    <div class="p-6 border-b border-gray-200 bg-white rounded-t-2xl">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h2 id="modal-curriculum-title" class="text-2xl font-bold text-slate-800 leading-tight">Subjects</h2>
+                                <p id="modal-curriculum-subtitle" class="text-sm text-slate-500 mt-1 font-medium">Curriculum Details</p>
+                            </div>
+                            <button id="closeSubjectsModal" class="text-slate-400 hover:text-slate-600 focus:outline-none transition-colors duration-200 rounded-full p-2 hover:bg-slate-100" aria-label="Close modal">
+                                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                        </div>
+
+                        <!-- Curriculum Details Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 bg-slate-50 p-5 rounded-xl border border-slate-200 shadow-inner">
+                            <!-- Academic Year -->
+                            <div class="flex items-start gap-3">
+                                <div class="p-2 bg-blue-100 text-blue-600 rounded-lg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Academic Year</p>
+                                    <p id="modal-academic-year" class="font-semibold text-slate-800 text-sm mt-0.5">N/A</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Total Units -->
+                            <div class="flex items-start gap-3">
+                                <div class="p-2 bg-orange-100 text-orange-600 rounded-lg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Total Units</p>
+                                    <p id="modal-total-units" class="font-semibold text-slate-800 text-sm mt-0.5">N/A</p>
+                                </div>
+                            </div>
+
+                            <!-- Compliance -->
+                             <div class="flex items-start gap-3">
+                                <div class="p-2 bg-purple-100 text-purple-600 rounded-lg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Compliance</p>
+                                    <p id="modal-compliance" class="font-semibold text-slate-800 text-sm mt-0.5">N/A</p>
+                                </div>
+                            </div>
+
+                            <!-- Memorandum -->
+                            <div class="flex items-start gap-3 md:col-span-2 lg:col-span-2">
+                                <div class="p-2 bg-slate-100 text-slate-600 rounded-lg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Official Memorandum</p>
+                                    <p id="modal-memorandum" class="font-semibold text-slate-800 text-sm mt-0.5 truncate" title="">N/A</p>
+                                </div>
+                            </div>
+
+                            <!-- Status & Version -->
+                            <div class="flex items-center justify-start lg:justify-end gap-2">
+                                 <div id="modal-version-badge">
+                                    <!-- Dynamic Version Badge -->
+                                 </div>
+                                 <div id="modal-status-badge">
+                                    <!-- Dynamic Status Badge -->
+                                 </div>
+                            </div>
+                        </div>
                     </div>
                     <div id="modal-subjects-content" class="p-6 space-y-4 flex-1 overflow-y-auto"></div>
                 </div>
@@ -196,12 +251,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const collegeList = document.getElementById('college-curriculums');
     const searchBar = document.getElementById('search-bar');
     const versionFilter = document.getElementById('version-filter');
+    const statusFilter = document.getElementById('status-filter');
     
     // Modal 1 (Curriculum Overview)
     const subjectsModal = document.getElementById('subjectsModal');
     const subjectsModalPanel = document.getElementById('modal-panel-subjects');
     const closeSubjectsModalBtn = document.getElementById('closeSubjectsModal');
     const modalCurriculumTitle = document.getElementById('modal-curriculum-title');
+    const modalCurriculumSubtitle = document.getElementById('modal-curriculum-subtitle');
+    const modalAcademicYear = document.getElementById('modal-academic-year');
+    const modalTotalUnits = document.getElementById('modal-total-units');
+    const modalCompliance = document.getElementById('modal-compliance');
+    const modalMemorandum = document.getElementById('modal-memorandum');
+    const modalStatusBadge = document.getElementById('modal-status-badge');
+    const modalVersionBadge = document.getElementById('modal-version-badge');
     const modalSubjectsContent = document.getElementById('modal-subjects-content');
 
     // Modal 2 (Subject Details)
@@ -382,20 +445,23 @@ document.addEventListener('DOMContentLoaded', () => {
             </span>`
             : '';
 
-        // Version status badge
-        const versionBadge = curriculum.version_status === 'old'
-            ? `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
-                </svg>
-                Old
-            </span>`
-            : `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-                </svg>
-                New
-            </span>`;
+        // Version status badge - Only show if approved
+        let versionBadge = '';
+        if (approvalStatus === 'approved') {
+            versionBadge = curriculum.version_status === 'old'
+                ? `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
+                    </svg>
+                    Old
+                </span>`
+                : `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                    </svg>
+                    New
+                </span>`;
+        }
 
         // Approval status badge
         let approvalBadge = '';
@@ -473,7 +539,54 @@ document.addEventListener('DOMContentLoaded', () => {
         versionButton.className = 'hidden'; // Keeping it hidden as per design, or remove if not needed
         
         card.addEventListener('click', async () => {
-            modalCurriculumTitle.textContent = `${curriculum.curriculum_name} (${curriculum.program_code})` ;
+            // Populate Modal Header Details
+            modalCurriculumTitle.textContent = curriculum.curriculum_name;
+            if (modalCurriculumSubtitle) modalCurriculumSubtitle.textContent = `${curriculum.program_code} • ${curriculum.year_level}`;
+            
+            if (modalAcademicYear) modalAcademicYear.textContent = curriculum.academic_year || 'N/A';
+            if (modalTotalUnits) modalTotalUnits.textContent = curriculum.total_units ? `${parseFloat(curriculum.total_units)} Units` : 'N/A';
+            if (modalCompliance) modalCompliance.textContent = curriculum.compliance || 'N/A';
+            
+            // Memorandum Logic
+            if (modalMemorandum) {
+                const memoYear = curriculum.memorandum_year || '';
+                const memoCat = curriculum.memorandum_category || '';
+                const memoText = curriculum.memorandum || 'No memorandum selected';
+                let fullMemo = memoText;
+                if (memoCat) fullMemo = `${memoCat} • ${fullMemo}`;
+                modalMemorandum.textContent = fullMemo;
+                modalMemorandum.title = fullMemo;
+            }
+
+            // Status Badge Logic
+            if (modalStatusBadge) {
+                let statusHtml = '';
+                if (approvalStatus === 'approved') {
+                    statusHtml = `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800 border border-green-200"><svg class="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>Approved</span>`;
+                } else if (approvalStatus === 'rejected') {
+                    statusHtml = `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800 border border-red-200"><svg class="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" /></svg>Rejected</span>`;
+                } else {
+                    statusHtml = `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200"><svg class="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" /></svg>Processing</span>`;
+                }
+                modalStatusBadge.innerHTML = statusHtml;
+            }
+
+            // Version Badge Logic
+            if (modalVersionBadge) {
+                if (approvalStatus === 'approved') {
+                    const versionStatus = curriculum.version_status || 'new';
+                    let versionHtml = '';
+                    if (versionStatus === 'old') {
+                        versionHtml = `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200"><svg class="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" /></svg>Old</span>`;
+                    } else {
+                        versionHtml = `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200"><svg class="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>New</span>`;
+                    }
+                    modalVersionBadge.innerHTML = versionHtml;
+                } else {
+                    modalVersionBadge.innerHTML = ''; // Hide version badge for non-approved curriculums
+                }
+            }
+
             modalSubjectsContent.innerHTML = '<p class="text-gray-500 text-center">Loading history...</p>';
             showSubjectsModal();
             try {
@@ -534,53 +647,100 @@ document.addEventListener('DOMContentLoaded', () => {
         return card;
     };
     
-    const getSubjectTagClass = (subjectType) => {
-        const geIdentifiers = ["GE", "General Education", "Gen Ed", "General"];
-        if (subjectType === 'Major') return 'subject-tag-major';
-        if (subjectType === 'Minor') return 'subject-tag-minor';
-        if (subjectType === 'Elective') return 'subject-tag-elective';
-        if (geIdentifiers.map(id => id.toLowerCase()).includes(subjectType.toLowerCase())) return 'subject-tag-general';
-        return 'subject-tag-default';
-    };
+
     
     const createSubjectTagForModal = (subject) => {
         const tag = document.createElement('div');
-        const tagClass = getSubjectTagClass(subject.subject_type);
         const isRemoved = subject._isRemoved;
         
-        // Apply different styling for removed subjects
-        let className = `subject-tag shadow-sm rounded-lg p-3 flex items-center justify-between w-full border ${tagClass}`;
-        if (isRemoved) {
-            className += ' opacity-60 bg-red-50 border-red-200';
+        // Define styles based on subject type (matching subject_mapping.blade.php)
+        let assignedClass = 'border-gray-400';
+        let iconBgClass = 'bg-gray-500';
+        let iconSvgClass = 'text-white';
+        let subjectNameClass = 'text-gray-800';
+        let textColorClass = 'text-gray-500';
+        let unitsColorClass = 'text-gray-600';
+        let dotColorClass = 'text-gray-400';
+        let typeBadgeClass = 'text-gray-500 bg-gray-50 border-gray-100';
+
+        const subjectType = subject.subject_type || 'General';
+
+        if (subjectType === 'Major') {
+            assignedClass = 'border-blue-500';
+            iconBgClass = 'bg-blue-500';
+            iconSvgClass = 'text-white';
+            subjectNameClass = 'text-blue-700';
+            textColorClass = 'text-blue-600 font-bold';
+            unitsColorClass = 'text-blue-600 font-bold';
+            dotColorClass = 'text-blue-400';
+            typeBadgeClass = 'text-white bg-blue-500 border-blue-500';
+        } else if (subjectType === 'Minor') {
+            assignedClass = 'border-purple-500';
+            iconBgClass = 'bg-purple-500';
+            iconSvgClass = 'text-white';
+            subjectNameClass = 'text-purple-700';
+            textColorClass = 'text-purple-600 font-bold';
+            unitsColorClass = 'text-purple-600 font-bold';
+            dotColorClass = 'text-purple-400';
+            typeBadgeClass = 'text-white bg-purple-500 border-purple-500';
+        } else if (subjectType === 'Elective') {
+            assignedClass = 'border-red-500';
+            iconBgClass = 'bg-red-500';
+            iconSvgClass = 'text-white';
+            subjectNameClass = 'text-red-700';
+            textColorClass = 'text-red-600 font-bold';
+            unitsColorClass = 'text-red-600 font-bold';
+            dotColorClass = 'text-red-400';
+            typeBadgeClass = 'text-white bg-red-500 border-red-500';
         } else {
-            className += ' cursor-pointer';
+            // General Education / Default
+            assignedClass = 'border-orange-500';
+            iconBgClass = 'bg-orange-500';
+            iconSvgClass = 'text-white';
+            subjectNameClass = 'text-orange-700';
+            textColorClass = 'text-orange-600 font-bold';
+            unitsColorClass = 'text-orange-600 font-bold';
+            dotColorClass = 'text-orange-400';
+            typeBadgeClass = 'text-white bg-orange-500 border-orange-500';
         }
+
+        // Overrides for removed subjects
+        if (isRemoved) {
+            assignedClass = 'border-red-300 bg-red-50';
+            iconBgClass = 'bg-red-200';
+            iconSvgClass = 'text-red-500';
+            subjectNameClass = 'text-red-800 line-through';
+            textColorClass = 'text-red-600';
+            unitsColorClass = 'text-red-600';
+            dotColorClass = 'text-red-400';
+            typeBadgeClass = 'text-red-600 bg-red-100 border-red-200';
+        }
+
+        tag.className = `subject-card bg-white border-2 ${assignedClass} p-3 rounded-xl shadow-sm flex items-center gap-3 mb-2 ${isRemoved ? 'opacity-75' : 'cursor-pointer hover:shadow-md transition-shadow'}`;
         
-        tag.className = className;
-        
-        const removedIcon = isRemoved ? `
-            <svg class="h-4 w-4 text-red-500 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-            </svg>
-        ` : '';
-        
-        const textStyle = isRemoved ? 'line-through text-red-600' : '';
-        
+        const removedBadge = isRemoved ? `<span class="text-[10px] font-bold text-red-600 bg-red-100 px-2 py-0.5 rounded border border-red-200 ml-2">REMOVED</span>` : '';
+
         tag.innerHTML = `
-            <div class="flex items-center gap-3 flex-grow">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="flex-shrink-0 w-12 h-12 ${iconBgClass} rounded-lg flex items-center justify-center">
+                <svg class="h-6 w-6 ${iconSvgClass}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
-                <div class="flex-grow">
-                    <p class="text-sm leading-tight text-main ${textStyle}">${subject.subject_name}</p>
-                    <p class="text-xs font-mono text-code ${textStyle}">${subject.subject_code}</p>
+            </div>
+            <div class="flex-grow min-w-0">
+                <div class="flex items-center justify-between mb-0.5">
+                    <p class="subject-name font-bold ${subjectNameClass} text-base truncate pr-2">${subject.subject_name}</p>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                    <span class="subject-code font-mono ${textColorClass} bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">${subject.subject_code}</span>
+                    <span class="separator-dot ${dotColorClass}">•</span>
+                    <span class="subject-units font-medium ${unitsColorClass}">${subject.subject_unit} Units</span>
                 </div>
             </div>
-            <div class="flex items-center gap-3 ml-2 flex-shrink-0">
-                <span class="text-xs font-semibold px-2 py-1 rounded-full unit-badge ${isRemoved ? 'bg-red-100 text-red-700' : ''}">${subject.subject_unit} units</span>
-                ${removedIcon}
-                ${isRemoved ? '<span class="text-xs text-red-600 font-medium ml-2">REMOVED</span>' : ''}
-            </div>`;
+            <div class="flex flex-col items-end gap-2 pl-2">
+                <span class="subject-type-badge text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded border ${typeBadgeClass}">${subjectType}</span>
+                ${removedBadge}
+            </div>
+        `;
             
         if (!isRemoved) {
             tag.addEventListener('dblclick', () => {
@@ -814,7 +974,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         return year == i && semester == j;
                     });
                     const semesterBox = document.createElement('div');
-                    semesterBox.className = 'bg-gray-50 border-2 border-solid border-gray-200 rounded-lg p-4';
+                    semesterBox.className = 'bg-gray-50 border-2 border-solid border-gray-200 rounded-lg p-4 shadow-md';
                     
                     let semesterTitle = j === 1 ? 'First Semester' : 'Second Semester';
                     if (yearLevel === 'Senior High') {
@@ -895,21 +1055,25 @@ document.addEventListener('DOMContentLoaded', () => {
     function filterCurriculums() {
         const searchTerm = searchBar.value.toLowerCase();
         const versionStatus = versionFilter.value;
+        const statusValue = statusFilter.value;
         
         document.querySelectorAll('.curriculum-history-card').forEach(card => {
             const name = card.dataset.name;
             const code = card.dataset.code;
             const version = card.dataset.version;
+            const approvalStatus = card.dataset.approvalStatus;
             
             const matchesSearch = name.includes(searchTerm) || code.includes(searchTerm);
             const matchesVersion = version === versionStatus;
+            const matchesStatus = statusValue === 'all' || approvalStatus === statusValue;
             
-            card.style.display = (matchesSearch && matchesVersion) ? 'flex' : 'none';
+            card.style.display = (matchesSearch && matchesVersion && matchesStatus) ? 'flex' : 'none';
         });
     }
 
     searchBar.addEventListener('input', filterCurriculums);
     versionFilter.addEventListener('change', filterCurriculums);
+    statusFilter.addEventListener('change', filterCurriculums);
 });
 </script>
 
@@ -1245,24 +1409,76 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     const renderSubjectCard = (subject) => {
-        const typeColors = {
-            'Major': 'bg-red-100 text-red-800 border-red-200',
-            'Minor': 'bg-blue-100 text-blue-800 border-blue-200',
-            'Elective': 'bg-green-100 text-green-800 border-green-200',
-            'General Education': 'bg-yellow-100 text-yellow-800 border-yellow-200',
-            'GE': 'bg-yellow-100 text-yellow-800 border-yellow-200'
-        };
-        
-        const colorClass = typeColors[subject.subject_type] || 'bg-gray-100 text-gray-800 border-gray-200';
-        
+        // Define styles based on subject type (matching subject_mapping.blade.php)
+        let assignedClass = 'border-gray-400';
+        let iconBgClass = 'bg-gray-500';
+        let iconSvgClass = 'text-white';
+        let subjectNameClass = 'text-gray-800';
+        let textColorClass = 'text-gray-500';
+        let unitsColorClass = 'text-gray-600';
+        let dotColorClass = 'text-gray-400';
+        let typeBadgeClass = 'text-gray-500 bg-gray-50 border-gray-100';
+
+        const subjectType = subject.subject_type || 'General';
+
+        if (subjectType === 'Major') {
+            assignedClass = 'border-blue-500';
+            iconBgClass = 'bg-blue-500';
+            iconSvgClass = 'text-white';
+            subjectNameClass = 'text-blue-700';
+            textColorClass = 'text-blue-600 font-bold';
+            unitsColorClass = 'text-blue-600 font-bold';
+            dotColorClass = 'text-blue-400';
+            typeBadgeClass = 'text-white bg-blue-500 border-blue-500';
+        } else if (subjectType === 'Minor') {
+            assignedClass = 'border-purple-500';
+            iconBgClass = 'bg-purple-500';
+            iconSvgClass = 'text-white';
+            subjectNameClass = 'text-purple-700';
+            textColorClass = 'text-purple-600 font-bold';
+            unitsColorClass = 'text-purple-600 font-bold';
+            dotColorClass = 'text-purple-400';
+            typeBadgeClass = 'text-white bg-purple-500 border-purple-500';
+        } else if (subjectType === 'Elective') {
+            assignedClass = 'border-red-500';
+            iconBgClass = 'bg-red-500';
+            iconSvgClass = 'text-white';
+            subjectNameClass = 'text-red-700';
+            textColorClass = 'text-red-600 font-bold';
+            unitsColorClass = 'text-red-600 font-bold';
+            dotColorClass = 'text-red-400';
+            typeBadgeClass = 'text-white bg-red-500 border-red-500';
+        } else {
+            // General Education / Default
+            assignedClass = 'border-orange-500';
+            iconBgClass = 'bg-orange-500';
+            iconSvgClass = 'text-white';
+            subjectNameClass = 'text-orange-700';
+            textColorClass = 'text-orange-600 font-bold';
+            unitsColorClass = 'text-orange-600 font-bold';
+            dotColorClass = 'text-orange-400';
+            typeBadgeClass = 'text-white bg-orange-500 border-orange-500';
+        }
+
         return `
-            <div class="subject-card-mini ${colorClass} p-2 rounded border text-xs">
-                <div class="flex items-center justify-between">
-                    <div class="flex-1 min-w-0">
-                        <p class="font-medium truncate">${subject.subject_code}</p>
-                        <p class="text-xs opacity-75 truncate">${subject.subject_name}</p>
+            <div class="subject-card bg-white border-2 ${assignedClass} p-3 rounded-xl shadow-sm flex items-center gap-3 mb-2">
+                <div class="flex-shrink-0 w-12 h-12 ${iconBgClass} rounded-lg flex items-center justify-center">
+                    <svg class="h-6 w-6 ${iconSvgClass}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                </div>
+                <div class="flex-grow min-w-0">
+                    <div class="flex items-center justify-between mb-0.5">
+                        <p class="subject-name font-bold ${subjectNameClass} text-base truncate pr-2">${subject.subject_name}</p>
                     </div>
-                    <span class="ml-2 text-xs font-medium">${subject.subject_unit} units</span>
+                    <div class="flex items-center gap-2 text-sm">
+                        <span class="subject-code font-mono ${textColorClass} bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">${subject.subject_code}</span>
+                        <span class="separator-dot ${dotColorClass}">•</span>
+                        <span class="subject-units font-medium ${unitsColorClass}">${subject.subject_unit} Units</span>
+                    </div>
+                </div>
+                <div class="flex flex-col items-end gap-2 pl-2">
+                    <span class="subject-type-badge text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded border ${typeBadgeClass}">${subjectType}</span>
                 </div>
             </div>
         `;

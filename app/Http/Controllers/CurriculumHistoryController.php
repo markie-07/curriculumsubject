@@ -27,7 +27,7 @@ class CurriculumHistoryController extends Controller
                         'version_number' => $version->version_number,
                         'change_description' => $version->change_description,
                         'changed_by' => $version->user ? $version->user->name : 'Unknown',
-                        'created_at' => $version->created_at->format('M d, Y \a\t g:i A'),
+                        'created_at' => $version->created_at->timezone('Asia/Manila')->format('M d, Y \a\t g:i A'),
                         'created_at_raw' => $version->created_at->toISOString(),
                         'snapshot_data' => $version->snapshot_data,
                         'is_current' => $version->version_number === CurriculumHistory::getLatestVersionNumber($curriculumId)
@@ -90,7 +90,7 @@ class CurriculumHistoryController extends Controller
                     'version_number' => $version->version_number,
                     'change_description' => $version->change_description,
                     'changed_by' => $version->user ? $version->user->name : 'Unknown',
-                    'created_at' => $version->created_at->format('M d, Y \a\t g:i A'),
+                    'created_at' => $version->created_at->timezone('Asia/Manila')->format('M d, Y \a\t g:i A'),
                     'subjects' => $organizedSubjects,
                     'total_subjects' => count($snapshotData['subjects'] ?? [])
                 ]
@@ -147,7 +147,7 @@ class CurriculumHistoryController extends Controller
                 'version' => [
                     'id' => $version->id,
                     'version_number' => $version->version_number,
-                    'created_at' => $version->created_at->format('M d, Y \a\t g:i A')
+                    'created_at' => $version->created_at->timezone('Asia/Manila')->format('M d, Y \a\t g:i A')
                 ]
             ]);
 
@@ -209,12 +209,12 @@ class CurriculumHistoryController extends Controller
                     'version1' => [
                         'id' => $version1->id,
                         'version_number' => $version1->version_number,
-                        'created_at' => $version1->created_at->format('M d, Y \a\t g:i A')
+                        'created_at' => $version1->created_at->timezone('Asia/Manila')->format('M d, Y \a\t g:i A')
                     ],
                     'version2' => [
                         'id' => $version2->id,
                         'version_number' => $version2->version_number,
-                        'created_at' => $version2->created_at->format('M d, Y \a\t g:i A')
+                        'created_at' => $version2->created_at->timezone('Asia/Manila')->format('M d, Y \a\t g:i A')
                     ],
                     'changes' => [
                         'added' => $added->values(),

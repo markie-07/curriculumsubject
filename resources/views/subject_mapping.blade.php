@@ -9,10 +9,11 @@
     .icon-bg-elective { background-color: #FEE2E2; border: 2px solid #FECACA; } /* Red */
     .icon-bg-general { background-color: #FFEDD5; border: 2px solid #FED7AA; } /* Orange */
 
-    .icon-major { color: #3B82F6; }
-    .icon-minor { color: #8B5CF6; }
-    .icon-elective { color: #EF4444; }
-    .icon-general { color: #F97316; }
+    /* Icon colors - commented out as we now use text-white for assigned cards */
+    /* .icon-major { color: #3B82F6; } */
+    /* .icon-minor { color: #8B5CF6; } */
+    /* .icon-elective { color: #EF4444; } */
+    /* .icon-general { color: #F97316; } */
     .assigned-major { background-color: #DBEAFE; border-color: #BFDBFE; }
     .assigned-minor { background-color: #E9D5FF; border-color: #D8B4FE; }
     .assigned-elective { background-color: #FEE2E2; border-color: #FECACA; }
@@ -28,10 +29,9 @@
     
     /* Complete semester styling */
     .semester-complete {
-        background-color: #f9fafb !important;
-        border-color: #d1d5db !important;
-        opacity: 0.7;
-        cursor: not-allowed;
+        border-color: #10b981 !important; /* Green border for completed semesters */
+        border-width: 2px !important;
+        box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2), 0 2px 4px -1px rgba(16, 185, 129, 0.1) !important; /* Green-tinted shadow */
     }
     
     .semester-complete .add-subject-btn {
@@ -92,6 +92,18 @@
     .add-subject-checkbox input[type="checkbox"]:focus {
         outline: 2px solid #3B82F6;
         outline-offset: 2px;
+    }
+
+    /* Force white color for icons in assigned cards */
+    .subject-card svg.text-white,
+    .subject-tag svg.text-white {
+        color: white !important;
+        stroke: white !important;
+    }
+    
+    /* Hide all + Select Subject buttons when there are pending subjects */
+    body.has-pending-subjects .add-subject-btn-placeholder {
+        display: none !important;
     }
 </style>
 <main class="flex-1 overflow-hidden bg-gray-100 p-6 flex flex-col">
@@ -165,24 +177,31 @@
                     </div>
                 </div>
 
-                <div id="grand-total-container" class="hidden mt-4 p-4 bg-gray-100 border border-gray-200 text-gray-800 rounded-lg flex justify-between items-center">
-                    <span class="text-lg font-bold">Total Curriculum Units:</span>
-                    <span id="grand-total-units" class="text-2xl font-extrabold">0</span>
-                </div>
 
                 <div id="curriculumOverview" class="mt-4 space-y-6 flex-1 overflow-y-auto">
                     <p class="text-gray-500 text-center mt-4">Select a curriculum from the dropdown to start mapping subjects.</p>
                 </div>
                 
-                <div class="mt-auto pt-6 border-t border-gray-200 flex justify-end gap-2">
-                    <button id="editCurriculumButton" class="px-6 py-3 rounded-lg text-sm font-semibold text-blue-700 bg-white border border-blue-700 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors shadow-md hidden">
-                        <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
-                        Edit
-                    </button>
-                    <button id="saveCurriculumButton" class="px-6 py-3 rounded-lg text-sm font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors shadow-md hidden" disabled>
-                        <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v6a2 2 0 002 2h6m4-4H9m0 0V9m0 0V5a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2h-3m-4-4V9"></path></svg>
-                        Save the Mapping
-                    </button>
+                <div class="mt-auto pt-6 border-t border-gray-200 flex justify-between items-center gap-4">
+                    <div id="grand-total-container" class="hidden px-5 py-3 bg-white border-2 border-blue-200 text-gray-700 rounded-xl flex items-center gap-3 shadow-md border-l-4 border-l-blue-500">
+                        <div class="bg-blue-100 p-2.5 rounded-lg">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        </div>
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-sm font-semibold text-gray-600">Total Curriculum Units:</span>
+                            <span id="grand-total-units" class="text-2xl font-bold text-blue-700">0</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="editCurriculumButton" class="px-6 py-3 rounded-lg text-sm font-semibold text-blue-700 bg-white border-2 border-blue-700 hover:bg-blue-700 hover:text-white hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-md hidden">
+                            <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
+                            Edit
+                        </button>
+                        <button id="saveCurriculumButton" class="px-6 py-3 rounded-lg text-sm font-semibold text-green-700 bg-white border-2 border-green-700 hover:bg-green-700 hover:text-white hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-md hidden" disabled>
+                            <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v6a2 2 0 002 2h6m4-4H9m0 0V9m0 0V5a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2h-3m-4-4V9"></path></svg>
+                            Save the Mapping
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -391,7 +410,7 @@
                 <p class="text-sm text-gray-500 mt-2">Are you sure you want to save the mapping?</p>
                 <div class="mt-6 flex justify-center gap-4">
                     <button id="cancelSaveMapping" class="w-full px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Cancel</button>
-                    <button id="confirmSaveMapping" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">Yes</button>
+                    <button id="confirmSaveMapping" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">Confirm</button>
                 </div>
             </div>
         </div>
@@ -1172,63 +1191,119 @@
         newSubjectCard.dataset.subjectData = JSON.stringify(subject);
         newSubjectCard.dataset.status = status;
 
-        let cardClasses = 'subject-card p-4 border border-gray-200 rounded-xl shadow-sm transition-all duration-200 flex items-center gap-4';
+        let cardClasses = 'subject-card p-4 border border-gray-200 rounded-xl shadow-md transition-all duration-200 flex items-center gap-4 group relative overflow-hidden';
         let statusHTML = '';
         let isDraggable = true;
         
         let iconContainerClasses = 'icon-bg-default';
         let iconSvgClasses = 'text-gray-500';
+        let borderClass = '';
+
+        // Determine border color based on subject type
+        const geIdentifiers = ["GE", "General Education", "Gen Ed", "General"];
+        switch (true) {
+            case subject.subject_type === 'Major':
+                borderClass = 'border-l-4 border-l-blue-500';
+                break;
+            case subject.subject_type === 'Minor':
+                borderClass = 'border-l-4 border-l-purple-500';
+                break;
+            case subject.subject_type === 'Elective':
+                borderClass = 'border-l-4 border-l-red-500';
+                break;
+            case geIdentifiers.map(id => id.toLowerCase()).includes(subject.subject_type.toLowerCase()):
+                borderClass = 'border-l-4 border-l-orange-500';
+                break;
+            default:
+                borderClass = 'border-l-4 border-l-gray-400';
+        }
+
+        let subjectNameClass = 'text-gray-800';
+        let textColorClass = 'text-gray-500';
+        let unitsColorClass = 'text-gray-600';
+        let dotColorClass = 'text-gray-400';
+        let typeBadgeClass = 'text-gray-500 bg-gray-50 border-gray-100';
 
         if (isMapped) {
-            const geIdentifiers = ["GE", "General Education", "Gen Ed", "General"];
-            let assignedClass = 'assigned-card'; 
+            let assignedClass = ''; 
 
             switch (true) {
                 case subject.subject_type === 'Major':
-                    assignedClass = 'assigned-major';
-                    iconContainerClasses = 'icon-bg-major';
-                    iconSvgClasses = 'icon-major';
+                    assignedClass = 'border-blue-500';
+                    iconContainerClasses = 'bg-blue-500';
+                    iconSvgClasses = 'text-white';
+                    subjectNameClass = 'text-blue-700';
+                    textColorClass = 'text-blue-600 font-bold';
+                    unitsColorClass = 'text-blue-600 font-bold';
+                    dotColorClass = 'text-blue-400';
+                    typeBadgeClass = 'text-white bg-blue-500 border-blue-500';
                     break;
                 case subject.subject_type === 'Minor':
-                    assignedClass = 'assigned-minor';
-                    iconContainerClasses = 'icon-bg-minor';
-                    iconSvgClasses = 'icon-minor';
+                    assignedClass = 'border-purple-500';
+                    iconContainerClasses = 'bg-purple-500';
+                    iconSvgClasses = 'text-white';
+                    subjectNameClass = 'text-purple-700';
+                    textColorClass = 'text-purple-600 font-bold';
+                    unitsColorClass = 'text-purple-600 font-bold';
+                    dotColorClass = 'text-purple-400';
+                    typeBadgeClass = 'text-white bg-purple-500 border-purple-500';
                     break;
                 case subject.subject_type === 'Elective':
-                    assignedClass = 'assigned-elective';
-                    iconContainerClasses = 'icon-bg-elective';
-                    iconSvgClasses = 'icon-elective';
+                    assignedClass = 'border-red-500';
+                    iconContainerClasses = 'bg-red-500';
+                    iconSvgClasses = 'text-white';
+                    subjectNameClass = 'text-red-700';
+                    textColorClass = 'text-red-600 font-bold';
+                    unitsColorClass = 'text-red-600 font-bold';
+                    dotColorClass = 'text-red-400';
+                    typeBadgeClass = 'text-white bg-red-500 border-red-500';
                     break;
                 case geIdentifiers.map(id => id.toLowerCase()).includes(subject.subject_type.toLowerCase()):
-                    assignedClass = 'assigned-general';
-                    iconContainerClasses = 'icon-bg-general';
-                    iconSvgClasses = 'icon-general';
+                    assignedClass = 'border-orange-500';
+                    iconContainerClasses = 'bg-orange-500';
+                    iconSvgClasses = 'text-white';
+                    subjectNameClass = 'text-orange-700';
+                    textColorClass = 'text-orange-600 font-bold';
+                    unitsColorClass = 'text-orange-600 font-bold';
+                    dotColorClass = 'text-orange-400';
+                    typeBadgeClass = 'text-white bg-orange-500 border-orange-500';
                     break;
+                default:
+                    assignedClass = 'border-gray-400';
+                    iconContainerClasses = 'bg-gray-500';
+                    iconSvgClasses = 'text-white';
             }
-            cardClasses += ` ${assignedClass} cursor-not-allowed`;
-            statusHTML = `<span class="status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-200 text-gray-700">Assigned</span>`;
+            // Use border-2 for assigned cards to make it more visible, and ensure bg-white
+            cardClasses += ` bg-white border-2 ${assignedClass} cursor-not-allowed`;
+            // Solid green badge for Assigned
+            statusHTML = `<span class="status-badge text-[10px] uppercase tracking-wider font-bold px-3 py-1 rounded-full bg-green-500 text-white shadow-sm">Assigned</span>`;
             isDraggable = false;
         } else {
-            cardClasses += ' bg-white hover:shadow-md hover:border-blue-400 cursor-grab active:cursor-grabbing';
-            statusHTML = '<span class="status-badge text-xs font-semibold text-green-700 bg-green-100 px-2.5 py-1 rounded-full">Available</span>';
+            cardClasses += ` bg-white ${borderClass} hover:shadow-lg hover:border-blue-400 hover:-translate-y-0.5 cursor-grab active:cursor-grabbing`;
+            statusHTML = '<span class="status-badge text-[10px] uppercase tracking-wider font-bold text-gray-600 bg-gray-100 px-3 py-1 rounded-full">Available</span>';
         }
         
         newSubjectCard.className = cardClasses;
         newSubjectCard.setAttribute('draggable', isDraggable);
         
         newSubjectCard.innerHTML = `
-            <div class="flex-shrink-0 w-12 h-12 ${iconContainerClasses} rounded-lg flex items-center justify-center transition-colors duration-300">
+            <div class="flex-shrink-0 w-12 h-12 ${iconContainerClasses} rounded-xl flex items-center justify-center transition-colors duration-300 shadow-sm group-hover:scale-105 transform transition-transform">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ${iconSvgClasses} transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
             </div>
-            <div class="flex-grow">
-                <p class="subject-name font-bold text-gray-800">${subject.subject_name}</p>
-                <p class="text-sm text-gray-500">${subject.subject_code}</p>
-                <p class="text-sm font-semibold text-gray-600 mt-1">Units: ${subject.subject_unit}</p>
+            <div class="flex-grow min-w-0">
+                <div class="flex items-center justify-between mb-0.5">
+                    <p class="subject-name font-bold ${subjectNameClass} text-base truncate pr-2">${subject.subject_name}</p>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                    <span class="subject-code font-mono ${textColorClass} bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">${subject.subject_code}</span>
+                    <span class="separator-dot ${dotColorClass}">•</span>
+                    <span class="subject-units font-medium ${unitsColorClass}">${subject.subject_unit} Units</span>
+                </div>
             </div>
-            <div class="flex flex-col items-end gap-2">
-                <span class="text-xs font-semibold px-2.5 py-1 rounded-full">${subject.subject_type}</span>
+            <div class="flex flex-col items-end gap-2 pl-2">
+                <span class="subject-type-badge text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded border ${typeBadgeClass}">${subject.subject_type}</span>
                 ${statusHTML}
             </div>
             <div class="add-subject-checkbox hidden ml-2">
@@ -1248,65 +1323,78 @@
             subjectTag.setAttribute('draggable', isEditing);
             subjectTag.dataset.subjectData = JSON.stringify(subjectData);
 
-            let baseClasses = 'subject-tag shadow-sm rounded-lg p-3 flex items-center justify-between w-full transition-all border';
-            let colorClasses = '';
-            let textClasses = '';
-            let unitClasses = '';
-            let iconClasses = '';
-            let codeClasses = '';
-            let deleteBtnClasses = 'text-red-500 hover:text-red-700';
+            let baseClasses = 'subject-tag bg-white shadow-md rounded-lg p-3 flex items-center justify-between w-full transition-all hover:shadow-lg group relative overflow-hidden';
+            let borderAccentClass = '';
+            let iconContainerClass = '';
+            let iconClass = '';
+            let textClass = 'text-gray-800 font-bold';
+            let codeClass = 'text-gray-500';
+            let unitClass = 'bg-gray-500 text-white';
+            let typeBadgeClass = 'text-gray-500 bg-gray-50 border-gray-100';
+            let deleteBtnClasses = 'text-gray-400 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-red-50';
 
             const subjectType = subjectData.subject_type;
             const geIdentifiers = ["GE", "General Education", "Gen Ed", "General"];
 
             if (subjectType === 'Major') {
-                colorClasses = 'bg-blue-100 border-blue-200 hover:bg-blue-200';
-                textClasses = 'text-blue-800 font-bold';
-                unitClasses = 'bg-blue-200 text-blue-800';
-                iconClasses = 'text-blue-500';
-                codeClasses = 'text-blue-700';
+                borderAccentClass = 'border-2 border-blue-500';
+                iconContainerClass = 'bg-blue-500';
+                iconClass = 'text-white';
+                textClass = 'text-blue-700 font-bold';
+                codeClass = 'text-blue-600';
+                unitClass = 'bg-blue-500 text-white';
+                typeBadgeClass = 'text-blue-600 bg-blue-50 border-blue-100';
             } else if (subjectType === 'Minor') {
-                colorClasses = 'bg-purple-100 border-purple-200 hover:bg-purple-200';
-                textClasses = 'text-purple-800 font-bold';
-                unitClasses = 'bg-purple-200 text-purple-800';
-                iconClasses = 'text-purple-500';
-                codeClasses = 'text-purple-700';
+                borderAccentClass = 'border-2 border-purple-500';
+                iconContainerClass = 'bg-purple-500';
+                iconClass = 'text-white';
+                textClass = 'text-purple-700 font-bold';
+                codeClass = 'text-purple-600';
+                unitClass = 'bg-purple-500 text-white';
+                typeBadgeClass = 'text-purple-600 bg-purple-50 border-purple-100';
             } else if (subjectType === 'Elective') {
-                colorClasses = 'bg-red-100 border-red-200 hover:bg-red-200';
-                textClasses = 'text-red-800 font-bold';
-                unitClasses = 'bg-red-200 text-red-800';
-                iconClasses = 'text-red-500';
-                codeClasses = 'text-red-700';
+                borderAccentClass = 'border-2 border-red-500';
+                iconContainerClass = 'bg-red-500';
+                iconClass = 'text-white';
+                textClass = 'text-red-700 font-bold';
+                codeClass = 'text-red-600';
+                unitClass = 'bg-red-500 text-white';
+                typeBadgeClass = 'text-red-600 bg-red-50 border-red-100';
             } else if (geIdentifiers.map(id => id.toLowerCase()).includes(subjectType.toLowerCase())) {
-                colorClasses = 'bg-orange-50 text-orange-700 hover:bg-orange-100 border-orange-200';
-                textClasses = 'text-orange-700 font-bold';
-                unitClasses = 'bg-orange-200 text-orange-700';
-                iconClasses = 'text-orange-500';
-                codeClasses = 'text-orange-700';
+                borderAccentClass = 'border-2 border-orange-500';
+                iconContainerClass = 'bg-orange-500';
+                iconClass = 'text-white';
+                textClass = 'text-orange-700 font-bold';
+                codeClass = 'text-orange-600';
+                unitClass = 'bg-orange-500 text-white';
+                typeBadgeClass = 'text-orange-600 bg-orange-50 border-orange-100';
             } else {
-                colorClasses = 'bg-white border-gray-200 hover:shadow-md hover:border-blue-500';
-                textClasses = 'text-gray-800 font-bold';
-                unitClasses = 'bg-gray-200 text-gray-700';
-                iconClasses = 'text-gray-400';
-                codeClasses = 'text-gray-500';
+                borderAccentClass = 'border-2 border-gray-400';
+                iconContainerClass = 'bg-gray-500';
+                iconClass = 'text-white';
             }
 
-            subjectTag.className = `${baseClasses} ${colorClasses}`;
+            subjectTag.className = `${baseClasses} ${borderAccentClass}`;
 
             subjectTag.innerHTML = `
-                <div class="flex items-center gap-3 flex-grow">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ${iconClasses}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
-                    <div class="flex-grow">
-                        <p class="text-sm leading-tight ${textClasses}">${subjectData.subject_name}</p>
-                        <p class="text-xs font-mono ${codeClasses}">${subjectData.subject_code}</p>
+                <div class="flex items-center gap-3 flex-grow min-w-0">
+                    <div class="flex-shrink-0 w-10 h-10 ${iconContainerClass} rounded-lg flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ${iconClass}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                    </div>
+                    <div class="flex-grow min-w-0">
+                        <p class="text-sm leading-tight truncate ${textClass}">${subjectData.subject_name}</p>
+                        <div class="flex items-center gap-2 mt-0.5">
+                            <p class="text-xs font-mono ${codeClass}">${subjectData.subject_code}</p>
+                            <span class="text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border ${typeBadgeClass}">${subjectType}</span>
+                        </div>
                     </div>
                 </div>
-                <div class="flex items-center gap-3 ml-2 flex-shrink-0">
-                    <span class="text-xs font-semibold px-2 py-1 rounded-full ${unitClasses}">${subjectData.subject_unit} units</span>
-                    <button class="delete-subject-tag ${isEditing ? '' : 'hidden'} ${deleteBtnClasses} transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <div class="flex items-center gap-2 ml-2 flex-shrink-0">
+                    <span class="text-xs font-semibold px-2 py-1 rounded-md ${unitClass}">${subjectData.subject_unit} units</span>
+                    <button class="delete-subject-tag ${isEditing ? '' : 'hidden'} ${deleteBtnClasses}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
             `;
@@ -1621,51 +1709,100 @@ const updateAllTotals = () => {
                 targetContainer.appendChild(subjectTag);
                 draggedItem.setAttribute('draggable', 'false');
                 
-                draggedItem.classList.remove('bg-white', 'hover:shadow-md', 'hover:border-blue-400', 'cursor-grab', 'active:cursor-grabbing');
+                draggedItem.classList.remove('bg-white', 'hover:shadow-lg', 'hover:border-blue-400', 'cursor-grab', 'active:cursor-grabbing');
                 
                 const geIdentifiers = ["GE", "General Education", "Gen Ed", "General"];
-                let assignedClass = 'assigned-card';
-                let iconBgClass = 'bg-gray-100';
-                let iconSvgClass = 'text-gray-500';
+                let assignedClass = 'border-gray-400';
+                let iconBgClass = 'bg-gray-500';
+                let iconSvgClass = 'text-white';
+                let subjectNameClass = 'text-gray-800';
+                let textColorClass = 'text-gray-500';
+                let unitsColorClass = 'text-gray-600';
+                let dotColorClass = 'text-gray-400';
+                let typeBadgeClass = 'text-gray-500 bg-gray-50 border-gray-100';
 
                 switch (true) {
                     case droppedSubjectData.subject_type === 'Major':
-                        assignedClass = 'assigned-major';
-                        iconBgClass = 'icon-bg-major';
-                        iconSvgClass = 'icon-major';
+                        assignedClass = 'border-blue-500';
+                        iconBgClass = 'bg-blue-500';
+                        iconSvgClass = 'text-white';
+                        subjectNameClass = 'text-blue-700';
+                        textColorClass = 'text-blue-600 font-bold';
+                        unitsColorClass = 'text-blue-600 font-bold';
+                        dotColorClass = 'text-blue-400';
+                        typeBadgeClass = 'text-white bg-blue-500 border-blue-500';
                         break;
                     case droppedSubjectData.subject_type === 'Minor':
-                        assignedClass = 'assigned-minor';
-                        iconBgClass = 'icon-bg-minor';
-                        iconSvgClass = 'icon-minor';
+                        assignedClass = 'border-purple-500';
+                        iconBgClass = 'bg-purple-500';
+                        iconSvgClass = 'text-white';
+                        subjectNameClass = 'text-purple-700';
+                        textColorClass = 'text-purple-600 font-bold';
+                        unitsColorClass = 'text-purple-600 font-bold';
+                        dotColorClass = 'text-purple-400';
+                        typeBadgeClass = 'text-white bg-purple-500 border-purple-500';
                         break;
                     case droppedSubjectData.subject_type === 'Elective':
-                        assignedClass = 'assigned-elective';
-                        iconBgClass = 'icon-bg-elective';
-                        iconSvgClass = 'icon-elective';
+                        assignedClass = 'border-red-500';
+                        iconBgClass = 'bg-red-50';
+                        iconSvgClass = 'text-white';
+                        subjectNameClass = 'text-red-700';
+                        textColorClass = 'text-red-600 font-bold';
+                        unitsColorClass = 'text-red-600 font-bold';
+                        dotColorClass = 'text-red-400';
+                        typeBadgeClass = 'text-white bg-red-500 border-red-500';
                         break;
                     case geIdentifiers.map(id => id.toLowerCase()).includes(droppedSubjectData.subject_type.toLowerCase()):
-                        assignedClass = 'assigned-general';
-                        iconBgClass = 'icon-bg-general';
-                        iconSvgClass = 'icon-general';
+                        assignedClass = 'border-orange-500';
+                        iconBgClass = 'bg-orange-500';
+                        iconSvgClass = 'text-white';
+                        subjectNameClass = 'text-orange-700';
+                        textColorClass = 'text-orange-600 font-bold';
+                        unitsColorClass = 'text-orange-600 font-bold';
+                        dotColorClass = 'text-orange-400';
+                        typeBadgeClass = 'text-white bg-orange-500 border-orange-500';
                         break;
                 }
                 
-                draggedItem.classList.add(assignedClass, 'cursor-not-allowed');
+                draggedItem.classList.add(assignedClass, 'cursor-not-allowed', 'bg-white', 'border-2');
 
                 const iconContainer = draggedItem.querySelector('.flex-shrink-0');
                 const iconSvg = iconContainer.querySelector('svg');
+                const subjectName = draggedItem.querySelector('.subject-name');
+                const subjectCode = draggedItem.querySelector('.subject-code');
+                const separatorDot = draggedItem.querySelector('.separator-dot');
+                const subjectUnits = draggedItem.querySelector('.subject-units');
+                const typeBadge = draggedItem.querySelector('.subject-type-badge');
                 
-                iconContainer.classList.remove('bg-gray-100');
-                iconSvg.classList.remove('text-gray-500');
+                // Reset icon classes first
+                iconContainer.className = `flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300 shadow-sm group-hover:scale-105 transform transition-transform ${iconBgClass}`;
+                iconSvg.className = `h-6 w-6 transition-colors duration-300 ${iconSvgClass}`;
                 
-                iconContainer.classList.add(iconBgClass);
-                iconSvg.classList.add(iconSvgClass);
+                // Update text colors
+                if (subjectName) {
+                    subjectName.classList.remove('text-gray-800');
+                    subjectName.classList.add(subjectNameClass);
+                }
+                if (subjectCode) {
+                    subjectCode.classList.remove('text-gray-500');
+                    subjectCode.className = `subject-code font-mono bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100 ${textColorClass}`;
+                }
+                if (separatorDot) {
+                    separatorDot.classList.remove('text-gray-400');
+                    separatorDot.classList.add(dotColorClass);
+                }
+                if (subjectUnits) {
+                    subjectUnits.classList.remove('text-gray-600');
+                    subjectUnits.className = `subject-units font-medium ${unitsColorClass}`;
+                }
+                if (typeBadge) {
+                    typeBadge.className = `subject-type-badge text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded border ${typeBadgeClass}`;
+                }
 
                 const statusBadge = draggedItem.querySelector('.status-badge');
                 if (statusBadge) {
                     statusBadge.textContent = 'Assigned';
-                    statusBadge.className = 'status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-200 text-gray-700';
+                    statusBadge.className = 'status-badge text-[10px] uppercase tracking-wider font-bold px-3 py-1 rounded-full bg-green-500 text-white shadow-sm';
                 }
                 updateUnitTotals();
                 
@@ -1772,7 +1909,10 @@ const updateAllTotals = () => {
                     }
                 });
 
-                semesterDropzone.querySelector('.add-subject-btn-placeholder').classList.add('hidden');
+                // Hide ALL "+ Add Subject" buttons in all semester boxes
+                document.querySelectorAll('.add-subject-btn-placeholder').forEach(btn => {
+                    btn.classList.add('hidden');
+                });
 
             // If we are turning the mode off
             } else {
@@ -1784,11 +1924,23 @@ const updateAllTotals = () => {
                     cb.querySelector('input').checked = false;
                 });
 
-                if (activeSemesterForAdding) {
-                    activeSemesterForAdding.querySelector('.add-subject-btn-placeholder').classList.remove('hidden');
-                }
-                document.querySelectorAll('.add-subject-btn-placeholder').forEach(div => {
-                    if (isEditing) div.classList.remove('hidden');
+                // Check if there are ANY pending subjects in Available Subjects (globally)
+                const anyPendingInAvailableSubjects = document.querySelectorAll('.subject-card .status-badge').length > 0 && 
+                    Array.from(document.querySelectorAll('.subject-card .status-badge')).some(badge => 
+                        badge.textContent.trim().toLowerCase() === 'pending'
+                    );
+
+                // Show "+ Select Subject" buttons only in semesters with NO pending subjects
+                // AND only if there are NO pending subjects anywhere in Available Subjects
+                document.querySelectorAll('.semester-dropzone').forEach(semester => {
+                    const hasPendingInSemester = semester.querySelectorAll('.subject-tag[data-is-pending="true"]').length > 0;
+                    const addSubjectBtn = semester.querySelector('.add-subject-btn-placeholder');
+                    
+                    if (addSubjectBtn && isEditing && !hasPendingInSemester && !anyPendingInAvailableSubjects) {
+                        addSubjectBtn.classList.remove('hidden');
+                    } else if (addSubjectBtn) {
+                        addSubjectBtn.classList.add('hidden');
+                    }
                 });
                 
                 activeSemesterForAdding = null;
@@ -1815,7 +1967,7 @@ const updateAllTotals = () => {
                         const statusBadge = originalSubjectCard.querySelector('.status-badge');
                         if (statusBadge) {
                             statusBadge.textContent = 'Available';
-                            statusBadge.className = 'status-badge text-xs font-semibold text-green-700 bg-green-100 px-2.5 py-1 rounded-full';
+                            statusBadge.className = 'status-badge text-[10px] uppercase tracking-wider font-bold text-gray-600 bg-gray-100 px-3 py-1 rounded-full';
                         }
                     }
                     draggedItem.remove();
@@ -1845,6 +1997,7 @@ const updateAllTotals = () => {
             }, 300);
         };
 
+
         document.getElementById('cancelRemoveButton').addEventListener('click', hideRemoveConfirmationModal);
         
         // --- REMOVE SUBJECT CONFIRMATION ---
@@ -1864,8 +2017,40 @@ const updateAllTotals = () => {
                 // Reset subject to Available status
                 originalSubjectCard.dataset.status = '';
                 originalSubjectCard.setAttribute('draggable', 'true');
-                originalSubjectCard.classList.remove('assigned-card', 'assigned-major', 'assigned-minor', 'assigned-elective', 'assigned-general', 'bg-white', 'opacity-60', 'cursor-not-allowed', 'removed-subject-card');
-                originalSubjectCard.classList.add('bg-white', 'hover:shadow-md', 'hover:border-blue-400', 'cursor-grab');
+                originalSubjectCard.classList.remove(
+                    'assigned-card', 'cursor-not-allowed', 'removed-subject-card', 'border-2',
+                    'border-blue-500', 'border-purple-500', 'border-red-500', 'border-orange-500', 'border-gray-400'
+                );
+                originalSubjectCard.classList.add('bg-white', 'hover:shadow-lg', 'hover:border-blue-400', 'cursor-grab');
+                
+                // Reset subject name color
+                const subjectName = originalSubjectCard.querySelector('.subject-name');
+                if (subjectName) {
+                    subjectName.classList.remove('text-blue-700', 'text-purple-700', 'text-red-700', 'text-orange-700');
+                    subjectName.classList.add('text-gray-800');
+                }
+
+                // Reset other text elements
+                const subjectCode = originalSubjectCard.querySelector('.subject-code');
+                const separatorDot = originalSubjectCard.querySelector('.separator-dot');
+                const subjectUnits = originalSubjectCard.querySelector('.subject-units');
+                const typeBadge = originalSubjectCard.querySelector('.subject-type-badge');
+
+                if (subjectCode) {
+                    subjectCode.classList.remove('text-blue-600', 'text-purple-600', 'text-red-600', 'text-orange-600', 'font-bold');
+                    subjectCode.className = 'subject-code font-mono text-gray-500 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100';
+                }
+                if (separatorDot) {
+                    separatorDot.classList.remove('text-blue-400', 'text-purple-400', 'text-red-400', 'text-orange-400');
+                    separatorDot.classList.add('text-gray-400');
+                }
+                if (subjectUnits) {
+                    subjectUnits.classList.remove('text-blue-600', 'text-purple-600', 'text-red-600', 'text-orange-600', 'font-bold');
+                    subjectUnits.className = 'subject-units font-medium text-gray-600';
+                }
+                if (typeBadge) {
+                    typeBadge.className = 'subject-type-badge text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded border text-gray-500 bg-gray-50 border-gray-100';
+                }
 
                 // Reset icon styling to default gray state (not colored by type)
                 const iconContainer = originalSubjectCard.querySelector('.flex-shrink-0');
@@ -1883,7 +2068,7 @@ const updateAllTotals = () => {
                 const statusBadge = originalSubjectCard.querySelector('.status-badge');
                 if (statusBadge) {
                     statusBadge.textContent = 'Available';
-                    statusBadge.className = 'status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-green-100 text-green-700';
+                    statusBadge.className = 'status-badge text-[10px] uppercase tracking-wider font-bold px-3 py-1 rounded-full bg-gray-100 text-gray-600';
                 }
                 
                 // Uncheck checkbox if it exists and is checked
@@ -1893,93 +2078,44 @@ const updateAllTotals = () => {
                 }
             };
 
-            if (isNewSubject) {
-                // Handle new subjects (added via checkbox) - no API call needed
-                const isPending = subjectTagToRemove.dataset.isPending === 'true';
-                subjectTagToRemove.remove();
-                
-                // If it was a pending subject, don't need to update unit totals since it wasn't counted
-                if (!isPending) {
-                    updateUnitTotals();
-                }
-                
-                hideRemoveConfirmationModal();
-                
-                // Reload the page to ensure the subject card is properly reset
-                setTimeout(() => {
-                    window.location.reload();
-                }, 300);
-                
-                return;
-            }
-
-            // Handle existing subjects - need API call
-            const curriculumId = curriculumSelector.value;
-            try {
-                const response = await fetch('/api/curriculum/remove-subject', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        curriculumId: curriculumId,
-                        subjectId: subjectData.id,
-                        year: year,
-                        semester: semester
-                    }),
-                });
-
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.message || 'Failed to remove the subject.');
-                }
-
-                subjectTagToRemove.remove();
+            // Remove subject from UI (both new and existing subjects)
+            // No API call - changes will be saved when "Save the Mapping" is clicked
+            const isPending = subjectTagToRemove.dataset.isPending === 'true';
+            subjectTagToRemove.remove();
+            
+            // Update unit totals if it wasn't a pending subject
+            if (!isPending) {
                 updateUnitTotals();
-                
-                // Hide the modal first
-                hideRemoveConfirmationModal();
-                
-                // Show success message and then reload the page
-                Swal.fire({
-                    title: 'Subject Removed Successfully!',
-                    text: `"${subjectData.subject_name}" (${subjectData.subject_code}) has been removed from Year ${year}, Semester ${semester}.`,
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#10B981',
-                    timer: 2000,
-                    timerProgressBar: true,
-                    showClass: {
-                        popup: 'animate__animated animate__fadeInDown'
-                    },
-                    hideClass: {
-                        popup: 'animate__animated animate__fadeOutUp'
-                    }
-                }).then(() => {
-                    // Reload the page to refresh the curriculum data and reset all subject cards
-                    window.location.reload();
-                });
-
-            } catch (error) {
-                console.error('Error removing subject:', error);
-                Swal.fire({
-                    title: 'Failed to Remove Subject!',
-                    text: 'An error occurred while trying to remove the subject: ' + error.message,
-                    icon: 'error',
-                    confirmButtonText: 'Try Again',
-                    confirmButtonColor: '#EF4444',
-                    showClass: {
-                        popup: 'animate__animated animate__shakeX'
-                    },
-                    hideClass: {
-                        popup: 'animate__animated animate__fadeOutUp'
-                    }
-                });
-            } finally {
-                hideRemoveConfirmationModal();
             }
+            
+            // Reset the subject card to Available state
+            const originalSubjectCard = document.getElementById(`subject-${subjectData.subject_code.toLowerCase()}`);
+            if (originalSubjectCard) {
+                resetSubjectCard(originalSubjectCard);
+            }
+            
+            // Hide the modal
+            hideRemoveConfirmationModal();
+            
+            // Show success message
+            Swal.fire({
+                title: 'Subject Removed!',
+                text: `"${subjectData.subject_name}" (${subjectData.subject_code}) has been removed from Year ${year}, Semester ${semester}. Click "Save the Mapping" to save changes.`,
+                icon: 'success',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#10B981',
+                timer: 3000,
+                timerProgressBar: true,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                showClass: {
+                    popup: 'animate__animated animate__fadeInRight'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutRight'
+                }
+            });
         });
 
         closeRemoveSuccessModal.addEventListener('click', () => {
@@ -2267,7 +2403,7 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
             <div>
                 <h3 class="text-lg font-semibold text-gray-700 mb-3">${yearTitle}</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="semester-dropzone bg-white border-2 border-solid border-gray-300 rounded-lg p-4 transition-colors" data-year="${i}" data-semester="1" data-unit-limit="${firstSemLimit}">
+                    <div class="semester-dropzone bg-white border-2 border-solid border-gray-300 rounded-lg p-4 transition-colors shadow-md" data-year="${i}" data-semester="1" data-unit-limit="${firstSemLimit}">
                         <div class="border-b border-gray-200 pb-2 mb-3">
                             <div class="flex justify-between items-center">
                                 <div>
@@ -2285,13 +2421,16 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
                         </div>
                         <div class="flex-wrap space-y-2 min-h-[80px]"></div>
                          <div class="add-subject-btn-placeholder mt-2 text-center hidden">
-                            <button class="add-subject-btn text-blue-600 hover:text-blue-800 font-semibold text-sm py-2 px-4 rounded-lg hover:bg-blue-100 transition-all">+ Add Subject</button>
+                            <button class="add-subject-btn text-blue-600 hover:text-blue-800 font-semibold text-sm py-2 px-4 rounded-lg hover:bg-blue-100 transition-all">+ Select Subject</button>
                         </div>
                         <div class="add-all-btn-container mt-2 text-center hidden">
-                            <button class="add-all-btn bg-green-500 hover:bg-green-600 text-white font-semibold text-sm py-2 px-4 rounded-lg transition-all">Add All</button>
+                            <button class="add-all-btn bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold text-sm py-2.5 px-5 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105 flex items-center justify-center gap-2 mx-auto">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                Confirm
+                            </button>
                         </div>
                     </div>
-                    <div class="semester-dropzone bg-white border-2 border-solid border-gray-300 rounded-lg p-4 transition-colors" data-year="${i}" data-semester="2" data-unit-limit="${secondSemLimit}">
+                    <div class="semester-dropzone bg-white border-2 border-solid border-gray-300 rounded-lg p-4 transition-colors shadow-md" data-year="${i}" data-semester="2" data-unit-limit="${secondSemLimit}">
                         <div class="border-b border-gray-200 pb-2 mb-3">
                             <div class="flex justify-between items-center">
                                 <div>
@@ -2309,10 +2448,13 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
                         </div>
                         <div class="flex-wrap space-y-2 min-h-[80px]"></div>
                          <div class="add-subject-btn-placeholder mt-2 text-center hidden">
-                            <button class="add-subject-btn text-blue-600 hover:text-blue-800 font-semibold text-sm py-2 px-4 rounded-lg hover:bg-blue-100 transition-all">+ Add Subject</button>
+                            <button class="add-subject-btn text-blue-600 hover:text-blue-800 font-semibold text-sm py-2 px-4 rounded-lg hover:bg-blue-100 transition-all">+ Select Subject</button>
                         </div>
                         <div class="add-all-btn-container mt-2 text-center hidden">
-                            <button class="add-all-btn bg-green-500 hover:bg-green-600 text-white font-semibold text-sm py-2 px-4 rounded-lg transition-all">Add All</button>
+                            <button class="add-all-btn bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold text-sm py-2.5 px-5 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105 flex items-center justify-center gap-2 mx-auto">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                Confirm
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -2414,59 +2556,108 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
                         
                         // Update subject card appearance to show it's selected (pending)
                         const geIdentifiers = ["GE", "General Education", "Gen Ed", "General"];
-                        let pendingClass = 'assigned-card';
-                        let iconBgClass = 'icon-bg-default';
-                        let iconSvgClass = 'text-gray-500';
+                        let assignedClass = 'border-gray-400';
+                        let iconBgClass = 'bg-gray-500';
+                        let iconSvgClass = 'text-white';
+                        let subjectNameClass = 'text-gray-800';
+                        let textColorClass = 'text-gray-500 font-bold';
+                        let unitsColorClass = 'text-gray-600 font-bold';
+                        let dotColorClass = 'text-gray-400';
+                        let typeBadgeClass = 'text-white bg-gray-500 border-gray-500';
 
                         switch (true) {
                             case subjectData.subject_type === 'Major':
-                                pendingClass = 'assigned-major';
-                                iconBgClass = 'icon-bg-major';
-                                iconSvgClass = 'icon-major';
+                                assignedClass = 'border-blue-500';
+                                iconBgClass = 'bg-blue-500';
+                                iconSvgClass = 'text-white';
+                                subjectNameClass = 'text-blue-700';
+                                textColorClass = 'text-blue-600 font-bold';
+                                unitsColorClass = 'text-blue-600 font-bold';
+                                dotColorClass = 'text-blue-400';
+                                typeBadgeClass = 'text-white bg-blue-500 border-blue-500';
                                 break;
                             case subjectData.subject_type === 'Minor':
-                                pendingClass = 'assigned-minor';
-                                iconBgClass = 'icon-bg-minor';
-                                iconSvgClass = 'icon-minor';
+                                assignedClass = 'border-purple-500';
+                                iconBgClass = 'bg-purple-500';
+                                iconSvgClass = 'text-white';
+                                subjectNameClass = 'text-purple-700';
+                                textColorClass = 'text-purple-600 font-bold';
+                                unitsColorClass = 'text-purple-600 font-bold';
+                                dotColorClass = 'text-purple-400';
+                                typeBadgeClass = 'text-white bg-purple-500 border-purple-500';
                                 break;
                             case subjectData.subject_type === 'Elective':
-                                pendingClass = 'assigned-elective';
-                                iconBgClass = 'icon-bg-elective';
-                                iconSvgClass = 'icon-elective';
+                                assignedClass = 'border-red-500';
+                                iconBgClass = 'bg-red-500';
+                                iconSvgClass = 'text-white';
+                                subjectNameClass = 'text-red-700';
+                                textColorClass = 'text-red-600 font-bold';
+                                unitsColorClass = 'text-red-600 font-bold';
+                                dotColorClass = 'text-red-400';
+                                typeBadgeClass = 'text-white bg-red-500 border-red-500';
                                 break;
                             case geIdentifiers.map(id => id.toLowerCase()).includes(subjectData.subject_type.toLowerCase()):
-                                pendingClass = 'assigned-general';
-                                iconBgClass = 'icon-bg-general';
-                                iconSvgClass = 'icon-general';
+                                assignedClass = 'border-orange-500';
+                                iconBgClass = 'bg-orange-500';
+                                iconSvgClass = 'text-white';
+                                subjectNameClass = 'text-orange-700';
+                                textColorClass = 'text-orange-600 font-bold';
+                                unitsColorClass = 'text-orange-600 font-bold';
+                                dotColorClass = 'text-orange-400';
+                                typeBadgeClass = 'text-white bg-orange-500 border-orange-500';
                                 break;
                         }
                         
                         // Apply pending styling to subject card
-                        subjectCard.classList.remove('bg-white', 'hover:shadow-md', 'hover:border-blue-400', 'cursor-grab');
-                        subjectCard.classList.add(pendingClass, 'opacity-70', 'cursor-not-allowed');
+                        subjectCard.classList.remove('bg-white', 'hover:shadow-lg', 'hover:border-blue-400', 'cursor-grab', 'active:cursor-grabbing');
+                        subjectCard.classList.add(assignedClass, 'opacity-70', 'cursor-not-allowed', 'bg-white', 'border-2');
                         subjectCard.setAttribute('draggable', false);
                         
                         // Update icon styling
                         const iconContainer = subjectCard.querySelector('.flex-shrink-0');
                         const iconSvg = iconContainer?.querySelector('svg');
+                        const subjectName = subjectCard.querySelector('.subject-name');
+                        const subjectCode = subjectCard.querySelector('.subject-code');
+                        const separatorDot = subjectCard.querySelector('.separator-dot');
+                        const subjectUnits = subjectCard.querySelector('.subject-units');
+                        const typeBadge = subjectCard.querySelector('.subject-type-badge');
+
                         if (iconContainer && iconSvg) {
-                            // Remove old classes
-                            iconContainer.classList.remove('icon-bg-default', 'bg-gray-100');
-                            iconSvg.classList.remove('text-gray-500');
-                            // Add new classes
-                            iconContainer.classList.add(iconBgClass);
-                            iconSvg.classList.add(iconSvgClass);
+                            iconContainer.className = `flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300 shadow-sm group-hover:scale-105 transform transition-transform ${iconBgClass}`;
+                            iconSvg.className = `h-6 w-6 transition-colors duration-300 ${iconSvgClass}`;
+                        }
+                        
+                        // Update text colors
+                        if (subjectName) {
+                            subjectName.classList.remove('text-gray-800');
+                            subjectName.classList.add(subjectNameClass);
+                        }
+                        if (subjectCode) {
+                            subjectCode.className = `subject-code font-mono bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100 ${textColorClass}`;
+                        }
+                        if (separatorDot) {
+                            separatorDot.classList.remove('text-gray-400');
+                            separatorDot.classList.add(dotColorClass);
+                        }
+                        if (subjectUnits) {
+                            subjectUnits.className = `subject-units font-medium ${unitsColorClass}`;
+                        }
+                        if (typeBadge) {
+                            typeBadge.className = `subject-type-badge text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded border ${typeBadgeClass}`;
                         }
                         
                         // Update status badge
                         const statusBadge = subjectCard.querySelector('.status-badge');
                         if (statusBadge) {
                             statusBadge.textContent = 'Pending';
-                            statusBadge.className = 'status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-700';
+                            statusBadge.className = 'status-badge text-[10px] uppercase tracking-wider font-bold px-3 py-1 rounded-full bg-yellow-100 text-yellow-700';
                         }
                         
-                        // Show the "Add All" button for this semester if there are pending subjects
+                        // Show the "Confirm" button for this semester if there are pending subjects
                         showAddAllButton(activeSemesterForAdding);
+                        
+                        // Update ALL semester buttons globally to hide + Select Subject buttons
+                        updateAllSemesterButtons();
                         
                         // Update unit totals to include pending subjects
                         updateUnitTotals();
@@ -2507,7 +2698,7 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
                             
                             // Reset status badge
                             subjectCard.querySelector('.status-badge').textContent = 'Available';
-                            subjectCard.querySelector('.status-badge').className = 'status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-green-100 text-green-700';
+                            subjectCard.querySelector('.status-badge').className = 'status-badge text-[10px] uppercase tracking-wider font-bold px-3 py-1 rounded-full bg-gray-100 text-gray-600';
                             
                             updateUnitTotals();
                             
@@ -2520,16 +2711,56 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
                 }
             });
             
-            // Function to show/hide Add All button based on pending subjects
-            window.showAddAllButton = (semesterDropzone) => {
-                const pendingSubjects = semesterDropzone.querySelectorAll('.subject-tag[data-is-pending="true"]');
-                const addAllContainer = semesterDropzone.querySelector('.add-all-btn-container');
+            // Function to update ALL semester buttons based on global pending status
+            window.updateAllSemesterButtons = () => {
+                // Check if there are ANY pending subjects in Available Subjects (globally)
+                const anyPendingInAvailableSubjects = document.querySelectorAll('.subject-card .status-badge').length > 0 && 
+                    Array.from(document.querySelectorAll('.subject-card .status-badge')).some(badge => 
+                        badge.textContent.trim().toLowerCase() === 'pending'
+                    );
                 
-                if (pendingSubjects.length > 0) {
-                    addAllContainer.classList.remove('hidden');
+                // Add or remove class from body to control ALL + Select Subject buttons via CSS
+                if (anyPendingInAvailableSubjects || isAddingSubjectsMode) {
+                    document.body.classList.add('has-pending-subjects');
                 } else {
-                    addAllContainer.classList.add('hidden');
+                    document.body.classList.remove('has-pending-subjects');
                 }
+                
+                // Update all semester dropzones for both Confirm and "+ Select Subject" buttons
+                document.querySelectorAll('.semester-dropzone').forEach(semester => {
+                    const hasPendingInSemester = semester.querySelectorAll('.subject-tag[data-is-pending="true"]').length > 0;
+                    const addAllBtn = semester.querySelector('.add-all-btn-container');
+                    const addSubjectBtn = semester.querySelector('.add-subject-btn-placeholder');
+                    
+                    // Show/hide Confirm button
+                    if (addAllBtn) {
+                        if (hasPendingInSemester) {
+                            addAllBtn.classList.remove('hidden');
+                        } else {
+                            addAllBtn.classList.add('hidden');
+                        }
+                    }
+                    
+                    // Show/hide "+ Select Subject" button
+                    if (addSubjectBtn) {
+                        // Show button only if:
+                        // 1. We're in editing mode
+                        // 2. No pending subjects in this semester
+                        // 3. No pending subjects globally
+                        // 4. Not currently in adding subjects mode
+                        if (isEditing && !hasPendingInSemester && !anyPendingInAvailableSubjects && !isAddingSubjectsMode) {
+                            addSubjectBtn.classList.remove('hidden');
+                        } else {
+                            addSubjectBtn.classList.add('hidden');
+                        }
+                    }
+                });
+            };
+            
+            // Function to show/hide Confirm button based on pending subjects
+            // This now just calls updateAllSemesterButtons for consistency
+            window.showAddAllButton = (semesterDropzone) => {
+                updateAllSemesterButtons();
             };
             
             // Function to confirm all pending subjects in a semester
@@ -2548,51 +2779,100 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
                     if (subjectCard) {
                         // Apply proper styling based on subject type
                         const geIdentifiers = ["GE", "General Education", "Gen Ed", "General"];
-                        let assignedClass = 'assigned-card';
-                        let iconBgClass = 'icon-bg-default';
-                        let iconSvgClass = 'text-gray-500';
+                        let assignedClass = 'border-gray-400';
+                        let iconBgClass = 'bg-gray-500';
+                        let iconSvgClass = 'text-white';
+                        let subjectNameClass = 'text-gray-800';
+                        let textColorClass = 'text-gray-500';
+                        let unitsColorClass = 'text-gray-600';
+                        let dotColorClass = 'text-gray-400';
+                        let typeBadgeClass = 'text-gray-500 bg-gray-50 border-gray-100';
 
                         switch (true) {
                             case subjectData.subject_type === 'Major':
-                                assignedClass = 'assigned-major';
-                                iconBgClass = 'icon-bg-major';
-                                iconSvgClass = 'icon-major';
+                                assignedClass = 'border-blue-500';
+                                iconBgClass = 'bg-blue-500';
+                                iconSvgClass = 'text-white';
+                                subjectNameClass = 'text-blue-700';
+                                textColorClass = 'text-blue-600 font-bold';
+                                unitsColorClass = 'text-blue-600 font-bold';
+                                dotColorClass = 'text-blue-400';
+                                typeBadgeClass = 'text-white bg-blue-500 border-blue-500';
                                 break;
                             case subjectData.subject_type === 'Minor':
-                                assignedClass = 'assigned-minor';
-                                iconBgClass = 'icon-bg-minor';
-                                iconSvgClass = 'icon-minor';
+                                assignedClass = 'border-purple-500';
+                                iconBgClass = 'bg-purple-500';
+                                iconSvgClass = 'text-white';
+                                subjectNameClass = 'text-purple-700';
+                                textColorClass = 'text-purple-600 font-bold';
+                                unitsColorClass = 'text-purple-600 font-bold';
+                                dotColorClass = 'text-purple-400';
+                                typeBadgeClass = 'text-white bg-purple-500 border-purple-500';
                                 break;
                             case subjectData.subject_type === 'Elective':
-                                assignedClass = 'assigned-elective';
-                                iconBgClass = 'icon-bg-elective';
-                                iconSvgClass = 'icon-elective';
+                                assignedClass = 'border-red-500';
+                                iconBgClass = 'bg-red-500';
+                                iconSvgClass = 'text-white';
+                                subjectNameClass = 'text-red-700';
+                                textColorClass = 'text-red-600 font-bold';
+                                unitsColorClass = 'text-red-600 font-bold';
+                                dotColorClass = 'text-red-400';
+                                typeBadgeClass = 'text-white bg-red-500 border-red-500';
                                 break;
                             case geIdentifiers.map(id => id.toLowerCase()).includes(subjectData.subject_type.toLowerCase()):
-                                assignedClass = 'assigned-general';
-                                iconBgClass = 'icon-bg-general';
-                                iconSvgClass = 'icon-general';
+                                assignedClass = 'border-orange-500';
+                                iconBgClass = 'bg-orange-500';
+                                iconSvgClass = 'text-white';
+                                subjectNameClass = 'text-orange-700';
+                                textColorClass = 'text-orange-600 font-bold';
+                                unitsColorClass = 'text-orange-600 font-bold';
+                                dotColorClass = 'text-orange-400';
+                                typeBadgeClass = 'text-white bg-orange-500 border-orange-500';
                                 break;
                         }
                         
                         subjectCard.classList.remove('opacity-70'); // Remove pending opacity
-                        subjectCard.classList.add(assignedClass, 'cursor-not-allowed');
+                        subjectCard.classList.add(assignedClass, 'cursor-not-allowed', 'bg-white', 'border-2');
                         subjectCard.setAttribute('draggable', false);
                         
                         // Update icon styling
                         const iconContainer = subjectCard.querySelector('.flex-shrink-0');
                         const iconSvg = iconContainer?.querySelector('svg');
+                        const subjectName = subjectCard.querySelector('.subject-name');
+                        const subjectCode = subjectCard.querySelector('.subject-code');
+                        const separatorDot = subjectCard.querySelector('.separator-dot');
+                        const subjectUnits = subjectCard.querySelector('.subject-units');
+                        const typeBadge = subjectCard.querySelector('.subject-type-badge');
+
                         if (iconContainer && iconSvg) {
-                            // Remove old classes
-                            iconContainer.classList.remove('icon-bg-default', 'icon-bg-major', 'icon-bg-minor', 'icon-bg-elective', 'icon-bg-general');
-                            iconSvg.classList.remove('text-gray-500', 'icon-major', 'icon-minor', 'icon-elective', 'icon-general');
-                            // Add new classes
-                            iconContainer.classList.add(iconBgClass);
-                            iconSvg.classList.add(iconSvgClass);
+                            // Reset icon classes first
+                            iconContainer.className = `flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300 shadow-sm group-hover:scale-105 transform transition-transform ${iconBgClass}`;
+                            iconSvg.className = `h-6 w-6 transition-colors duration-300 ${iconSvgClass}`;
+                        }
+                        
+                        // Update text colors
+                        if (subjectName) {
+                            subjectName.classList.remove('text-gray-800');
+                            subjectName.classList.add(subjectNameClass);
+                        }
+                        if (subjectCode) {
+                            subjectCode.classList.remove('text-gray-500');
+                            subjectCode.className = `subject-code font-mono bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100 ${textColorClass}`;
+                        }
+                        if (separatorDot) {
+                            separatorDot.classList.remove('text-gray-400');
+                            separatorDot.classList.add(dotColorClass);
+                        }
+                        if (subjectUnits) {
+                            subjectUnits.classList.remove('text-gray-600');
+                            subjectUnits.className = `subject-units font-medium ${unitsColorClass}`;
+                        }
+                        if (typeBadge) {
+                            typeBadge.className = `subject-type-badge text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded border ${typeBadgeClass}`;
                         }
                         
                         subjectCard.querySelector('.status-badge').textContent = 'Assigned';
-                        subjectCard.querySelector('.status-badge').className = 'status-badge text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-200 text-gray-700';
+                        subjectCard.querySelector('.status-badge').className = 'status-badge text-[10px] uppercase tracking-wider font-bold px-3 py-1 rounded-full bg-green-500 text-white shadow-sm';
                         
                         // Hide and uncheck the checkbox
                         const checkboxDiv = subjectCard.querySelector('.add-subject-checkbox');
@@ -2613,6 +2893,12 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
                 
                 // Update unit totals now that subjects are confirmed
                 updateUnitTotals();
+                
+                // Explicitly update all semester buttons to show "+ Select Subject" buttons
+                // This ensures buttons reappear after confirming pending subjects
+                setTimeout(() => {
+                    updateAllSemesterButtons();
+                }, 100);
             };
             
             initDragAndDrop();
