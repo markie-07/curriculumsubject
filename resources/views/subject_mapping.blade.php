@@ -193,11 +193,11 @@
                         </div>
                     </div>
                     <div class="flex gap-2">
-                        <button id="editCurriculumButton" class="px-6 py-3 rounded-lg text-sm font-semibold text-blue-700 bg-white border-2 border-blue-700 hover:bg-blue-700 hover:text-white hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-md hidden">
+                        <button id="editCurriculumButton" class="px-6 py-3 rounded-lg text-sm font-semibold text-white bg-blue-700 border-2 border-blue-700 hover:bg-white hover:text-blue-700 hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-md hidden">
                             <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
                             Edit
                         </button>
-                        <button id="saveCurriculumButton" class="px-6 py-3 rounded-lg text-sm font-semibold text-green-700 bg-white border-2 border-green-700 hover:bg-green-700 hover:text-white hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-md hidden" disabled>
+                        <button id="saveCurriculumButton" class="px-6 py-3 rounded-lg text-sm font-semibold text-white bg-green-700 border-2 border-green-700 hover:bg-white hover:text-green-700 hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-md hidden" disabled>
                             <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v6a2 2 0 002 2h6m4-4H9m0 0V9m0 0V5a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2h-3m-4-4V9"></path></svg>
                             Save the Mapping
                         </button>
@@ -1310,9 +1310,7 @@
                 <input type="checkbox">
             </div>`;
         
-        if(isDraggable) {
-            addDraggableEvents(newSubjectCard);
-        }
+        addDraggableEvents(newSubjectCard);
         addDoubleClickEvents(newSubjectCard);
         
         return newSubjectCard;
@@ -2014,66 +2012,84 @@ const updateAllTotals = () => {
             const resetSubjectCard = (originalSubjectCard) => {
                 if (!originalSubjectCard) return;
                 
+                const subjectType = subjectData.subject_type;
+                const geIdentifiers = ["GE", "General Education", "Gen Ed", "General"];
+                let borderClass = '';
+
+                // Determine border color based on subject type (matching createSubjectCard logic)
+                if (subjectType === 'Major') {
+                    borderClass = 'border-l-4 border-l-blue-500';
+                } else if (subjectType === 'Minor') {
+                    borderClass = 'border-l-4 border-l-purple-500';
+                } else if (subjectType === 'Elective') {
+                    borderClass = 'border-l-4 border-l-red-500';
+                } else if (geIdentifiers.map(id => id.toLowerCase()).includes(subjectType.toLowerCase())) {
+                    borderClass = 'border-l-4 border-l-orange-500';
+                } else {
+                    borderClass = 'border-l-4 border-l-gray-400';
+                }
+                
                 // Reset subject to Available status
                 originalSubjectCard.dataset.status = '';
                 originalSubjectCard.setAttribute('draggable', 'true');
-                originalSubjectCard.classList.remove(
-                    'assigned-card', 'cursor-not-allowed', 'removed-subject-card', 'border-2',
-                    'border-blue-500', 'border-purple-500', 'border-red-500', 'border-orange-500', 'border-gray-400'
-                );
-                originalSubjectCard.classList.add('bg-white', 'hover:shadow-lg', 'hover:border-blue-400', 'cursor-grab');
+                
+                // Reset card classes - completely reconstruct to ensure clean state
+                originalSubjectCard.className = `subject-card p-4 border border-gray-200 rounded-xl shadow-md transition-all duration-200 flex items-center gap-4 group relative overflow-hidden bg-white ${borderClass} hover:shadow-lg hover:border-blue-400 hover:-translate-y-0.5 cursor-grab active:cursor-grabbing`;
                 
                 // Reset subject name color
                 const subjectName = originalSubjectCard.querySelector('.subject-name');
                 if (subjectName) {
-                    subjectName.classList.remove('text-blue-700', 'text-purple-700', 'text-red-700', 'text-orange-700');
-                    subjectName.classList.add('text-gray-800');
+                    subjectName.className = 'subject-name font-bold text-gray-800 text-base truncate pr-2';
                 }
 
-                // Reset other text elements
+                // Reset subject code
                 const subjectCode = originalSubjectCard.querySelector('.subject-code');
-                const separatorDot = originalSubjectCard.querySelector('.separator-dot');
-                const subjectUnits = originalSubjectCard.querySelector('.subject-units');
-                const typeBadge = originalSubjectCard.querySelector('.subject-type-badge');
-
                 if (subjectCode) {
-                    subjectCode.classList.remove('text-blue-600', 'text-purple-600', 'text-red-600', 'text-orange-600', 'font-bold');
                     subjectCode.className = 'subject-code font-mono text-gray-500 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100';
                 }
+                
+                // Reset separator dot
+                const separatorDot = originalSubjectCard.querySelector('.separator-dot');
                 if (separatorDot) {
-                    separatorDot.classList.remove('text-blue-400', 'text-purple-400', 'text-red-400', 'text-orange-400');
-                    separatorDot.classList.add('text-gray-400');
+                    separatorDot.className = 'separator-dot text-gray-400';
                 }
+                
+                // Reset units
+                const subjectUnits = originalSubjectCard.querySelector('.subject-units');
                 if (subjectUnits) {
-                    subjectUnits.classList.remove('text-blue-600', 'text-purple-600', 'text-red-600', 'text-orange-600', 'font-bold');
                     subjectUnits.className = 'subject-units font-medium text-gray-600';
                 }
+                
+                // Reset type badge
+                const typeBadge = originalSubjectCard.querySelector('.subject-type-badge');
                 if (typeBadge) {
                     typeBadge.className = 'subject-type-badge text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded border text-gray-500 bg-gray-50 border-gray-100';
                 }
 
-                // Reset icon styling to default gray state (not colored by type)
+                // Reset icon styling to default gray state
                 const iconContainer = originalSubjectCard.querySelector('.flex-shrink-0');
-                const iconSvg = iconContainer?.querySelector('svg');
-                
-                // Reset to default gray styling for available subjects
                 if (iconContainer) {
-                    iconContainer.className = 'flex-shrink-0 w-12 h-12 icon-bg-default rounded-lg flex items-center justify-center transition-colors duration-300';
-                }
-                if (iconSvg) {
-                    iconSvg.className = 'h-6 w-6 text-gray-500 transition-colors duration-300';
+                    iconContainer.className = 'flex-shrink-0 w-12 h-12 icon-bg-default rounded-xl flex items-center justify-center transition-colors duration-300 shadow-sm group-hover:scale-105 transform transition-transform';
+                    // Force SVG reset by replacing innerHTML to ensure no lingering classes
+                    iconContainer.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                    `;
                 }
                 
                 // Reset status badge to Available
                 const statusBadge = originalSubjectCard.querySelector('.status-badge');
                 if (statusBadge) {
-                    statusBadge.textContent = 'Available';
-                    statusBadge.className = 'status-badge text-[10px] uppercase tracking-wider font-bold px-3 py-1 rounded-full bg-gray-100 text-gray-600';
+                    const newBadge = document.createElement('span');
+                    newBadge.className = 'status-badge text-[10px] uppercase tracking-wider font-bold text-gray-600 bg-gray-100 px-3 py-1 rounded-full';
+                    newBadge.textContent = 'Available';
+                    statusBadge.replaceWith(newBadge);
                 }
                 
                 // Uncheck checkbox if it exists and is checked
                 const checkbox = originalSubjectCard.querySelector('.add-subject-checkbox input');
-                if (checkbox && checkbox.checked) {
+                if (checkbox) {
                     checkbox.checked = false;
                 }
             };
@@ -2622,9 +2638,14 @@ function renderCurriculumOverview(yearLevel, semesterUnits = []) {
                         const subjectUnits = subjectCard.querySelector('.subject-units');
                         const typeBadge = subjectCard.querySelector('.subject-type-badge');
 
-                        if (iconContainer && iconSvg) {
+                        if (iconContainer) {
                             iconContainer.className = `flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300 shadow-sm group-hover:scale-105 transform transition-transform ${iconBgClass}`;
-                            iconSvg.className = `h-6 w-6 transition-colors duration-300 ${iconSvgClass}`;
+                            // Force SVG update by replacing innerHTML to ensure correct color class application
+                            iconContainer.innerHTML = `
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2" style="stroke: white !important; color: white !important;">
+                                    <path stroke="white" stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                </svg>
+                            `;
                         }
                         
                         // Update text colors

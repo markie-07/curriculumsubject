@@ -724,7 +724,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // Modal event listeners
     document.getElementById('closeExportConfirmationButton').addEventListener('click', hideExportConfirmationModal);
     document.getElementById('cancelExportConfirmationButton').addEventListener('click', hideExportConfirmationModal);
-    document.getElementById('closeExportSuccessButton').addEventListener('click', hideExportSuccessModal);
+    document.getElementById('closeExportSuccessButton').addEventListener('click', function() {
+        hideExportSuccessModal();
+        window.location.reload();
+    });
 
     // Confirm export button
     document.getElementById('confirmExportConfirmationButton').addEventListener('click', async function () {
@@ -763,6 +766,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 text: 'Curriculum has been exported successfully!',
                 icon: 'success',
                 confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.reload();
             });
             
             addHistoryItemToDOM(newHistory.data || newHistory);

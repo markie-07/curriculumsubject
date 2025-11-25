@@ -2420,7 +2420,8 @@
         }
         #sidebar.collapsed .sidebar-title,
         #sidebar.collapsed .profile-text,
-        #sidebar.collapsed .nav-text {
+        #sidebar.collapsed .nav-text,
+        #sidebar.collapsed .section-header {
             display: none;
         }
         #sidebar.collapsed .profile-section {
@@ -2443,25 +2444,36 @@
         #sidebar.collapsed .sidebar-footer p {
             display: none;
         }
-        #sidebar.collapsed .sidebar-footer .flex.items-center.justify-center {
-            display: none;
-        }
 
-        /* Active navigation link styles */
+
+
+        /* Active navigation link styles - Professional & Modern */
         .nav-link.active {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.15));
-            border-left: 3px solid #3b82f6;
+            background: rgba(96, 165, 250, 0.12);
+            position: relative;
         }
         .nav-link.active .w-8 {
-            background: rgba(59, 130, 246, 0.2);
+            background: transparent;
         }
         .nav-link.active svg {
-            color: #60a5fa !important;
+            color: #ffffff !important;
+            stroke: #ffffff !important;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
         }
         .nav-link.active span {
             color: #ffffff !important;
             font-weight: 600;
+            letter-spacing: 0.01em;
         }
+
+        /* Active navigation link styles when sidebar is collapsed - Professional */
+        #sidebar.collapsed .nav-link.active {
+            background: rgba(96, 165, 250, 0.12);
+        }
+        #sidebar.collapsed .nav-link.active .w-8 {
+            background: transparent;
+        }
+
 
         /* Smooth scrollbar for sidebar */
         #sidebar nav::-webkit-scrollbar {
@@ -2708,6 +2720,30 @@
                     sidebar.classList.toggle('collapsed');
                 }
             });
+
+            // Highlight active navigation link based on current URL
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            // Find the best matching link (exact match or longest matching path)
+            let bestMatch = null;
+            let bestMatchLength = 0;
+            
+            navLinks.forEach(link => {
+                const linkPath = new URL(link.href).pathname;
+                
+                // Exact match gets highest priority
+                if (currentPath === linkPath) {
+                    if (bestMatch) {
+                        bestMatch.classList.remove('active');
+                    }
+                    link.classList.add('active');
+                    bestMatch = link;
+                    bestMatchLength = linkPath.length;
+                }
+            });
+
+
             const dateTimeSpan = document.getElementById('datetime-span');
             function updateDateTime() {
                 const now = new Date();

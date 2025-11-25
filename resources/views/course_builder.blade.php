@@ -3,15 +3,27 @@
 @section('content')
 <div class="px-6 py-8 bg-gray-50">
     <div class="bg-white p-10 md:p-12 rounded-2xl shadow-lg border border-gray-200">
-        <h1 class="text-4xl font-bold text-gray-800 mb-12 border-b pb-4">Course Builder</h1>
+        <div class="flex justify-between items-center mb-12 border-b pb-4">
+            <h1 class="text-4xl font-bold text-gray-800">Course Builder</h1>
+            {{-- Syllabus Type Toggle --}}
+            <div class="bg-gray-200 p-1 rounded-lg inline-flex shadow-inner">
+                <button type="button" id="btn-ched" class="px-6 py-2 rounded-md text-sm font-semibold transition-all duration-200 bg-white text-blue-600 shadow-sm" onclick="switchSyllabus('CHED')">
+                    CHED Format
+                </button>
+                <button type="button" id="btn-deped" class="px-6 py-2 rounded-md text-sm font-semibold text-gray-600 hover:text-gray-800 transition-all duration-200" onclick="switchSyllabus('DepEd')">
+                    DepEd Format
+                </button>
+            </div>
+        </div>
 
         {{-- FORM STARTS HERE to wrap all input fields --}}
         <form id="courseForm" onsubmit="return false;">
             @csrf
             {{-- This hidden input will store the ID of the subject being edited --}}
             <input type="hidden" id="subject_id" name="subject_id">
+            <input type="hidden" id="syllabus_type" name="syllabus_type" value="CHED">
 
-            {{-- Section 1: Course Information --}}
+            {{-- Section 1: Course Information (Shared) --}}
             <div class="mb-12">
                 <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center justify-between">
                     <span class="flex items-center">
@@ -37,13 +49,28 @@
                                 <option value="Minor">Minor</option>
                             </select>
                         </div>
-                        <div>
-                            <label for="credit_units" class="block text-sm font-medium text-gray-700">Credit Units</label>
-                            <input type="number" name="credit_units" id="credit_units" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                        {{-- CHED Specific Fields --}}
+                        <div id="ched-course-info-fields" class="contents">
+                            <div>
+                                <label for="credit_units" class="block text-sm font-medium text-gray-700">Credit Units</label>
+                                <input type="number" name="credit_units" id="credit_units" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label for="contact_hours" class="block text-sm font-medium text-gray-700">Contact Hours</label>
+                                <input type="number" name="contact_hours" id="contact_hours" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            </div>
                         </div>
-                        <div>
-                            <label for="contact_hours" class="block text-sm font-medium text-gray-700">Contact Hours</label>
-                            <input type="number" name="contact_hours" id="contact_hours" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+
+                        {{-- DepEd Specific Fields --}}
+                        <div id="deped-course-info-fields" class="contents hidden">
+                            <div>
+                                <label for="time_allotment" class="block text-sm font-medium text-gray-700">Time Allotment</label>
+                                <input type="text" name="time_allotment" id="time_allotment" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500" placeholder="e.g. 80 hours / semester">
+                            </div>
+                            <div>
+                                <label for="schedule" class="block text-sm font-medium text-gray-700">Schedule</label>
+                                <input type="text" name="schedule" id="schedule" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500" placeholder="e.g. M-W-F 9:00-10:00">
+                            </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Applicable Curriculums</label>
@@ -59,8 +86,60 @@
                             <textarea id="course_description" name="course_description" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
                         </div>
                     </div>
+                    
+
                 </div>
             </div>
+
+
+            {{-- DepEd Curriculum Guide Grids (Hidden by default) --}}
+            <div id="deped-curriculum-grids" class="mb-12 hidden">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Curriculum Guide
+                </h2>
+                <div class="space-y-6">
+                    @for ($q = 1; $q <= 2; $q++)
+                    <div class="border rounded-2xl overflow-hidden shadow-sm">
+                        <button type="button" class="w-full flex justify-between items-center p-4 bg-white hover:bg-gray-50 transition-colors" onclick="toggleAccordion(this)">
+                            <span class="font-semibold text-lg text-gray-700">Quarter {{ $q }}</span>
+                            <svg class="w-6 h-6 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="accordion-content bg-gray-50 p-6 border-t" style="display: none;">
+                            <div class="grid grid-cols-1 gap-6">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div>
+                                        <label for="q_{{ $q }}_content" class="block text-sm font-medium text-gray-700">Content</label>
+                                        <textarea id="q_{{ $q }}_content" rows="6" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500" placeholder="Enter Content..."></textarea>
+                                    </div>
+                                    <div>
+                                        <label for="q_{{ $q }}_content_standards" class="block text-sm font-medium text-gray-700">Content Standards</label>
+                                        <textarea id="q_{{ $q }}_content_standards" rows="6" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500" placeholder="The learners demonstrate understanding of..."></textarea>
+                                    </div>
+                                    <div>
+                                        <label for="q_{{ $q }}_learning_competencies" class="block text-sm font-medium text-gray-700">Learning Competencies</label>
+                                        <textarea id="q_{{ $q }}_learning_competencies" rows="6" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500" placeholder="The learners..."></textarea>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="q_{{ $q }}_performance_standards" class="block text-sm font-medium text-gray-700">Performance Standards</label>
+                                    <textarea id="q_{{ $q }}_performance_standards" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500" placeholder="The learners shall be able to..."></textarea>
+                                </div>
+                                <div>
+                                    <label for="q_{{ $q }}_performance_task" class="block text-sm font-medium text-gray-700">Suggested Performance Task</label>
+                                    <textarea id="q_{{ $q }}_performance_task" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500" placeholder="Enter Suggested Performance Task..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endfor
+                </div>
+            </div>
+
+            {{-- CHED CONTAINER --}}
+            <div id="ched-container">
+
+
 
             {{-- Institutional Information --}}
             <div class="mb-12">
@@ -339,13 +418,16 @@
             </div>
 
 
-            {{-- Approval Section --}}
+
+            </div> {{-- End of CHED Container --}}
+
+            {{-- Approval Section (Shared) --}}
             <div class="mb-12">
                 <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
                     <svg class="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                     Approval
                 </h2>
-                 <div class="bg-white p-8 rounded-2xl shadow-md border border-gray-100">
+                <div class="bg-white p-8 rounded-2xl shadow-md border border-gray-100">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div>
                             <label for="prepared_by" class="block text-sm font-medium text-gray-700">Prepared:</label>
@@ -365,6 +447,8 @@
                     </div>
                 </div>
             </div>
+
+
 
             {{-- Save/Update Button --}}
             <div class="mt-10 pt-6 border-t border-gray-200">
@@ -485,6 +569,53 @@ function toggleAccordion(button) {
         icon.style.transform = "rotate(0deg)";
     }
 }
+
+function switchSyllabus(type) {
+    const chedContainer = document.getElementById('ched-container');
+    const depedContainer = document.getElementById('deped-container');
+    const btnChed = document.getElementById('btn-ched');
+    const btnDeped = document.getElementById('btn-deped');
+    const syllabusTypeInput = document.getElementById('syllabus_type');
+    
+    // Course Info Fields
+    const chedFields = document.getElementById('ched-course-info-fields');
+    const depedFields = document.getElementById('deped-course-info-fields');
+    const depedGrids = document.getElementById('deped-curriculum-grids');
+
+    syllabusTypeInput.value = type;
+
+    if (type === 'CHED') {
+        chedContainer.classList.remove('hidden');
+        // depedContainer.classList.add('hidden'); // Removed depedContainer
+        
+        // Show CHED fields, Hide DepEd fields and grids
+        chedFields.classList.remove('hidden');
+        depedFields.classList.add('hidden');
+        depedGrids.classList.add('hidden');
+        
+        btnChed.classList.add('bg-white', 'text-blue-600', 'shadow-sm');
+        btnChed.classList.remove('text-gray-600');
+        
+        btnDeped.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+        btnDeped.classList.add('text-gray-600');
+    } else {
+        chedContainer.classList.add('hidden');
+        // depedContainer.classList.remove('hidden'); // Removed depedContainer
+        
+        // Hide CHED fields, Show DepEd fields and grids
+        chedFields.classList.add('hidden');
+        depedFields.classList.remove('hidden');
+        depedGrids.classList.remove('hidden');
+        
+        btnDeped.classList.add('bg-white', 'text-red-600', 'shadow-sm');
+        btnDeped.classList.remove('text-gray-600');
+        
+        btnChed.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+        btnChed.classList.add('text-gray-600');
+    }
+}
+
+
 
 document.addEventListener('DOMContentLoaded', function () {
     const courseForm = document.getElementById('courseForm');

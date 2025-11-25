@@ -18,7 +18,7 @@
                             <h1 class="text-2xl sm:text-3xl font-bold text-slate-800">Curriculum Builder</h1>
                             <p class="text-sm text-slate-500 mt-1">Design and manage your academic curriculums.</p>
                         </div>
-                        <button id="addCurriculumButton" class="w-full mt-4 sm:mt-0 sm:w-auto flex items-center justify-center space-x-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <button id="addCurriculumButton" class="w-full mt-4 sm:mt-0 sm:w-auto flex items-center justify-center space-x-2 px-5 py-2.5 bg-blue-600 text-white border-2 border-blue-600 rounded-lg hover:bg-white hover:text-blue-600 transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
                             </svg>
@@ -223,11 +223,11 @@
                                 </div>
                             </div>
                             <div class="pt-6 flex flex-col sm:flex-row-reverse gap-3">
-                                <button type="submit" id="submit-button" class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                                <button type="submit" id="submit-button" class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold text-white bg-blue-600 border-2 border-blue-600 hover:bg-white hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                                     <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z" clip-rule="evenodd" /></svg>
                                     <span>Create</span>
                                 </button>
-                                <button type="button" id="cancelModalButton" class="w-full sm:w-auto px-6 py-3 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-colors">
+                                <button type="button" id="cancelModalButton" class="w-full sm:w-auto px-6 py-3 border-2 border-slate-500 rounded-lg text-sm font-medium text-white bg-slate-500 hover:bg-white hover:text-slate-500 transition-colors">
                                     Cancel
                                 </button>
                             </div>
@@ -770,7 +770,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                         </svg>
                     </div>
-                    <div class="flex-grow ${approvalStatus === 'approved' ? 'cursor-default' : 'cursor-pointer'} min-w-0" onclick="${approvalStatus === 'approved' ? '' : `window.location.href='/subject_mapping?curriculumId=${curriculum.id}'`}">
+                    <div class="flex-grow ${approvalStatus === 'approved' ? 'cursor-default' : 'cursor-pointer'} min-w-0" onclick="handleCardClick(${curriculum.id}, '${approvalStatus}')">
                         <div class="flex items-start justify-between">
                             <div class="flex-grow min-w-0 pr-2">
                                 <h3 class="font-bold ${titleColorClass} transition-colors duration-300 truncate mb-1">${curriculum.curriculum_name}</h3>
@@ -836,19 +836,36 @@
             const fetchCurriculums = () => {
                 fetch('/api/curriculums')
                     .then(response => response.json())
-                    .then(renderCurriculums)
+                    .then(data => {
+                        window.curriculumsData = data;
+                        renderCurriculums(data);
+                    })
                     .catch(error => console.error('Error fetching curriculums:', error));
             };
 
             const showAddEditModal = (isEdit = false, curriculum = null) => {
                 curriculumForm.reset();
+                
+                // Reset form state (remove read-only and disabled styles)
+                const fieldsToReset = ['curriculum', 'programCode', 'academicYear', 'yearLevel', 'compliance', 'memorandum', 'memorandumYear', 'memorandumCategory'];
+                fieldsToReset.forEach(id => {
+                    const el = document.getElementById(id);
+                    if(el) {
+                        el.removeAttribute('readonly');
+                        el.classList.remove('bg-gray-100', 'pointer-events-none');
+                    }
+                });
+                curriculumForm.dataset.approvalStatus = ''; // Reset status
+
                  const modalSubTitle = document.querySelector('#modal-panel > div.text-center.mb-8 > p');
                 if (isEdit && curriculum) {
                     modalTitle.textContent = 'Edit Curriculum';
                     modalSubTitle.textContent = 'Update the details for this curriculum.';
                     submitButton.querySelector('span').textContent = 'Update';
                     curriculumIdField.value = curriculum.id;
-                    document.getElementById('curriculum').value = curriculum.curriculum;
+                    // Use curriculum_name from API response
+                    const curriculumName = curriculum.curriculum_name || curriculum.curriculum || '';
+                    document.getElementById('curriculum').value = curriculumName;
                     document.getElementById('programCode').value = curriculum.program_code;
                     document.getElementById('academicYear').value = curriculum.academic_year;
                     document.getElementById('yearLevel').value = curriculum.year_level;
@@ -892,6 +909,7 @@
                     // Generate semester inputs and populate if data exists
                     if (curriculum.year_level) {
                         generateSemesterInputs(curriculum.year_level);
+                        unitsContainer.classList.remove('hidden'); // Ensure units container is visible
                         
                         const semesterUnitsLabel = document.getElementById('semesterUnitsLabel');
                         if (curriculum.year_level === 'Senior High') {
@@ -1016,13 +1034,25 @@
                 };
 
                 const isUpdating = !!curriculumIdField.value;
-                console.log('Showing confirmation modal, isUpdating:', isUpdating);
+                const isRejectedUpdate = curriculumForm.dataset.approvalStatus === 'rejected';
+                
+                console.log('Showing confirmation modal, isUpdating:', isUpdating, 'isRejectedUpdate:', isRejectedUpdate);
+                
                 showConfirmationModal({
-                    title: isUpdating ? 'Update Curriculum?' : 'Create Curriculum?',
-                    message: `Are you sure you want to ${isUpdating ? 'update' : 'create'} this curriculum?`,
+                    title: isRejectedUpdate ? 'Update Curriculum?' : (isUpdating ? 'Update Curriculum?' : 'Create Curriculum?'),
+                    message: isRejectedUpdate 
+                        ? 'Are you sure you want to change the units of this curriculum?' 
+                        : `Are you sure you want to ${isUpdating ? 'update' : 'create'} this curriculum?`,
                     icon: `<svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
                     confirmButtonClass: 'bg-blue-600 hover:bg-blue-700',
-                    onConfirm: performSubmit
+                    onConfirm: () => {
+                        performSubmit().then(() => {
+                            if (isRejectedUpdate) {
+                                // Redirect to subject mapping after successful update of rejected curriculum
+                                window.location.href = `/subject_mapping?curriculumId=${curriculumIdField.value}`;
+                            }
+                        });
+                    }
                 });
             };
             
@@ -1143,6 +1173,58 @@
                         }
                     }
                 });
+            };
+
+            window.handleCardClick = (id, status) => {
+                if (status === 'approved') return;
+                
+                if (status === 'rejected') {
+                    console.log('Clicked rejected curriculum with ID:', id);
+                    console.log('Available curriculums:', window.curriculumsData);
+                    
+                    if (!window.curriculumsData) {
+                        console.error('Curriculums data not loaded yet');
+                        return;
+                    }
+                    
+                    const curriculum = window.curriculumsData.find(c => c.id === id);
+                    console.log('Found curriculum:', curriculum);
+                    
+                    if (curriculum) {
+                        openRejectedCurriculumModal(curriculum);
+                    } else {
+                        console.error('Curriculum not found with ID:', id);
+                    }
+                } else {
+                    window.location.href = '/subject_mapping?curriculumId=' + id;
+                }
+            };
+
+            window.openRejectedCurriculumModal = (curriculum) => {
+                console.log('Opening rejected curriculum modal with data:', curriculum);
+                console.log('Curriculum name:', curriculum.curriculum_name, 'Curriculum:', curriculum.curriculum);
+                showAddEditModal(true, curriculum);
+                
+                // Change modal title
+                document.getElementById('modal-title').textContent = 'Update Curriculum';
+                document.querySelector('#modal-panel > div.text-center.mb-8 > p').textContent = 'Update the units for this curriculum.';
+                
+                // Apply read-only styling to non-editable fields (including yearLevel)
+                const fieldsToDisable = ['curriculum', 'programCode', 'academicYear', 'yearLevel', 'compliance', 'memorandum', 'memorandumYear', 'memorandumCategory'];
+                fieldsToDisable.forEach(id => {
+                    const el = document.getElementById(id);
+                    if(el) {
+                        el.setAttribute('readonly', 'true');
+                        if(el.tagName === 'SELECT') {
+                            el.classList.add('pointer-events-none', 'bg-gray-100');
+                        } else {
+                            el.classList.add('bg-gray-100');
+                        }
+                    }
+                });
+                
+                // Set status for submit handler
+                curriculumForm.dataset.approvalStatus = 'rejected';
             };
 
             fetchCurriculums();

@@ -66,6 +66,21 @@
                 </div>
                 <div class="dropdown-divider"></div>
                 <div class="dropdown-item">
+                    <div class="dropdown-link" style="cursor: default;">
+                        <div class="dropdown-icon">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                            </svg>
+                        </div>
+                        <span>Dark Mode</span>
+                        <label class="relative inline-flex items-center cursor-pointer ml-auto">
+                            <input type="checkbox" id="darkModeToggle" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                </div>
+                <div class="dropdown-divider"></div>
+                <div class="dropdown-item">
                     <form id="logout-form" method="POST" action="{{ route('logout') }}" class="w-full">
                         @csrf
                         <button type="submit" id="logout-button" class="dropdown-link logout-btn" onclick="console.log('Logout button clicked directly')">
