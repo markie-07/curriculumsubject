@@ -1,0 +1,159 @@
+/* Mobile responsiveness enhancements for Curriculum & Subject Management System */
+
+/* 1) Allow horizontal scrolling for content on mobile to prevent clipped tables/cards */
+@media (max-width: 640px) {
+  main.flex-1 {
+    overflow-x: auto !important;
+  }
+
+  main.flex-1.overflow-x-hidden.overflow-y-auto.bg-gray-100 {
+    overflow-x: auto !important;
+  }
+}
+
+/* 2) Sidebar: treat as overlay drawer on mobile */
+/* 2) Sidebar: treat as overlay drawer on mobile */
+@media (max-width: 640px) {
+  #sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    z-index: 9999 !important;
+    /* High z-index to sit on top */
+    height: 100dvh !important;
+    /* Full dynamic viewport height */
+    width: 18rem !important;
+    /* Force standard width (w-72) */
+    max-width: 85vw !important;
+    /* Prevent it from being too wide */
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  /* Force show all sidebar content on mobile, ignoring .collapsed state */
+  #sidebar.collapsed {
+    width: 18rem !important;
+  }
+
+  #sidebar.collapsed .sidebar-title,
+  #sidebar.collapsed .profile-text,
+  #sidebar.collapsed .nav-text,
+  #sidebar.collapsed .section-header {
+    display: block !important;
+  }
+
+  #sidebar.collapsed .profile-section {
+    padding: 1.25rem !important;
+    /* p-5 */
+    margin: 1rem 0 !important;
+    /* my-4 */
+  }
+
+  #sidebar.collapsed .profile-avatar {
+    width: 6rem !important;
+    /* w-24 */
+    height: 6rem !important;
+    margin-bottom: 0.75rem !important;
+    /* mb-3 */
+    font-size: 1.125rem !important;
+    /* text-lg */
+  }
+
+  #sidebar.collapsed .nav-link {
+    justify-content: flex-start !important;
+    padding-left: 1rem !important;
+    /* px-4 */
+    padding-right: 1rem !important;
+  }
+
+  #sidebar.collapsed .nav-link .w-8 {
+    margin-right: 0.75rem !important;
+    /* mr-3 */
+  }
+
+  #sidebar.collapsed .sidebar-footer p {
+    display: block !important;
+  }
+
+  /* Ensure nav takes available space and scrolls */
+  #sidebar nav {
+    flex: 1 1 auto !important;
+    overflow-y: auto !important;
+    min-height: 0 !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Ensure off-canvas translates behave consistently */
+  #sidebar.-translate-x-full {
+    transform: translateX(-100%) !important;
+  }
+
+  #sidebar:not(.-translate-x-full) {
+    transform: translateX(0) !important;
+  }
+}
+
+/* 3) Header: compact layout for small screens */
+@media (max-width: 640px) {
+  header {
+    padding: 0.5rem 0.75rem !important;
+  }
+
+  #datetime-span {
+    display: none !important;
+  }
+
+  /* Override Tailwind space-x-* margins */
+  header .space-x-6>*+* {
+    margin-left: 0.5rem !important;
+  }
+
+  /* Hide user name block, keep avatar */
+  header .text-right {
+    display: none !important;
+  }
+
+  /* Slightly smaller avatar */
+  header .w-8.h-8 {
+    width: 2rem !important;
+    height: 2rem !important;
+  }
+}
+
+/* 4) Dropdowns fit the viewport on mobile */
+@media (max-width: 640px) {
+  .notifications-dropdown-minimal {
+    width: min(90vw, 320px) !important;
+    right: 0.5rem !important;
+    left: auto !important;
+  }
+
+  .dropdown-menu-minimal {
+    min-width: 70vw !important;
+    right: 0.5rem !important;
+    left: auto !important;
+  }
+}
+
+/* 5) Tables: keep cells on one line, rely on horizontal scroll */
+@media (max-width: 640px) {
+  table {
+    font-size: 0.875rem;
+  }
+
+  th,
+  td {
+    white-space: nowrap;
+  }
+}
+
+/* 6) Extra-small phones: shrink header icons further */
+@media (max-width: 480px) {
+
+  #notifications-button svg,
+  #settings-button svg,
+  #sidebar-toggle svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+}

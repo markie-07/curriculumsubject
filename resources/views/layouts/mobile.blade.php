@@ -1,3 +1,4 @@
+{{-- Mobile Layout --}}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2701,7 +2702,7 @@
     </style>
 </head>
 <body class="bg-gray-100 dark-mode-transition">
-    <div class="flex h-screen bg-gray-200">
+    <div class="flex h-screen bg-gray-100">
         @include('partials.sidebar')
         <div class="flex-1 flex flex-col overflow-hidden">
             @include('partials.header')
@@ -2719,24 +2720,6 @@
                     sidebar.classList.toggle('-translate-x-full');
                 } else {
                     sidebar.classList.toggle('collapsed');
-                }
-            });
-
-            // Mobile sidebar close button
-            const sidebarClose = document.getElementById('sidebar-close');
-            if (sidebarClose) {
-                sidebarClose.addEventListener('click', () => {
-                    sidebar.classList.add('-translate-x-full');
-                });
-            }
-
-            // Close sidebar when clicking outside on mobile
-            document.addEventListener('click', (e) => {
-                if (window.innerWidth < 640 && 
-                    !sidebar.contains(e.target) && 
-                    !sidebarToggle.contains(e.target) && 
-                    !sidebar.classList.contains('-translate-x-full')) {
-                    sidebar.classList.add('-translate-x-full');
                 }
             });
 
