@@ -49,8 +49,49 @@
                                 <option value="Minor">Minor</option>
                             </select>
                         </div>
+                        {{-- DepEd Specific Fields --}}
+                        <div id="deped-course-info-fields" class="contents hidden">
+                            <div class="md:col-span-2 lg:col-span-3 mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Import Syllabus (PDF)</label>
+                                <div class="flex items-center space-x-4">
+                                    <button type="button" onclick="document.getElementById('syllabus_file').click()" class="px-4 py-2 bg-red-50 text-red-600 rounded-md border border-red-200 hover:bg-red-100 transition-colors flex items-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                        Choose File
+                                    </button>
+                                    <span id="file_name_display" class="text-sm text-gray-500">No file chosen</span>
+                                    <input type="file" id="syllabus_file" class="hidden" accept=".pdf" onchange="handleSyllabusUpload(this)">
+                                </div>
+                                <p class="text-xs text-gray-500 mt-2">
+                                    <svg class="w-4 h-4 inline mr-1 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    <strong>Note:</strong> Auto-extraction works best with standard DepEd formats. Please review and manually adjust the extracted data as needed. Use the "+ Add Content Row" button to organize content into proper rows.
+                                </p>
+                            </div>
+                            <div>
+                                <label for="time_allotment" class="block text-sm font-medium text-gray-700">Time Allotment</label>
+                                <input type="text" name="time_allotment" id="time_allotment" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="e.g. 80 hours / semester">
+                            </div>
+                            <div>
+                                <label for="schedule" class="block text-sm font-medium text-gray-700">Schedule</label>
+                                <input type="text" name="schedule" id="schedule" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="e.g. M-W-F 9:00-10:00">
+                            </div>
+                        </div>
                         {{-- CHED Specific Fields --}}
                         <div id="ched-course-info-fields" class="contents">
+                            <div class="md:col-span-2 lg:col-span-3 mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Import Syllabus (PDF)</label>
+                                <div class="flex items-center space-x-4">
+                                    <button type="button" onclick="document.getElementById('ched_syllabus_file').click()" class="px-4 py-2 bg-blue-50 text-blue-600 rounded-md border border-blue-200 hover:bg-blue-100 transition-colors flex items-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                        Choose File
+                                    </button>
+                                    <span id="ched_file_name_display" class="text-sm text-gray-500">No file chosen</span>
+                                    <input type="file" id="ched_syllabus_file" class="hidden" accept=".pdf" onchange="handleSyllabusUpload(this)">
+                                </div>
+                                <p class="text-xs text-gray-500 mt-2">
+                                    <svg class="w-4 h-4 inline mr-1 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    <strong>Note:</strong> Auto-extraction works best with standard CHED formats. Please review and manually adjust the extracted data as needed.
+                                </p>
+                            </div>
                             <div>
                                 <label for="credit_units" class="block text-sm font-medium text-gray-700">Credit Units</label>
                                 <input type="number" name="credit_units" id="credit_units" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
@@ -61,17 +102,7 @@
                             </div>
                         </div>
 
-                        {{-- DepEd Specific Fields --}}
-                        <div id="deped-course-info-fields" class="contents hidden">
-                            <div>
-                                <label for="time_allotment" class="block text-sm font-medium text-gray-700">Time Allotment</label>
-                                <input type="text" name="time_allotment" id="time_allotment" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500" placeholder="e.g. 80 hours / semester">
-                            </div>
-                            <div>
-                                <label for="schedule" class="block text-sm font-medium text-gray-700">Schedule</label>
-                                <input type="text" name="schedule" id="schedule" class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500" placeholder="e.g. M-W-F 9:00-10:00">
-                            </div>
-                        </div>
+
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Applicable Curriculums</label>
                             <button type="button" id="openCurriculumModal" class="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-left hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
@@ -107,19 +138,27 @@
                         </button>
                         <div class="accordion-content bg-gray-50 p-6 border-t" style="display: none;">
                             <div class="grid grid-cols-1 gap-6">
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <div>
-                                        <label for="q_{{ $q }}_content" class="block text-sm font-medium text-gray-700">Content</label>
-                                        <textarea id="q_{{ $q }}_content" rows="6" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500" placeholder="Enter Content..."></textarea>
+                                <div id="q_{{ $q }}_rows_container" class="space-y-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative group deped-row">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Content</label>
+                                            <textarea name="q_{{ $q }}_content[]" id="q_{{ $q }}_content" rows="6" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500" placeholder="Enter Content..."></textarea>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Content Standards</label>
+                                            <textarea name="q_{{ $q }}_content_standards[]" id="q_{{ $q }}_content_standards" rows="6" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500" placeholder="The learners demonstrate understanding of..."></textarea>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Learning Competencies</label>
+                                            <textarea name="q_{{ $q }}_learning_competencies[]" id="q_{{ $q }}_learning_competencies" rows="6" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500" placeholder="The learners..."></textarea>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label for="q_{{ $q }}_content_standards" class="block text-sm font-medium text-gray-700">Content Standards</label>
-                                        <textarea id="q_{{ $q }}_content_standards" rows="6" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500" placeholder="The learners demonstrate understanding of..."></textarea>
-                                    </div>
-                                    <div>
-                                        <label for="q_{{ $q }}_learning_competencies" class="block text-sm font-medium text-gray-700">Learning Competencies</label>
-                                        <textarea id="q_{{ $q }}_learning_competencies" rows="6" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500" placeholder="The learners..."></textarea>
-                                    </div>
+                                </div>
+                                <div class="flex justify-center border-b pb-6">
+                                    <button type="button" onclick="addDepEdRow({{ $q }})" class="flex items-center px-4 py-2 bg-red-50 text-red-600 rounded-full hover:bg-red-100 transition-colors text-sm font-medium">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                        Add Content Row
+                                    </button>
                                 </div>
                                 <div>
                                     <label for="q_{{ $q }}_performance_standards" class="block text-sm font-medium text-gray-700">Performance Standards</label>
@@ -269,6 +308,22 @@
                     Learning Outcomes
                 </h2>
                 <div class="bg-white p-8 rounded-2xl shadow-md border border-gray-100 space-y-8">
+                    {{-- School Goals and Program Goals --}}
+                    <div class="p-6 bg-gray-50 rounded-lg border border-gray-200">
+                        <div class="mb-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-2">School Goals:</h3>
+                            <p class="text-gray-700 leading-relaxed">
+                                BCP puts God in the center of all its efforts realize and operationalize its vision and missions through the following. Instruction, Research, Extension and Productivity
+                            </p>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800 mb-2">Program Goals:</h3>
+                            <p class="text-gray-700 leading-relaxed">
+                                To cultivate a dynamic and inclusive learning environment that empowers students to become self-directed, ethical, and engaged citizens, equipped with the critical thinking, communication, and problem-solving skills necessary to thrive in a rapidly evolving world.
+                            </p>
+                        </div>
+                    </div>
+
                     <div>
                         <label for="pilo_outcomes" class="block text-xl font-semibold text-gray-700 mb-2">PROGRAM INTENDED LEARNING OUTCOMES (PILO)</label>
                         <textarea id="pilo_outcomes" name="pilo_outcomes" rows="5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
@@ -1067,6 +1122,203 @@ Learning Management System`;
         // For new courses, populate Week 0 with default BCP content
         populateWeek0DefaultContent();
     }
+
 });
+
+// Function to handle Syllabus PDF Upload
+// Function to handle Syllabus PDF Upload
+function handleSyllabusUpload(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        // Update display name based on which input triggered this
+        if (input.id === 'ched_syllabus_file') {
+            document.getElementById('ched_file_name_display').textContent = file.name;
+        } else {
+            document.getElementById('file_name_display').textContent = file.name;
+        }
+
+        const formData = new FormData();
+        formData.append('syllabus_file', file);
+        formData.append('_token', document.querySelector('input[name="_token"]').value);
+
+        // Show loading state
+        const btn = input.previousElementSibling.previousElementSibling; // The button
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Uploading...';
+        btn.disabled = true;
+
+        // Determine API endpoint based on input ID or syllabus type
+        const isChed = input.id === 'ched_syllabus_file';
+        const endpoint = isChed ? '/api/extract-ched-syllabus' : '/api/extract-syllabus';
+
+        fetch(endpoint, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Common fields
+                if (data.data.course_title) document.getElementById('course_title').value = data.data.course_title;
+                if (data.data.course_description) document.getElementById('course_description').value = data.data.course_description;
+                
+                if (isChed) {
+                    // CHED Specific Fields
+                    if (data.data.course_code) document.getElementById('course_code').value = data.data.course_code;
+                    if (data.data.credit_units) document.getElementById('credit_units').value = data.data.credit_units;
+                    if (data.data.contact_hours) document.getElementById('contact_hours').value = data.data.contact_hours;
+                    
+                    if (data.data.pilo_outcomes) document.getElementById('pilo_outcomes').value = data.data.pilo_outcomes;
+                    if (data.data.cilo_outcomes) document.getElementById('cilo_outcomes').value = data.data.cilo_outcomes;
+                    if (data.data.learning_outcomes) document.getElementById('learning_outcomes').value = data.data.learning_outcomes;
+                    
+                    if (data.data.basic_readings) document.getElementById('basic_readings').value = data.data.basic_readings;
+                    if (data.data.extended_readings) document.getElementById('extended_readings').value = data.data.extended_readings;
+                    if (data.data.course_assessment) document.getElementById('course_assessment').value = data.data.course_assessment;
+                    if (data.data.committee_members) document.getElementById('committee_members').value = data.data.committee_members;
+                    if (data.data.consultation_schedule) document.getElementById('consultation_schedule').value = data.data.consultation_schedule;
+                    
+                    if (data.data.prepared_by) document.getElementById('prepared_by').value = data.data.prepared_by;
+                    if (data.data.reviewed_by) document.getElementById('reviewed_by').value = data.data.reviewed_by;
+                    if (data.data.approved_by) document.getElementById('approved_by').value = data.data.approved_by;
+
+                    // Mapping Grids
+                    if (data.data.program_mapping && data.data.program_mapping.length > 0) {
+                        const tbody = document.getElementById('program-mapping-table-body');
+                        tbody.innerHTML = ''; // Clear existing
+                        data.data.program_mapping.forEach(row => {
+                            const tr = createMappingTableRow(true);
+                            const inputs = tr.querySelectorAll('input');
+                            inputs[0].value = row.pilo || '';
+                            inputs[1].value = row.ctpss || '';
+                            inputs[2].value = row.ecc || '';
+                            inputs[3].value = row.epp || '';
+                            inputs[4].value = row.glc || '';
+                            tbody.appendChild(tr);
+                        });
+                    }
+
+                    if (data.data.course_mapping && data.data.course_mapping.length > 0) {
+                        const tbody = document.getElementById('course-mapping-table-body');
+                        tbody.innerHTML = ''; // Clear existing
+                        data.data.course_mapping.forEach(row => {
+                            const tr = createMappingTableRow(false);
+                            const inputs = tr.querySelectorAll('input');
+                            inputs[0].value = row.cilo || '';
+                            inputs[1].value = row.ctpss || '';
+                            inputs[2].value = row.ecc || '';
+                            inputs[3].value = row.epp || '';
+                            inputs[4].value = row.glc || '';
+                            tbody.appendChild(tr);
+                        });
+                    }
+
+                    // Weekly Plan
+                    if (data.data.weekly_plan) {
+                        for (const [week, lesson] of Object.entries(data.data.weekly_plan)) {
+                            // week is index (0, 1, 2...)
+                            if (document.getElementById(`week_${week}_content`)) {
+                                if (lesson.content) document.getElementById(`week_${week}_content`).value = lesson.content;
+                                if (lesson.silo) document.getElementById(`week_${week}_silo`).value = lesson.silo;
+                                if (lesson.at_onsite) document.getElementById(`week_${week}_at_onsite`).value = lesson.at_onsite;
+                                if (lesson.at_offsite) document.getElementById(`week_${week}_at_offsite`).value = lesson.at_offsite;
+                                if (lesson.tla_onsite) document.getElementById(`week_${week}_tla_onsite`).value = lesson.tla_onsite;
+                                if (lesson.tla_offsite) document.getElementById(`week_${week}_tla_offsite`).value = lesson.tla_offsite;
+                                if (lesson.ltsm) document.getElementById(`week_${week}_ltsm`).value = lesson.ltsm;
+                                if (lesson.output) document.getElementById(`week_${week}_output`).value = lesson.output;
+                            }
+                        }
+                    }
+
+                } else {
+                    // DepEd Specific Fields
+                    if (data.data.time_allotment) document.getElementById('time_allotment').value = data.data.time_allotment;
+                    if (data.data.schedule) document.getElementById('schedule').value = data.data.schedule;
+
+                    // Populate Quarter 1
+                    if (data.data.q_1_rows && data.data.q_1_rows.length > 0) {
+                        // Populate first row
+                        const firstRow = data.data.q_1_rows[0];
+                        if (firstRow.content) document.getElementById('q_1_content').value = firstRow.content;
+                        if (firstRow.content_standards) document.getElementById('q_1_content_standards').value = firstRow.content_standards;
+                        if (firstRow.learning_competencies) document.getElementById('q_1_learning_competencies').value = firstRow.learning_competencies;
+                        
+                        // Add additional rows
+                        for (let i = 1; i < data.data.q_1_rows.length; i++) {
+                            addDepEdRow(1);
+                            const row = data.data.q_1_rows[i];
+                            const container = document.getElementById('q_1_rows_container');
+                            const lastRow = container.lastElementChild;
+                            const textareas = lastRow.querySelectorAll('textarea');
+                            if (row.content) textareas[0].value = row.content;
+                            if (row.content_standards) textareas[1].value = row.content_standards;
+                            if (row.learning_competencies) textareas[2].value = row.learning_competencies;
+                        }
+                    }
+                    if (data.data.q_1_performance_standards) document.getElementById('q_1_performance_standards').value = data.data.q_1_performance_standards;
+                    if (data.data.q_1_performance_task) document.getElementById('q_1_performance_task').value = data.data.q_1_performance_task;
+
+                    // Populate Quarter 2
+                    if (data.data.q_2_rows && data.data.q_2_rows.length > 0) {
+                        // Populate first row
+                        const firstRow = data.data.q_2_rows[0];
+                        if (firstRow.content) document.getElementById('q_2_content').value = firstRow.content;
+                        if (firstRow.content_standards) document.getElementById('q_2_content_standards').value = firstRow.content_standards;
+                        if (firstRow.learning_competencies) document.getElementById('q_2_learning_competencies').value = firstRow.learning_competencies;
+                        
+                        // Add additional rows
+                        for (let i = 1; i < data.data.q_2_rows.length; i++) {
+                            addDepEdRow(2);
+                            const row = data.data.q_2_rows[i];
+                            const container = document.getElementById('q_2_rows_container');
+                            const lastRow = container.lastElementChild;
+                            const textareas = lastRow.querySelectorAll('textarea');
+                            if (row.content) textareas[0].value = row.content;
+                            if (row.content_standards) textareas[1].value = row.content_standards;
+                            if (row.learning_competencies) textareas[2].value = row.learning_competencies;
+                        }
+                    }
+                    if (data.data.q_2_performance_standards) document.getElementById('q_2_performance_standards').value = data.data.q_2_performance_standards;
+                    if (data.data.q_2_performance_task) document.getElementById('q_2_performance_task').value = data.data.q_2_performance_task;
+                }
+
+                alert('Syllabus data extracted successfully!');
+            } else {
+                alert('Failed to extract data: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while uploading the file. Please check the console for details.');
+        })
+        .finally(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        });
+    }
+}
+
+function addDepEdRow(quarter) {
+    const container = document.getElementById(`q_${quarter}_rows_container`);
+    const newRow = document.createElement('div');
+    newRow.className = 'grid grid-cols-1 md:grid-cols-3 gap-6 relative group deped-row pt-6 border-t border-dashed';
+    
+    newRow.innerHTML = `
+        <div>
+            <textarea name="q_${quarter}_content[]" rows="6" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500" placeholder="Enter Content..."></textarea>
+        </div>
+        <div>
+            <textarea name="q_${quarter}_content_standards[]" rows="6" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500" placeholder="The learners demonstrate understanding of..."></textarea>
+        </div>
+        <div>
+            <textarea name="q_${quarter}_learning_competencies[]" rows="6" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500" placeholder="The learners..."></textarea>
+        </div>
+        <button type="button" onclick="this.parentElement.remove()" class="absolute -top-3 right-0 bg-white text-red-500 hover:text-red-700 rounded-full p-1 shadow-sm border border-gray-200" title="Remove Row">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+    `;
+    
+    container.appendChild(newRow);
+}
 </script>
 @endsection

@@ -1,0 +1,141 @@
+=== CLEANED MAIN TEXT ===
+ 
+1. Scientific 
+measurement 
+ 
+1. accuracy, precision, and appropriate use of 
+standard units of measurement are 
+fundamental to Chemistry; 
+ 
+ 
+1. explain the difference between mass, volume, and 
+density of a solid using the correct and appropriate 
+units; 
+2. investigate the density of commonly used solids using 
+laboratory equipment, including writing a scientific 
+report; 
+3. explain that accuracy and precision are important to 
+assess the quality of experimental results; 
+4. identify sources of error and propose improvements to 
+enhance measurement reliability;   
+5. apply scientific notation and explain how to determine 
+the proper number of significant figures in 
+calculations;
+
+2 
+ 
+2. The Quantum 
+Theory and the 
+electronic 
+structure of 
+atoms 
+ 
+ 
+2. the contributions of Planck, Bohr, and 
+Schrödinger helped in the development of 
+Quantum Theory, which explains the 
+behavior of subatomic particle; 
+ 
+3. electrons of elements are arranged 
+according to different energy levels, 
+subshells, and orbitals based on the 
+quantum mechanical model; and 
+6. explain how Mendeleev developed the periodic table of 
+elements; 
+7. create a diagram of the periodic table to illustrate the 
+relationship between atomic radius and atomic mass 
+of elements across a period and down a group; 
+8. draw a model of the discrete energy levels of an atom 
+using the ‘spdf’ notation for the orbitals; 
+9. write the electronic configuration of common elements 
+following the principles of quantum theory; 
+10. explain and predict main energy levels, sublevels, and 
+orbitals in relation to the electronic configurations of 
+elements in periods and groups in the periodic table; 
+4. Isotopes 2. isotopes of elements can be both beneficial     
+and harmful. 
+11. explain that isotopes of an element have the same 
+number of protons but a different number of 
+neutrons; 
+12. use secondary resources to identify natural and 
+human-made radioisotopes and their properties in 
+terms of the type of radiation emitted and their half-
+life; and 
+13. use secondary sources to describe the use of 
+radioisotopes in medicine.
+
+=== LINES ===
+Line 1: [1. Scientific]
+  -> MATCHED as Content (short, no period)
+Line 2: [measurement]
+Line 4: [1. accuracy, precision, and appropriate use of]
+  -> MATCHED as Content (short, no period)
+Line 5: [standard units of measurement are]
+Line 6: [fundamental to Chemistry;]
+Line 9: [1. explain the difference between mass, volume, and]
+  -> MATCHED as Content (short, no period)
+Line 10: [density of a solid using the correct and appropriate]
+Line 11: [units;]
+Line 12: [2. investigate the density of commonly used solids using]
+  -> MATCHED as Content (short, no period)
+Line 13: [laboratory equipment, including writing a scientific]
+Line 14: [report;]
+Line 15: [3. explain that accuracy and precision are important to]
+  -> MATCHED as Content (short, no period)
+Line 16: [assess the quality of experimental results;]
+Line 17: [4. identify sources of error and propose improvements to]
+  -> MATCHED as Content (short, no period)
+Line 18: [enhance measurement reliability;]
+Line 19: [5. apply scientific notation and explain how to determine]
+  -> MATCHED as Content (short, no period)
+Line 20: [the proper number of significant figures in]
+Line 21: [calculations;]
+Line 23: [2]
+Line 25: [2. The Quantum]
+  -> MATCHED as Content (short, no period)
+Line 26: [Theory and the]
+Line 27: [electronic]
+Line 28: [structure of]
+Line 29: [atoms]
+Line 32: [2. the contributions of Planck, Bohr, and]
+  -> MATCHED as Content (short, no period)
+Line 33: [Schrödinger helped in the development of]
+Line 34: [Quantum Theory, which explains the]
+Line 35: [behavior of subatomic particle;]
+Line 37: [3. electrons of elements are arranged]
+  -> MATCHED as Content (short, no period)
+Line 38: [according to different energy levels,]
+Line 39: [subshells, and orbitals based on the]
+Line 40: [quantum mechanical model; and]
+Line 41: [6. explain how Mendeleev developed the periodic table of]
+  -> MATCHED as Content (short, no period)
+Line 42: [elements;]
+Line 43: [7. create a diagram of the periodic table to illustrate the]
+  -> MATCHED as Content (short, no period)
+Line 44: [relationship between atomic radius and atomic mass]
+Line 45: [of elements across a period and down a group;]
+Line 46: [8. draw a model of the discrete energy levels of an atom]
+  -> MATCHED as Content (short, no period)
+Line 47: [using the ‘spdf’ notation for the orbitals;]
+Line 48: [9. write the electronic configuration of common elements]
+  -> MATCHED as Content (short, no period)
+Line 49: [following the principles of quantum theory;]
+Line 50: [10. explain and predict main energy levels, sublevels, and]
+  -> MATCHED as Content (short, no period)
+Line 51: [orbitals in relation to the electronic configurations of]
+Line 52: [elements in periods and groups in the periodic table;]
+Line 53: [4. Isotopes 2. isotopes of elements can be both beneficial]
+  -> MATCHED as numbered item
+Line 54: [and harmful.]
+Line 55: [11. explain that isotopes of an element have the same]
+  -> MATCHED as Content (short, no period)
+Line 56: [number of protons but a different number of]
+Line 57: [neutrons;]
+Line 58: [12. use secondary resources to identify natural and]
+  -> MATCHED as Content (short, no period)
+Line 59: [human-made radioisotopes and their properties in]
+Line 60: [terms of the type of radiation emitted and their half-]
+Line 61: [life; and]
+Line 62: [13. use secondary sources to describe the use of]
+  -> MATCHED as Content (short, no period)
+Line 63: [radioisotopes in medicine.]

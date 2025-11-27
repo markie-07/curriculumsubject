@@ -15,6 +15,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\CurriculumHistoryController;
+use App\Http\Controllers\ExtractSyllabusController;
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -169,6 +170,9 @@ Route::middleware(['auth', 'prevent.back'])->group(function () {
         Route::get('/course-builder', function () {
             return view('course_builder');
         })->name('course_builder');
+
+        Route::post('/api/extract-syllabus', [ExtractSyllabusController::class, 'extract'])->name('syllabus.extract');
+        Route::post('/api/extract-ched-syllabus', [\App\Http\Controllers\ExtractChedSyllabusController::class, 'extract'])->name('syllabus.extract.ched');
 
         // Curriculum History API Routes
         Route::prefix('api/curriculum-history')->group(function () {

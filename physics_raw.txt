@@ -1,0 +1,183 @@
+Republic of the Philippines
+STRENGTHENED SENIOR HIGH SCHOOL CURRICULUM PHYSICS 1
+Grade 11
+DepEd Complex, Meralco Avenue, Pasig City
+
+1 
+ 
+Course Description:  
+This course introduces learners to the fundamental principles governing  the physical world, focusing on matter, motion, and energy 
+interactions. It covers core topics in physics, including measurement, kinematics, dynamics, energy, momentum, rotational 
+mechanics, and periodic motion. Through hands-on experiments, real-world problem solving, and critical analysis, students will 
+develop scientific inquiry, mathematical reasoning, and an appreciation for the role of physics in technology, society, and STEM-
+related careers.  
+ 
+Elective: Academic 
+Prerequisite: None 
+Time Allotment: 80 hours for one semester, 4 hours per week 
+Schedule: First Semester 
+ 
+Quarter 1: Measurements and Translational Kinematics 
+Content Content Standards 
+The learners learn that     
+Learning Competencies 
+The learners     
+1. Introduction to 
+Physics 
+1. Physics is fundamental to understanding the 
+natural world in a scientific way and leads to 
+the development of many applications that 
+benefit society; 
+1. use secondary sources to evaluate the impact of 
+physics in society and identify the range of careers 
+that are available through the study of physics; 
+2. Kinematics 2. measuring should be done precisely and 
+accurately, and must be expressed correctly; 
+and 
+2. conduct simple experiments on the translational 
+motion of objects in one- and two-dimensions using 
+standard and alternative measuring tools to 
+measure length and time quantitatively; 
+3. define the fundamental quantities and the basis of 
+its SI units;  
+3. qualitative, quantitative, and graphical 
+analysis of motion provide complementary 
+ways to understand, describe, and predict 
+motion. 
+ 
+4. calculate displacement, velocity, and acceleration 
+in one-dimensional motion; 
+5. create and interpret motion graphs of one-
+dimensional motion (displacement-time, velocity-
+time, and acceleration-time graphs); 
+6. derive the four kinematic equations and their 
+various forms through algebraic methods to solve
+
+2 
+ 
+various cases of uniformly accelerated motion 
+(horizontal and vertical);  
+7. carry out  first-hand investigations involving 2-
+dimensional projectile and circular motion to 
+investigate factors, such as speed, radius, and 
+centripetal force; 
+8. explain concepts of moving reference frames and 
+relative motion; and 
+9. solve physics problems involving uniformly 
+accelerated motion (horizontal and vertical), 
+projectile, circular, and relative motion in one- and 
+two-dimensions in various contexts, such as 
+moving vehicles, riverboat problems, aircraft, and 
+spacecraft navigation. 
+Performance Standards 
+By the end of the quarter, learners properly measure and use pertinent units, compute resultant vectors, and analyze motion 
+graphs. They explain, calculate, and analyze one-dimensional, two-dimensional, and relative motion in practical contexts and 
+solve problems using kinematic equations. They also describe and explain how basic physics principles are applied to describe 
+and make predictions about motion in everyday situations and scenarios. 
+ 
+Suggested Performance Task 
+ 
+● Prove through experimentation, data gathering, graphical representation, and analysis that vertical and horizontal 
+motion are independent of each other in projectile motion.
+
+3 
+ 
+Quarter 2: Dynamics 
+Content Content Standards 
+The learners learn that     
+Learning Competencies 
+The learners: 
+Translational 
+dynamics 
+1. Types of forces 
+2. Newton’s Laws of 
+Motion and their 
+applications 
+3. Work and power 
+4. Energy 
+5. Momentum 
+ 
+1. Newton's Laws of Motion, work, energy, 
+power, and the conservation of energy are 
+essential for understanding the behavior of 
+objects and systems; 
+ 
+2. momentum, impulse, and the laws of 
+conservation are essential in evaluating the 
+efficiency and safety of physical systems; 
+1. conduct simple experiments on forces using 
+standard and alternative measuring tools to     
+measure length, mass, volume, and time 
+quantitatively;  
+2. determine the resultant of one- to two-dimensional 
+vectors using analytical methods; 
+3. apply Newton’s laws of motion in solving word 
+problems involving equilibrium and non-
+equilibrium cases; 
+4. calculate work done by an applied force and the 
+power generated in practical situations such as 
+engineering and sports science; 
+5. explain how energy is conserved in various real-life 
+scenarios; 
+6. develop a table to summarize how the principles of 
+impulse and conservation of linear momentum 
+apply in various real-life contexts, such as sports 
+performance, vehicle safety systems, industrial 
+processes, and space exploration; 
+ 
+Rotational 
+mechanics 
+1. Rotational motion 
+2. Force and torque 
+3. Mass and moment 
+of inertia 
+ 
+3. rotational mechanics can maximize efficiency 
+in physical systems; and 
+7. describe rotational motion in terms of angular 
+displacement, angular velocity, angular 
+acceleration, and angular frequency; 
+8. explain various phenomena involving rotational 
+motion using the concepts of torque, moment of 
+inertia, and angular momentum; 
+9. design a prototype applying concepts of rotational 
+motion to improve processes involved in various 
+fields such as the automotive industry, amusement 
+park rides, and manufacturing;
+
+4 
+ 
+Periodic motion 
+1. Oscillations 
+2. Simple harmonic 
+motion 
+ 
+ 
+ 
+ 
+ 
+ 
+4. simple harmonic motion can be characterized 
+by periodic motion.     
+ 
+10. draw on personal experiences and secondary 
+sources to demonstrate through simple activities 
+the concept of simple harmonic motion in natural 
+and human-made situations; 
+11. describe simple harmonic motion in terms of 
+amplitude, period, frequency, phase, and how its 
+principles are applied in the design of everyday 
+systems; and 
+12. use mathematical models to solve for and describe 
+the displacement, velocity, and acceleration of 
+objects in simple harmonic motion.     
+Performance Standards 
+By the end of the quarter, learners properly measure and use pertinent units, compute resultant vectors, and analyze motion 
+graphs. They explain, calculate, and analyze one-dimensional, two-dimensional, and relative motion in practical contexts and 
+solve problems using kinematic equations. They also describe and explain how basic physics principles are applied to describe 
+and make predictions about motion in everyday situations and scenarios. 
+ 
+Suggested Performance Task 
+ 
+● Design and run a Rube Goldberg Machine to demonstrate the concepts of the laws of conservation of energy, Newton’s 
+laws of motion, and rotational motion. Write a quantitative and qualitative analysis of the system.
