@@ -2542,7 +2542,7 @@
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
             z-index: 9999;
-            min-width: 180px;
+            min-width: 240px;
             padding: 8px;
             opacity: 0;
             transform: translateY(-8px);
