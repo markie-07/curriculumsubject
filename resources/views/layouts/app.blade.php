@@ -1998,6 +1998,28 @@
             transition: transform 0.3s ease !important;
         }
 
+        /* Comprehensive z-index hierarchy */
+        /* Sidebar and navigation - MUST be lower than modals */
+        aside[class*="fixed"],
+        nav[class*="fixed"],
+        div[class*="sidebar"],
+        .sidebar,
+        #sidebar,
+        #sidebar.collapsed .nav-link::after,
+        #sidebar.collapsed .nav-link::before {
+            z-index: 40 !important;
+        }
+
+        /* Modals should always be above sidebar */
+        div[id*="Modal"],
+        div[id*="modal"],
+        .modal,
+        .fixed.inset-0.bg-black,
+        .fixed.inset-0.bg-slate-900,
+        [class*="fixed"][class*="inset-0"][class*="bg-"] {
+            z-index: 100000 !important;
+        }
+
         /* When sidebar is open, rotate arrow to point left (close direction) */
         .sidebar-toggle.sidebar-open i {
             transform: rotate(180deg) !important;
@@ -2577,7 +2599,7 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.2s ease, left 0.2s ease;
-            z-index: 99999;
+            z-index: 40;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
         }
         
@@ -2591,7 +2613,7 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.2s ease;
-            z-index: 99999;
+            z-index: 40;
         }
         
         #sidebar.collapsed .nav-link:hover::after,
@@ -2613,7 +2635,7 @@
             border: 1px solid #f1f5f9;
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-            z-index: 9999;
+            z-index: 50;
             min-width: 240px;
             padding: 8px;
             opacity: 0;

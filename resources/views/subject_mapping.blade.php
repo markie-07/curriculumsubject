@@ -208,7 +208,7 @@
     </div>
     
  {{-- Subject Details Modal --}}
-<div id="subjectDetailsModal" class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-60 transition-opacity duration-300 ease-out hidden">
+<div id="subjectDetailsModal" class="fixed inset-0 left-0 z-[100] overflow-y-auto bg-black bg-opacity-60 transition-opacity duration-300 ease-out hidden">
     <div class="flex items-center justify-center min-h-screen p-2">
         <div class="relative bg-white w-[98vw] h-[98vh] rounded-2xl shadow-2xl transform scale-95 opacity-0 transition-all duration-300 ease-out flex flex-col" id="modal-details-panel">
             
@@ -853,7 +853,25 @@
                         if (part.startsWith('Output Materials:')) lessonData.output = part.replace('Output Materials:\n', '');
                     });
 
-                    const weekHTML = `
+                    const isExamWeek = ['Week 6', 'Week 12', 'Week 18'].includes(week);
+                    let weekHTML = '';
+
+                    if (isExamWeek) {
+                        weekHTML = `
+                        <div class="border border-gray-200 rounded-lg overflow-hidden">
+                            <button type="button" class="w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 transition-colors week-toggle">
+                                <span class="font-semibold text-gray-700">${week} - ${lessonData.content || 'Exam'}</span>
+                                <svg class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div class="p-5 border-t border-gray-200 bg-white hidden week-content">
+                                <div class="text-center py-4">
+                                    <p class="text-xl font-bold text-gray-600">${lessonData.content || 'Exam'}</p>
+                                    <p class="text-sm text-gray-500 mt-2">No additional details required for this week.</p>
+                                </div>
+                            </div>
+                        </div>`;
+                    } else {
+                        weekHTML = `
                         <div class="border border-gray-200 rounded-lg overflow-hidden">
                             <button type="button" class="w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 transition-colors week-toggle">
                                 <span class="font-semibold text-gray-700">${week}</span>
@@ -887,6 +905,7 @@
                                 </div>
                             </div>
                         </div>`;
+                    }
                     detailsLessonsContainer.innerHTML += weekHTML;
                 });
             } else {
