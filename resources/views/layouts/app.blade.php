@@ -2557,7 +2557,6 @@
         /* Ensure main content doesn't block sidebar tooltips */
         main {
             position: relative;
-            z-index: 1;
         }
         
         #sidebar {
@@ -2569,60 +2568,22 @@
         }
         
         
-        /* Tooltip styles for collapsed sidebar */
-        #sidebar.collapsed {
-            overflow: visible !important;
-        }
+
         
-        #sidebar.collapsed nav {
-            overflow-y: auto !important;
-            overflow-x: visible !important;
-        }
-        
-        #sidebar.collapsed .nav-link {
-            position: relative;
-            overflow: visible !important;
-        }
-        
-        #sidebar.collapsed .nav-link::after {
-            content: attr(data-tooltip);
+        /* Custom Tooltip Styles */
+        .custom-tooltip {
             position: fixed;
-            left: calc(5rem + 12px);
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(0, 0, 0, 0.9);
             color: white;
-            padding: 10px 14px;
-            border-radius: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
             font-size: 13px;
-            font-weight: 500;
+            pointer-events: none;
+            z-index: 99999;
+            display: none;
             white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease, left 0.2s ease;
-            z-index: 40;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-        }
-        
-        #sidebar.collapsed .nav-link::before {
-            content: '';
-            position: fixed;
-            left: calc(5rem + 6px);
-            transform: translateY(-50%);
-            border: 7px solid transparent;
-            border-right-color: rgba(0, 0, 0, 0.95);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease;
-            z-index: 40;
-        }
-        
-        #sidebar.collapsed .nav-link:hover::after,
-        #sidebar.collapsed .nav-link:hover::before {
-            opacity: 1;
-        }
-        
-        #sidebar.collapsed .nav-link:hover::after {
-            left: calc(5rem + 16px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         /* Minimalist Dropdown menu styles */
@@ -2832,6 +2793,33 @@
                     !sidebar.classList.contains('-translate-x-full')) {
                     sidebar.classList.add('-translate-x-full');
                 }
+            });
+
+            // Custom Tooltip Logic
+            const tooltip = document.createElement('div');
+            tooltip.className = 'custom-tooltip';
+            document.body.appendChild(tooltip);
+
+            document.querySelectorAll('[data-tooltip]').forEach(el => {
+                el.addEventListener('mouseenter', (e) => {
+                    const sidebar = document.getElementById('sidebar');
+                    if (window.innerWidth < 640) return;
+                    if (!sidebar.classList.contains('collapsed')) return;
+                    
+                    const text = el.getAttribute('data-tooltip');
+                    if (!text) return;
+                    
+                    tooltip.textContent = text;
+                    tooltip.style.display = 'block';
+                    
+                    const rect = el.getBoundingClientRect();
+                    tooltip.style.top = (rect.top + (rect.height / 2) - (tooltip.offsetHeight / 2)) + 'px';
+                    tooltip.style.left = (rect.right + 10) + 'px';
+                });
+
+                el.addEventListener('mouseleave', () => {
+                    tooltip.style.display = 'none';
+                });
             });
 
             // Highlight active navigation link based on current URL
