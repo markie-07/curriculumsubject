@@ -316,6 +316,18 @@
     <div class="legend-box"><span class="field-label">Legend:</span><ul><li><span class="field-label">L</span> – Facilitate Learning of the competencies</li><li><span class="field-label">P</span> – Allow student to practice competencies (No input but competency is evaluated)</li><li><span class="field-label">O</span> – Provide opportunity for development (No input or evaluation, but there is opportunity to practice the competencies)</li><li><span class="field-label">CTPSS</span> - critical thinking and problem-solving skills;</li><li><span class="field-label">ECC</span> - effective communication and collaboration;</li><li><span class="field-label">EPP</span> - ethical and professional practice; and,</li><li><span class="field-label">GLC</span> - global and lifelong learning commitment.</li></ul></div>
     <div class="section-title">LEARNING OUTCOMES</div>
     <table>
+        <tr>
+            <td colspan="2">
+                <div style="margin-bottom: 10px;">
+                    <span class="field-label">School Goals:</span><br>
+                    BCP puts God in the center of all its efforts realize and operationalize its vision and missions through the following. Instruction, Research, Extension and Productivity
+                </div>
+                <div>
+                    <span class="field-label">Program Goals:</span><br>
+                    To cultivate a dynamic and inclusive learning environment that empowers students to become self-directed, ethical, and engaged citizens, equipped with the critical thinking, communication, and problem-solving skills necessary to thrive in a rapidly evolving world.
+                </div>
+            </td>
+        </tr>
         <tr><td width="40%"><span class="field-label">PROGRAM INTENDED LEARNING OUTCOMES (PILO):</span></td><td class="description">{{ $subject->pilo_outcomes ?? 'N/A' }}</td></tr>
         <tr><td><span class="field-label">Course Intended Learning Outcomes (CILO):</span></td><td class="description">{{ $subject->cilo_outcomes ?? 'N/A' }}</td></tr>
         <tr><td><span class="field-label">Expected BCP Graduate Elements:</span></td>
@@ -353,12 +365,22 @@
             @endphp
             <table class="weekly-plan-table">
                 <tr class="header-row"><th colspan="2">{{ $week }}</th></tr>
-                <tr><td width="50%"><span class="field-label">Content:</span><br>{{ $lessonData['content'] ?: 'N/A' }}</td><td width="50%"><span class="field-label">Student Intended Learning Outcomes:</span><br>{{ $lessonData['silo'] ?: 'N/A' }}</td></tr>
-                <tr><td colspan="2"><span class="field-label">Assessment Tasks (ATs):</span></td></tr>
-                <tr><td width="50%"><span class="field-label">ONSITE:</span><br>{{ $lessonData['at_onsite'] ?: 'N/A' }}</td><td width="50%"><span class="field-label">OFFSITE:</span><br>{{ $lessonData['at_offsite'] ?: 'N/A' }}</td></tr>
-                <tr><td colspan="2"><span class="field-label">Suggested Teaching/Learning Activities (TLAs):</span></td></tr>
-                <tr><td width="50%"><span class="field-label">Face to Face (On-Site):</span><br>{{ $lessonData['tla_onsite'] ?: 'N/A' }}</td><td width="50%"><span class="field-label">Online (Off-Site):</span><br>{{ $lessonData['tla_offsite'] ?: 'N/A' }}</td></tr>
-                <tr><td><span class="field-label">Learning and Teaching Support Materials (LTSM):</span><br>{{ $lessonData['ltsm'] ?: 'N/A' }}</td><td><span class="field-label">Output Materials:</span><br>{{ $lessonData['output'] ?: 'N/A' }}</td></tr>
+                @php
+                    $weekNum = (int) filter_var($week, FILTER_SANITIZE_NUMBER_INT);
+                @endphp
+                @if(in_array($weekNum, [6, 12, 18]))
+                    <tr><td colspan="2" class="text-center" style="text-align: center; padding: 20px;">
+                        <strong>{{ $lessonData['content'] ?: ($weekNum == 6 ? 'Prelim Exam' : ($weekNum == 12 ? 'Midterm Exam' : 'Final Exam')) }}</strong>
+                        <br><span style="font-size: 10px; color: #777;">No additional details required for this week.</span>
+                    </td></tr>
+                @else
+                    <tr><td width="50%"><span class="field-label">Content:</span><br>{{ $lessonData['content'] ?: 'N/A' }}</td><td width="50%"><span class="field-label">Student Intended Learning Outcomes:</span><br>{{ $lessonData['silo'] ?: 'N/A' }}</td></tr>
+                    <tr><td colspan="2"><span class="field-label">Assessment Tasks (ATs):</span></td></tr>
+                    <tr><td width="50%"><span class="field-label">ONSITE:</span><br>{{ $lessonData['at_onsite'] ?: 'N/A' }}</td><td width="50%"><span class="field-label">OFFSITE:</span><br>{{ $lessonData['at_offsite'] ?: 'N/A' }}</td></tr>
+                    <tr><td colspan="2"><span class="field-label">Suggested Teaching/Learning Activities (TLAs):</span></td></tr>
+                    <tr><td width="50%"><span class="field-label">Face to Face (On-Site):</span><br>{{ $lessonData['tla_onsite'] ?: 'N/A' }}</td><td width="50%"><span class="field-label">Online (Off-Site):</span><br>{{ $lessonData['tla_offsite'] ?: 'N/A' }}</td></tr>
+                    <tr><td><span class="field-label">Learning and Teaching Support Materials (LTSM):</span><br>{{ $lessonData['ltsm'] ?: 'N/A' }}</td><td><span class="field-label">Output Materials:</span><br>{{ $lessonData['output'] ?: 'N/A' }}</td></tr>
+                @endif
             </table>
         @endforeach
     @else<p>No weekly plan data available.</p>@endif

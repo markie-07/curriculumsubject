@@ -360,10 +360,32 @@
                     @for ($i = 0; $i <= 18; $i++)
                         <div class="border rounded-2xl overflow-hidden shadow-sm">
                             <button type="button" class="w-full flex justify-between items-center p-4 bg-white hover:bg-gray-50 transition-colors" onclick="toggleAccordion(this)">
-                                <span class="font-semibold text-lg text-gray-700">Week {{ $i }}</span>
+                                <span class="font-semibold text-lg text-gray-700">
+                                    Week {{ $i }}
+                                    @if($i == 6)
+                                        - Prelim Exam
+                                    @elseif($i == 12)
+                                        - Midterm Exam
+                                    @elseif($i == 18)
+                                        - Final Exam
+                                    @endif
+                                </span>
                                 <svg class="w-6 h-6 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                             </button>
                             <div class="accordion-content bg-gray-50 p-6 border-t" style="display: none;">
+                                @if(in_array($i, [6, 12, 18]))
+                                    <div class="text-center py-8">
+                                        <p class="text-xl font-bold text-gray-600">
+                                            @if($i == 6) PRELIM EXAM
+                                            @elseif($i == 12) MIDTERM EXAM
+                                            @elseif($i == 18) FINAL EXAM
+                                            @endif
+                                        </p>
+                                        <p class="text-sm text-gray-500 mt-2">No additional details required for this week.</p>
+                                        {{-- Hidden input to maintain data structure --}}
+                                        <input type="hidden" id="week_{{ $i }}_content" value="{{ $i == 6 ? 'Prelim Exam' : ($i == 12 ? 'Midterm Exam' : 'Final Exam') }}">
+                                    </div>
+                                @else
                                 <div class="grid grid-cols-1 gap-6">
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
@@ -415,6 +437,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                @endif
                             </div>
                         </div>
                     @endfor
@@ -679,7 +702,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const pageTitle = document.querySelector('h1.text-4xl');
 
     // --- DEFAULT WEEK 0 CONTENT ---
-    const populateWeek0DefaultContent = () => {
+    // --- DEFAULT CONTENT ---
+    const populateDefaultContent = () => {
         // Only populate if Week 0 fields are empty (for new courses)
         if (document.getElementById('week_0_content').value.trim() === '') {
             document.getElementById('week_0_content').value = `BCP Vision, Mission, Goals, Objectives, Philosophy and School Organizational Structure School Policies Orientation in Online and Modular Learning System`;
@@ -710,6 +734,17 @@ Learning Management System`;
             
             document.getElementById('week_0_output').value = `Check alignment report`;
         }
+
+        // Default Exams
+        if (document.getElementById('week_6_content') && document.getElementById('week_6_content').value.trim() === '') {
+            document.getElementById('week_6_content').value = 'Prelim Exam';
+        }
+        if (document.getElementById('week_12_content') && document.getElementById('week_12_content').value.trim() === '') {
+            document.getElementById('week_12_content').value = 'Midterm Exam';
+        }
+        if (document.getElementById('week_18_content') && document.getElementById('week_18_content').value.trim() === '') {
+            document.getElementById('week_18_content').value = 'Final Exam';
+        }
     };
 
     // --- HELPER FUNCTIONS ---
@@ -737,14 +772,24 @@ Learning Management System`;
     const collectWeeklyPlan = () => {
         const lessons = {};
         for (let i = 0; i <= 18; i++) {
-            const content = document.getElementById(`week_${i}_content`).value;
-            const silo = document.getElementById(`week_${i}_silo`).value;
-            const atOnsite = document.getElementById(`week_${i}_at_onsite`).value;
-            const atOffsite = document.getElementById(`week_${i}_at_offsite`).value;
-            const tlaOnsite = document.getElementById(`week_${i}_tla_onsite`).value;
-            const tlaOffsite = document.getElementById(`week_${i}_tla_offsite`).value;
-            const ltsm = document.getElementById(`week_${i}_ltsm`).value;
-            const output = document.getElementById(`week_${i}_output`).value;
+            const contentEl = document.getElementById(`week_${i}_content`);
+            const siloEl = document.getElementById(`week_${i}_silo`);
+            const atOnsiteEl = document.getElementById(`week_${i}_at_onsite`);
+            const atOffsiteEl = document.getElementById(`week_${i}_at_offsite`);
+            const tlaOnsiteEl = document.getElementById(`week_${i}_tla_onsite`);
+            const tlaOffsiteEl = document.getElementById(`week_${i}_tla_offsite`);
+            const ltsmEl = document.getElementById(`week_${i}_ltsm`);
+            const outputEl = document.getElementById(`week_${i}_output`);
+
+            const content = contentEl ? contentEl.value : '';
+            const silo = siloEl ? siloEl.value : '';
+            const atOnsite = atOnsiteEl ? atOnsiteEl.value : '';
+            const atOffsite = atOffsiteEl ? atOffsiteEl.value : '';
+            const tlaOnsite = tlaOnsiteEl ? tlaOnsiteEl.value : '';
+            const tlaOffsite = tlaOffsiteEl ? tlaOffsiteEl.value : '';
+            const ltsm = ltsmEl ? ltsmEl.value : '';
+            const output = outputEl ? outputEl.value : '';
+
             if (content || silo || atOnsite || atOffsite || tlaOnsite || tlaOffsite || ltsm || output) {
                 lessons[`Week ${i}`] = [
                     `Detailed Lesson Content:\n${content}`,
@@ -782,23 +827,36 @@ Learning Management System`;
             if (lessons[weekKey]) {
                 const lessonString = lessons[weekKey];
                 const contentMatch = lessonString.match(/Detailed Lesson Content:\n(.*?)(?=,, |$)/s);
-                document.getElementById(`week_${i}_content`).value = contentMatch ? contentMatch[1].trim() : '';
+                const contentEl = document.getElementById(`week_${i}_content`);
+                if (contentEl) contentEl.value = contentMatch ? contentMatch[1].trim() : '';
+
                 const siloMatch = lessonString.match(/Student Intended Learning Outcomes:\n(.*?)(?=,, |$)/s);
-                document.getElementById(`week_${i}_silo`).value = siloMatch ? siloMatch[1].trim() : '';
+                const siloEl = document.getElementById(`week_${i}_silo`);
+                if (siloEl) siloEl.value = siloMatch ? siloMatch[1].trim() : '';
+
                 const atMatch = lessonString.match(/Assessment: ONSITE: (.*?) OFFSITE: (.*?)(?=,, |$)/s);
                 if (atMatch) {
-                    document.getElementById(`week_${i}_at_onsite`).value = atMatch[1].trim();
-                    document.getElementById(`week_${i}_at_offsite`).value = atMatch[2].trim();
+                    const atOnsiteEl = document.getElementById(`week_${i}_at_onsite`);
+                    if (atOnsiteEl) atOnsiteEl.value = atMatch[1].trim();
+                    const atOffsiteEl = document.getElementById(`week_${i}_at_offsite`);
+                    if (atOffsiteEl) atOffsiteEl.value = atMatch[2].trim();
                 }
+
                 const tlaMatch = lessonString.match(/Activities: ON-SITE: (.*?) OFF-SITE: (.*?)(?=,, |$)/s);
                 if (tlaMatch) {
-                    document.getElementById(`week_${i}_tla_onsite`).value = tlaMatch[1].trim();
-                    document.getElementById(`week_${i}_tla_offsite`).value = tlaMatch[2].trim();
+                    const tlaOnsiteEl = document.getElementById(`week_${i}_tla_onsite`);
+                    if (tlaOnsiteEl) tlaOnsiteEl.value = tlaMatch[1].trim();
+                    const tlaOffsiteEl = document.getElementById(`week_${i}_tla_offsite`);
+                    if (tlaOffsiteEl) tlaOffsiteEl.value = tlaMatch[2].trim();
                 }
+
                 const ltsmMatch = lessonString.match(/Learning and Teaching Support Materials:\n(.*?)(?=,, |$)/s);
-                document.getElementById(`week_${i}_ltsm`).value = ltsmMatch ? ltsmMatch[1].trim() : '';
+                const ltsmEl = document.getElementById(`week_${i}_ltsm`);
+                if (ltsmEl) ltsmEl.value = ltsmMatch ? ltsmMatch[1].trim() : '';
+
                 const outputMatch = lessonString.match(/Output Materials:\n(.*?)(?=,, |$)/s);
-                document.getElementById(`week_${i}_output`).value = outputMatch ? outputMatch[1].trim() : '';
+                const outputEl = document.getElementById(`week_${i}_output`);
+                if (outputEl) outputEl.value = outputMatch ? outputMatch[1].trim() : '';
             }
         }
     };
@@ -1120,7 +1178,8 @@ Learning Management System`;
         fetchSubjectData(subjectIdToEdit);
     } else {
         // For new courses, populate Week 0 with default BCP content
-        populateWeek0DefaultContent();
+        // For new courses, populate defaults
+        populateDefaultContent();
     }
 
 });

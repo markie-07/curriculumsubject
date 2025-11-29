@@ -1998,6 +1998,28 @@
             transition: transform 0.3s ease !important;
         }
 
+        /* Comprehensive z-index hierarchy */
+        /* Sidebar and navigation - MUST be lower than modals */
+        aside[class*="fixed"],
+        nav[class*="fixed"],
+        div[class*="sidebar"],
+        .sidebar,
+        #sidebar,
+        #sidebar.collapsed .nav-link::after,
+        #sidebar.collapsed .nav-link::before {
+            z-index: 40 !important;
+        }
+
+        /* Modals should always be above sidebar */
+        div[id*="Modal"],
+        div[id*="modal"],
+        .modal,
+        .fixed.inset-0.bg-black,
+        .fixed.inset-0.bg-slate-900,
+        [class*="fixed"][class*="inset-0"][class*="bg-"] {
+            z-index: 100000 !important;
+        }
+
         /* When sidebar is open, rotate arrow to point left (close direction) */
         .sidebar-toggle.sidebar-open i {
             transform: rotate(180deg) !important;
@@ -2532,6 +2554,77 @@
             margin-bottom: 0.5rem;
         }
         
+        /* Ensure main content doesn't block sidebar tooltips */
+        main {
+            position: relative;
+            z-index: 1;
+        }
+        
+        #sidebar {
+            z-index: 50;
+        }
+        
+        #sidebar.collapsed {
+            z-index: 100;
+        }
+        
+        
+        /* Tooltip styles for collapsed sidebar */
+        #sidebar.collapsed {
+            overflow: visible !important;
+        }
+        
+        #sidebar.collapsed nav {
+            overflow-y: auto !important;
+            overflow-x: visible !important;
+        }
+        
+        #sidebar.collapsed .nav-link {
+            position: relative;
+            overflow: visible !important;
+        }
+        
+        #sidebar.collapsed .nav-link::after {
+            content: attr(data-tooltip);
+            position: fixed;
+            left: calc(5rem + 12px);
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.95);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, left 0.2s ease;
+            z-index: 40;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        #sidebar.collapsed .nav-link::before {
+            content: '';
+            position: fixed;
+            left: calc(5rem + 6px);
+            transform: translateY(-50%);
+            border: 7px solid transparent;
+            border-right-color: rgba(0, 0, 0, 0.95);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            z-index: 40;
+        }
+        
+        #sidebar.collapsed .nav-link:hover::after,
+        #sidebar.collapsed .nav-link:hover::before {
+            opacity: 1;
+        }
+        
+        #sidebar.collapsed .nav-link:hover::after {
+            left: calc(5rem + 16px);
+        }
+        
         /* Minimalist Dropdown menu styles */
         .dropdown-menu-minimal {
             display: none;
@@ -2542,7 +2635,7 @@
             border: 1px solid #f1f5f9;
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-            z-index: 9999;
+            z-index: 50;
             min-width: 240px;
             padding: 8px;
             opacity: 0;
