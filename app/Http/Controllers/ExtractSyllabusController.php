@@ -4,9 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Smalot\PdfParser\Parser;
+use App\Services\GeminiService;
+use Illuminate\Support\Facades\Log;
 
 class ExtractSyllabusController extends Controller
 {
+    protected $geminiService;
+
+    public function __construct(GeminiService $geminiService)
+    {
+        $this->geminiService = $geminiService;
+    }
+
     public function extract(Request $request)
     {
         $request->validate([
@@ -24,12 +33,52 @@ class ExtractSyllabusController extends Controller
                 $text .= $page->getText() . "\n";
             }
 
-            $data = [
-                'course_title' => null,
-                'course_description' => null,
-                'time_allotment' => null,
-                'schedule' => null,
-            ];
+            $extractionMethod = 'regex'; // Default method
+            $data = null;
+
+            // Try AI extraction if enabled
+            if (config('services.gemini.enabled', false)) {
+                Log::info('Attempting Gemini AI extraction for DepEd syllabus');
+                $data = $this->geminiService->extractDepEdSyllabus($text);
+                
+                if ($data !== null) {
+                    $extractionMethod = 'ai';
+                    Log::info('Gemini AI extraction successful');
+                }
+            }
+
+            // Fallback to regex extraction if AI failed or disabled
+            if ($data === null) {
+                Log::info('Using regex-based extraction for DepEd syllabus');
+                $data = $this->extractWithRegex($text);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+                'extraction_method' => $extractionMethod,
+                'message' => 'Extraction complete'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Original regex-based extraction (fallback method)
+     */
+    private function extractWithRegex(string $text): array
+    {
+        $data = [
+            'course_title' => null,
+            'course_description' => null,
+            'time_allotment' => null,
+            'schedule' => null,
+        ];
 
             // 1. Course Title
             if (preg_match('/STRENGTHENED SENIOR HIGH SCHOOL CURRICULUM\s+(.*)/i', $text, $matches)) {
@@ -207,17 +256,6 @@ class ExtractSyllabusController extends Controller
                 $data['q_2_performance_task'] = $q2Data['performance_task'];
             }
 
-            return response()->json([
-                'success' => true,
-                'data' => $data,
-                'message' => 'Extraction complete'
-            ]);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
-        }
+            return $data;
     }
 }

@@ -153,6 +153,12 @@ class DashboardController extends Controller
                     
                     // Weekly activity data for chart
                     'weekly_activities' => $weeklyActivities,
+                    
+                    // System Health Metrics (Real-time)
+                    'memory_usage_percent' => $this->getMemoryUsagePercent(),
+                    'memory_used_gb' => $this->getMemoryUsedGB(),
+                    'memory_total_gb' => $this->getMemoryTotalGB(),
+                    'response_time_ms' => $this->getResponseTime(),
                 ];
                 
                 return $stats;
@@ -407,6 +413,98 @@ class DashboardController extends Controller
                       ->count();
         } catch (\Exception $e) {
             \Log::error('Error counting active users: ' . $e->getMessage());
+            return 0;
+        }
+    }
+
+    /**
+     * Get current memory usage percentage
+     */
+    private function getMemoryUsagePercent()
+    {
+        try {
+            $memoryUsed = memory_get_usage(true);
+            $memoryLimit = $this->getMemoryLimit();
+            
+            if ($memoryLimit > 0) {
+                return round(($memoryUsed / $memoryLimit) * 100, 1);
+            }
+            
+            return 0;
+        } catch (\Exception $e) {
+            \Log::error('Error calculating memory usage: ' . $e->getMessage());
+            return 0;
+        }
+    }
+
+    /**
+     * Get memory used in GB
+     */
+    private function getMemoryUsedGB()
+    {
+        try {
+            $memoryUsed = memory_get_usage(true);
+            return round($memoryUsed / 1024 / 1024 / 1024, 2); // Convert to GB
+        } catch (\Exception $e) {
+            return 0;
+        }
+    }
+
+    /**
+     * Get total memory limit in GB
+     */
+    private function getMemoryTotalGB()
+    {
+        try {
+            $memoryLimit = $this->getMemoryLimit();
+            return round($memoryLimit / 1024 / 1024 / 1024, 2); // Convert to GB
+        } catch (\Exception $e) {
+            return 0;
+        }
+    }
+
+    /**
+     * Get PHP memory limit in bytes
+     */
+    private function getMemoryLimit()
+    {
+        $memoryLimit = ini_get('memory_limit');
+        
+        if ($memoryLimit == -1) {
+            // Unlimited memory, use a reasonable default for percentage calculation
+            return 2 * 1024 * 1024 * 1024; // 2GB default
+        }
+        
+        // Convert memory limit to bytes
+        $unit = strtoupper(substr($memoryLimit, -1));
+        $value = (int) $memoryLimit;
+        
+        switch ($unit) {
+            case 'G':
+                return $value * 1024 * 1024 * 1024;
+            case 'M':
+                return $value * 1024 * 1024;
+            case 'K':
+                return $value * 1024;
+            default:
+                return $value;
+        }
+    }
+
+    /**
+     * Get approximate response time in milliseconds
+     */
+    private function getResponseTime()
+    {
+        try {
+            // Calculate time since request started
+            if (defined('LARAVEL_START')) {
+                $responseTime = (microtime(true) - LARAVEL_START) * 1000;
+                return round($responseTime, 0);
+            }
+            
+            return 0;
+        } catch (\Exception $e) {
             return 0;
         }
     }

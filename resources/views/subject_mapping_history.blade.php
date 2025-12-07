@@ -502,8 +502,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 </svg>
             </div>
             <div class="flex-grow min-w-0">
-                <div class="flex items-start justify-between">
-                    <div class="flex-grow min-w-0 pr-2">
+                <div class="flex flex-col-reverse sm:flex-row items-start justify-between gap-2">
+                    <div class="flex-grow min-w-0 w-full sm:pr-2">
                         <h3 class="font-bold ${titleColorClass} transition-colors duration-300 truncate mb-1">${curriculum.curriculum_name}</h3>
                         <div class="flex items-center gap-2 text-sm text-slate-500 mb-1">
                             <span>${curriculum.program_code} • ${curriculum.academic_year}</span>
@@ -522,7 +522,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="font-medium">${curriculum.subjects_count || 0} subject${curriculum.subjects_count !== 1 ? 's' : ''}</span>
                         </p>
                     </div>
-                    <div class="flex flex-col items-end gap-1">
+                    <div class="flex flex-col items-end sm:items-end gap-1 w-full sm:w-auto">
                         <div class="flex items-center gap-1 flex-wrap justify-end">
                             ${complianceBadge}
                             ${totalUnitsDisplay}

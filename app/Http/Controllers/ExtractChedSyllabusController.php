@@ -4,9 +4,59 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Smalot\PdfParser\Parser;
+use App\Services\GeminiService;
+use Illuminate\Support\Facades\Log;
 
 class ExtractChedSyllabusController extends Controller
 {
+    protected $geminiService;
+
+    public function __construct(GeminiService $geminiService)
+    {
+        $this->geminiService = $geminiService;
+    }
+
+    /**
+     * Clean extracted text by removing common labels and colons
+     */
+    private function cleanExtractedText($text)
+    {
+        if (empty($text)) {
+            return $text;
+        }
+        
+        // Remove common labels that might be included
+        $labels = [
+            'Content:',
+            'ONSITE:',
+            'OFFSITE:',
+            'Face to Face (On-Site):',
+            'Online (Off-Site):',
+            'Learning and Teaching Support Materials (LTSM):',
+            'Output Materials:',
+            'Student Intended Learning Outcomes:',
+            'Assessment Tasks (ATs):',
+            'Suggested Teaching/Learning Activities (TLAs):',
+            'Basic Readings / Textbooks:',
+            'Extended Readings / References:',
+            'Course Assessment:',
+            'Committee Members:',
+            'Consultation Schedule:',
+            'Prepared:',
+            'Reviewed:',
+            'Approved:',
+        ];
+        
+        foreach ($labels as $label) {
+            if (stripos($text, $label) === 0) {
+                $text = substr($text, strlen($label));
+                break;
+            }
+        }
+        
+        return trim($text);
+    }
+
     public function extract(Request $request)
     {
         $request->validate([
@@ -19,28 +69,68 @@ class ExtractChedSyllabusController extends Controller
             $pdf = $parser->parseFile($file->getPathname());
             $text = $pdf->getText();
 
-            // Initialize data structure matching the CHED fields in course_builder.blade.php
-            $data = [
-                'course_title' => null,
-                'course_code' => null,
-                'credit_units' => null,
-                'contact_hours' => null,
-                'course_description' => null,
-                'pilo_outcomes' => null,
-                'cilo_outcomes' => null,
-                'learning_outcomes' => null,
-                'weekly_plan' => [],
-                'basic_readings' => null,
-                'extended_readings' => null,
-                'course_assessment' => null,
-                'committee_members' => null,
-                'consultation_schedule' => null,
-                'prepared_by' => null,
-                'reviewed_by' => null,
-                'approved_by' => null,
-                'program_mapping' => [],
-                'course_mapping' => [],
-            ];
+            $extractionMethod = 'regex'; // Default method
+            $data = null;
+
+            // Try AI extraction if enabled
+            if (config('services.gemini.enabled', false)) {
+                Log::info('Attempting Gemini AI extraction for CHED syllabus');
+                $data = $this->geminiService->extractChedSyllabus($text);
+                
+                if ($data !== null) {
+                    $extractionMethod = 'ai';
+                    Log::info('Gemini AI extraction successful');
+                }
+            }
+
+            // Fallback to regex extraction if AI failed or disabled
+            if ($data === null) {
+                Log::info('Using regex-based extraction for CHED syllabus');
+                $data = $this->extractWithRegex($text);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+                'extraction_method' => $extractionMethod,
+                'message' => 'CHED Syllabus extracted successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Extraction failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Original regex-based extraction (fallback method)
+     */
+    private function extractWithRegex(string $text): array
+    {
+        // Initialize data structure matching the CHED fields in course_builder.blade.php
+        $data = [
+            'course_title' => null,
+            'course_code' => null,
+            'credit_units' => null,
+            'contact_hours' => null,
+            'course_description' => null,
+            'pilo_outcomes' => null,
+            'cilo_outcomes' => null,
+            'learning_outcomes' => null,
+            'weekly_plan' => [],
+            'basic_readings' => null,
+            'extended_readings' => null,
+            'course_assessment' => null,
+            'committee_members' => null,
+            'consultation_schedule' => null,
+            'prepared_by' => null,
+            'reviewed_by' => null,
+            'approved_by' => null,
+            'program_mapping' => [],
+            'course_mapping' => [],
+        ];
 
             // --- Course Information ---
             // Course Code - look for pattern "Course Code" followed by value before "Credit Units"
@@ -64,7 +154,12 @@ class ExtractChedSyllabusController extends Controller
             }
             
             // Course Description - look for it after "Course Description" label
-            if (preg_match('/Course\s+Description\s+([^\n]+?)(?=INSTITUTIONAL INFORMATION|VISION|$)/is', $text, $matches)) {
+            // Try multiple patterns to handle different formats
+            if (preg_match('/Course\s+Description\s*:?\s*\n+(.*?)(?=\n\s*INSTITUTIONAL INFORMATION|VISION|SCHOOL|DEPARTMENT|$)/is', $text, $matches)) {
+                $data['course_description'] = trim($matches[1]);
+            } elseif (preg_match('/Course\s+Description\s+([^\n]+?)(?=\s+Course Type|INSTITUTIONAL|$)/is', $text, $matches)) {
+                $data['course_description'] = trim($matches[1]);
+            } elseif (preg_match('/Course Description\s+(.*?)(?=INSTITUTIONAL INFORMATION|VISION|$)/is', $text, $matches)) {
                 $data['course_description'] = trim($matches[1]);
             }
 
@@ -124,125 +219,158 @@ class ExtractChedSyllabusController extends Controller
                 $data['learning_outcomes'] = trim($matches[1]);
             }
 
-            // --- Weekly Plan ---
-            // Week 0
-            if (preg_match('/Week 0\s+Content:\s+(.*?)Student Intended Learning Outcomes:\s+(.*?)Assessment Tasks \(ATs\):\s+ONSITE:\s+(.*?)OFFSITE:\s+(.*?)Suggested Teaching\/Learning Activities \(TLAs\):\s+Face to Face \(On-Site\):\s+(.*?)Online \(O[fƒ]+-Site\):\s+(.*?)Learning and Teaching Support\s+Materials \(LTSM\):\s+(.*?)Output Materials:\s+(.*?)(?=Week 1|BESTLINK COLLEGE)/is', $text, $matches)) {
-                $data['weekly_plan'][0] = [
-                    'content' => trim($matches[1]),
-                    'silo' => trim($matches[2]),
-                    'at_onsite' => trim($matches[3]),
-                    'at_offsite' => trim($matches[4]),
-                    'tla_onsite' => trim($matches[5]),
-                    'tla_offsite' => trim($matches[6]),
-                    'ltsm' => trim($matches[7]),
-                    'output' => trim($matches[8])
-                ];
-            }
             
-            // Week 1-5, 7-11, 13-17 (regular weeks)
-            for ($i = 1; $i <= 18; $i++) {
-                // Skip exam weeks
-                if (in_array($i, [6, 12, 18])) {
-                    continue;
-                }
-                
-                $pattern = '/Week ' . $i . '\s+Content:\s+(.*?)Student Intended Learning Outcomes:\s+(.*?)Assessment Tasks \(ATs\):\s+ONSITE:\s+(.*?)OFFSITE:\s+(.*?)Suggested Teaching\/Learning Activities \(TLAs\):\s+Face to Face \(On-Site\):\s+(.*?)Online \(O[fƒ]+-Site\):\s+(.*?)Learning and Teaching Support\s+Materials \(LTSM\):\s+(.*?)Output Materials:\s+(.*?)(?=Week ' . ($i + 1) . '|Week 6|Week 12|Week 18|COURSE REQUIREMENTS|BESTLINK COLLEGE)/is';
-                
-                if (preg_match($pattern, $text, $matches)) {
-                    $data['weekly_plan'][$i] = [
-                        'content' => trim($matches[1]),
-                        'silo' => trim($matches[2]),
-                        'at_onsite' => trim($matches[3]),
-                        'at_offsite' => trim($matches[4]),
-                        'tla_onsite' => trim($matches[5]),
-                        'tla_offsite' => trim($matches[6]),
-                        'ltsm' => trim($matches[7]),
-                        'output' => trim($matches[8])
+            // --- Weekly Plan Extraction ---
+            // Extract weekly lessons (Week 0, Week 1, etc.)
+            $weeklyPlan = [];
+            
+            // Try to find all weeks with various patterns
+            if (preg_match_all('/Week\s+(\d+)\s*\n+(.*?)(?=Week\s+\d+|Basic Readings|Extended Readings|Committee|COURSE REQUIREMENTS|$)/is', $text, $weekMatches, PREG_SET_ORDER)) {
+                foreach ($weekMatches as $match) {
+                    $weekNum = $match[1];
+                    $weekContent = trim($match[2]);
+                    
+                    // Parse the week content
+                    $lessonData = [
+                        'content' => '',
+                        'silo' => '',
+                        'at_onsite' => '',
+                        'at_offsite' => '',
+                        'tla_onsite' => '',
+                        'tla_offsite' => '',
+                        'ltsm' => '',
+                        'output' => ''
                     ];
+                    
+                    // Extract Content
+                    if (preg_match('/Content:?\s*\n+(.*?)(?=Student Intended|Assessment|Suggested|Learning and Teaching|Output|$)/is', $weekContent, $contentMatch)) {
+                        $lessonData['content'] = $this->cleanExtractedText(trim($contentMatch[1]));
+                    }
+                    
+                    // Extract Student Intended Learning Outcomes (SILO)
+                    if (preg_match('/Student Intended Learning Outcomes:?\s*\n+(.*?)(?=Assessment|Suggested|Learning and Teaching|Output|$)/is', $weekContent, $siloMatch)) {
+                        $lessonData['silo'] = $this->cleanExtractedText(trim($siloMatch[1]));
+                    }
+                    
+                    // Extract Assessment Tasks - ONSITE
+                    if (preg_match('/ONSITE:?\s*\n+(.*?)(?=OFFSITE|Suggested|Face to Face|$)/is', $weekContent, $onsiteMatch)) {
+                        $lessonData['at_onsite'] = $this->cleanExtractedText(trim($onsiteMatch[1]));
+                    }
+                    
+                    // Extract Assessment Tasks - OFFSITE
+                    if (preg_match('/OFFSITE:?\s*\n+(.*?)(?=Suggested|Face to Face|Learning and Teaching|$)/is', $weekContent, $offsiteMatch)) {
+                        $lessonData['at_offsite'] = $this->cleanExtractedText(trim($offsiteMatch[1]));
+                    }
+                    
+                    // Extract TLA - Face to Face (On-Site)
+                    if (preg_match('/Face to Face.*?:?\s*\n+(.*?)(?=Online|Learning and Teaching|Output|$)/is', $weekContent, $f2fMatch)) {
+                        $lessonData['tla_onsite'] = $this->cleanExtractedText(trim($f2fMatch[1]));
+                    }
+                    
+                    // Extract TLA - Online (Off-Site)
+                    if (preg_match('/Online.*?:?\s*\n+(.*?)(?=Learning and Teaching|Output|Week|$)/is', $weekContent, $onlineMatch)) {
+                        $lessonData['tla_offsite'] = $this->cleanExtractedText(trim($onlineMatch[1]));
+                    }
+                    
+                    // Extract LTSM
+                    if (preg_match('/Learning and Teaching Support Materials.*?:?\s*\n+(.*?)(?=Output Materials|Week|$)/is', $weekContent, $ltsmMatch)) {
+                        $lessonData['ltsm'] = $this->cleanExtractedText(trim($ltsmMatch[1]));
+                    }
+                    
+                    // Extract Output Materials
+                    if (preg_match('/Output Materials:?\s*\n+(.*?)(?=Week|Basic|Extended|$)/is', $weekContent, $outputMatch)) {
+                        $lessonData['output'] = $this->cleanExtractedText(trim($outputMatch[1]));
+                    }
+                    
+                    $weeklyPlan[$weekNum] = $lessonData;
                 }
             }
             
-            // Exam weeks (6, 12, 18) - just set content
-            if (preg_match('/Week 6\s+Prelim Exam/is', $text)) {
-                $data['weekly_plan'][6] = [
-                    'content' => 'Prelim Exam',
-                    'silo' => '',
-                    'at_onsite' => '',
-                    'at_offsite' => '',
-                    'tla_onsite' => '',
-                    'tla_offsite' => '',
-                    'ltsm' => '',
-                    'output' => ''
-                ];
-            }
-            if (preg_match('/Week 12\s+Midterm Exam/is', $text)) {
-                $data['weekly_plan'][12] = [
-                    'content' => 'Midterm Exam',
-                    'silo' => '',
-                    'at_onsite' => '',
-                    'at_offsite' => '',
-                    'tla_onsite' => '',
-                    'tla_offsite' => '',
-                    'ltsm' => '',
-                    'output' => ''
-                ];
-            }
-            if (preg_match('/Week 18\s+Final Exam/is', $text)) {
-                $data['weekly_plan'][18] = [
-                    'content' => 'Final Exam',
-                    'silo' => '',
-                    'at_onsite' => '',
-                    'at_offsite' => '',
-                    'tla_onsite' => '',
-                    'tla_offsite' => '',
-                    'ltsm' => '',
-                    'output' => ''
-                ];
+            if (!empty($weeklyPlan)) {
+                $data['weekly_plan'] = $weeklyPlan;
             }
 
-            // --- Course Requirements and Policies ---
-            if (preg_match('/Basic Readings\s*\/\s*Textbooks:\s+([^\n]+?)(?=Extended Readings|$)/is', $text, $matches)) {
-                $data['basic_readings'] = trim($matches[1]);
+            // --- Learning Outcomes ---
+            // PILO - Program Intended Learning Outcomes
+            // Try multiple patterns to find PILO, making sure to stop before Legend
+            if (preg_match('/PROGRAM INTENDED LEARNING OUTCOMES?\s*\(PILO\):?\s*\n+(.*?)(?=\n\s*Legend:|Course Intended Learning|Expected BCP|$)/is', $text, $matches)) {
+                $piloText = trim($matches[1]);
+                // Remove Legend section if it got captured
+                $piloText = preg_replace('/Legend:.*$/is', '', $piloText);
+                $data['pilo_outcomes'] = trim($piloText);
+            } elseif (preg_match('/PILO:?\s*\n+(.*?)(?=\n\s*Legend:|Course Intended|CILO|$)/is', $text, $matches)) {
+                $piloText = trim($matches[1]);
+                $piloText = preg_replace('/Legend:.*$/is', '', $piloText);
+                $data['pilo_outcomes'] = trim($piloText);
             }
-            if (preg_match('/Extended Readings\s*\/\s*References:\s+([^\n]+?)(?=Course Assessment|$)/is', $text, $matches)) {
-                $data['extended_readings'] = trim($matches[1]);
+            
+            // CILO - Course Intended Learning Outcomes
+            if (preg_match('/Course Intended Learning Outcomes?\s*\(CILO\):?\s*\n+(.*?)(?=\n\s*Legend:|Expected BCP|Learning Outcomes:|Week 0|$)/is', $text, $matches)) {
+                $ciloText = trim($matches[1]);
+                $ciloText = preg_replace('/Legend:.*$/is', '', $ciloText);
+                $data['cilo_outcomes'] = trim($ciloText);
+            } elseif (preg_match('/CILO:?\s*\n+(.*?)(?=Legend:|Expected BCP|Learning Outcomes:|$)/is', $text, $matches)) {
+                $ciloText = trim($matches[1]);
+                $ciloText = preg_replace('/Legend:.*$/is', '', $ciloText);
+                $data['cilo_outcomes'] = trim($ciloText);
             }
-            if (preg_match('/Course Assessment:\s+([^\n]+?)(?=Course Policies|$)/is', $text, $matches)) {
-                $data['course_assessment'] = trim($matches[1]);
+            
+            // General Learning Outcomes - Make sure to skip PILO, CILO, and Expected BCP sections
+            // Look for "Learning Outcomes:" that comes AFTER "Expected BCP Graduate Elements"
+            if (preg_match('/Expected BCP Graduate Elements.*?Learning Outcomes:?\s*\n+(.*?)(?=\n\s*Week 0|Week 1|Basic Readings|Extended Readings|Committee|WEEKLY PLAN|$)/is', $text, $matches)) {
+                $data['learning_outcomes'] = trim($matches[1]);
+            } elseif (preg_match('/(?:Expected BCP|Graduate Elements).*?\n.*?Learning Outcomes:?\s*\n+(.*?)(?=Week|Basic|Extended|$)/is', $text, $matches)) {
+                $data['learning_outcomes'] = trim($matches[1]);
+            }
+
+            // --- Readings and Assessment ---
+            // Basic Readings
+            if (preg_match('/Basic Readings?\s*\/?\s*Textbooks?:?\s*(.*?)(?=Extended Readings|Course Assessment|Committee Members|$)/is', $text, $matches)) {
+                $data['basic_readings'] = $this->cleanExtractedText(trim($matches[1]));
+            }
+            
+            // Extended Readings
+            if (preg_match('/Extended Readings?\s*\/?\s*References?:?\s*(.*?)(?=Course Assessment|Committee Members|$)/is', $text, $matches)) {
+                $data['extended_readings'] = $this->cleanExtractedText(trim($matches[1]));
+            }
+            
+            // Course Assessment
+            if (preg_match('/Course Assessment:?\s*(.*?)(?=Committee Members|Consultation Schedule|Prepared|$)/is', $text, $matches)) {
+                $data['course_assessment'] = $this->cleanExtractedText(trim($matches[1]));
             }
             
             // Committee Members
-            if (preg_match('/Committee Members:\s+([^\n]+?)(?=Consultation|$)/is', $text, $matches)) {
-                $data['committee_members'] = trim($matches[1]);
-            }
-
-            // Consultation Schedule
-            if (preg_match('/Consultation\s+Schedule:\s+([^\n]+?)(?=GRADING SYSTEM|$)/is', $text, $matches)) {
-                $data['consultation_schedule'] = trim($matches[1]);
+            if (preg_match('/Committee Members:?\s*(.*?)(?=Consultation Schedule|Prepared|Reviewed|$)/is', $text, $matches)) {
+                $data['committee_members'] = $this->cleanExtractedText(trim($matches[1]));
             }
             
-            // Approval
-            if (preg_match('/Prepared:\s+([^\n]+?)(?=Cluster Leader|Reviewed|$)/is', $text, $matches)) {
+            // Consultation Schedule
+            if (preg_match('/Consultation Schedule:?\s*(.*?)(?=Prepared|Reviewed|Approved|$)/is', $text, $matches)) {
+                $data['consultation_schedule'] = $this->cleanExtractedText(trim($matches[1]));
+            }
+
+            // --- Approval Section ---
+            // Prepared by (Cluster Leader)
+            if (preg_match('/Prepared:?\s*(.*?)(?=Cluster Leader|Reviewed|$)/is', $text, $matches)) {
+                $data['prepared_by'] = trim($matches[1]);
+            } elseif (preg_match('/Cluster Leader:?\s*(.*?)(?=Reviewed|General Education|$)/is', $text, $matches)) {
                 $data['prepared_by'] = trim($matches[1]);
             }
-            if (preg_match('/Reviewed:\s+([^\n]+?)(?=General Education Program|Approved|$)/is', $text, $matches)) {
+            
+            // Reviewed by (General Education Program Head)
+            if (preg_match('/Reviewed:?\s*(.*?)(?=General Education Program Head|Approved|$)/is', $text, $matches)) {
+                $data['reviewed_by'] = trim($matches[1]);
+            } elseif (preg_match('/General Education Program Head:?\s*(.*?)(?=Approved|Vice President|$)/is', $text, $matches)) {
                 $data['reviewed_by'] = trim($matches[1]);
             }
-            if (preg_match('/Approved:\s+([^\n]+?)(?=Vice President|$)/is', $text, $matches)) {
+            
+            // Approved by (Vice President for Academic Affairs)
+            if (preg_match('/Approved:?\s*(.*?)(?=Vice President for Academic Affairs|$)/is', $text, $matches)) {
+                $data['approved_by'] = trim($matches[1]);
+            } elseif (preg_match('/Vice President for Academic Affairs:?\s*(.*?)$/is', $text, $matches)) {
                 $data['approved_by'] = trim($matches[1]);
             }
 
-            return response()->json([
-                'success' => true,
-                'data' => $data,
-                'message' => 'CHED Syllabus extracted successfully'
-            ]);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Extraction failed: ' . $e->getMessage()
-            ], 500);
-        }
+            return $data;
     }
 }

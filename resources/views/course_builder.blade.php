@@ -1,6 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    /* Allow textareas to auto-resize */
+    textarea {
+        resize: none !important;
+        overflow: hidden !important;
+        min-height: 60px !important;
+        box-sizing: border-box !important;
+    }
+</style>
 <div class="px-6 py-8 bg-gray-50">
     <div class="bg-white p-10 md:p-12 rounded-2xl shadow-lg border border-gray-200">
         <div class="flex justify-between items-center mb-12 border-b pb-4">
@@ -635,6 +644,22 @@
     </div>
 </div>
 
+{{-- Extraction Success Modal --}}
+<div id="extractionSuccessModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
+            <div class="w-12 h-12 rounded-full bg-green-100 p-2 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800">Syllabus Extracted Successfully!</h3>
+            <p class="text-sm text-gray-500 mt-2">The syllabus data has been extracted and populated into the form fields.</p>
+            <div class="mt-6">
+                <button id="closeExtractionModal" class="w-full px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 function toggleAccordion(button) {
     const content = button.nextElementSibling;
@@ -1017,15 +1042,9 @@ Learning Management System`;
         window.location.href = `/subject_mapping`;
     });
 
-    // --- MAPPING GRID ROW LOGIC ---
-    const createMappingTableRow = (isPilo = true) => {
-        const row = document.createElement('tr');
-        row.className = '';
-        row.innerHTML = `<td class="py-2 px-4 border-b"><input type="text" placeholder="${isPilo ? 'PILO...' : 'CILO...'}" class="w-full p-1 border-gray-300 rounded"></td><td class="py-2 px-4 border-b"><input type="text" class="w-full p-1 text-center border-gray-300 rounded"></td><td class="py-2 px-4 border-b"><input type="text" class="w-full p-1 text-center border-gray-300 rounded"></td><td class="py-2 px-4 border-b"><input type="text" class="w-full p-1 text-center border-gray-300 rounded"></td><td class="py-2 px-4 border-b"><input type="text" class="w-full p-1 text-center border-gray-300 rounded"></td><td class="py-2 px-4 border-b text-center"><button type="button" class="delete-row-btn text-red-500 hover:text-red-700 font-semibold">Delete</button></td>`;
-        return row;
-    };
+    // --- MAPPING GRID ROW LOGIC (Event Listeners) ---
     document.getElementById('add-program-mapping-row').addEventListener('click', () => document.getElementById('program-mapping-table-body').appendChild(createMappingTableRow(true)));
-    document.getElementById('add-course-mapping-row').addEventListener('click', () => document.getElementById('course-mapping-table-body').appendChild(createMappingTableRow(false)));
+    document.getElementById('add-course-mapping-row').addEventListener('click', () => document.getElementById('program-mapping-table-body').appendChild(createMappingTableRow(false)));
     
     // Event delegation for delete buttons in both tables
     document.addEventListener('click', (e) => {
@@ -1184,6 +1203,14 @@ Learning Management System`;
 
 });
 
+// --- MAPPING GRID ROW LOGIC ---
+const createMappingTableRow = (isPilo = true) => {
+    const row = document.createElement('tr');
+    row.className = '';
+    row.innerHTML = `<td class="py-2 px-4 border-b"><input type="text" placeholder="${isPilo ? 'PILO...' : 'CILO...'}" class="w-full p-1 border-gray-300 rounded"></td><td class="py-2 px-4 border-b"><input type="text" class="w-full p-1 text-center border-gray-300 rounded"></td><td class="py-2 px-4 border-b"><input type="text" class="w-full p-1 text-center border-gray-300 rounded"></td><td class="py-2 px-4 border-b"><input type="text" class="w-full p-1 text-center border-gray-300 rounded"></td><td class="py-2 px-4 border-b"><input type="text" class="w-full p-1 text-center border-gray-300 rounded"></td><td class="py-2 px-4 border-b text-center"><button type="button" class="delete-row-btn text-red-500 hover:text-red-700 font-semibold">Delete</button></td>`;
+    return row;
+};
+
 // Function to handle Syllabus PDF Upload
 // Function to handle Syllabus PDF Upload
 function handleSyllabusUpload(input) {
@@ -1216,6 +1243,10 @@ function handleSyllabusUpload(input) {
         })
         .then(response => response.json())
         .then(data => {
+            // Debug: Log the full response
+            console.log('Extraction Response:', data);
+            console.log('Extraction Method:', data.extraction_method);
+            
             if (data.success) {
                 // Common fields
                 if (data.data.course_title) document.getElementById('course_title').value = data.data.course_title;
@@ -1341,7 +1372,8 @@ function handleSyllabusUpload(input) {
                     if (data.data.q_2_performance_task) document.getElementById('q_2_performance_task').value = data.data.q_2_performance_task;
                 }
 
-                alert('Syllabus data extracted successfully!');
+                // Show success modal instead of alert
+                document.getElementById('extractionSuccessModal').classList.remove('hidden');
             } else {
                 alert('Failed to extract data: ' + (data.message || 'Unknown error'));
             }
@@ -1356,6 +1388,11 @@ function handleSyllabusUpload(input) {
         });
     }
 }
+
+// Extraction Success Modal Close Handler
+document.getElementById('closeExtractionModal').addEventListener('click', () => {
+    document.getElementById('extractionSuccessModal').classList.add('hidden');
+});
 
 function addDepEdRow(quarter) {
     const container = document.getElementById(`q_${quarter}_rows_container`);
@@ -1378,6 +1415,65 @@ function addDepEdRow(quarter) {
     `;
     
     container.appendChild(newRow);
+    
+    // Auto-resize the newly added textareas
+    newRow.querySelectorAll('textarea').forEach(textarea => {
+        setupAutoResize(textarea);
+    });
 }
+
+// Simple auto-resize function
+function autoResize(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = (textarea.scrollHeight) + 'px';
+}
+
+// Resize all textareas
+function resizeAllTextareas() {
+    document.querySelectorAll('textarea').forEach(function(textarea) {
+        autoResize(textarea);
+    });
+}
+
+// Initialize all textareas on page load
+window.addEventListener('load', function() {
+    document.querySelectorAll('textarea').forEach(function(textarea) {
+        // Set initial size
+        autoResize(textarea);
+        
+        // Add oninput attribute if not already present
+        if (!textarea.hasAttribute('oninput')) {
+            textarea.setAttribute('oninput', 'autoResize(this)');
+        }
+        
+        // Also add event listener as backup
+        textarea.addEventListener('input', function() {
+            autoResize(this);
+        });
+    });
+    
+    // Watch for value changes (for programmatic updates like PDF extraction)
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                resizeAllTextareas();
+            }
+        });
+    });
+    
+    // Observe the entire form for changes
+    const form = document.getElementById('courseForm');
+    if (form) {
+        observer.observe(form, {
+            childList: true,
+            subtree: true,
+            characterData: true
+        });
+    }
+});
+
+// Also resize all textareas periodically (catches programmatic changes)
+setInterval(resizeAllTextareas, 1000);
+
 </script>
 @endsection

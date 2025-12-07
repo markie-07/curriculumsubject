@@ -984,9 +984,9 @@
                         <span class="text-sm text-gray-600">Memory</span>
                     </div>
                     <div class="flex items-center">
-                        <span class="text-sm font-medium text-gray-700" id="memory-usage">65%</span>
+                        <span class="text-sm font-medium text-gray-700" id="memory-usage">{{ $dashboardData['stats']['memory_usage_percent'] ?? 0 }}%</span>
                         <div class="ml-2 w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
-                            <div class="h-full bg-orange-500 rounded-full transition-all duration-300" style="width: 65%" id="memory-bar"></div>
+                            <div class="h-full bg-orange-500 rounded-full transition-all duration-300" style="width: {{ $dashboardData['stats']['memory_usage_percent'] ?? 0 }}%" id="memory-bar"></div>
                         </div>
                     </div>
                 </div>
@@ -995,7 +995,7 @@
                         <i class="las la-clock text-indigo-500 mr-2"></i>
                         <span class="text-sm text-gray-600">Response</span>
                     </div>
-                    <span class="text-sm font-medium text-indigo-600" id="response-time">~120ms</span>
+                    <span class="text-sm font-medium text-indigo-600" id="response-time">~{{ $dashboardData['stats']['response_time_ms'] ?? 0 }}ms</span>
                 </div>
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
