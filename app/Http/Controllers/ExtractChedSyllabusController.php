@@ -27,6 +27,14 @@ class ExtractChedSyllabusController extends Controller
         
         // Remove common labels that might be included
         $labels = [
+            'Course Code:',
+            'Course Title:',
+            'Credit Units:',
+            'Contact Hours:',
+            'Course Type:',
+            'Course Description:',
+            'Credit Prerequisites:',
+            'Pre-requisite to:',
             'Content:',
             'ONSITE:',
             'OFFSITE:',
@@ -133,34 +141,32 @@ class ExtractChedSyllabusController extends Controller
         ];
 
             // --- Course Information ---
-            // Course Code - look for pattern "Course Code" followed by value before "Credit Units"
-            if (preg_match('/Course Code\s+([^\t\n]+?)(?=\s+Credit Units|$)/is', $text, $matches)) {
-                $data['course_code'] = trim($matches[1]);
+            // Course Code - look for pattern "Course Code:" followed by value
+            if (preg_match('/Course Code:\s*([^\n]+?)(?=\n|$)/is', $text, $matches)) {
+                $data['course_code'] = $this->cleanExtractedText(trim($matches[1]));
             }
             
-            // Credit Units - look for number before "UNITS" or after "Credit Units"
-            if (preg_match('/Credit Units\s+(\d+)/i', $text, $matches)) {
-                $data['credit_units'] = trim($matches[1]);
+            // Credit Units - look for number after "Credit Units:"
+            if (preg_match('/Credit Units:\s*(\d+)/i', $text, $matches)) {
+                $data['credit_units'] = $this->cleanExtractedText(trim($matches[1]));
             }
             
-            // Course Title - look for pattern after "Course Title"
-            if (preg_match('/Course Title\s+([^\t\n]+?)(?=\s+Contact|$)/is', $text, $matches)) {
-                $data['course_title'] = trim($matches[1]);
+            // Course Title - look for pattern after "Course Title:"
+            if (preg_match('/Course Title:\s*([^\n]+?)(?=\n|$)/is', $text, $matches)) {
+                $data['course_title'] = $this->cleanExtractedText(trim($matches[1]));
             }
             
             // Contact Hours
-            if (preg_match('/Contact\s+Hours\s+(\d+)/i', $text, $matches)) {
-                $data['contact_hours'] = trim($matches[1]);
+            if (preg_match('/Contact Hours:\s*(\d+)/i', $text, $matches)) {
+                $data['contact_hours'] = $this->cleanExtractedText(trim($matches[1]));
             }
             
-            // Course Description - look for it after "Course Description" label
+            // Course Description - look for it after "Course Description:" label
             // Try multiple patterns to handle different formats
-            if (preg_match('/Course\s+Description\s*:?\s*\n+(.*?)(?=\n\s*INSTITUTIONAL INFORMATION|VISION|SCHOOL|DEPARTMENT|$)/is', $text, $matches)) {
-                $data['course_description'] = trim($matches[1]);
-            } elseif (preg_match('/Course\s+Description\s+([^\n]+?)(?=\s+Course Type|INSTITUTIONAL|$)/is', $text, $matches)) {
-                $data['course_description'] = trim($matches[1]);
-            } elseif (preg_match('/Course Description\s+(.*?)(?=INSTITUTIONAL INFORMATION|VISION|$)/is', $text, $matches)) {
-                $data['course_description'] = trim($matches[1]);
+            if (preg_match('/Course Description:\s*\n+(.*?)(?=\n\s*INSTITUTIONAL INFORMATION|VISION|SCHOOL|DEPARTMENT|$)/is', $text, $matches)) {
+                $data['course_description'] = $this->cleanExtractedText(trim($matches[1]));
+            } elseif (preg_match('/Course Description:\s*([^\n]+?)(?=\n|$)/is', $text, $matches)) {
+                $data['course_description'] = $this->cleanExtractedText(trim($matches[1]));
             }
 
             // --- Mapping Grids ---
@@ -174,6 +180,13 @@ class ExtractChedSyllabusController extends Controller
                     
                     // Look for lines with tab-separated values (PILO/CILO followed by 4 values)
                     if (preg_match('/^(.+?)\t+([^\t]+)\t+([^\t]+)\t+([^\t]+)\t+([^\t]+)$/i', $line, $matches)) {
+                        $firstCol = trim($matches[1]);
+                        
+                        // Skip header rows - don't include if first column is exactly "PILO" or "CILO"
+                        if (strtoupper($firstCol) === 'PILO' || strtoupper($firstCol) === 'CILO') {
+                            continue;
+                        }
+                        
                         $rows[] = [
                             'pilo' => trim($matches[1]),
                             'ctpss' => trim($matches[2]),

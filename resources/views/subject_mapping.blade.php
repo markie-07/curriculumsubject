@@ -559,7 +559,7 @@
                     </div>
                     
                     <!-- Version Comparison -->
-                    <div id="versionTrackerContent" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div id="versionTrackerContent" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <!-- Current Version Card -->
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
@@ -572,7 +572,7 @@
                         </div>
                         
                         <!-- Version History List -->
-                        <div class="lg:col-span-2 space-y-4">
+                        <div class="space-y-4">
                             <div class="flex items-center justify-between">
                                 <h3 class="text-lg font-semibold text-gray-800">Version History</h3>
                                 <span id="versionCount" class="px-3 py-1 text-xs font-semibold text-blue-700 bg-blue-100 rounded-full">0 versions</span>

@@ -4,55 +4,67 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>{{ $subject->subject_name ?? 'Subject Details' }}</title>
     <style>
-        body {
-            font-family: 'DejaVu Sans', sans-serif;
-            font-size: 10pt;
-            line-height: 1.3;
-            margin: 0;
-            padding: 20px;
+        @page {
+            margin: 15mm;
         }
 
-        /* Header Section */
+        body {
+            font-family: 'DejaVu Sans', sans-serif;
+            font-size: 9.5pt;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+            color: #1f2937;
+        }
+
+        /* Header Section - Minimalist with gradient accent */
         .header {
             text-align: center;
-            border: 2px solid #000;
-            padding: 15px;
-            margin-bottom: 20px;
+            padding: 20px 15px;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #2563eb;
+            background: linear-gradient(to bottom, #ffffff 0%, #f0f9ff 100%);
         }
 
         .header-logo {
-            width: 60px;
-            height: 60px;
-            margin-bottom: 10px;
+            width: 55px;
+            height: 55px;
+            margin-bottom: 8px;
         }
 
         .header h1 {
-            font-size: 16pt;
+            font-size: 15pt;
             font-weight: bold;
-            margin: 5px 0;
-            color: #000;
+            margin: 8px 0 5px 0;
+            color: #1e40af;
+            letter-spacing: 0.3px;
         }
 
         .header p {
-            font-size: 9pt;
-            margin: 3px 0;
+            font-size: 8.5pt;
+            margin: 2px 0;
+            color: #4b5563;
         }
 
-        /* Section Headers */
+        /* Section Headers - Gradient blue/teal */
         .section-header {
-            background-color: #d3d3d3;
-            border: 1px solid #000;
-            padding: 8px 12px;
+            background: linear-gradient(135deg, #2563eb 0%, #0891b2 100%);
+            color: #ffffff;
+            padding: 10px 15px;
             font-weight: bold;
-            font-size: 11pt;
-            margin-top: 15px;
-            margin-bottom: 5px;
+            font-size: 10.5pt;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
         }
 
-        /* Info Boxes */
+        /* Info Boxes - Clean and minimal */
         .info-box {
-            border: 1px solid #000;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .info-row {
@@ -63,42 +75,57 @@
 
         .info-cell {
             display: table-cell;
-            border: 1px solid #000;
-            padding: 8px;
+            padding: 10px 12px;
             vertical-align: top;
+            border-bottom: 1px solid #e5e7eb;
         }
 
         .info-label {
-            font-weight: bold;
-            background-color: #f0f0f0;
+            font-weight: 600;
+            background-color: #dbeafe;
+            color: #1e40af;
             width: 30%;
+            font-size: 9pt;
         }
 
         .info-value {
             width: 70%;
+            background-color: #ffffff;
+            color: #374151;
         }
 
-        /* Tables */
+        /* Tables - Alternating rows */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 10px;
-        }
-
-        table, th, td {
-            border: 1px solid #000;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         th {
-            background-color: #d3d3d3;
-            font-weight: bold;
-            padding: 6px;
+            background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            color: #ffffff;
+            font-weight: 600;
+            padding: 8px 10px;
             text-align: center;
+            font-size: 9.5pt;
         }
 
         td {
-            padding: 6px;
+            padding: 8px 10px;
             vertical-align: top;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 9pt;
+        }
+
+        tr:nth-child(even) td {
+            background-color: #f9fafb;
+        }
+
+        tr:nth-child(odd) td {
+            background-color: #ffffff;
         }
 
         /* Two-column layout */
@@ -110,45 +137,54 @@
         .column {
             display: table-cell;
             width: 50%;
-            padding: 8px;
-            border: 1px solid #000;
+            padding: 10px;
             vertical-align: top;
         }
 
         .column-header {
-            font-weight: bold;
+            font-weight: 600;
             text-align: center;
-            background-color: #d3d3d3;
-            padding: 5px;
-            margin-bottom: 8px;
+            background-color: #dbeafe;
+            color: #1e40af;
+            padding: 6px;
+            margin-bottom: 10px;
+            border-radius: 3px;
         }
 
-        /* Weekly Plan */
+        /* Weekly Plan - Deep blue headers */
         .week-header {
-            background-color: #34495e;
-            color: #fff;
-            font-weight: bold;
+            background: linear-gradient(135deg, #1e40af 0%, #0891b2 100%);
+            color: #ffffff;
+            font-weight: 600;
             text-align: center;
-            padding: 8px;
+            padding: 10px;
+            font-size: 10pt;
+            letter-spacing: 0.3px;
         }
 
-        /* Legend Box */
+        /* Legend Box - Soft background */
         .legend {
-            border: 1px solid #000;
-            padding: 10px;
-            margin: 10px 0;
-            background-color: #f9f9f9;
-            font-size: 9pt;
+            padding: 12px 15px;
+            margin: 15px 0;
+            background-color: #f0f9ff;
+            border-left: 4px solid #3b82f6;
+            border-radius: 4px;
+            font-size: 8.5pt;
         }
 
         .legend ul {
-            margin: 5px 0;
+            margin: 8px 0;
             padding-left: 20px;
+        }
+
+        .legend li {
+            margin: 4px 0;
+            color: #374151;
         }
 
         /* Approval Section */
         .approval-section {
-            margin-top: 30px;
+            margin-top: 35px;
             text-align: center;
         }
 
@@ -166,14 +202,15 @@
         }
 
         .signature-line {
-            border-top: 1px solid #000;
-            width: 80%;
-            margin: 40px auto 5px auto;
+            border-top: 2px solid #2563eb;
+            width: 75%;
+            margin: 40px auto 8px auto;
         }
 
         .approval-title {
             font-size: 8pt;
-            color: #666;
+            color: #6b7280;
+            font-style: italic;
         }
 
         /* Utilities */
@@ -182,7 +219,8 @@
         }
 
         .bold {
-            font-weight: bold;
+            font-weight: 600;
+            color: #1f2937;
         }
 
         .page-break {
@@ -212,53 +250,82 @@
 
     <!-- COURSE INFORMATION -->
     <div class="section-header">COURSE INFORMATION</div>
-    <div class="info-box">
-        <div class="info-row">
-            <div class="info-cell info-label">Course Code</div>
-            <div class="info-cell info-value">{{ $subject->subject_code }}</div>
-            <div class="info-cell info-label">Credit Units</div>
-            <div class="info-cell info-value">{{ $subject->subject_unit }}</div>
-        </div>
-        <div class="info-row">
-            <div class="info-cell info-label">Course Title</div>
-            <div class="info-cell info-value">{{ $subject->subject_name }}</div>
-            <div class="info-cell info-label">Contact Hours</div>
-            <div class="info-cell info-value">{{ $subject->contact_hours ?? 'N/A' }}</div>
-        </div>
-        <div class="info-row">
-            <div class="info-cell info-label">Course Type</div>
-            <div class="info-cell info-value">{{ $subject->subject_type }}</div>
-            <div class="info-cell info-label">Pre-requisite to</div>
-            <div class="info-cell info-value">
-                @if(!empty($prerequisiteData) && isset($prerequisiteData['subjectToChildrenMap']))
-                    @php
-                        $childSubjects = $prerequisiteData['subjectToChildrenMap'][$subject->subject_code] ?? [];
-                        echo !empty($childSubjects) ? implode(', ', $childSubjects) : 'None';
-                    @endphp
-                @else
-                    None
-                @endif
-            </div>
-        </div>
-        <div class="info-row">
-            <div class="info-cell info-label">Credit Prerequisites</div>
-            <div class="info-cell info-value" style="width: 70%;" colspan="3">
-                @if(!empty($prerequisiteData) && isset($prerequisiteData['subjectToParentsMap']))
-                    @php
-                        $directPrerequisites = $prerequisiteData['subjectToParentsMap'][$subject->subject_code] ?? [];
-                        sort($directPrerequisites);
-                        echo !empty($directPrerequisites) ? implode(', ', $directPrerequisites) : 'None';
-                    @endphp
-                @else
-                    None
-                @endif
-            </div>
-        </div>
-        <div class="info-row">
-            <div class="info-cell info-label">Course Description</div>
-            <div class="info-cell info-value" style="width: 70%;">{{ $subject->course_description ?? 'N/A' }}</div>
-        </div>
-    </div>
+    <table style="border: none; box-shadow: none;">
+        <tr>
+            <td width="50%" style="vertical-align: top; padding: 8px; border: none;">
+                <!-- Course Code -->
+                <div style="padding: 10px; margin-bottom: 10px;">
+                    <div class="bold" style="font-size: 8.5pt; margin-bottom: 3px;">Course Code:</div>
+                    <div>{{ $subject->subject_code }}</div>
+                </div>
+                
+                <!-- Course Title -->
+                <div style="padding: 10px; margin-bottom: 10px;">
+                    <div class="bold" style="font-size: 8.5pt; margin-bottom: 3px;">Course Title:</div>
+                    <div>{{ $subject->subject_name }}</div>
+                </div>
+                
+                <!-- Course Type -->
+                <div style="padding: 10px; margin-bottom: 10px;">
+                    <div class="bold" style="font-size: 8.5pt; margin-bottom: 3px;">Course Type:</div>
+                    <div>{{ $subject->subject_type }}</div>
+                </div>
+                
+                <!-- Credit Prerequisites -->
+                <div style="padding: 10px;">
+                    <div class="bold" style="font-size: 8.5pt; margin-bottom: 3px;">Credit Prerequisites:</div>
+                    <div>
+                        @if(!empty($prerequisiteData) && isset($prerequisiteData['subjectToParentsMap']))
+                            @php
+                                $directPrerequisites = $prerequisiteData['subjectToParentsMap'][$subject->subject_code] ?? [];
+                                sort($directPrerequisites);
+                                echo !empty($directPrerequisites) ? implode(', ', $directPrerequisites) : 'None';
+                            @endphp
+                        @else
+                            None
+                        @endif
+                    </div>
+                </div>
+            </td>
+            <td width="50%" style="vertical-align: top; padding: 8px; border: none;">
+                <!-- Credit Units -->
+                <div style="padding: 10px; margin-bottom: 10px;">
+                    <div class="bold" style="font-size: 8.5pt; margin-bottom: 3px;">Credit Units:</div>
+                    <div>{{ $subject->subject_unit }}</div>
+                </div>
+                
+                <!-- Contact Hours -->
+                <div style="padding: 10px; margin-bottom: 10px;">
+                    <div class="bold" style="font-size: 8.5pt; margin-bottom: 3px;">Contact Hours:</div>
+                    <div>{{ $subject->contact_hours ?? 'N/A' }}</div>
+                </div>
+                
+                <!-- Pre-requisite to -->
+                <div style="padding: 10px;">
+                    <div class="bold" style="font-size: 8.5pt; margin-bottom: 3px;">Pre-requisite to:</div>
+                    <div>
+                        @if(!empty($prerequisiteData) && isset($prerequisiteData['subjectToChildrenMap']))
+                            @php
+                                $childSubjects = $prerequisiteData['subjectToChildrenMap'][$subject->subject_code] ?? [];
+                                echo !empty($childSubjects) ? implode(', ', $childSubjects) : 'None';
+                            @endphp
+                        @else
+                            None
+                        @endif
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="padding: 8px; border: none;">
+                <!-- Course Description -->
+                <div style="padding: 10px;">
+                    <div class="bold" style="font-size: 8.5pt; margin-bottom: 3px;">Course Description:</div>
+                    <div>{{ $subject->course_description ?? 'N/A' }}</div>
+                </div>
+            </td>
+        </tr>
+    </table>
 
     <!-- INSTITUTIONAL INFORMATION -->
     <div class="section-header">INSTITUTIONAL INFORMATION</div>
