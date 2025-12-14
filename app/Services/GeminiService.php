@@ -17,6 +17,7 @@ class GeminiService
     {
         try {
             $apiKey = config('services.gemini.api_key');
+            $model = config('services.gemini.model', 'gemini-1.5-flash');
             
             if (empty($apiKey)) {
                 Log::warning('Gemini API key not configured');
@@ -27,7 +28,7 @@ class GeminiService
             
             $prompt = $this->buildDepEdPrompt($pdfText);
             
-            $result = $client->geminiPro()->generateContent($prompt);
+            $result = $client->generativeModel($model)->generateContent($prompt);
             
             $responseText = $result->text();
             
@@ -61,6 +62,7 @@ class GeminiService
     {
         try {
             $apiKey = config('services.gemini.api_key');
+            $model = config('services.gemini.model', 'gemini-1.5-flash');
             
             if (empty($apiKey)) {
                 Log::warning('Gemini API key not configured');
@@ -71,7 +73,7 @@ class GeminiService
             
             $prompt = $this->buildChedPrompt($pdfText);
             
-            $result = $client->geminiPro()->generateContent($prompt);
+            $result = $client->generativeModel($model)->generateContent($prompt);
             
             $responseText = $result->text();
             
@@ -103,6 +105,10 @@ class GeminiService
         return <<<PROMPT
 You are a curriculum data extraction expert. Extract structured data from this DepEd syllabus PDF text.
 
+This syllabus may be in one of TWO formats:
+- **Format A (Table-based)**: Simple 3-column table with Content | Content Standards | Learning Competencies
+- **Format B (Narrative-based)**: Sections with CONTENT STANDARDS, PERFORMANCE STANDARDS, SUGGESTED COMMUNICATIVE EVENTS, LEARNING COMPETENCIES
+
 Return ONLY valid JSON (no markdown, no explanations) with this exact structure:
 
 {
@@ -112,9 +118,9 @@ Return ONLY valid JSON (no markdown, no explanations) with this exact structure:
   "schedule": "string or null",
   "q_1_rows": [
     {
-      "content": "content topic",
-      "content_standards": "standards text",
-      "learning_competencies": "competencies text"
+      "content": "Content topic or theme",
+      "content_standards": "What learners should understand",
+      "learning_competencies": "What learners should be able to do"
     }
   ],
   "q_1_performance_standards": "string or null",
@@ -125,18 +131,72 @@ Return ONLY valid JSON (no markdown, no explanations) with this exact structure:
 }
 
 EXTRACTION RULES:
-1. Course Title: Look for "STRENGTHENED SENIOR HIGH SCHOOL CURRICULUM" or "Course Title:"
-2. Course Description: Text after "Course Description" label
-3. Time Allotment: Look for "No. of Hours" or "Time Allotment"
-4. Schedule: Look for "Schedule" field
-5. For each Quarter:
-   - Content topics are SHORT (1-10 words), like "1. Scientific measurement"
-   - Content Standards are longer descriptions, numbered
-   - Learning Competencies start with action verbs (explain, conduct, calculate, etc.)
-   - Performance Standards: Overall standards for the quarter
-   - Performance Task: Suggested tasks for assessment
-6. If a field is not found, use null
-7. Preserve all numbering in the original text
+
+1. **Course Title**: 
+   - Look for "STRENGTHENED SENIOR HIGH SCHOOL CURRICULUM" followed by subject name
+   - Examples: "CHEMISTRY 1", "EFFECTIVE COMMUNICATION", "GENERAL MATHEMATICS"
+
+2. **Course Description**: 
+   - Text after "Course Description:" label
+   - Usually 1-3 paragraphs explaining the course
+
+3. **Time Allotment**: 
+   - Look for "Time Allotment:" or "80 hours for one year, 2 hours per week"
+   - Extract complete time specification
+
+4. **Schedule**: 
+   - Look for "Schedule:" field
+   - Examples: "First Semester", "One School Year"
+
+5. **QUARTER DATA EXTRACTION** (Handle both formats):
+
+   **FORMAT A - Table-based (e.g., Chemistry)**:
+   - Look for tables with columns: Content | Content Standards | Learning Competencies
+   - Content: Short topics (1-10 words) like "1. Scientific measurement"
+   - Content Standards: Numbered descriptions or "The learners learn that..."
+   - Learning Competencies: Numbered action verbs (explain, investigate, calculate)
+   - Extract EVERY row from the table
+
+   **FORMAT B - Narrative-based (e.g., Effective Communication)**:
+   - Look for sections labeled:
+     * CONTENT STANDARDS (what learners demonstrate/understand)
+     * PERFORMANCE STANDARDS (what learners are able to do/perform)
+     * SUGGESTED COMMUNICATIVE EVENTS (bulleted activities)
+     * LEARNING COMPETENCIES (detailed competencies, often with italic headers)
+   
+   For Format B, create rows by:
+   - **content**: Use the quarter theme/title (e.g., "EFFECTIVE COMMUNICATION IN PERSONAL AND INTERPERSONAL CONTEXTS")
+   - **content_standards**: Combine CONTENT STANDARDS text
+   - **learning_competencies**: Combine all LEARNING COMPETENCIES text (including italic section headers and their items)
+
+6. **Performance Standards**:
+   - Look for "Performance Standards" or "PERFORMANCE STANDARDS" section
+   - Usually starts with "By the end of the quarter, learners..." or "The learners are able to..."
+   - Extract complete paragraph(s)
+
+7. **Suggested Performance Task**:
+   - Look for "Suggested Performance Task" or "SUGGESTED COMMUNICATIVE EVENTS"
+   - May be bulleted list or paragraph
+   - Examples: 
+     * "Make a 2-minute video presentation..."
+     * "Introducing oneself in diverse settings"
+     * "Writing personal narratives, journal entries"
+
+8. **Quarter Identification**:
+   - Look for "Quarter 1", "QUARTER 1:", "Quarter 2", "QUARTER 2:"
+   - Quarter titles may include themes like:
+     * "QUARTER 1: EFFECTIVE COMMUNICATION IN PERSONAL AND INTERPERSONAL CONTEXTS"
+     * "QUARTER 2: EFFECTIVE COMMUNICATION IN SOCIAL AND CULTURAL CONTEXTS"
+   - Extract data for both quarters using the same structure
+   - If only one quarter exists, set the other to empty arrays/null
+
+9. **Handling Multiple Rows**:
+   - Format A: Create one row per table row
+   - Format B: Can create one comprehensive row per quarter, OR split by major learning competency themes if clearly separated
+
+10. If a field is not found, use null or empty array as appropriate
+
+11. Preserve important formatting and numbering from the original text
 
 PDF TEXT:
 {$pdfText}
@@ -144,6 +204,7 @@ PDF TEXT:
 Return ONLY the JSON object, nothing else.
 PROMPT;
     }
+
     
     /**
      * Build prompt for CHED syllabus extraction
@@ -184,8 +245,24 @@ Return ONLY valid JSON (no markdown, no explanations) with this exact structure:
   "prepared_by": "string or null",
   "reviewed_by": "string or null",
   "approved_by": "string or null",
-  "program_mapping": [],
-  "course_mapping": []
+  "program_mapping": [
+    {
+      "pilo": "text from PILO column",
+      "ctpss": "single letter/value",
+      "ecc": "single letter/value",
+      "epp": "single letter/value",
+      "glc": "single letter/value"
+    }
+  ],
+  "course_mapping": [
+    {
+      "cilo": "text from CILO column",
+      "ctpss": "single letter/value",
+      "ecc": "single letter/value",
+      "epp": "single letter/value",
+      "glc": "single letter/value"
+    }
+  ]
 }
 
 EXTRACTION RULES:
@@ -196,8 +273,28 @@ EXTRACTION RULES:
 4. Readings: Extract basic and extended readings/references
 5. Assessment: Extract course assessment information
 6. Committee/Approval: Extract committee members, consultation schedule, prepared/reviewed/approved by
-7. Mapping Grids: Extract program and course mapping if present
-8. If a field is not found, use null or empty string as appropriate
+7. **MAPPING GRIDS - CRITICAL**:
+   
+   PROGRAM MAPPING GRID:
+   - Look for table with header: PILO | CTPSS | ECC | EPP | GLC
+   - Extract EVERY row below the header
+   - First column (PILO) contains text descriptions
+   - Other columns (CTPSS, ECC, EPP, GLC) contain single letters or short values
+   - Skip the header row itself
+   - Example row: "qweqwe" in PILO, "a" in CTPSS, "s" in ECC, "d" in EPP, "f" in GLC
+   
+   COURSE MAPPING GRID:
+   - Look for table with header: CILO | CTPSS | ECC | EPP | GLC
+   - Extract EVERY row below the header
+   - First column (CILO) contains text descriptions
+   - Other columns (CTPSS, ECC, EPP, GLC) contain single letters or short values
+   - Skip the header row itself
+   - Example row: "zxczxc" in CILO, "a" in CTPSS, "s" in ECC, "d" in EPP, "g" in GLC
+   
+   The tables appear after "MAPPING GRIDS" section heading.
+   Extract ALL data rows from both tables.
+   
+8. If a field is not found, use null or empty array as appropriate
 
 PDF TEXT:
 {$pdfText}

@@ -189,16 +189,18 @@
         }
 
         .approval-row {
-            display: table;
             width: 100%;
             margin-top: 50px;
+            text-align: center;
         }
 
         .approval-cell {
-            display: table-cell;
-            width: 33.33%;
+            display: inline-block;
+            width: 30%;
             text-align: center;
             padding: 10px;
+            vertical-align: top;
+            margin: 0 1.5%;
         }
 
         .signature-line {
@@ -212,6 +214,7 @@
             color: #6b7280;
             font-style: italic;
         }
+
 
         /* Utilities */
         .text-center {
@@ -321,7 +324,7 @@
                 <!-- Course Description -->
                 <div style="padding: 10px;">
                     <div class="bold" style="font-size: 8.5pt; margin-bottom: 3px;">Course Description:</div>
-                    <div>{{ $subject->course_description ?? 'N/A' }}</div>
+                    <div>{!! nl2br(e($subject->course_description ?? 'N/A')) !!}</div>
                 </div>
             </td>
         </tr>
@@ -472,13 +475,13 @@
         <tr>
             <td colspan="2">
                 <div class="bold">PROGRAM INTENDED LEARNING OUTCOMES (PILO):</div>
-                {{ $subject->pilo_outcomes ?? 'N/A' }}
+                {!! nl2br(e($subject->pilo_outcomes ?? 'N/A')) !!}
             </td>
         </tr>
         <tr>
             <td colspan="2">
                 <div class="bold">Course Intended Learning Outcomes (CILO):</div>
-                {{ $subject->cilo_outcomes ?? 'N/A' }}
+                {!! nl2br(e($subject->cilo_outcomes ?? 'N/A')) !!}
             </td>
         </tr>
         <tr>
@@ -496,7 +499,7 @@
         <tr>
             <td colspan="2">
                 <div class="bold">Learning Outcomes:</div>
-                {{ $subject->learning_outcomes ?? 'N/A' }}
+                {!! nl2br(e($subject->learning_outcomes ?? 'N/A')) !!}
             </td>
         </tr>
     </table>
@@ -596,48 +599,50 @@
     <table>
         <tr>
             <td width="30%" class="bold">Basic Readings / Textbooks:</td>
-            <td>{{ $subject->basic_readings ?? 'N/A' }}</td>
+            <td>{!! nl2br(e($subject->basic_readings ?? 'N/A')) !!}</td>
         </tr>
         <tr>
             <td class="bold">Extended Readings / References:</td>
-            <td>{{ $subject->extended_readings ?? 'N/A' }}</td>
+            <td>{!! nl2br(e($subject->extended_readings ?? 'N/A')) !!}</td>
         </tr>
         <tr>
             <td class="bold">Course Assessment:</td>
-            <td>{{ $subject->course_assessment ?? 'N/A' }}</td>
+            <td>{!! nl2br(e($subject->course_assessment ?? 'N/A')) !!}</td>
         </tr>
         <tr>
             <td class="bold">Committee Members:</td>
-            <td>{{ $subject->committee_members ?? 'N/A' }}</td>
+            <td>{!! nl2br(e($subject->committee_members ?? 'N/A')) !!}</td>
         </tr>
         <tr>
             <td class="bold">Consultation Schedule:</td>
-            <td>{{ $subject->consultation_schedule ?? 'N/A' }}</td>
+            <td>{!! nl2br(e($subject->consultation_schedule ?? 'N/A')) !!}</td>
         </tr>
     </table>
 
     <!-- APPROVAL SECTION -->
     <div class="approval-section">
-        <div class="approval-row">
-            <div class="approval-cell">
-                <div>Prepared:</div>
-                <div class="signature-line"></div>
-                <div class="bold">{{ $subject->prepared_by ?? '' }}</div>
-                <div class="approval-title">Cluster Leader</div>
-            </div>
-            <div class="approval-cell">
-                <div>Reviewed:</div>
-                <div class="signature-line"></div>
-                <div class="bold">{{ $subject->reviewed_by ?? '' }}</div>
-                <div class="approval-title">General Education Program Head</div>
-            </div>
-            <div class="approval-cell">
-                <div>Approved:</div>
-                <div class="signature-line"></div>
-                <div class="bold">{{ $subject->approved_by ?? '' }}</div>
-                <div class="approval-title">Vice President for Academic Affairs</div>
-            </div>
-        </div>
+        <table style="width: 100%; border: none; margin-top: 50px;">
+            <tr>
+                <td style="width: 33.33%; text-align: center; vertical-align: top; border: none;">
+                    <hr style="border: none; border-top: 2px solid #000000; width: 75%; margin: 0 auto 5px auto;" />
+                    <div style="margin-bottom: 5px;">Prepared:</div>
+                    <div class="bold">{{ $subject->prepared_by ?? '' }}</div>
+                    <div style="font-size: 8pt; color: #6b7280; font-style: italic;">Cluster Leader</div>
+                </td>
+                <td style="width: 33.33%; text-align: center; vertical-align: top; border: none;">
+                    <hr style="border: none; border-top: 2px solid #000000; width: 75%; margin: 0 auto 5px auto;" />
+                    <div style="margin-bottom: 5px;">Reviewed:</div>
+                    <div class="bold">{{ $subject->reviewed_by ?? '' }}</div>
+                    <div style="font-size: 8pt; color: #6b7280; font-style: italic;">General Education Program Head</div>
+                </td>
+                <td style="width: 33.33%; text-align: center; vertical-align: top; border: none;">
+                    <hr style="border: none; border-top: 2px solid #000000; width: 75%; margin: 0 auto 5px auto;" />
+                    <div style="margin-bottom: 5px;">Approved:</div>
+                    <div class="bold">{{ $subject->approved_by ?? '' }}</div>
+                    <div style="font-size: 8pt; color: #6b7280; font-style: italic;">Vice President for Academic Affairs</div>
+                </td>
+            </tr>
+        </table>
     </div>
 
 </body>

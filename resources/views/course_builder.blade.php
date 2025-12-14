@@ -9,6 +9,11 @@
         min-height: 60px !important;
         box-sizing: border-box !important;
     }
+    
+    /* Auto-capitalize mapping grid inputs (CTPSS, ECC, EPP, GLC only - not PILO/CILO) */
+    .mapping-grid-container table td.text-center input[type="text"] {
+        text-transform: uppercase !important;
+    }
 </style>
 <div class="px-6 py-8 bg-gray-50">
     <div class="bg-white p-10 md:p-12 rounded-2xl shadow-lg border border-gray-200">
@@ -673,6 +678,7 @@ function toggleAccordion(button) {
     }
 }
 
+
 function switchSyllabus(type) {
     const chedContainer = document.getElementById('ched-container');
     const depedContainer = document.getElementById('deped-container');
@@ -686,6 +692,30 @@ function switchSyllabus(type) {
     const depedGrids = document.getElementById('deped-curriculum-grids');
 
     syllabusTypeInput.value = type;
+    
+    // Clear shared fields when switching (unless editing existing subject)
+    const isEditing = document.getElementById('subject_id').value !== '';
+    if (!isEditing) {
+        // Clear Course Information fields
+        document.getElementById('course_title').value = '';
+        document.getElementById('course_code').value = '';
+        document.getElementById('subject_type').value = '';
+        document.getElementById('course_description').value = '';
+        
+        // Clear Approval fields
+        document.getElementById('prepared_by').value = '';
+        document.getElementById('reviewed_by').value = '';
+        document.getElementById('approved_by').value = '';
+        
+        // Clear curriculum selection if available
+        if (typeof selectedCurriculums !== 'undefined') {
+            selectedCurriculums.clear();
+            // Update button text if the function exists
+            if (typeof updateCurriculumButtonText === 'function') {
+                updateCurriculumButtonText();
+            }
+        }
+    }
 
     if (type === 'CHED') {
         chedContainer.classList.remove('hidden');
@@ -701,6 +731,33 @@ function switchSyllabus(type) {
         
         btnDeped.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
         btnDeped.classList.add('text-gray-600');
+        
+        // Clear DepEd-specific fields if not editing
+        if (!isEditing) {
+            document.getElementById('time_allotment').value = '';
+            document.getElementById('schedule').value = '';
+            
+            // Clear quarter grids
+            for (let q = 1; q <= 2; q++) {
+                const container = document.getElementById(`q_${q}_rows_container`);
+                if (container) {
+                    // Keep only the first row and clear it
+                    const rows = container.querySelectorAll('.deped-row');
+                    rows.forEach((row, index) => {
+                        if (index === 0) {
+                            row.querySelectorAll('textarea').forEach(ta => ta.value = '');
+                        } else {
+                            row.remove();
+                        }
+                    });
+                }
+                
+                const perfStd = document.getElementById(`q_${q}_performance_standards`);
+                const perfTask = document.getElementById(`q_${q}_performance_task`);
+                if (perfStd) perfStd.value = '';
+                if (perfTask) perfTask.value = '';
+            }
+        }
     } else {
         chedContainer.classList.add('hidden');
         // depedContainer.classList.remove('hidden'); // Removed depedContainer
@@ -715,8 +772,49 @@ function switchSyllabus(type) {
         
         btnChed.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
         btnChed.classList.add('text-gray-600');
+        
+        // Clear CHED-specific fields if not editing
+        if (!isEditing) {
+            document.getElementById('credit_units').value = '';
+            document.getElementById('contact_hours').value = '';
+            document.getElementById('pilo_outcomes').value = '';
+            document.getElementById('cilo_outcomes').value = '';
+            document.getElementById('learning_outcomes').value = '';
+            document.getElementById('basic_readings').value = '';
+            document.getElementById('extended_readings').value = '';
+            document.getElementById('course_assessment').value = '';
+            document.getElementById('committee_members').value = '';
+            document.getElementById('consultation_schedule').value = '';
+            
+            // Clear mapping grids
+            document.getElementById('program-mapping-table-body').innerHTML = '';
+            document.getElementById('course-mapping-table-body').innerHTML = '';
+            
+            // Clear weekly plan
+            for (let i = 0; i <= 18; i++) {
+                const contentEl = document.getElementById(`week_${i}_content`);
+                const siloEl = document.getElementById(`week_${i}_silo`);
+                const atOnsiteEl = document.getElementById(`week_${i}_at_onsite`);
+                const atOffsiteEl = document.getElementById(`week_${i}_at_offsite`);
+                const tlaOnsiteEl = document.getElementById(`week_${i}_tla_onsite`);
+                const tlaOffsiteEl = document.getElementById(`week_${i}_tla_offsite`);
+                const ltsmEl = document.getElementById(`week_${i}_ltsm`);
+                const outputEl = document.getElementById(`week_${i}_output`);
+                
+                if (contentEl) contentEl.value = '';
+                if (siloEl) siloEl.value = '';
+                if (atOnsiteEl) atOnsiteEl.value = '';
+                if (atOffsiteEl) atOffsiteEl.value = '';
+                if (tlaOnsiteEl) tlaOnsiteEl.value = '';
+                if (tlaOffsiteEl) tlaOffsiteEl.value = '';
+                if (ltsmEl) ltsmEl.value = '';
+                if (outputEl) outputEl.value = '';
+            }
+        }
     }
 }
+
+
 
 
 
@@ -1422,6 +1520,17 @@ function addDepEdRow(quarter) {
     });
 }
 
+// Setup auto-resize for a textarea element
+function setupAutoResize(textarea) {
+    // Initial resize
+    autoResize(textarea);
+    
+    // Add event listener for future changes
+    textarea.addEventListener('input', function() {
+        autoResize(this);
+    });
+}
+
 // Simple auto-resize function
 function autoResize(textarea) {
     textarea.style.height = 'auto';
@@ -1474,6 +1583,102 @@ window.addEventListener('load', function() {
 
 // Also resize all textareas periodically (catches programmatic changes)
 setInterval(resizeAllTextareas, 1000);
+
+// Scroll prevention during extraction
+window.scrollPreventionModule = (function() {
+    let savedScrollPosition = 0;
+    let scrollLocked = false;
+    
+    // Lock scroll at current position
+    function lockScroll() {
+        savedScrollPosition = window.scrollY || window.pageYOffset;
+        scrollLocked = true;
+    }
+    
+    // Unlock scroll and restore position
+    function unlockScroll() {
+        scrollLocked = false;
+        if (savedScrollPosition !== undefined) {
+            window.scrollTo(0, savedScrollPosition);
+        }
+    }
+    
+    // Prevent any scroll events when locked
+    window.addEventListener('scroll', function(e) {
+        if (scrollLocked) {
+            window.scrollTo(0, savedScrollPosition);
+        }
+    }, { passive: false });
+    
+    // Monitor extraction modal
+    document.addEventListener('DOMContentLoaded', function() {
+        const extractionModal = document.getElementById('extractionSuccessModal');
+        if (extractionModal) {
+            // Observe when modal is shown
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.attributeName === 'class') {
+                        // Don't lock here - we lock earlier when file is selected
+                    }
+                });
+            });
+            observer.observe(extractionModal, { attributes: true });
+        }
+        
+        // Handle extraction modal close button
+        const closeExtractionBtn = document.getElementById('closeExtractionModal');
+        if (closeExtractionBtn) {
+            closeExtractionBtn.addEventListener('click', function() {
+                if (extractionModal) {
+                    extractionModal.classList.add('hidden');
+                }
+                // Unlock scroll after modal closes
+                setTimeout(function() {
+                    unlockScroll();
+                }, 150);
+            });
+        }
+        
+        // Also handle clicks outside modal
+        if (extractionModal) {
+            extractionModal.addEventListener('click', function(e) {
+                if (e.target === extractionModal) {
+                    extractionModal.classList.add('hidden');
+                    setTimeout(function() {
+                        unlockScroll();
+                    }, 150);
+                }
+            });
+        }
+        
+        // Hook into file input changes to lock scroll BEFORE extraction starts
+        const chedFileInput = document.getElementById('ched_syllabus_file');
+        const depedFileInput = document.getElementById('syllabus_file');
+        
+        if (chedFileInput) {
+            chedFileInput.addEventListener('change', function(e) {
+                lockScroll();
+            }, true); // Use capture phase to run before other handlers
+        }
+        
+        if (depedFileInput) {
+            depedFileInput.addEventListener('change', function(e) {
+                lockScroll();
+            }, true); // Use capture phase to run before other handlers
+        }
+    });
+    
+    // Prevent browser's default scroll restoration
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+    
+    // Expose public API
+    return {
+        lock: lockScroll,
+        unlock: unlockScroll
+    };
+})();
 
 </script>
 @endsection

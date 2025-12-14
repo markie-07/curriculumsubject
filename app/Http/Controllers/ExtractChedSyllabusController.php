@@ -65,6 +65,32 @@ class ExtractChedSyllabusController extends Controller
         return trim($text);
     }
 
+    /**
+     * Format extracted text to preserve line breaks and numbered lists
+     */
+    private function formatExtractedText($text)
+    {
+        if (empty($text)) {
+            return $text;
+        }
+        
+        // First clean any labels
+        $text = $this->cleanExtractedText($text);
+        
+        // Add line breaks before numbered items with decimals (1.1, 2.3, etc.)
+        $text = preg_replace('/(\d+\.\d+)/', "\n$1", $text);
+        
+        // Add line breaks before simple numbered items (1., 2., 3., etc.)
+        // This pattern ensures we don't match decimal numbers like 1.1
+        $text = preg_replace('/(\d+\.)(?!\d)/', "\n$1", $text);
+        
+        // Clean up multiple consecutive line breaks
+        $text = preg_replace('/\n{3,}/', "\n\n", $text);
+        
+        // Trim leading/trailing whitespace
+        return trim($text);
+    }
+
     public function extract(Request $request)
     {
         $request->validate([
@@ -164,9 +190,9 @@ class ExtractChedSyllabusController extends Controller
             // Course Description - look for it after "Course Description:" label
             // Try multiple patterns to handle different formats
             if (preg_match('/Course Description:\s*\n+(.*?)(?=\n\s*INSTITUTIONAL INFORMATION|VISION|SCHOOL|DEPARTMENT|$)/is', $text, $matches)) {
-                $data['course_description'] = $this->cleanExtractedText(trim($matches[1]));
+                $data['course_description'] = $this->formatExtractedText(trim($matches[1]));
             } elseif (preg_match('/Course Description:\s*([^\n]+?)(?=\n|$)/is', $text, $matches)) {
-                $data['course_description'] = $this->cleanExtractedText(trim($matches[1]));
+                $data['course_description'] = $this->formatExtractedText(trim($matches[1]));
             }
 
             // --- Mapping Grids ---
@@ -189,10 +215,10 @@ class ExtractChedSyllabusController extends Controller
                         
                         $rows[] = [
                             'pilo' => trim($matches[1]),
-                            'ctpss' => trim($matches[2]),
-                            'ecc' => trim($matches[3]),
-                            'epp' => trim($matches[4]),
-                            'glc' => trim($matches[5]),
+                            'ctpss' => strtoupper(trim($matches[2])),
+                            'ecc' => strtoupper(trim($matches[3])),
+                            'epp' => strtoupper(trim($matches[4])),
+                            'glc' => strtoupper(trim($matches[5])),
                         ];
                     }
                 }
@@ -208,10 +234,10 @@ class ExtractChedSyllabusController extends Controller
                 $data['course_mapping'] = array_map(function($row) {
                     return [
                         'cilo' => $row['pilo'],
-                        'ctpss' => $row['ctpss'],
-                        'ecc' => $row['ecc'],
-                        'epp' => $row['epp'],
-                        'glc' => $row['glc'],
+                        'ctpss' => strtoupper($row['ctpss']),
+                        'ecc' => strtoupper($row['ecc']),
+                        'epp' => strtoupper($row['epp']),
+                        'glc' => strtoupper($row['glc']),
                     ];
                 }, $courseRows);
             }
@@ -310,56 +336,56 @@ class ExtractChedSyllabusController extends Controller
                 $piloText = trim($matches[1]);
                 // Remove Legend section if it got captured
                 $piloText = preg_replace('/Legend:.*$/is', '', $piloText);
-                $data['pilo_outcomes'] = trim($piloText);
+                $data['pilo_outcomes'] = $this->formatExtractedText($piloText);
             } elseif (preg_match('/PILO:?\s*\n+(.*?)(?=\n\s*Legend:|Course Intended|CILO|$)/is', $text, $matches)) {
                 $piloText = trim($matches[1]);
                 $piloText = preg_replace('/Legend:.*$/is', '', $piloText);
-                $data['pilo_outcomes'] = trim($piloText);
+                $data['pilo_outcomes'] = $this->formatExtractedText($piloText);
             }
             
             // CILO - Course Intended Learning Outcomes
             if (preg_match('/Course Intended Learning Outcomes?\s*\(CILO\):?\s*\n+(.*?)(?=\n\s*Legend:|Expected BCP|Learning Outcomes:|Week 0|$)/is', $text, $matches)) {
                 $ciloText = trim($matches[1]);
                 $ciloText = preg_replace('/Legend:.*$/is', '', $ciloText);
-                $data['cilo_outcomes'] = trim($ciloText);
+                $data['cilo_outcomes'] = $this->formatExtractedText($ciloText);
             } elseif (preg_match('/CILO:?\s*\n+(.*?)(?=Legend:|Expected BCP|Learning Outcomes:|$)/is', $text, $matches)) {
                 $ciloText = trim($matches[1]);
                 $ciloText = preg_replace('/Legend:.*$/is', '', $ciloText);
-                $data['cilo_outcomes'] = trim($ciloText);
+                $data['cilo_outcomes'] = $this->formatExtractedText($ciloText);
             }
             
             // General Learning Outcomes - Make sure to skip PILO, CILO, and Expected BCP sections
             // Look for "Learning Outcomes:" that comes AFTER "Expected BCP Graduate Elements"
             if (preg_match('/Expected BCP Graduate Elements.*?Learning Outcomes:?\s*\n+(.*?)(?=\n\s*Week 0|Week 1|Basic Readings|Extended Readings|Committee|WEEKLY PLAN|$)/is', $text, $matches)) {
-                $data['learning_outcomes'] = trim($matches[1]);
+                $data['learning_outcomes'] = $this->formatExtractedText(trim($matches[1]));
             } elseif (preg_match('/(?:Expected BCP|Graduate Elements).*?\n.*?Learning Outcomes:?\s*\n+(.*?)(?=Week|Basic|Extended|$)/is', $text, $matches)) {
-                $data['learning_outcomes'] = trim($matches[1]);
+                $data['learning_outcomes'] = $this->formatExtractedText(trim($matches[1]));
             }
 
             // --- Readings and Assessment ---
             // Basic Readings
             if (preg_match('/Basic Readings?\s*\/?\s*Textbooks?:?\s*(.*?)(?=Extended Readings|Course Assessment|Committee Members|$)/is', $text, $matches)) {
-                $data['basic_readings'] = $this->cleanExtractedText(trim($matches[1]));
+                $data['basic_readings'] = $this->formatExtractedText(trim($matches[1]));
             }
             
             // Extended Readings
             if (preg_match('/Extended Readings?\s*\/?\s*References?:?\s*(.*?)(?=Course Assessment|Committee Members|$)/is', $text, $matches)) {
-                $data['extended_readings'] = $this->cleanExtractedText(trim($matches[1]));
+                $data['extended_readings'] = $this->formatExtractedText(trim($matches[1]));
             }
             
             // Course Assessment
             if (preg_match('/Course Assessment:?\s*(.*?)(?=Committee Members|Consultation Schedule|Prepared|$)/is', $text, $matches)) {
-                $data['course_assessment'] = $this->cleanExtractedText(trim($matches[1]));
+                $data['course_assessment'] = $this->formatExtractedText(trim($matches[1]));
             }
             
             // Committee Members
             if (preg_match('/Committee Members:?\s*(.*?)(?=Consultation Schedule|Prepared|Reviewed|$)/is', $text, $matches)) {
-                $data['committee_members'] = $this->cleanExtractedText(trim($matches[1]));
+                $data['committee_members'] = $this->formatExtractedText(trim($matches[1]));
             }
             
             // Consultation Schedule
             if (preg_match('/Consultation Schedule:?\s*(.*?)(?=Prepared|Reviewed|Approved|$)/is', $text, $matches)) {
-                $data['consultation_schedule'] = $this->cleanExtractedText(trim($matches[1]));
+                $data['consultation_schedule'] = $this->formatExtractedText(trim($matches[1]));
             }
 
             // --- Approval Section ---

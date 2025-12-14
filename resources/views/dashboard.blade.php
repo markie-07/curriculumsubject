@@ -1422,10 +1422,10 @@ const chartConfigs = {
                 scales: {
                     r: {
                         beginAtZero: true,
-                        max: 100,
+                        max: 50,
                         min: 0,
                         ticks: {
-                            stepSize: 20,
+                            stepSize: 10,
                             color: '#6b7280'
                         },
                         grid: {
