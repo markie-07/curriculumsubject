@@ -91,6 +91,41 @@
                     </div>
                 </div>
 
+                {{-- Subject Selection for Minor Courses --}}
+                <div id="minor-subject-section" class="mt-8 border border-gray-200 bg-gray-50/50 p-6 rounded-xl hidden">
+                    <div class="flex items-center gap-3 pb-3 mb-4">
+                        <div class="w-10 h-10 flex-shrink-0 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                        </div>
+                        <h2 class="text-xl font-semibold text-gray-700">Select Minor Subject</h2>
+                    </div>
+                    <div>
+                        <label for="minor-subject-select" class="block text-sm font-medium text-gray-600 mb-1">Minor Subject</label>
+                        
+                        {{-- Custom Dropdown --}}
+                        <div class="relative">
+                            <button type="button" id="minor-subject-dropdown-btn" class="w-full py-3 pl-4 pr-10 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition-colors text-left flex items-center justify-between">
+                                <span id="minor-subject-selected-text" class="text-gray-500">Select a minor subject...</span>
+                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            
+                            {{-- Dropdown Menu --}}
+                            <div id="minor-subject-dropdown-menu" class="hidden absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                <div class="py-1">
+                                    <!-- Options will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {{-- Hidden select for form compatibility --}}
+                        <select id="minor-subject-select" class="hidden">
+                            <option value="">Select a minor subject...</option>
+                        </select>
+                    </div>
+                </div>
+
                 {{-- Grade Components --}}
                 <div class="mt-8">
                     <div class="flex items-center justify-between gap-3 pb-3 mb-6">
@@ -467,7 +502,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const curriculumSelect = document.getElementById('curriculum-select');
     const courseTypeSection = document.getElementById('course-type-section');
     const majorSubjectSection = document.getElementById('major-subject-section');
+    const minorSubjectSection = document.getElementById('minor-subject-section');
     const majorSubjectSelect = document.getElementById('major-subject-select');
+    const minorSubjectSelect = document.getElementById('minor-subject-select');
     const gradeHistoryContainer = document.getElementById('grade-history-container');
     const addGradeComponentBtn = document.getElementById('add-grade-component-btn');
     const updateMinorGradesBtn = document.getElementById('update-minor-grades-btn');
@@ -563,6 +600,18 @@ document.addEventListener('DOMContentLoaded', () => {
             Swal.fire({
                 title: 'Select a Major Subject First',
                 text: 'Please select a major subject before adding grade components.',
+                icon: 'warning',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#4f46e5'
+            });
+            return;
+        }
+        
+        // For minor courses, check if a subject is selected
+        if (currentCourseType === 'minor' && !currentSubjectId) {
+            Swal.fire({
+                title: 'Select a Minor Subject First',
+                text: 'Please select a minor subject before adding grade components.',
                 icon: 'warning',
                 confirmButtonText: 'OK',
                 confirmButtonColor: '#4f46e5'
@@ -1343,16 +1392,21 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCourseTypeButtons(courseType);
         
         if (courseType === 'minor') {
-            // Load current grade structure for minor courses
+            // Show minor subject selection AND load default grades
             majorSubjectSection.classList.add('hidden');
-            await loadMinorGradeStructure();
+            minorSubjectSection.classList.remove('hidden');
+            document.querySelector('.curriculum-reminder-text').textContent = '⏳ Loading minor subjects and default grades...';
+            await populateMinorSubjects();
+            await loadMinorGradeStructure(); // Load default grade structure
             toggleGradeComponents(true); // Lock components initially
+            addGradeBtn.disabled = true;
             addGradeComponentBtn.style.display = 'none'; // Hide add component button initially
             updateMinorGradesBtn.classList.remove('hidden'); // Show update minor grades button
             minorGradesUnlocked = false; // Set as locked initially
-            document.querySelector('.curriculum-reminder-text').textContent = '✅ Default grades already applied to all minor subject(s) - Grade components are locked';
+            document.querySelector('.curriculum-reminder-text').textContent = '✅ Default grades applied to all minor subjects - Select a specific subject to customize or click "Create new grades" to modify';
         } else if (courseType === 'major') {
             // Show major subject selection
+            minorSubjectSection.classList.add('hidden');
             majorSubjectSection.classList.remove('hidden');
             document.querySelector('.curriculum-reminder-text').textContent = '⏳ Loading major subjects...';
             await populateMajorSubjects();
@@ -1518,6 +1572,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Hide Update Minor Grades button (since it's now unlocked)
         updateMinorGradesBtn.classList.add('hidden');
         
+        // Show Set Grade Scheme button
+        addGradeBtn.classList.remove('hidden');
+        updateGradeSetupBtn.classList.add('hidden');
+        
         // Update reminder text
         document.querySelector('.curriculum-reminder-text').textContent = '✏️ Minor grades unlocked - You can now edit the grade components';
         
@@ -1574,6 +1632,106 @@ document.addEventListener('DOMContentLoaded', () => {
             option.textContent = `${subject.subject_name} (${subject.subject_code})`;
             majorSubjectSelect.appendChild(option);
         });
+    };
+    
+    const populateMinorSubjects = async () => {
+        const minorSubjects = currentCurriculumSubjects.filter(subject => subject.subject_type === 'Minor');
+        
+        // Get dropdown elements
+        const dropdownMenu = document.getElementById('minor-subject-dropdown-menu');
+        const dropdownContainer = dropdownMenu.querySelector('.py-1');
+        
+        // Clear existing options
+        dropdownContainer.innerHTML = '';
+        minorSubjectSelect.innerHTML = '<option value="">Select a minor subject...</option>';
+        
+        // Check if there are any minor subjects
+        if (minorSubjects.length === 0) {
+            const noSubjectsDiv = document.createElement('div');
+            noSubjectsDiv.className = 'px-4 py-3 text-sm text-gray-500 text-center';
+            noSubjectsDiv.textContent = 'No minor subjects available';
+            dropdownContainer.appendChild(noSubjectsDiv);
+            return;
+        }
+        
+        // Display all minor subjects
+        minorSubjects.forEach(subject => {
+            // Create custom dropdown option
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between transition-colors';
+            optionDiv.dataset.subjectId = subject.id;
+            optionDiv.dataset.subjectName = subject.subject_name;
+            optionDiv.dataset.subjectCode = subject.subject_code;
+            
+            optionDiv.innerHTML = `
+                <span class="text-sm text-gray-900">${subject.subject_name} <span class="text-gray-900">(${subject.subject_code})</span></span>
+            `;
+            
+            // Single click to select
+            optionDiv.addEventListener('click', () => {
+                selectMinorSubject(subject.id, subject.subject_name, subject.subject_code);
+            });
+            
+            dropdownContainer.appendChild(optionDiv);
+            
+            // Also add to hidden select for compatibility
+            const option = document.createElement('option');
+            option.value = subject.id;
+            option.textContent = `${subject.subject_name} (${subject.subject_code})`;
+            minorSubjectSelect.appendChild(option);
+        });
+    };
+    
+    const selectMinorSubject = async (subjectId, subjectName, subjectCode) => {
+        currentSubjectId = subjectId;
+        
+        // Update dropdown display
+        document.getElementById('minor-subject-selected-text').textContent = `${subjectName} (${subjectCode})`;
+        document.getElementById('minor-subject-selected-text').classList.remove('text-gray-500');
+        document.getElementById('minor-subject-selected-text').classList.add('text-gray-900');
+        document.getElementById('minor-subject-dropdown-menu').classList.add('hidden');
+        
+        // Update hidden select
+        minorSubjectSelect.value = subjectId;
+        
+        // Check if this subject already has grades
+        try {
+            const gradeData = await fetchAPI(`grades/${subjectId}`);
+            
+            if (gradeData && gradeData.components && Object.keys(gradeData.components).length > 0) {
+                // Subject has existing grades - load them but LOCK them
+                loadGradeDataToDOM(gradeData.components);
+                toggleGradeComponents(true); // Lock components (changed from false)
+                isEditMode = true;
+                addGradeBtn.classList.add('hidden');
+                updateGradeSetupBtn.classList.add('hidden'); // Hide update button initially
+                updateMinorGradesBtn.classList.remove('hidden'); // Show "Create new grades" to unlock
+                minorGradesUnlocked = false; // Reset unlock state
+                document.querySelector('.curriculum-reminder-text').textContent = '✅ Custom grade scheme loaded - Click "Create new grades" to modify';
+            } else {
+                // No existing grades - reload default structure (fresh start)
+                await loadMinorGradeStructure(); // Reload defaults
+                toggleGradeComponents(true); // Lock components
+                isEditMode = false;
+                addGradeBtn.classList.add('hidden');
+                updateGradeSetupBtn.classList.add('hidden');
+                updateMinorGradesBtn.classList.remove('hidden'); // Show "Create new grades" button
+                minorGradesUnlocked = false;
+                document.querySelector('.curriculum-reminder-text').textContent = '✅ Default grades applied - Click "Create new grades" to modify';
+            }
+        } catch (error) {
+            // No existing grades - reload default structure (fresh start)
+            await loadMinorGradeStructure(); // Reload defaults
+            toggleGradeComponents(true); // Lock components
+            isEditMode = false;
+            addGradeBtn.classList.add('hidden');
+            updateGradeSetupBtn.classList.add('hidden');
+            updateMinorGradesBtn.classList.remove('hidden'); // Show "Create new grades" button
+            minorGradesUnlocked = false;
+            document.querySelector('.curriculum-reminder-text').textContent = '✅ Default grades applied - Click "Create new grades" to modify';
+        }
+        
+        calculateAndUpdateTotals();
     };
     
     // Function to show grade component details for graded subjects
@@ -2471,7 +2629,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Custom dropdown toggle
+    // Custom dropdown toggle for major subjects
     const dropdownBtn = document.getElementById('major-subject-dropdown-btn');
     const dropdownMenu = document.getElementById('major-subject-dropdown-menu');
     
@@ -2484,6 +2642,22 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', (e) => {
         if (!dropdownBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
             dropdownMenu.classList.add('hidden');
+        }
+    });
+    
+    // Custom dropdown toggle for minor subjects
+    const minorDropdownBtn = document.getElementById('minor-subject-dropdown-btn');
+    const minorDropdownMenu = document.getElementById('minor-subject-dropdown-menu');
+    
+    minorDropdownBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        minorDropdownMenu.classList.toggle('hidden');
+    });
+    
+    // Close minor dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!minorDropdownBtn.contains(e.target) && !minorDropdownMenu.contains(e.target)) {
+            minorDropdownMenu.classList.add('hidden');
         }
     });
     

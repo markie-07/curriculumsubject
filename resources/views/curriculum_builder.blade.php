@@ -744,25 +744,42 @@
                         ? curriculum.memorandum_category 
                         : '';
 
-                // Approve/Reject buttons - only show if status is processing
-                const actionButtons = approvalStatus === 'processing' ? `
-                    <div class="flex gap-2 mt-2">
-                        <button onclick="event.stopPropagation(); approveCurriculum(${curriculum.id})" 
-                                class="approve-btn px-3 py-1.5 bg-transparent border border-green-600 text-green-600 hover:bg-green-600 hover:text-white text-xs font-medium rounded-lg transition-all duration-200 flex items-center gap-1">
-                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
-                            </svg>
-                            Approve
-                        </button>
-                        <button onclick="event.stopPropagation(); rejectCurriculum(${curriculum.id})" 
-                                class="reject-btn px-3 py-1.5 bg-transparent border border-red-600 text-red-600 hover:bg-red-600 hover:text-white text-xs font-medium rounded-lg transition-all duration-200 flex items-center gap-1">
-                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
-                            </svg>
-                            Reject
-                        </button>
-                    </div>
-                ` : '';
+
+                // Action buttons based on status
+                let actionButtons = '';
+                if (approvalStatus === 'processing') {
+                    actionButtons = `
+                        <div class="flex gap-2 mt-2">
+                            <button onclick="event.stopPropagation(); approveCurriculum(${curriculum.id})" 
+                                    class="approve-btn px-3 py-1.5 bg-transparent border border-green-600 text-green-600 hover:bg-green-600 hover:text-white text-xs font-medium rounded-lg transition-all duration-200 flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                                </svg>
+                                Approve
+                            </button>
+                            <button onclick="event.stopPropagation(); rejectCurriculum(${curriculum.id})" 
+                                    class="reject-btn px-3 py-1.5 bg-transparent border border-red-600 text-red-600 hover:bg-red-600 hover:text-white text-xs font-medium rounded-lg transition-all duration-200 flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+                                </svg>
+                                Reject
+                            </button>
+                        </div>
+                    `;
+                } else if (approvalStatus === 'rejected') {
+                    actionButtons = `
+                        <div class="flex gap-2 mt-2">
+                            <button onclick="event.stopPropagation(); restoreCurriculum(${curriculum.id})" 
+                                    class="restore-btn px-3 py-1.5 bg-transparent border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-xs font-medium rounded-lg transition-all duration-200 flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z" clip-rule="evenodd" />
+                                </svg>
+                                Restore
+                            </button>
+                        </div>
+                    `;
+                }
+
 
                 card.innerHTML = `
                     <div class="flex-shrink-0 w-10 h-10 ${iconBgClass} rounded-lg flex items-center justify-center transition-colors duration-300">
@@ -1141,7 +1158,7 @@
                 showConfirmationModal({
                     title: 'Reject Curriculum?',
                     message: 'Are you sure you want to reject this curriculum?',
-                    icon: `<svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
+                    icon: '<svg class="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" /></svg>',
                     confirmButtonClass: 'bg-red-600 hover:bg-red-700',
                     onConfirm: async () => {
                         try {
@@ -1149,27 +1166,54 @@
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                                    'Accept': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                                 }
                             });
 
-                            if (!response.ok) {
-                                throw new Error('Failed to reject curriculum');
-                            }
+                            const data = await response.json();
 
-                            const result = await response.json();
-                            
-                            // Show success notification
-                            if (result.notification) {
-                                showSuccessModal(result.notification.title, result.notification.message);
+                            if (response.ok) {
+                                showSuccessModal('Curriculum Rejected!', data.message);
+                                fetchCurriculums(); // Changed from fetchAndDisplayCurriculums()
+                            } else {
+                                alert('Error: ' + (data.message || 'Failed to reject curriculum'));
                             }
-                            
-                            // Refresh the curriculum list
-                            fetchCurriculums();
                         } catch (error) {
                             console.error('Error rejecting curriculum:', error);
-                            showSuccessModal('Error', 'Failed to reject curriculum. Please try again.');
+                            showSuccessModal('Error', 'Failed to reject curriculum. Please try again.'); // Reverted to original error handling
+                        }
+                    }
+                });
+            };
+
+            // Restore curriculum function
+            window.restoreCurriculum = async (curriculumId) => {
+                showConfirmationModal({
+                    title: 'Restore Curriculum?',
+                    message: 'Are you sure you want to restore this curriculum to processing status?',
+                    icon: '<svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z" clip-rule="evenodd" /></svg>',
+                    confirmButtonClass: 'bg-blue-600 hover:bg-blue-700',
+                    onConfirm: async () => {
+                        try {
+                            const response = await fetch(`/api/curriculums/${curriculumId}/restore`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                }
+                            });
+
+                            const data = await response.json();
+
+                            if (response.ok) {
+                                showSuccessModal('Curriculum Restored!', data.message);
+                                fetchCurriculums(); // Changed from fetchAndDisplayCurriculums()
+                            } else {
+                                alert('Error: ' + (data.message || 'Failed to restore curriculum'));
+                            }
+                        } catch (error) {
+                            console.error('Error restoring curriculum:', error);
+                            alert('An error occurred while restoring the curriculum.');
                         }
                     }
                 });

@@ -388,10 +388,10 @@
                     @foreach($subject->program_mapping_grid as $row)
                         <tr>
                             <td>{{ $row['pilo'] ?? '' }}</td>
-                            <td class="text-center">{{ $row['ctpss'] ?? '' }}</td>
-                            <td class="text-center">{{ $row['ecc'] ?? '' }}</td>
-                            <td class="text-center">{{ $row['epp'] ?? '' }}</td>
-                            <td class="text-center">{{ $row['glc'] ?? '' }}</td>
+                            <td class="text-center">{{ strtoupper($row['ctpss'] ?? '') }}</td>
+                            <td class="text-center">{{ strtoupper($row['ecc'] ?? '') }}</td>
+                            <td class="text-center">{{ strtoupper($row['epp'] ?? '') }}</td>
+                            <td class="text-center">{{ strtoupper($row['glc'] ?? '') }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -416,10 +416,10 @@
                     @foreach($subject->course_mapping_grid as $row)
                         <tr>
                             <td>{{ $row['cilo'] ?? '' }}</td>
-                            <td class="text-center">{{ $row['ctpss'] ?? '' }}</td>
-                            <td class="text-center">{{ $row['ecc'] ?? '' }}</td>
-                            <td class="text-center">{{ $row['epp'] ?? '' }}</td>
-                            <td class="text-center">{{ $row['glc'] ?? '' }}</td>
+                            <td class="text-center">{{ strtoupper($row['ctpss'] ?? '') }}</td>
+                            <td class="text-center">{{ strtoupper($row['ecc'] ?? '') }}</td>
+                            <td class="text-center">{{ strtoupper($row['epp'] ?? '') }}</td>
+                            <td class="text-center">{{ strtoupper($row['glc'] ?? '') }}</td>
                         </tr>
                     @endforeach
                 </tbody>

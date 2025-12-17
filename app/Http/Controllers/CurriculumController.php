@@ -589,6 +589,20 @@ public function saveSubjects(Request $request)
             $curriculum = Curriculum::findOrFail($id);
             $curriculum->update(['approval_status' => 'rejected']);
 
+            // If rejecting a 'new' curriculum, restore the previous approved 'old' version
+            if ($curriculum->version_status === 'new') {
+                $oldApprovedCurriculum = Curriculum::where('curriculum', $curriculum->curriculum)
+                    ->where('year_level', $curriculum->year_level)
+                    ->where('version_status', 'old')
+                    ->where('approval_status', 'approved')
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+
+                if ($oldApprovedCurriculum) {
+                    $oldApprovedCurriculum->update(['version_status' => 'new']);
+                }
+            }
+
             // Create database notification for admins
             if (Auth::check()) {
                 Notification::createForAdmins(
@@ -612,6 +626,60 @@ public function saveSubjects(Request $request)
             \Log::error("Error rejecting curriculum: " . $e->getMessage());
             return response()->json([
                 'message' => 'An error occurred while rejecting the curriculum.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Restore a rejected curriculum back to processing status
+     */
+    public function restore($id)
+    {
+        try {
+            $curriculum = Curriculum::findOrFail($id);
+            
+            // Only allow restoring rejected curriculums
+            if ($curriculum->approval_status !== 'rejected') {
+                return response()->json([
+                    'message' => 'Only rejected curriculums can be restored.',
+                ], 400);
+            }
+            
+            $curriculum->update(['approval_status' => 'processing']);
+
+            // If restoring a 'new' curriculum back to processing, mark old approved versions as 'old' again
+            if ($curriculum->version_status === 'new') {
+                Curriculum::where('curriculum', $curriculum->curriculum)
+                    ->where('year_level', $curriculum->year_level)
+                    ->where('id', '!=', $curriculum->id)
+                    ->where('approval_status', 'approved')
+                    ->update(['version_status' => 'old']);
+            }
+
+            // Create database notification for admins
+            if (Auth::check()) {
+                Notification::createForAdmins(
+                    'info',
+                    'Curriculum Restored',
+                    'Curriculum "' . $curriculum->curriculum . '" has been restored to processing by ' . Auth::user()->name,
+                    ['curriculum_id' => $curriculum->id, 'action' => 'restored']
+                );
+            }
+
+            return response()->json([
+                'message' => 'Curriculum restored to processing status successfully!',
+                'curriculum' => $curriculum,
+                'notification' => [
+                    'type' => 'success',
+                    'title' => 'Curriculum Restored!',
+                    'message' => 'Curriculum "' . $curriculum->curriculum . '" has been restored to processing status.'
+                ]
+            ]);
+        } catch (\Exception $e) {
+            \Log::error("Error restoring curriculum: " . $e->getMessage());
+            return response()->json([
+                'message' => 'An error occurred while restoring the curriculum.',
                 'error' => $e->getMessage()
             ], 500);
         }

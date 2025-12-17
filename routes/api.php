@@ -22,6 +22,7 @@ Route::get('/curriculums/{id}/subjects', [CurriculumController::class, 'getCurri
 Route::post('/curriculums/{id}/add-subjects', [CurriculumController::class, 'addSubjectsToCurriculum']);
 Route::post('/curriculums/{id}/approve', [CurriculumController::class, 'approve']);
 Route::post('/curriculums/{id}/reject', [CurriculumController::class, 'reject']);
+Route::post('/curriculums/{id}/restore', [CurriculumController::class, 'restore']);
 
 
 // --- Subject Routes ---
